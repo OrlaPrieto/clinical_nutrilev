@@ -1,0 +1,245 @@
+<div class="bg-nutri-bg min-h-full pb-12 overflow-hidden selection:bg-nutri-rose/20 text-nutri-text" *ngIf="patient">
+    
+    <!-- Profile Banner Compacto -->
+    <div class="relative bg-white pt-6 pb-6 px-6 border-b border-nutri-rose/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-center gap-6 relative">
+            <!-- Avatar más pequeño -->
+            <div class="w-16 h-16 rounded-3xl bg-nutri-rose text-white flex items-center justify-center text-2xl font-bold shadow-lg ring-2 ring-nutri-rose/10">
+                {{patient.nombre?.charAt(0)}}
+            </div>
+
+            <div class="flex-1 text-center md:text-left space-y-1">
+                <span class="text-nutri-rose font-bold tracking-widest uppercase text-[9px] block">Expediente Clínico</span>
+                <h2 class="text-3xl font-bold serif">{{patient.nombre}}</h2>
+                
+                <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                    <div class="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-nutri-rose/10 text-[11px] text-nutri-text/60 shadow-sm">
+                        <i class="pi pi-envelope text-[10px] text-nutri-rose"></i>
+                        <span>{{patient.email}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs Compactas -->
+    <div class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-nutri-rose/5">
+        <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
+            <div class="flex items-center space-x-6 py-3 min-w-max">
+                <button *ngFor="let tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Notas']; let i = index"
+                        (click)="activeTab = i"
+                        class="relative py-1 text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
+                        [ngClass]="activeTab === i ? 'text-nutri-rose' : 'text-nutri-text/30 hover:text-nutri-text/60'">
+                    {{tab}}
+                    <div *ngIf="activeTab === i" 
+                         class="absolute -bottom-3 left-0 right-0 h-0.5 bg-nutri-rose rounded-full animate-fade-in"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Area Compactada -->
+    <div class="max-w-7xl mx-auto px-6 mt-6 mb-10">
+        
+        <!-- Tab 0: Personal Compacto -->
+        <div *ngIf="activeTab === 0" class="space-y-6 animate-fade-up">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Data Cards Compactas -->
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Edad</span>
+                    <p class="text-md font-bold">{{patient.edad}} años</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Género</span>
+                    <p class="text-md font-bold">{{patient.genero || '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Estatura</span>
+                    <p class="text-md font-bold">{{patient.estatura || '---'}} cm</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Civil</span>
+                    <p class="text-md font-bold">{{patient.estado_civil || '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm col-span-2 md:col-span-2">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Dirección</span>
+                    <p class="text-sm font-medium leading-tight truncate">{{patient.direccion || '--'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm col-span-2 md:col-span-2">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Profesión</span>
+                    <p class="text-sm font-medium">{{patient.ocupacion || patient.profesion || '---'}}</p>
+                </div>
+            </div>
+
+            <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-2">
+                <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Motivo de Consulta</h4>
+                <p class="text-lg font-bold serif italic leading-tight">"{{patient.motivos_consulta}}"</p>
+                <p class="text-[9px] text-nutri-rose/40 font-bold uppercase tracking-widest">Fuente: {{patient.recomendacion_fuente || '---'}}</p>
+            </div>
+        </div>
+
+        <!-- Tab 1: Clínica / Antecedentes Compacto -->
+        <div *ngIf="activeTab === 1" class="space-y-6 animate-fade-up">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><i class="pi pi-briefcase"></i></div>
+                        <div>
+                            <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Patologías</h4>
+                            <p class="text-sm leading-relaxed font-medium">{{patient.antecedentes_patologicos || 'Ninguno'}}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
+                        <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><i class="pi pi-heart"></i></div>
+                        <div>
+                            <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Enfermedades</h4>
+                            <p class="text-sm leading-relaxed font-medium">{{patient.enfermedades || 'Ninguno'}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><i class="pi pi-file-edit"></i></div>
+                        <div>
+                            <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Med/Cirugías</h4>
+                            <p class="text-sm leading-relaxed font-medium">{{patient.medicamentos || 'No'}} / {{patient.cirugias || 'No'}}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
+                        <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><i class="pi pi-users"></i></div>
+                        <div>
+                            <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Familiar</h4>
+                            <p class="text-sm leading-relaxed font-medium">{{patient.antecedentes_familiares || 'Ninguno'}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm">
+                <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest mb-3">Laboratorios</h4>
+                <div class="text-sm leading-relaxed text-nutri-text/60 italic bg-nutri-bg/30 p-4 rounded-2xl border border-nutri-rose/5">
+                    {{patient.laboratorios || 'No registrados.'}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Estilo de Vida Compacto -->
+        <div *ngIf="activeTab === 2" class="space-y-6 animate-fade-up">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Habit Cards Compactas -->
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
+                    <i class="pi pi-percentage text-nutri-rose/30 text-xs mb-1 block"></i>
+                    <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Alcohol</span>
+                    <p class="text-xs font-bold">{{patient.alcohol || '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
+                    <i class="pi pi-filter text-nutri-rose/30 text-xs mb-1 block"></i>
+                    <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Tabaco</span>
+                    <p class="text-xs font-bold">{{patient.tabaco || '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
+                    <i class="pi pi-sun text-nutri-rose/30 text-xs mb-1 block"></i>
+                    <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Sueño</span>
+                    <p class="text-xs font-bold">{{patient.sueno || '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
+                    <i class="pi pi-clock text-nutri-rose/30 text-xs mb-1 block"></i>
+                    <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Ejercicio</span>
+                    <p class="text-xs font-bold">{{patient.hace_ejercicio || '---'}}</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-6">
+                <div class="space-y-2">
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Actividad Física</h4>
+                    <p class="text-md font-medium serif italic leading-relaxed text-nutri-text/80">"{{patient.ejercicio_detalles || 'No registrado.'}}"</p>
+                </div>
+                <div class="border-t border-nutri-rose/[0.03] pt-4 space-y-2">
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Horarios y Actividad</h4>
+                    <p class="text-sm leading-relaxed text-nutri-text/70">{{patient.tipo_actividad_horario || 'No especificado.'}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Nutrición Compacto -->
+        <div *ngIf="activeTab === 3" class="space-y-6 animate-fade-up">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                    <div class="space-y-1">
+                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Comidas / Distribución</h4>
+                        <p class="text-md font-bold">{{patient.comidas_dia}} al día <span class="font-normal text-xs text-nutri-text/40">({{patient.comidas_dia_otro}})</span></p>
+                    </div>
+                    <div class="space-y-1 border-t border-nutri-rose/[0.03] pt-4">
+                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Hábitos</h4>
+                        <p class="text-xs font-medium">🛒 Compra: {{patient.comida_comprada}}</p>
+                        <p class="text-xs font-medium">🍳 Cocina: {{patient.quien_cocina}}</p>
+                    </div>
+                </div>
+
+                <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-4">
+                    <div class="space-y-2">
+                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Preferencias</h4>
+                        <p class="text-xs"><span class="font-bold text-nutri-rose">Gusta:</span> {{patient.alimentos_preferidos}}</p>
+                        <p class="text-xs"><span class="font-bold text-nutri-rose">Evita:</span> {{patient.alimentos_no_agradan}}</p>
+                        <p class="text-xs font-bold text-red-500/80 mt-2"><i class="pi pi-exclamation-triangle mr-1"></i>Alergias: {{patient.alergias_alimentarias || 'Ninguna'}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-2">Diario 24h</h4>
+                    <p class="text-md leading-relaxed serif italic text-nutri-text/80 whitespace-pre-wrap">{{patient.diario_24h || '---'}}</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Suplementos</h4>
+                        <p class="text-sm font-bold">{{patient.suplementos_si_no === 'Si' ? '✅ Sí' : '❌ No'}} <span class="font-normal text-xs text-nutri-text/40 ml-2">{{patient.suplementos_cuales}}</span></p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Dieta Especial</h4>
+                        <p class="text-sm font-bold leading-tight">{{patient.dieta_especial || 'Ninguna'}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Notas Persistentes Optimizadas -->
+        <div *ngIf="activeTab === 4" class="space-y-4 animate-fade-up h-full flex flex-col">
+            <div class="flex items-center justify-between bg-white p-4 rounded-3xl border border-nutri-rose/5 shadow-sm">
+                <div class="space-y-0.5">
+                    <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
+                    <p class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronización automática activa</p>
+                </div>
+                <button class="btn-primary" [disabled]="saving" (click)="saveNotes()">
+                    <i class="pi mr-2" [ngClass]="saving ? 'pi-spin pi-spinner' : 'pi-save'"></i>
+                    <span class="text-[10px]">{{ saving ? 'GUARDANDO...' : 'GUARDAR' }}</span>
+                </button>
+            </div>
+            
+            <div class="relative flex-1">
+                <textarea [(ngModel)]="patient.notas" 
+                          placeholder="Escribe aquí las notas, seguimiento o evolución..."
+                          class="w-full min-h-[500px] h-full bg-white rounded-[2rem] border border-nutri-rose/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 outline-none resize-none scroll-premium"></textarea>
+                
+                <div class="absolute bottom-4 right-6 text-[8px] text-nutri-rose/20 font-bold uppercase tracking-[0.4em]">
+                    Nutrilev Management System
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Success Toast -->
+    <div *ngIf="showSuccess" 
+         class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white rounded-3xl shadow-2xl border border-nutri-rose/10 animate-fade-up">
+        <div class="w-10 h-10 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 shadow-inner">
+            <i class="pi pi-check"></i>
+        </div>
+        <div class="space-y-0.5">
+            <p class="font-bold text-nutri-text text-sm">Cambios Guardados</p>
+            <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronizado con Google Sheets</p>
+        </div>
+    </div>
+</div>

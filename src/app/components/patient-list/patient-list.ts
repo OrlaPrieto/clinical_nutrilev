@@ -1,0 +1,125 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { PatientService } from '../../services/patient';
+import { Patient } from '../../models/patient.model';
+import { PatientDetailComponent } from '../patient-detail/patient-detail';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-patient-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule, PatientDetailComponent],
+  templateUrl: './patient-list.html',
+  styleUrl: './patient-list.css'
+})
+export class PatientListComponent implements OnInit {
+  patients: Patient[] = [];
+  uniquePatients: any[] = [];
+  filteredPatients: any[] = [];
+  searchTerm: string = '';
+  loading: boolean = true;
+  displayDetail: boolean = false;
+  selectedPatient: Patient | null = null;
+  
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 1;
+  paginatedPatients: any[] = [];
+
+  constructor(
+    private patientService: PatientService,
+    public authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    this.loadPatients();
+  }
+
+  loadPatients() {
+    this.loading = true;
+    this.patientService.getPatients().subscribe({
+      next: (data) => {
+        this.patients = data;
+        this.groupPatients(data);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading patients', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  groupPatients(data: Patient[]) {
+    const grouped = data.reduce((acc: any, curr) => {
+      const key = curr.email || curr.nombre;
+      // Si no existe el paciente o si la entrada actual es más reciente que la guardada
+      if (!acc[key] || new Date(curr.fecha_hoy) > new Date(acc[key].fecha_hoy)) {
+        acc[key] = { ...curr };
+      }
+      // Asegurar que la fecha de actualización más reciente se conserve
+      if (curr.ultima_actualizacion && (!acc[key].ultima_actualizacion || new Date(curr.ultima_actualizacion) > new Date(acc[key].ultima_actualizacion))) {
+        acc[key].ultima_actualizacion = curr.ultima_actualizacion;
+      }
+      return acc;
+    }, {});
+    this.uniquePatients = Object.values(grouped);
+    
+    // Sort by most recent update by default
+    this.uniquePatients.sort((a, b) => {
+      const dateA = a.ultima_actualizacion ? new Date(a.ultima_actualizacion).getTime() : 0;
+      const dateB = b.ultima_actualizacion ? new Date(b.ultima_actualizacion).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    this.applyFilters();
+  }
+
+  onSearch() {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  applyFilters() {
+    if (!this.searchTerm) {
+      this.filteredPatients = [...this.uniquePatients];
+    } else {
+      const term = this.searchTerm.toLowerCase();
+      this.filteredPatients = this.uniquePatients.filter(p => 
+        p.nombre.toLowerCase().includes(term) || 
+        p.email.toLowerCase().includes(term) ||
+        p.telefono.toLowerCase().includes(term)
+      );
+    }
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredPatients.length / this.pageSize);
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedPatients = this.filteredPatients.slice(start, end);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  get pageNumbers(): number[] {
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  showDetail(patient: Patient) {
+    this.selectedPatient = patient;
+    this.displayDetail = true;
+  }
+}
