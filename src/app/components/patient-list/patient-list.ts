@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientService } from '../../services/patient';
@@ -27,6 +27,9 @@ export class PatientListComponent implements OnInit {
   pageSize: number = 10;
   totalPages: number = 1;
   paginatedPatients: any[] = [];
+
+  // Tooltip Interaction
+  activeTooltipId: string | null = null;
 
   constructor(
     private patientService: PatientService,
@@ -110,6 +113,11 @@ export class PatientListComponent implements OnInit {
     }
   }
 
+  onPageSizeChange() {
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
   get pageNumbers(): number[] {
     const pages = [];
     for (let i = 1; i <= this.totalPages; i++) {
@@ -121,5 +129,19 @@ export class PatientListComponent implements OnInit {
   showDetail(patient: Patient) {
     this.selectedPatient = patient;
     this.displayDetail = true;
+  }
+
+  toggleTooltip(id: string, event: Event) {
+    event.stopPropagation();
+    if (this.activeTooltipId === id) {
+      this.activeTooltipId = null;
+    } else {
+      this.activeTooltipId = id;
+    }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.activeTooltipId = null;
   }
 }

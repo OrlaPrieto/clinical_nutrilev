@@ -55,39 +55,50 @@
         </div>
 
         <!-- Premium Table -->
-        <div *ngIf="!loading && filteredPatients.length > 0" class="bg-white rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 overflow-hidden animate-fade-up">
-            <div class="overflow-x-auto">
+        <div *ngIf="!loading && filteredPatients.length > 0" class="bg-white rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 animate-fade-up relative">
+            <div class="w-full">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-nutri-rose/[0.02] border-b border-nutri-rose/5">
-                            <th class="px-12 py-8 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest">Paciente</th>
-                            <th class="px-12 py-8 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest">Preferencias</th>
-                            <th class="px-12 py-8 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest">Nacimiento</th>
-                            <th class="px-12 py-8 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-right">Acciones</th>
+                            <th class="px-12 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest first:rounded-tl-[2.5rem]">Paciente</th>
+                            <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest">Nacimiento</th>
+                            <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-center">Prefs</th>
+                            <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-center">Notas</th>
+                            <th class="px-12 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-right last:rounded-tr-[2.5rem]">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-nutri-rose/[0.03]">
                         <tr *ngFor="let patient of paginatedPatients; let i = index" 
-                            class="group hover:bg-nutri-rose/[0.01] transition-all duration-300">
-                            <td class="px-12 py-8">
+                            class="group relative hover:bg-nutri-rose/[0.01] transition-all duration-300 hover:z-40">
+                            <td class="px-12 py-5">
                                 <div class="flex items-center gap-4">
                                     <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose font-bold text-sm ring-1 ring-nutri-rose/10 group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
                                         {{ patient.nombre.charAt(0) }}
                                     </div>
                                     <div>
-                                        <p class="font-bold text-nutri-text serif text-lg group-hover:text-nutri-rose transition-colors">{{ patient.nombre }}</p>
-                                        <p class="text-[10px] text-nutri-text/30 font-bold uppercase tracking-widest">Expediente Clínico</p>
+                                        <p class="font-bold text-nutri-text serif text-lg group-hover:text-nutri-rose transition-colors leading-tight">{{ patient.nombre }}</p>
+                                        <p class="text-[10px] text-nutri-text/30 font-bold uppercase tracking-widest line-clamp-1 max-w-[200px]">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-12 py-8">
+                            <td class="px-8 py-5">
+                                <span class="text-sm font-medium text-nutri-text/60">
+                                    {{ (patient.fecha_nacimiento | date:'dd/MM/yyyy') || '---' }}
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 text-center">
                                 <div class="relative group/tooltip inline-block">
-                                    <div class="w-10 h-10 rounded-xl bg-nutri-bg flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all cursor-help shadow-sm border border-nutri-rose/5">
+                                    <div (click)="toggleTooltip(i + '-prefs', $event)"
+                                         class="w-10 h-10 rounded-xl bg-nutri-bg flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all cursor-pointer shadow-sm border border-nutri-rose/5 active:scale-95">
                                         <i class="pi pi-heart-fill text-sm"></i>
                                     </div>
-                                    <!-- Tooltip (Orientación lateral izquierda para evitar cortes arriba/abajo) -->
-                                    <div class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white rounded-3xl shadow-nutri border border-nutri-rose/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[100] pointer-events-none translate-x-2 group-hover/tooltip:translate-x-0 text-left">
-                                        <div class="space-y-4">
+                                    <!-- Tooltip Preferencias -->
+                                    <div (click)="$event.stopPropagation()"
+                                         [class.opacity-100]="activeTooltipId === i + '-prefs'"
+                                         [class.visible]="activeTooltipId === i + '-prefs'"
+                                         [class.translate-x-0]="activeTooltipId === i + '-prefs'"
+                                         class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white rounded-3xl shadow-nutri border border-nutri-rose/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto">
+                                        <div class="space-y-4 max-h-64 overflow-y-auto pr-2 scroll-premium">
                                             <div class="space-y-1">
                                                 <div class="flex items-center gap-2">
                                                     <i class="pi pi-check-circle text-[10px] text-nutri-rose"></i>
@@ -104,19 +115,36 @@
                                                 <p class="text-xs text-nutri-text font-medium leading-relaxed pl-4">{{ patient.alimentos_no_agradan || 'Sin datos especificados' }}</p>
                                             </div>
                                         </div>
-                                        <!-- Arrow pointing right -->
                                         <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-12 py-8">
-                                <span class="text-sm font-medium text-nutri-text/60">
-                                    {{ (patient.fecha_nacimiento | date:'dd/MM/yyyy') || '---' }}
-                                </span>
+                            <td class="px-8 py-5 text-center">
+                                <div class="relative group/tooltip inline-block">
+                                    <div (click)="toggleTooltip(i + '-notes', $event)"
+                                         class="w-10 h-10 rounded-xl bg-nutri-bg flex items-center justify-center text-nutri-text/40 hover:bg-nutri-text hover:text-white transition-all cursor-pointer shadow-sm border border-nutri-text/5 active:scale-95">
+                                        <i class="pi pi-file-edit text-sm"></i>
+                                    </div>
+                                    <!-- Tooltip Notas -->
+                                    <div (click)="$event.stopPropagation()"
+                                         [class.opacity-100]="activeTooltipId === i + '-notes'"
+                                         [class.visible]="activeTooltipId === i + '-notes'"
+                                         [class.translate-x-0]="activeTooltipId === i + '-notes'"
+                                         class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-80 p-6 bg-white rounded-3xl shadow-nutri border border-nutri-rose/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto">
+                                        <div class="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-premium">
+                                            <div class="flex items-center gap-2">
+                                                <i class="pi pi-info-circle text-[10px] text-nutri-rose"></i>
+                                                <p class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest">Últimas Notas</p>
+                                            </div>
+                                            <p class="text-xs text-nutri-text font-medium leading-relaxed whitespace-pre-wrap">{{ patient.notas || 'Sin notas registradas.' }}</p>
+                                        </div>
+                                        <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45"></div>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-12 py-8 text-right">
+                            <td class="px-12 py-5 text-right">
                                 <button (click)="showDetail(patient)"
-                                        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-nutri-bg text-nutri-text font-bold text-xs hover:bg-nutri-rose hover:text-white transition-all duration-300 shadow-sm hover:shadow-pink-soft active:scale-95">
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-nutri-bg text-nutri-text font-bold text-xs hover:bg-nutri-rose hover:text-white transition-all duration-300 shadow-sm hover:shadow-pink-soft active:scale-95">
                                     <span>ABRIR</span>
                                     <i class="pi pi-arrow-up-right text-[10px]"></i>
                                 </button>
@@ -127,10 +155,22 @@
             </div>
 
             <!-- Custom Pagination -->
-            <div class="bg-nutri-rose/[0.02] border-t border-nutri-rose/5 px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">
-                    Mostrando {{ paginatedPatients.length }} de {{ filteredPatients.length }} pacientes
-                </p>
+            <div class="bg-nutri-rose/[0.02] border-t border-nutri-rose/5 px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-6 rounded-b-[2.5rem]">
+                <div class="flex items-center gap-6">
+                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">
+                        Mostrando {{ paginatedPatients.length }} de {{ filteredPatients.length }} registros
+                    </p>
+                    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-nutri-rose/10 shadow-sm">
+                        <span class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Ver:</span>
+                        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" 
+                                class="bg-transparent text-[11px] font-bold text-nutri-rose border-none focus:ring-0 cursor-pointer outline-none">
+                            <option [value]="10">10</option>
+                            <option [value]="15">15</option>
+                            <option [value]="20">20</option>
+                            <option [value]="50">50</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="flex items-center gap-2">
                     <button (click)="goToPage(currentPage - 1)" 
                             [disabled]="currentPage === 1"
