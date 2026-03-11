@@ -70,13 +70,6 @@ export class PatientListComponent implements OnInit {
     }, {});
     this.uniquePatients = Object.values(grouped);
     
-    // Sort by most recent update by default
-    this.uniquePatients.sort((a, b) => {
-      const dateA = a.ultima_actualizacion ? new Date(a.ultima_actualizacion).getTime() : 0;
-      const dateB = b.ultima_actualizacion ? new Date(b.ultima_actualizacion).getTime() : 0;
-      return dateB - dateA;
-    });
-
     this.applyFilters();
   }
 

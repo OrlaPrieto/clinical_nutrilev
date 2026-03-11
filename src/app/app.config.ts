@@ -21,7 +21,11 @@ export const appConfig: ApplicationConfig = {
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              '1013427563620-rk8kd2481ogvmrj20gso83j86pcs8iah.apps.googleusercontent.com'
+              '1013427563620-rk8kd2481ogvmrj20gso83j86pcs8iah.apps.googleusercontent.com',
+              {
+                oneTapEnabled: false,
+                prompt_parent_id: 'google-login-button',
+              }
             )
           }
         ],
