@@ -41,6 +41,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "polyfills": [
@@ -87,7 +88,8 @@
               "buildTarget": "clinical-nutrilev:build:production"
             },
             "development": {
-              "buildTarget": "clinical-nutrilev:build:development"
+              "buildTarget": "clinical-nutrilev:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

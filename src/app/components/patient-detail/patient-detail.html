@@ -50,6 +50,10 @@
                     <p class="text-md font-bold">{{patient.edad}} años</p>
                 </div>
                 <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Fecha de Nacimiento</span>
+                    <p class="text-md font-bold">{{patient.fecha_nacimiento || '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
                     <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Género</span>
                     <p class="text-md font-bold">{{patient.genero || '---'}}</p>
                 </div>
@@ -157,14 +161,26 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-6">
+            <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Estilo de Vida</h4>
+                    <button (click)="saveChanges()" [disabled]="saving" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-nutri-rose text-white text-[10px] font-bold hover:bg-nutri-rose/80 transition-all active:scale-95 disabled:opacity-50">
+                        <i class="pi" [ngClass]="saving ? 'pi-spin pi-spinner' : 'pi-save'"></i>
+                        <span>{{ saving ? 'GUARDANDO' : 'GUARDAR' }}</span>
+                    </button>
+                </div>
+
                 <div class="space-y-2">
                     <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Actividad Física</h4>
-                    <p class="text-md font-medium serif italic leading-relaxed text-nutri-text/80">"{{patient.ejercicio_detalles || 'No registrado.'}}"</p>
+                    <textarea [(ngModel)]="patient.ejercicio_detalles" 
+                              class="w-full bg-white/50 rounded-2xl border border-nutri-rose/10 p-4 text-sm font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[80px]"
+                              placeholder="Describe la actividad física..."></textarea>
                 </div>
                 <div class="border-t border-nutri-rose/[0.03] pt-4 space-y-2">
                     <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Horarios y Actividad</h4>
-                    <p class="text-sm leading-relaxed text-nutri-text/70">{{patient.tipo_actividad_horario || 'No especificado.'}}</p>
+                    <textarea [(ngModel)]="patient.tipo_actividad_horario" 
+                              class="w-full bg-white/50 rounded-2xl border border-nutri-rose/10 p-4 text-sm font-medium leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[80px]"
+                              placeholder="Describe los horarios y tipo de actividad..."></textarea>
                 </div>
             </div>
         </div>

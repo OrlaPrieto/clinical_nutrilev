@@ -1,0 +1,8 @@
+python-docx
+google-genai
+requests
+Pillow
+lxml
+flask
+flask-cors
+python-dotenv
