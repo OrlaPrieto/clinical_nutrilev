@@ -7,10 +7,12 @@ import { PatientDetailComponent } from '../patient-detail/patient-detail';
 import { AuthService } from '../../services/auth.service';
 import { AppointmentModalComponent } from '../appointment-modal/appointment-modal';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PatientDetailComponent, AppointmentModalComponent],
+  imports: [CommonModule, FormsModule, PatientDetailComponent, AppointmentModalComponent, RouterModule],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.css'
 })

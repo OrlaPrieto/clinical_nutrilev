@@ -28,6 +28,12 @@
                             class="w-full pl-14 pr-6 py-4 bg-nutri-bg rounded-2xl border border-transparent focus:border-nutri-rose/20 focus:bg-white focus:ring-4 focus:ring-nutri-rose/5 transition-all outline-none font-medium text-nutri-text placeholder:text-nutri-text/30 shadow-inner">
                     </div>
 
+                    <a routerLink="/menu-automation" 
+                       class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white border border-nutri-rose/10 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm active:scale-95"
+                       title="Automatizador de Menús">
+                        <i class="pi pi-sparkles text-lg"></i>
+                    </a>
+
                     <button (click)="loadPatients()" [disabled]="loading" title="Actualizar datos"
                         class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white border border-nutri-rose/10 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm active:scale-95 disabled:opacity-50">
                         <i class="pi pi-refresh text-lg" [class.animate-spin]="loading"></i>
