@@ -80,7 +80,8 @@
                     </thead>
                     <tbody class="divide-y divide-nutri-rose/[0.03]">
                         <tr *ngFor="let patient of paginatedPatients; let i = index"
-                            class="group relative hover:bg-nutri-rose/[0.01] transition-all duration-300 hover:z-40">
+                            class="group relative hover:bg-nutri-rose/[0.01] transition-all duration-300 hover:z-40"
+                            [ngClass]="patient.dado_de_baja ? 'grayscale opacity-70 !bg-gray-200/70 border-gray-300/50' : ''">
                             <td class="px-12 py-5">
                                 <div class="flex items-center gap-4">
                                     <div
@@ -295,7 +296,7 @@
             <i class="pi pi-times text-md md:text-lg"></i>
         </button>
  
-        <div class="h-full overflow-y-auto overflow-x-hidden pt-12 md:pt-0">
+        <div class="h-full overflow-hidden pt-12 md:pt-0">
             <app-patient-detail [patient]="selectedPatient"></app-patient-detail>
         </div>
     </div>

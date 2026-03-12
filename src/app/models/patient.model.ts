@@ -51,4 +51,5 @@ export interface Patient {
   dieta_especial: string;
   notas: string;
   ultima_actualizacion: string;
+  dado_de_baja: boolean;
 }

@@ -34,10 +34,27 @@ export class PatientDetailComponent {
       action: "update"
     };
 
-    this.patientService.addPatientEntry(updatePayload).subscribe({
+    this.sendUpdate(updatePayload, true);
+  }
+
+  toggleDeactivation() {
+    if (!this.patient) return;
+    
+    const updatePayload = {
+      email: this.patient.email,
+      nombre: this.patient.nombre,
+      dado_de_baja: this.patient.dado_de_baja,
+      action: "update"
+    };
+
+    this.sendUpdate(updatePayload, false);
+  }
+
+  private sendUpdate(payload: any, exitEditMode: boolean) {
+    this.patientService.addPatientEntry(payload).subscribe({
       next: () => {
         this.saving = false;
-        this.isEditing = false; // Add this line
+        if (exitEditMode) this.isEditing = false;
         this.showSuccess = true;
         setTimeout(() => this.showSuccess = false, 3000);
       },

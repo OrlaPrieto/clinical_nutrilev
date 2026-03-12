@@ -1,7 +1,7 @@
-<div class="bg-nutri-bg min-h-full pb-12 overflow-hidden selection:bg-nutri-rose/20 text-nutri-text" *ngIf="patient">
+<div class="flex flex-col h-full bg-nutri-bg selection:bg-nutri-rose/20 text-nutri-text" *ngIf="patient">
     
-    <!-- Profile Banner Compacto -->
-    <div class="relative bg-white pt-6 pb-6 px-6 border-b border-nutri-rose/5">
+    <!-- Profile Banner Compacto (Fixed Header) -->
+    <div class="flex-none relative bg-white pt-6 pb-6 px-6 border-b border-nutri-rose/5">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-center gap-6 relative">
             <!-- Avatar más pequeño -->
             <div class="w-16 h-16 rounded-3xl bg-nutri-rose text-white flex items-center justify-center text-2xl font-bold shadow-lg ring-2 ring-nutri-rose/10">
@@ -42,8 +42,8 @@
         </div>
     </div>
 
-    <!-- Navigation Tabs Compactas -->
-    <div class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-nutri-rose/5">
+    <!-- Navigation Tabs Compactas (Fixed Header) -->
+    <div class="flex-none bg-white border-b border-nutri-rose/5">
         <div class="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto scrollbar-hide">
             <div class="flex items-center space-x-4 md:space-x-6 py-3 min-w-max">
                 <button *ngFor="let tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Seguimiento', 'Notas']; let i = index"
@@ -58,8 +58,8 @@
         </div>
     </div>
 
-    <!-- Content Area Compactada -->
-    <div class="max-w-7xl mx-auto px-6 mt-6 mb-10">
+    <!-- Content Area (Scrollable Area) -->
+    <div class="flex-1 w-full px-4 md:px-10 mt-6 mb-10 overflow-y-auto scroll-premium">
         
         <!-- Tab 0: Personal Compacto -->
         <div *ngIf="activeTab === 0" class="space-y-6 animate-fade-up">
@@ -445,5 +445,18 @@
             <p class="font-bold text-nutri-text text-sm">Cambios Guardados</p>
             <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronizado con Supabase</p>
         </div>
+    </div>
+    <!-- Deactivation Footer (Fixed Footer) -->
+    <div class="flex-none bg-white/90 backdrop-blur-md border-t border-nutri-rose/10 px-8 py-4 flex items-center justify-between shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)]">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg border border-nutri-rose/10 transition-all" [ngClass]="patient.dado_de_baja ? 'bg-rose-50 border-rose-200' : ''">
+                <input type="checkbox" [(ngModel)]="patient.dado_de_baja" (change)="toggleDeactivation()" id="activeToggle" class="accent-nutri-rose w-4 h-4 cursor-pointer">
+                <label for="activeToggle" class="text-[10px] font-black uppercase tracking-widest cursor-pointer" [ngClass]="patient.dado_de_baja ? 'text-rose-500' : 'text-nutri-text/40'">
+                    {{ patient.dado_de_baja ? 'Paciente Dado de Baja' : 'Dar de Baja' }}
+                </label>
+            </div>
+            <span *ngIf="patient.dado_de_baja" class="text-[9px] font-bold text-rose-500 uppercase italic animate-pulse">Este registro aparecerá desactivado en la lista</span>
+        </div>
+        <p class="text-[8px] font-bold text-nutri-text/20 uppercase tracking-[0.2em]">Nutrilev Admin Panel</p>
     </div>
 </div>
