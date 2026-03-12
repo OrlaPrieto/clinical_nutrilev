@@ -53,12 +53,11 @@
             <div class="w-20 h-20 rounded-4xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose/20">
                 <i class="pi pi-users text-4xl"></i>
             </div>
-            <h3 class="text-2xl font-bold text-nutri-text/40 serif">No se encontraron pacientes</h3>
         </div>
-
-        <!-- Premium Table -->
+        
+        <!-- Premium Table (Desktop Only) -->
         <div *ngIf="!loading && filteredPatients.length > 0"
-            class="bg-white rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 animate-fade-up relative">
+            class="hidden lg:block bg-white rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 animate-fade-up relative">
             <div class="w-full">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -109,7 +108,6 @@
                                         class="w-10 h-10 rounded-xl bg-nutri-bg flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all cursor-pointer shadow-sm border border-nutri-rose/5 active:scale-95">
                                         <i class="pi pi-heart-fill text-sm"></i>
                                     </div>
-                                    <!-- Tooltip Preferencias -->
                                     <div (click)="$event.stopPropagation()"
                                         [class.opacity-100]="activeTooltipId === i + '-prefs'"
                                         [class.visible]="activeTooltipId === i + '-prefs'"
@@ -119,38 +117,28 @@
                                             <div class="space-y-1 p-3 rounded-2xl bg-emerald-100/50 group/like">
                                                 <div class="flex items-center gap-2">
                                                     <i class="pi pi-check-circle text-[10px] text-emerald-800"></i>
-                                                    <p
-                                                        class="text-[9px] font-black text-emerald-900 uppercase tracking-widest">
-                                                        Le encanta</p>
+                                                    <p class="text-[9px] font-black text-emerald-900 uppercase tracking-widest">Le encanta</p>
                                                 </div>
-                                                <p class="text-xs text-nutri-text font-bold leading-relaxed pl-4">{{
-                                                    patient.alimentos_preferidos || 'Sin datos especificados' }}</p>
+                                                <p class="text-xs text-nutri-text font-bold leading-relaxed pl-4">{{ patient.alimentos_preferidos || 'Sin datos especificados' }}</p>
                                             </div>
                                             <div class="w-full h-px bg-nutri-rose/5"></div>
                                             <div class="space-y-1 p-3 rounded-2xl bg-rose-100/50 group/dislike">
                                                 <div class="flex items-center gap-2">
                                                     <i class="pi pi-times-circle text-[10px] text-rose-800"></i>
-                                                    <p
-                                                        class="text-[9px] font-black text-rose-900 uppercase tracking-widest">
-                                                        No le gusta</p>
+                                                    <p class="text-[9px] font-black text-rose-900 uppercase tracking-widest">No le gusta</p>
                                                 </div>
-                                                <p class="text-xs text-nutri-text font-bold leading-relaxed pl-4">{{
-                                                    patient.alimentos_no_agradan || 'Sin datos especificados' }}</p>
+                                                <p class="text-xs text-nutri-text font-bold leading-relaxed pl-4">{{ patient.alimentos_no_agradan || 'Sin datos especificados' }}</p>
                                             </div>
                                             <div class="w-full h-px bg-nutri-rose/5"></div>
                                             <div class="space-y-1 p-3 rounded-2xl bg-yellow-100/60">
                                                 <div class="flex items-center gap-2">
                                                     <i class="pi pi-exclamation-triangle text-[10px] text-yellow-700"></i>
-                                                    <p class="text-[9px] font-black text-yellow-900 uppercase tracking-widest">
-                                                        ALERGIAS</p>
+                                                    <p class="text-[9px] font-black text-yellow-900 uppercase tracking-widest">ALERGIAS</p>
                                                 </div>
-                                                <p class="text-xs text-yellow-900 font-bold leading-relaxed pl-4">{{
-                                                    patient.alergias_alimentarias || 'Ninguna' }}</p>
+                                                <p class="text-xs text-yellow-900 font-bold leading-relaxed pl-4">{{ patient.alergias_alimentarias || 'Ninguna' }}</p>
                                             </div>
                                         </div>
-                                        <div
-                                            class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45">
-                                        </div>
+                                        <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45"></div>
                                     </div>
                                 </div>
                             </td>
@@ -160,7 +148,6 @@
                                         class="w-10 h-10 rounded-xl bg-nutri-bg flex items-center justify-center text-nutri-text/40 hover:bg-nutri-text hover:text-white transition-all cursor-pointer shadow-sm border border-nutri-text/5 active:scale-95">
                                         <i class="pi pi-file-edit text-sm"></i>
                                     </div>
-                                    <!-- Tooltip Notas -->
                                     <div (click)="$event.stopPropagation()"
                                         [class.opacity-100]="activeTooltipId === i + '-notes'"
                                         [class.visible]="activeTooltipId === i + '-notes'"
@@ -169,17 +156,11 @@
                                         <div class="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-premium">
                                             <div class="flex items-center gap-2">
                                                 <i class="pi pi-info-circle text-[10px] text-nutri-rose"></i>
-                                                <p
-                                                    class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest">
-                                                    Últimas Notas</p>
+                                                <p class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest">Últimas Notas</p>
                                             </div>
-                                            <p
-                                                class="text-xs text-nutri-text font-medium leading-relaxed whitespace-pre-wrap">
-                                                {{ patient.notas || 'Sin notas registradas.' }}</p>
+                                            <p class="text-xs text-nutri-text font-medium leading-relaxed whitespace-pre-wrap">{{ patient.notas || 'Sin notas registradas.' }}</p>
                                         </div>
-                                        <div
-                                            class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45">
-                                        </div>
+                                        <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45"></div>
                                     </div>
                                 </div>
                             </td>
@@ -201,16 +182,14 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Custom Pagination -->
-            <div
-                class="bg-nutri-rose/[0.02] border-t border-nutri-rose/5 px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-6 rounded-b-[2.5rem]">
+            
+            <!-- Custom Pagination (Desktop) -->
+            <div class="bg-nutri-rose/[0.02] border-t border-nutri-rose/5 px-8 py-5 flex items-center justify-between rounded-b-[2.5rem]">
                 <div class="flex items-center gap-6">
                     <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">
                         Mostrando {{ paginatedPatients.length }} de {{ filteredPatients.length }} registros
                     </p>
-                    <div
-                        class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-nutri-rose/10 shadow-sm">
+                    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-nutri-rose/10 shadow-sm">
                         <span class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Ver:</span>
                         <select [(ngModel)]="pageSize" (change)="onPageSizeChange()"
                             class="bg-transparent text-[11px] font-bold text-nutri-rose border-none focus:ring-0 cursor-pointer outline-none">
@@ -226,18 +205,16 @@
                         class="w-10 h-10 flex items-center justify-center rounded-xl border border-nutri-rose/10 bg-white text-nutri-rose disabled:opacity-30 hover:bg-nutri-rose hover:text-white transition-all shadow-sm">
                         <i class="pi pi-chevron-left text-xs"></i>
                     </button>
-
                     <div class="flex items-center gap-1">
-                        <ng-container *ngFor="let p of pageNumbers">
-                            <button (click)="goToPage(p)" [class.bg-nutri-rose]="currentPage === p"
-                                [class.text-white]="currentPage === p" [class.border-nutri-rose]="currentPage === p"
+                        <button *ngFor="let p of pageNumbers" (click)="goToPage(p)"
+                                [class.bg-nutri-rose]="currentPage === p"
+                                [class.text-white]="currentPage === p"
+                                [class.border-nutri-rose]="currentPage === p"
                                 [class.text-nutri-rose]="currentPage !== p"
                                 class="w-10 h-10 flex items-center justify-center rounded-xl border border-nutri-rose/10 font-bold text-xs hover:border-nutri-rose/30 transition-all shadow-sm">
-                                {{ p }}
-                            </button>
-                        </ng-container>
+                            {{ p }}
+                        </button>
                     </div>
-
                     <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
                         class="w-10 h-10 flex items-center justify-center rounded-xl border border-nutri-rose/10 bg-white text-nutri-rose disabled:opacity-30 hover:bg-nutri-rose hover:text-white transition-all shadow-sm">
                         <i class="pi pi-chevron-right text-xs"></i>
@@ -245,22 +222,71 @@
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Cards (Lg Hidden) -->
+        <div *ngIf="!loading && filteredPatients.length > 0" class="lg:hidden space-y-4 animate-fade-up">
+            <div *ngFor="let patient of paginatedPatients" 
+                 class="bg-white rounded-3xl p-6 shadow-nutri border border-nutri-rose/5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose font-bold text-lg ring-1 ring-nutri-rose/10">
+                            {{ patient.nombre.charAt(0) }}
+                        </div>
+                        <div>
+                            <p class="font-bold text-nutri-text serif text-lg leading-tight">{{ patient.nombre }}</p>
+                            <p class="text-[10px] text-nutri-text/30 font-bold uppercase tracking-widest">{{ (patient.fecha_nacimiento | date:'dd/MM/yyyy') || '---' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-nutri-bg rounded-2xl">
+                    <p class="text-[9px] font-black text-nutri-rose/40 uppercase tracking-widest mb-1">Motivo de Consulta</p>
+                    <p class="text-xs text-nutri-text/60 font-medium line-clamp-2 leading-relaxed">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button (click)="openAppointment(patient, $event)"
+                        class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose font-bold text-[10px] active:scale-95 uppercase tracking-widest transition-all">
+                        <i class="pi pi-calendar-plus"></i>
+                        <span>CITA</span>
+                    </button>
+                    <button (click)="showDetail(patient)"
+                        class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-nutri-rose text-white font-bold text-[10px] active:scale-95 uppercase tracking-widest transition-all shadow-lg shadow-nutri-rose/20">
+                        <span>ABRIR</span>
+                        <i class="pi pi-arrow-up-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Pagination -->
+            <div class="flex items-center justify-between py-4">
+                <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                    class="px-6 py-3 rounded-2xl bg-white border border-nutri-rose/10 text-nutri-rose font-bold text-xs disabled:opacity-30">
+                    Anterior
+                </button>
+                <span class="text-[10px] font-black text-nutri-text/40 uppercase tracking-widest">{{ currentPage }} / {{ totalPages }}</span>
+                <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                    class="px-6 py-3 rounded-2xl bg-white border border-nutri-rose/10 text-nutri-rose font-bold text-xs disabled:opacity-30">
+                    Siguiente
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Details Modal -->
-<div *ngIf="displayDetail" class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-fade-in">
+<div *ngIf="displayDetail" class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-8 animate-fade-in">
     <div class="absolute inset-0 bg-nutri-text/80 backdrop-blur-xl" (click)="displayDetail = false"></div>
     <div
-        class="relative w-full max-w-5xl h-[90vh] bg-nutri-bg rounded-[3.5rem] shadow-2xl overflow-hidden border border-white/20 animate-scale-up">
-
+        class="relative w-full max-w-5xl h-full md:h-[90vh] bg-nutri-bg rounded-none md:rounded-[3.5rem] shadow-2xl overflow-hidden border-none md:border border-white/20 animate-scale-up">
+ 
         <!-- Close Button -->
         <button (click)="displayDetail = false"
-            class="absolute top-8 right-8 z-[110] w-12 h-12 flex items-center justify-center rounded-2xl bg-nutri-rose/10 hover:bg-nutri-rose text-nutri-rose hover:text-white transition-all duration-300 backdrop-blur-md shadow-sm">
-            <i class="pi pi-times text-lg"></i>
+            class="absolute top-4 right-4 md:top-8 md:right-8 z-[110] w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl bg-nutri-rose/10 hover:bg-nutri-rose text-nutri-rose hover:text-white transition-all duration-300 backdrop-blur-md shadow-sm">
+            <i class="pi pi-times text-md md:text-lg"></i>
         </button>
-
-        <div class="h-full overflow-y-auto overflow-x-hidden">
+ 
+        <div class="h-full overflow-y-auto overflow-x-hidden pt-12 md:pt-0">
             <app-patient-detail [patient]="selectedPatient"></app-patient-detail>
         </div>
     </div>
