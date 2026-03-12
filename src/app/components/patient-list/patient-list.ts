@@ -23,6 +23,10 @@ export class PatientListComponent implements OnInit {
   displayDetail: boolean = false;
   selectedPatient: Patient | null = null;
   
+  // Delete confirm
+  showDeleteConfirm: boolean = false;
+  patientToDelete: Patient | null = null;
+  
   // Appointment
   showAppointmentModal: boolean = false;
   patientForAppointment: Patient | null = null;
@@ -154,5 +158,36 @@ export class PatientListComponent implements OnInit {
     this.showAppointmentModal = false;
     this.appointmentSuccess = true;
     setTimeout(() => this.appointmentSuccess = false, 5000);
+  }
+
+  openDeleteConfirm(patient: Patient, event: Event) {
+    event.stopPropagation();
+    this.patientToDelete = patient;
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete() {
+    this.showDeleteConfirm = false;
+    this.patientToDelete = null;
+  }
+
+  confirmDelete() {
+    if (!this.patientToDelete) return;
+    
+    this.loading = true;
+    this.showDeleteConfirm = false;
+    
+    this.patientService.deletePatient(this.patientToDelete.email, this.patientToDelete.nombre).subscribe({
+      next: () => {
+        this.loadPatients();
+        this.patientToDelete = null;
+      },
+      error: (err) => {
+        console.error('Error deleting patient', err);
+        alert('Hubo un error al eliminar al paciente.');
+        this.loading = false;
+        this.patientToDelete = null;
+      }
+    });
   }
 }

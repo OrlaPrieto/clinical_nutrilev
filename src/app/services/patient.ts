@@ -50,4 +50,21 @@ export class PatientService {
       })
     );
   }
+
+  deletePatient(email: string, nombre: string): Observable<any> {
+    let query = supabase.from('patients').delete();
+    
+    if (email) {
+      query = query.eq('email', email);
+    } else {
+      query = query.eq('nombre', nombre);
+    }
+
+    return from(query).pipe(
+      map(response => {
+        if (response.error) throw response.error;
+        return response.data;
+      })
+    );
+  }
 }
