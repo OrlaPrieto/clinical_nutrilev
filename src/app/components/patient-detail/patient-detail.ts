@@ -37,6 +37,7 @@ export class PatientDetailComponent {
     this.patientService.addPatientEntry(updatePayload).subscribe({
       next: () => {
         this.saving = false;
+        this.isEditing = false; // Add this line
         this.showSuccess = true;
         setTimeout(() => this.showSuccess = false, 3000);
       },
