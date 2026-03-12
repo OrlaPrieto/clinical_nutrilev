@@ -78,7 +78,11 @@ export class PatientListComponent implements OnInit {
       }
       return acc;
     }, {});
-    this.uniquePatients = Object.values(grouped);
+    this.uniquePatients = Object.values(grouped).sort((a: any, b: any) => {
+      const dateA = a.ultima_actualizacion ? new Date(a.ultima_actualizacion).getTime() : 0;
+      const dateB = b.ultima_actualizacion ? new Date(b.ultima_actualizacion).getTime() : 0;
+      return dateB - dateA;
+    });
     
     this.applyFilters();
   }
@@ -94,9 +98,9 @@ export class PatientListComponent implements OnInit {
     } else {
       const term = this.searchTerm.toLowerCase();
       this.filteredPatients = this.uniquePatients.filter(p => 
-        p.nombre.toLowerCase().includes(term) || 
-        p.email.toLowerCase().includes(term) ||
-        p.telefono.toLowerCase().includes(term)
+        (p.nombre && p.nombre.toLowerCase().includes(term)) || 
+        (p.email && p.email.toLowerCase().includes(term)) ||
+        (p.telefono && p.telefono.toLowerCase().includes(term))
       );
     }
     this.updatePagination();
