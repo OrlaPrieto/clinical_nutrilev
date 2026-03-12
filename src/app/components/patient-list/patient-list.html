@@ -176,6 +176,11 @@
                                         <span>ABRIR</span>
                                         <i class="pi pi-arrow-up-right text-[10px]"></i>
                                     </button>
+                                    <button (click)="openDeleteConfirm(patient, $event)"
+                                        class="w-10 h-10 flex items-center justify-center rounded-2xl bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                                        title="Eliminar Paciente">
+                                        <i class="pi pi-trash text-xs"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -255,6 +260,10 @@
                         <span>ABRIR</span>
                         <i class="pi pi-arrow-up-right"></i>
                     </button>
+                    <button (click)="openDeleteConfirm(patient, $event)"
+                        class="w-12 h-12 flex items-center justify-center rounded-2xl bg-rose-50 text-rose-500 active:scale-95 transition-all">
+                        <i class="pi pi-trash"></i>
+                    </button>
                 </div>
             </div>
 
@@ -311,3 +320,33 @@
                        (onScheduled)="handleScheduled($event)"
                        (onClosed)="showAppointmentModal = false">
 </app-appointment-modal>
+<!-- Custom Delete Confirmation Modal -->
+<div *ngIf="showDeleteConfirm" class="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+    <div class="absolute inset-0 bg-nutri-text/40 backdrop-blur-md" (click)="cancelDelete()"></div>
+    <div class="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl border border-nutri-rose/10 overflow-hidden animate-scale-up">
+        <div class="p-8 text-center space-y-6">
+            <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                <i class="pi pi-exclamation-triangle"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold text-nutri-text serif">¿Eliminar paciente?</h3>
+                <p class="text-sm text-nutri-text/60 leading-relaxed px-4">
+                    Estás a punto de eliminar a <span class="text-nutri-rose font-bold">{{ patientToDelete?.nombre }}</span>. 
+                    Esta acción es permanente y no se podrá deshacer.
+                </p>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button (click)="cancelDelete()"
+                    class="flex-1 px-6 py-4 rounded-2xl bg-nutri-bg text-nutri-text font-bold text-xs hover:bg-nutri-rose/5 transition-all active:scale-95 uppercase tracking-widest">
+                    Cancelar
+                </button>
+                <button (click)="confirmDelete()"
+                    class="flex-1 px-6 py-4 rounded-2xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all active:scale-95 shadow-lg shadow-rose-500/20 uppercase tracking-widest">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
