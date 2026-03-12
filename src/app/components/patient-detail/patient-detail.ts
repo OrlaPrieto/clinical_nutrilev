@@ -30,6 +30,9 @@ export class PatientDetailComponent {
       alimentos_preferidos: this.patient.alimentos_preferidos || '',
       alimentos_no_agradan: this.patient.alimentos_no_agradan || '',
       alergias_alimentarias: this.patient.alergias_alimentarias || '',
+      hace_ejercicio: this.patient.hace_ejercicio || '',
+      ejercicio_detalles: this.patient.ejercicio_detalles || '',
+      tipo_actividad_horario: this.patient.tipo_actividad_horario || '',
       notas: this.patient.notas || ''
     };
 

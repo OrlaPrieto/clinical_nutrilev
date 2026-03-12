@@ -46,6 +46,10 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <!-- Data Cards Compactas -->
                 <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Nacimiento</span>
+                    <p class="text-md font-bold">{{patient.fecha_nacimiento ? (patient.fecha_nacimiento | date:'dd/MM/yyyy') : '---'}}</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
                     <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Edad</span>
                     <p class="text-md font-bold">{{patient.edad}} años</p>
                 </div>
@@ -157,14 +161,39 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-6">
-                <div class="space-y-2">
-                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Actividad Física</h4>
-                    <p class="text-md font-medium serif italic leading-relaxed text-nutri-text/80">"{{patient.ejercicio_detalles || 'No registrado.'}}"</p>
+            <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-6 relative overflow-hidden">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
+                <div class="flex items-center justify-between">
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Actividad Física y Horarios</h4>
+                    <button (click)="saveChanges()" [disabled]="saving" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-nutri-rose text-white text-[10px] font-bold hover:bg-nutri-rose/80 transition-all active:scale-95 disabled:opacity-50">
+                        <i class="pi" [ngClass]="saving ? 'pi-spin pi-spinner' : 'pi-save'"></i>
+                        <span>{{ saving ? 'GUARDANDO' : 'GUARDAR' }}</span>
+                    </button>
                 </div>
-                <div class="border-t border-nutri-rose/[0.03] pt-4 space-y-2">
-                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Horarios y Actividad</h4>
-                    <p class="text-sm leading-relaxed text-nutri-text/70">{{patient.tipo_actividad_horario || 'No especificado.'}}</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-bolt text-nutri-rose text-xs"></i>
+                            <span class="text-[8px] font-bold text-nutri-text/40 uppercase tracking-widest">Actividad Física</span>
+                        </div>
+                        <input type="text" [(ngModel)]="patient.hace_ejercicio" 
+                               class="w-full p-3 rounded-xl bg-nutri-bg/50 border border-nutri-rose/10 text-xs font-bold outline-none focus:ring-2 focus:ring-nutri-rose/10"
+                               placeholder="¿Hace ejercicio?">
+                        <textarea [(ngModel)]="patient.ejercicio_detalles" 
+                                  class="w-full bg-nutri-bg/20 rounded-2xl border border-nutri-rose/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[100px]"
+                                  placeholder="Detalles del ejercicio..."></textarea>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-calendar-clock text-nutri-rose text-xs"></i>
+                            <span class="text-[8px] font-bold text-nutri-text/40 uppercase tracking-widest">Horarios y Actividad</span>
+                        </div>
+                        <textarea [(ngModel)]="patient.tipo_actividad_horario" 
+                                  class="w-full bg-nutri-bg/20 rounded-2xl border border-nutri-rose/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[145px]"
+                                  placeholder="Describe horarios y tipo de actividad diaria..."></textarea>
+                    </div>
                 </div>
             </div>
         </div>
