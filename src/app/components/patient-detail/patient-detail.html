@@ -24,11 +24,11 @@
 
     <!-- Navigation Tabs Compactas -->
     <div class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-nutri-rose/5">
-        <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
-            <div class="flex items-center space-x-6 py-3 min-w-max">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto scrollbar-hide">
+            <div class="flex items-center space-x-4 md:space-x-6 py-3 min-w-max">
                 <button *ngFor="let tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Seguimiento', 'Notas']; let i = index"
                         (click)="activeTab = i"
-                        class="relative py-1 text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
+                        class="relative py-1 text-[10px] md:text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
                         [ngClass]="activeTab === i ? 'text-nutri-rose' : 'text-nutri-text/30 hover:text-nutri-text/60'">
                     {{tab}}
                     <div *ngIf="activeTab === i" 

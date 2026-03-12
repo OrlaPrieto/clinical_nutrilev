@@ -21,11 +21,11 @@ interface CalendarDay {
         <div class="flex flex-col lg:flex-row h-full max-h-[90vh]">
           
           <!-- Column 1: Selection (Calendar & Time) -->
-          <div class="flex-1 p-8 lg:p-12 space-y-8 overflow-y-auto border-b lg:border-b-0 lg:border-r border-nutri-rose/5">
+          <div class="flex-1 p-6 lg:p-12 space-y-8 overflow-y-auto border-b lg:border-b-0 lg:border-r border-nutri-rose/5">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-2xl font-bold serif italic text-nutri-rose">Agendar Cita</h3>
-                <p class="text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em] mt-1">{{ patientName }}</p>
+                <h3 class="text-xl lg:text-2xl font-bold serif italic text-nutri-rose">Agendar Cita</h3>
+                <p class="text-[9px] font-black text-nutri-text/30 uppercase tracking-[0.2em] mt-1">{{ patientName }}</p>
               </div>
               <button (click)="close()" class="w-10 h-10 rounded-2xl bg-nutri-bg flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm">
                 <i class="pi pi-times"></i>
@@ -48,13 +48,13 @@ interface CalendarDay {
 
               <div class="grid grid-cols-7 gap-1">
                 <div *ngFor="let day of ['D', 'L', 'M', 'M', 'J', 'V', 'S']" 
-                     class="text-center py-2 text-[9px] font-black text-nutri-rose/40 uppercase tracking-widest">
+                     class="text-center py-2 text-[8px] lg:text-[9px] font-black text-nutri-rose/40 uppercase tracking-widest">
                   {{ day }}
                 </div>
                 <button *ngFor="let day of calendarDays" 
                         (click)="selectDate(day)"
                         [disabled]="day.isPast"
-                        class="aspect-square flex flex-col items-center justify-center rounded-2xl transition-all relative group"
+                        class="aspect-square flex flex-col items-center justify-center rounded-xl lg:rounded-2xl transition-all relative group"
                         [ngClass]="{
                           'text-nutri-text/20': !day.isCurrentMonth,
                           'text-nutri-text font-bold': day.isCurrentMonth && !isSelected(day.date),
@@ -63,7 +63,7 @@ interface CalendarDay {
                           'cursor-not-allowed opacity-30': day.isPast
                         }">
                   <span class="text-xs">{{ day.date.getDate() }}</span>
-                  <div *ngIf="day.isToday && !isSelected(day.date)" class="absolute bottom-2 w-1 h-1 rounded-full bg-nutri-rose"></div>
+                  <div *ngIf="day.isToday && !isSelected(day.date)" class="absolute bottom-1.5 lg:bottom-2 w-1 h-1 rounded-full bg-nutri-rose"></div>
                 </button>
               </div>
             </div>
@@ -71,7 +71,7 @@ interface CalendarDay {
             <!-- Time Selection -->
             <div class="space-y-4">
               <label class="text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em] ml-2">Selecciona un horario</label>
-              <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                 <button *ngFor="let time of timeSlots" 
                         (click)="startTime = time"
                         class="h-11 rounded-xl text-[11px] font-bold transition-all border"
@@ -86,24 +86,24 @@ interface CalendarDay {
           </div>
 
           <!-- Column 2: Confirmation -->
-          <div class="w-full lg:w-[360px] bg-nutri-bg/40 p-12 space-y-8 flex flex-col justify-between overflow-y-auto">
+          <div class="w-full lg:w-[360px] bg-nutri-bg/40 p-6 lg:p-12 space-y-8 flex flex-col justify-between overflow-y-auto">
             <div class="space-y-8">
               <div class="space-y-6">
                 <div class="space-y-4">
                   <label class="text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em]">Detalles adicionales</label>
-                  <div class="space-y-3">
+                  <div class="grid grid-cols-2 lg:grid-cols-1 gap-3">
                     <div class="relative group">
                       <div class="absolute left-6 top-1/2 -translate-y-1/2 text-nutri-rose/40 pointer-events-none transition-colors group-focus-within:text-nutri-rose">
                          <span class="text-sm font-bold">$</span>
                       </div>
-                      <input type="text" [(ngModel)]="cost" placeholder="Costo (opc)"
+                      <input type="text" [(ngModel)]="cost" placeholder="Costo"
                              class="w-full h-14 bg-white/60 rounded-2xl pl-12 pr-6 border border-white focus:border-nutri-rose/20 outline-none transition-all shadow-sm font-medium text-sm">
                     </div>
                     <div class="relative group">
                       <div class="absolute left-6 top-1/2 -translate-y-1/2 text-nutri-rose/40 pointer-events-none transition-colors group-focus-within:text-nutri-rose">
                          <i class="pi pi-hashtag text-xs"></i>
                       </div>
-                      <input type="text" [(ngModel)]="appointmentNumber" placeholder="# Cita (opc)"
+                      <input type="text" [(ngModel)]="appointmentNumber" placeholder="# Cita"
                              class="w-full h-14 bg-white/60 rounded-2xl pl-12 pr-6 border border-white focus:border-nutri-rose/20 outline-none transition-all shadow-sm font-medium text-sm">
                     </div>
                   </div>
@@ -138,7 +138,7 @@ interface CalendarDay {
               </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 pt-6 lg:pt-0">
               <button (click)="schedule()" [disabled]="loading || !selectedDate || !startTime"
                       class="w-full h-16 rounded-[2rem] bg-nutri-rose text-white font-black text-xs tracking-widest uppercase shadow-xl shadow-nutri-rose/20 hover:bg-nutri-rose/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3">
                 <i class="pi" [ngClass]="loading ? 'pi-spin pi-spinner' : 'pi-check-circle'"></i>
