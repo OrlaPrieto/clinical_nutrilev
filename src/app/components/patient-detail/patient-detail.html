@@ -26,7 +26,7 @@
     <div class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-nutri-rose/5">
         <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
             <div class="flex items-center space-x-6 py-3 min-w-max">
-                <button *ngFor="let tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Notas']; let i = index"
+                <button *ngFor="let tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Seguimiento', 'Notas']; let i = index"
                         (click)="activeTab = i"
                         class="relative py-1 text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
                         [ngClass]="activeTab === i ? 'text-nutri-rose' : 'text-nutri-text/30 hover:text-nutri-text/60'">
@@ -71,9 +71,17 @@
                 </div>
             </div>
 
-            <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-2">
-                <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Motivo de Consulta</h4>
-                <p class="text-lg font-bold serif italic leading-tight">"{{patient.motivos_consulta}}"</p>
+            <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Motivo de Consulta</h4>
+                    <button (click)="saveChanges()" [disabled]="saving" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-nutri-rose text-white text-[10px] font-bold hover:bg-nutri-rose/80 transition-all active:scale-95 disabled:opacity-50">
+                        <i class="pi" [ngClass]="saving ? 'pi-spin pi-spinner' : 'pi-save'"></i>
+                        <span>{{ saving ? 'GUARDANDO' : 'GUARDAR' }}</span>
+                    </button>
+                </div>
+                <textarea [(ngModel)]="patient.motivos_consulta" 
+                          class="w-full bg-white/50 rounded-2xl border border-nutri-rose/10 p-4 text-sm font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[80px]"
+                          placeholder="Escribe el motivo de consulta..."></textarea>
                 <p class="text-[9px] text-nutri-rose/40 font-bold uppercase tracking-widest">Fuente: {{patient.recomendacion_fuente || '---'}}</p>
             </div>
         </div>
@@ -176,12 +184,39 @@
                     </div>
                 </div>
 
-                <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-4">
-                    <div class="space-y-2">
-                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Preferencias</h4>
-                        <p class="text-xs"><span class="font-bold text-nutri-rose">Gusta:</span> {{patient.alimentos_preferidos}}</p>
-                        <p class="text-xs"><span class="font-bold text-nutri-rose">Evita:</span> {{patient.alimentos_no_agradan}}</p>
-                        <p class="text-xs font-bold text-red-500/80 mt-2"><i class="pi pi-exclamation-triangle mr-1"></i>Alergias: {{patient.alergias_alimentarias || 'Ninguna'}}</p>
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 space-y-4 relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-20"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Preferencias</h4>
+                            <button (click)="saveChanges()" [disabled]="saving" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-nutri-rose text-white text-[10px] font-bold hover:bg-nutri-rose/80 transition-all active:scale-95 disabled:opacity-50">
+                                <i class="pi" [ngClass]="saving ? 'pi-spin pi-spinner' : 'pi-save'"></i>
+                                <span>{{ saving ? 'GUARDANDO' : 'GUARDAR' }}</span>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="space-y-1.5">
+                                <span class="font-black text-emerald-900 text-[10px] uppercase tracking-wider ml-2">Gusta:</span>
+                                <input type="text" [(ngModel)]="patient.alimentos_preferidos" 
+                                       class="w-full p-2.5 rounded-xl bg-emerald-100/40 border border-emerald-200/50 text-xs font-bold text-emerald-900 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                                       placeholder="¿Qué le gusta?">
+                            </div>
+                            <div class="space-y-1.5">
+                                <span class="font-black text-rose-900 text-[10px] uppercase tracking-wider ml-2">Evita:</span>
+                                <input type="text" [(ngModel)]="patient.alimentos_no_agradan" 
+                                       class="w-full p-2.5 rounded-xl bg-rose-100/40 border border-rose-200/50 text-xs font-bold text-rose-900 outline-none focus:ring-2 focus:ring-rose-500/20"
+                                       placeholder="¿Qué evita?">
+                            </div>
+                            <div class="space-y-1.5 pt-2">
+                                <div class="flex items-center gap-2 ml-2">
+                                    <i class="pi pi-exclamation-triangle text-[10px] text-yellow-700"></i>
+                                    <span class="font-black text-yellow-900 text-[10px] uppercase tracking-wider">Alergias:</span>
+                                </div>
+                                <input type="text" [(ngModel)]="patient.alergias_alimentarias" 
+                                       class="w-full p-2.5 rounded-xl bg-yellow-100/60 border border-yellow-200/50 text-xs font-bold text-yellow-900 outline-none focus:ring-2 focus:ring-yellow-500/20"
+                                       placeholder="¿Tiene alergias?">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -189,8 +224,34 @@
             <div class="space-y-4">
                 <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm relative overflow-hidden">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
-                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-2">Diario 24h</h4>
-                    <p class="text-md leading-relaxed serif italic text-nutri-text/80 whitespace-pre-wrap">{{patient.diario_24h || '---'}}</p>
+                    <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-4">Diario 24h (Resumen)</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
+                            <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Desayuno</span>
+                            <p class="text-xs font-medium">{{patient.diario_desayuno || '---'}}</p>
+                        </div>
+                        <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
+                            <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Colación (Mat)</span>
+                            <p class="text-xs font-medium">{{patient.diario_colacion_mat || '---'}}</p>
+                        </div>
+                        <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
+                            <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Comida</span>
+                            <p class="text-xs font-medium">{{patient.diario_comida || '---'}}</p>
+                        </div>
+                        <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
+                            <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Colación (Vesp)</span>
+                            <p class="text-xs font-medium">{{patient.diario_colacion_vesp || '---'}}</p>
+                        </div>
+                        <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
+                            <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Cena</span>
+                            <p class="text-xs font-medium">{{patient.diario_cena || '---'}}</p>
+                        </div>
+                        <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
+                            <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Extras / Otros</span>
+                            <p class="text-xs font-medium">{{patient.diario_extras || '---'}}</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,14 +267,44 @@
             </div>
         </div>
 
-        <!-- Tab 4: Notas Persistentes Optimizadas -->
-        <div *ngIf="activeTab === 4" class="space-y-4 animate-fade-up h-full flex flex-col">
+        <!-- Tab 4: Seguimiento / Antropometría -->
+        <div *ngIf="activeTab === 4" class="space-y-6 animate-fade-up">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-2">Peso Habitual</span>
+                    <p class="text-2xl font-bold serif">{{patient.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/30">kg</span></p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-2">Peso Meta</span>
+                    <p class="text-2xl font-bold serif text-nutri-rose">{{patient.peso_meta || '---'}} <span class="text-xs font-normal text-nutri-rose/40">kg</span></p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
+                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-2">Cambios Recientes</span>
+                    <p class="text-sm font-medium">{{patient.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                        <i class="pi pi-calendar"></i>
+                    </div>
+                    <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/60">Salud Femenina / Ciclo</h4>
+                </div>
+                <div class="p-4 bg-nutri-bg/30 rounded-2xl border border-nutri-rose/5">
+                    <p class="text-sm font-medium leading-relaxed">{{patient.salud_femenina_ciclo || 'Información no registrada o no aplica.'}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Notas Persistentes Optimizadas -->
+        <div *ngIf="activeTab === 5" class="space-y-4 animate-fade-up h-full flex flex-col">
             <div class="flex items-center justify-between bg-white p-4 rounded-3xl border border-nutri-rose/5 shadow-sm">
                 <div class="space-y-0.5">
                     <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
                     <p class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronización automática activa</p>
                 </div>
-                <button class="btn-primary" [disabled]="saving" (click)="saveNotes()">
+                <button class="btn-primary" [disabled]="saving" (click)="saveChanges()">
                     <i class="pi mr-2" [ngClass]="saving ? 'pi-spin pi-spinner' : 'pi-save'"></i>
                     <span class="text-[10px]">{{ saving ? 'GUARDANDO...' : 'GUARDAR' }}</span>
                 </button>
@@ -239,7 +330,7 @@
         </div>
         <div class="space-y-0.5">
             <p class="font-bold text-nutri-text text-sm">Cambios Guardados</p>
-            <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronizado con Google Sheets</p>
+            <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronizado con Supabase</p>
         </div>
     </div>
 </div>

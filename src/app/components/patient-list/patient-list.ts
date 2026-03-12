@@ -5,11 +5,12 @@ import { PatientService } from '../../services/patient';
 import { Patient } from '../../models/patient.model';
 import { PatientDetailComponent } from '../patient-detail/patient-detail';
 import { AuthService } from '../../services/auth.service';
+import { AppointmentModalComponent } from '../appointment-modal/appointment-modal';
 
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PatientDetailComponent],
+  imports: [CommonModule, FormsModule, PatientDetailComponent, AppointmentModalComponent],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.css'
 })
@@ -21,6 +22,11 @@ export class PatientListComponent implements OnInit {
   loading: boolean = true;
   displayDetail: boolean = false;
   selectedPatient: Patient | null = null;
+  
+  // Appointment
+  showAppointmentModal: boolean = false;
+  patientForAppointment: Patient | null = null;
+  appointmentSuccess: boolean = false;
   
   // Pagination
   currentPage: number = 1;
@@ -136,5 +142,17 @@ export class PatientListComponent implements OnInit {
   @HostListener('document:click')
   onDocumentClick() {
     this.activeTooltipId = null;
+  }
+
+  openAppointment(patient: Patient, event: Event) {
+    event.stopPropagation();
+    this.patientForAppointment = patient;
+    this.showAppointmentModal = true;
+  }
+
+  handleScheduled(event: any) {
+    this.showAppointmentModal = false;
+    this.appointmentSuccess = true;
+    setTimeout(() => this.appointmentSuccess = false, 5000);
   }
 }

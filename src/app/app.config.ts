@@ -25,6 +25,7 @@ export const appConfig: ApplicationConfig = {
               {
                 oneTapEnabled: false,
                 prompt_parent_id: 'google-login-button',
+                scopes: 'https://www.googleapis.com/auth/calendar'
               }
             )
           }

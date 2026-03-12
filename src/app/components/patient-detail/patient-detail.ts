@@ -19,13 +19,17 @@ export class PatientDetailComponent {
 
   constructor(private patientService: PatientService) {}
 
-  saveNotes() {
+  saveChanges() {
     if (!this.patient) return;
     this.saving = true;
     
     const updatePayload = {
       action: "update",
       email: this.patient.email,
+      motivos_consulta: this.patient.motivos_consulta || '',
+      alimentos_preferidos: this.patient.alimentos_preferidos || '',
+      alimentos_no_agradan: this.patient.alimentos_no_agradan || '',
+      alergias_alimentarias: this.patient.alergias_alimentarias || '',
       notas: this.patient.notas || ''
     };
 
@@ -36,9 +40,9 @@ export class PatientDetailComponent {
         setTimeout(() => this.showSuccess = false, 3000);
       },
       error: (err) => {
-        console.error('Error al guardar notas', err);
+        console.error('Error al guardar cambios', err);
         this.saving = false;
-        alert('Error al guardar notas');
+        alert('Error al guardar los cambios');
       }
     });
   }

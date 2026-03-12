@@ -115,27 +115,37 @@
                                         [class.visible]="activeTooltipId === i + '-prefs'"
                                         [class.translate-x-0]="activeTooltipId === i + '-prefs'"
                                         class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white rounded-3xl shadow-nutri border border-nutri-rose/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto">
-                                        <div class="space-y-4 max-h-64 overflow-y-auto pr-2 scroll-premium">
-                                            <div class="space-y-1">
+                                        <div class="space-y-2 max-h-64 overflow-y-auto pr-2 scroll-premium">
+                                            <div class="space-y-1 p-3 rounded-2xl bg-emerald-100/50 group/like">
                                                 <div class="flex items-center gap-2">
-                                                    <i class="pi pi-check-circle text-[10px] text-nutri-rose"></i>
+                                                    <i class="pi pi-check-circle text-[10px] text-emerald-800"></i>
                                                     <p
-                                                        class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest">
+                                                        class="text-[9px] font-black text-emerald-900 uppercase tracking-widest">
                                                         Le encanta</p>
                                                 </div>
-                                                <p class="text-xs text-nutri-text font-medium leading-relaxed pl-4">{{
+                                                <p class="text-xs text-nutri-text font-bold leading-relaxed pl-4">{{
                                                     patient.alimentos_preferidos || 'Sin datos especificados' }}</p>
                                             </div>
                                             <div class="w-full h-px bg-nutri-rose/5"></div>
-                                            <div class="space-y-1">
+                                            <div class="space-y-1 p-3 rounded-2xl bg-rose-100/50 group/dislike">
                                                 <div class="flex items-center gap-2">
-                                                    <i class="pi pi-times-circle text-[10px] text-red-400"></i>
+                                                    <i class="pi pi-times-circle text-[10px] text-rose-800"></i>
                                                     <p
-                                                        class="text-[9px] font-bold text-red-400 uppercase tracking-widest">
+                                                        class="text-[9px] font-black text-rose-900 uppercase tracking-widest">
                                                         No le gusta</p>
                                                 </div>
-                                                <p class="text-xs text-nutri-text font-medium leading-relaxed pl-4">{{
+                                                <p class="text-xs text-nutri-text font-bold leading-relaxed pl-4">{{
                                                     patient.alimentos_no_agradan || 'Sin datos especificados' }}</p>
+                                            </div>
+                                            <div class="w-full h-px bg-nutri-rose/5"></div>
+                                            <div class="space-y-1 p-3 rounded-2xl bg-yellow-100/60">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="pi pi-exclamation-triangle text-[10px] text-yellow-700"></i>
+                                                    <p class="text-[9px] font-black text-yellow-900 uppercase tracking-widest">
+                                                        ALERGIAS</p>
+                                                </div>
+                                                <p class="text-xs text-yellow-900 font-bold leading-relaxed pl-4">{{
+                                                    patient.alergias_alimentarias || 'Ninguna' }}</p>
                                             </div>
                                         </div>
                                         <div
@@ -174,11 +184,18 @@
                                 </div>
                             </td>
                             <td class="px-12 py-5 text-right">
-                                <button (click)="showDetail(patient)"
-                                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-nutri-bg text-nutri-text font-bold text-xs hover:bg-nutri-rose hover:text-white transition-all duration-300 shadow-sm hover:shadow-pink-soft active:scale-95">
-                                    <span>ABRIR</span>
-                                    <i class="pi pi-arrow-up-right text-[10px]"></i>
-                                </button>
+                                <div class="flex items-center justify-end gap-2">
+                                    <button (click)="openAppointment(patient, $event)"
+                                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-nutri-rose/10 text-nutri-rose font-bold text-[10px] hover:bg-nutri-rose hover:text-white transition-all duration-300 shadow-sm active:scale-95 uppercase tracking-widest">
+                                        <i class="pi pi-calendar-plus"></i>
+                                        <span>CITA</span>
+                                    </button>
+                                    <button (click)="showDetail(patient)"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-nutri-bg text-nutri-text font-bold text-xs hover:bg-nutri-rose hover:text-white transition-all duration-300 shadow-sm hover:shadow-pink-soft active:scale-95">
+                                        <span>ABRIR</span>
+                                        <i class="pi pi-arrow-up-right text-[10px]"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -248,3 +265,23 @@
         </div>
     </div>
 </div>
+
+<!-- Floating Appointment Success Toast -->
+<div *ngIf="appointmentSuccess" 
+     class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white rounded-3xl shadow-2xl border border-nutri-rose/10 animate-fade-up">
+    <div class="w-10 h-10 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
+        <i class="pi pi-calendar-plus"></i>
+    </div>
+    <div class="space-y-0.5">
+        <p class="font-bold text-nutri-text text-sm">Cita Agendada</p>
+        <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest">Registrada en Google Calendar</p>
+    </div>
+</div>
+
+<!-- Appointment Modal -->
+<app-appointment-modal *ngIf="showAppointmentModal"
+                       [patientName]="patientForAppointment?.nombre || ''"
+                       [patientEmail]="patientForAppointment?.email || ''"
+                       (onScheduled)="handleScheduled($event)"
+                       (onClosed)="showAppointmentModal = false">
+</app-appointment-modal>
