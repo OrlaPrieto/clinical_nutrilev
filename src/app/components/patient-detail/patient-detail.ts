@@ -16,24 +16,22 @@ export class PatientDetailComponent {
   activeTab: number = 0;
   saving: boolean = false;
   showSuccess: boolean = false;
+  isEditing: boolean = false;
 
   constructor(private patientService: PatientService) {}
+
+  toggleEdit() {
+    this.isEditing = !this.isEditing;
+  }
 
   saveChanges() {
     if (!this.patient) return;
     this.saving = true;
     
+    // Global update: Send everything
     const updatePayload = {
-      action: "update",
-      email: this.patient.email,
-      motivos_consulta: this.patient.motivos_consulta || '',
-      alimentos_preferidos: this.patient.alimentos_preferidos || '',
-      alimentos_no_agradan: this.patient.alimentos_no_agradan || '',
-      alergias_alimentarias: this.patient.alergias_alimentarias || '',
-      hace_ejercicio: this.patient.hace_ejercicio || '',
-      ejercicio_detalles: this.patient.ejercicio_detalles || '',
-      tipo_actividad_horario: this.patient.tipo_actividad_horario || '',
-      notas: this.patient.notas || ''
+      ...this.patient,
+      action: "update"
     };
 
     this.patientService.addPatientEntry(updatePayload).subscribe({
