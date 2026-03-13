@@ -1,0 +1,13 @@
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-nutri-text/40 backdrop-blur-md animate-fade-in" (click)="close()">
+  <div class="bg-white w-full max-w-5xl rounded-[3rem] shadow-2xl border border-nutri-rose/10 pointer-events-auto animate-scale-up overflow-hidden" (click)="$event.stopPropagation()">
+    
+    <app-appointment-calendar
+      [patientName]="patientName"
+      [loading]="loading"
+      [errorMessage]="errorMessage"
+      (scheduled)="handleScheduled($event)"
+      (closed)="close()">
+    </app-appointment-calendar>
+
+  </div>
+</div>

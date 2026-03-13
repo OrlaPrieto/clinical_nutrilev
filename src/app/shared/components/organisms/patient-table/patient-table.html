@@ -1,0 +1,185 @@
+<!-- Desktop Table View -->
+<div class="hidden lg:block bg-white rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 animate-fade-up relative">
+  <div class="w-full">
+    <table class="w-full text-left border-collapse min-w-[800px]">
+      <thead>
+        <tr class="bg-nutri-rose/[0.02] border-b border-nutri-rose/5">
+          <th class="px-12 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest">Paciente</th>
+          <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest">Nacimiento</th>
+          <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-center">Prefs</th>
+          <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-center">Notas</th>
+          <th class="px-12 py-6 text-[10px] font-bold text-nutri-rose/60 uppercase tracking-widest text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-nutri-rose/[0.03]">
+        @for (patient of patients(); track patient.email || $index; let i = $index) {
+          <tr class="group relative hover:bg-nutri-rose/[0.01] transition-all duration-300 hover:z-40"
+              [ngClass]="patient.dado_de_baja ? 'grayscale opacity-70 !bg-gray-200/70 border-gray-300/50' : ''">
+            
+            <td class="px-12 py-5">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose font-bold text-sm ring-1 ring-nutri-rose/10 group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
+                  {{ patient.nombre.charAt(0) }}
+                </div>
+                <div>
+                  <p class="font-bold text-nutri-text serif text-lg group-hover:text-nutri-rose transition-colors leading-tight">{{ patient.nombre }}</p>
+                  <p class="text-[10px] text-nutri-text/30 font-bold uppercase tracking-widest">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-8 py-5">
+              <div class="flex flex-col">
+                <span class="text-xs font-bold text-nutri-text/60 italic">{{ patient.fecha_nacimiento }}</span>
+                <span class="text-[9px] font-black text-nutri-rose/30 uppercase tracking-widest">{{ patient.edad }} años</span>
+              </div>
+            </td>
+
+            <td class="px-8 py-5 text-center">
+              <div class="relative group/tooltip inline-block">
+                <button (click)="toggleTooltip(i + '-prefs', $event)" [disabled]="!patient.alimentos_preferidos && !patient.alimentos_no_agradan"
+                        class="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-nutri-bg/50 text-nutri-rose hover:bg-nutri-rose hover:text-white disabled:opacity-20 active:scale-95">
+                  <mat-icon class="material-symbols-rounded text-lg">favorite</mat-icon>
+                </button>
+                
+                <div (click)="$event.stopPropagation()"
+                     [class.opacity-100]="activeTooltipId() === i + '-prefs'"
+                     [class.visible]="activeTooltipId() === i + '-prefs'"
+                     [class.translate-x-0]="activeTooltipId() === i + '-prefs'"
+                     class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white rounded-3xl shadow-2xl border border-nutri-rose/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto">
+                    <div class="space-y-4 max-h-64 overflow-y-auto pr-2 scroll-premium">
+                      <h4 class="text-[9px] font-black text-nutri-rose uppercase tracking-[0.2em] mb-3">Preferencias Alimentarias</h4>
+                      <div class="space-y-3">
+                        <div class="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100/50">
+                          <p class="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-1">Favoritos</p>
+                          <p class="text-[11px] text-emerald-900/70 font-medium leading-relaxed italic">{{ patient.alimentos_preferidos || 'No especificado' }}</p>
+                        </div>
+                        <div class="bg-rose-50/50 p-3 rounded-2xl border border-rose-100/50">
+                          <p class="text-[8px] font-black text-rose-600 uppercase tracking-widest mb-1">Evita</p>
+                          <p class="text-[11px] text-rose-900/70 font-medium leading-relaxed italic">{{ patient.alimentos_no_agradan || 'No especificado' }}</p>
+                        </div>
+                        <div class="bg-yellow-50/50 p-3 rounded-2xl border border-yellow-100/50">
+                          <p class="text-[8px] font-black text-yellow-700 uppercase tracking-widest mb-1">Alergias</p>
+                          <p class="text-[11px] text-yellow-900/70 font-medium leading-relaxed italic">{{ patient.alergias_alimentarias || 'Ninguna' }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45"></div>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-8 py-5 text-center">
+              <div class="relative group/tooltip inline-block">
+                <button (click)="toggleTooltip(i + '-notes', $event)" [disabled]="!patient.notas"
+                        class="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-nutri-bg/50 text-emerald-500 hover:bg-emerald-500 hover:text-white disabled:opacity-20 active:scale-95">
+                  <mat-icon class="material-symbols-rounded text-lg">edit_note</mat-icon>
+                </button>
+
+                <div (click)="$event.stopPropagation()"
+                     [class.opacity-100]="activeTooltipId() === i + '-notes'"
+                     [class.visible]="activeTooltipId() === i + '-notes'"
+                     [class.translate-x-0]="activeTooltipId() === i + '-notes'"
+                     class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white rounded-3xl shadow-2xl border border-nutri-rose/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto">
+                    <div class="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-premium">
+                      <div class="flex items-center gap-2 mb-2">
+                        <mat-icon class="material-symbols-rounded text-emerald-500 text-sm">description</mat-icon>
+                        <h4 class="text-[9px] font-black text-nutri-text uppercase tracking-[0.2em]">Notas Clínicas</h4>
+                      </div>
+                      <p class="text-[11px] text-nutri-text/60 font-medium leading-relaxed italic bg-nutri-bg/30 p-4 rounded-2xl border border-nutri-rose/5">{{ patient.notas || 'Sin notas registradas.' }}</p>
+                    </div>
+                    <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white border-t border-r border-nutri-rose/10 rotate-45"></div>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-12 py-5 text-right">
+              <div class="flex items-center justify-end gap-2 px-2">
+                <app-button 
+                  variant="outline" 
+                  size="sm" 
+                  icon="calendar_add_on" 
+                  (onClick)="schedule.emit(patient)">
+                </app-button>
+                <app-button 
+                  variant="primary" 
+                  size="sm" 
+                  icon="visibility" 
+                  (onClick)="view.emit(patient)">
+                </app-button>
+                <app-button 
+                  variant="ghost" 
+                  size="sm" 
+                  icon="delete" 
+                  customClass="hover:!text-rose-500"
+                  (onClick)="delete.emit(patient)">
+                </app-button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Mobile Card View -->
+<div class="lg:hidden space-y-4 animate-fade-up">
+  @for (patient of patients(); track patient.email || $index; let i = $index) {
+    <div class="bg-white rounded-3xl p-6 shadow-nutri border border-nutri-rose/5 space-y-4 transition-all duration-300"
+         [ngClass]="patient.dado_de_baja ? 'grayscale opacity-70 !bg-gray-200/70 border-gray-300/50' : ''">
+      
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose font-bold text-lg ring-1 ring-nutri-rose/10">
+            {{ patient.nombre.charAt(0) }}
+          </div>
+          <div>
+            <p class="font-bold text-nutri-text serif text-lg leading-tight">{{ patient.nombre }}</p>
+            <p class="text-[10px] text-nutri-text/30 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-nutri-bg rounded-2xl space-y-2">
+        <div>
+          <p class="text-[9px] font-black text-nutri-rose/40 uppercase tracking-widest">Motivo de Consulta</p>
+          <p class="text-xs text-nutri-text/60 font-medium line-clamp-2 leading-relaxed">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
+        </div>
+        
+        @if (patient.alimentos_preferidos || patient.alimentos_no_agradan) {
+          <div class="pt-2 border-t border-nutri-rose/5">
+            <p class="text-[9px] font-black text-emerald-600/40 uppercase tracking-widest mb-1">Preferencias</p>
+            <p class="text-[10px] text-nutri-text/50 italic line-clamp-1">{{ patient.alimentos_preferidos || 'No especificado' }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="flex items-center gap-3">
+        <app-button 
+          variant="outline" 
+          size="md" 
+          icon="calendar_add_on" 
+          label="CITA"
+          customClass="flex-1 !font-bold !text-[9px] !tracking-widest"
+          (onClick)="schedule.emit(patient)">
+        </app-button>
+        <app-button 
+          variant="primary" 
+          size="md" 
+          icon="visibility" 
+          label="ABRIR"
+          customClass="flex-1 !font-bold !text-[9px] !tracking-widest"
+          (onClick)="view.emit(patient)">
+        </app-button>
+        <app-button 
+          variant="ghost" 
+          size="md" 
+          icon="delete" 
+          customClass="bg-rose-50 hover:!bg-rose-500 hover:!text-white !text-rose-500 !px-4"
+          (onClick)="delete.emit(patient)">
+        </app-button>
+      </div>
+    </div>
+  }
+</div>

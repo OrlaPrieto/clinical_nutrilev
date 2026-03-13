@@ -1,0 +1,136 @@
+.appointment-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 95vh;
+  background: white;
+  border-radius: 4rem;
+  overflow: hidden;
+}
+
+.appointment-body {
+  overflow-y: auto;
+}
+
+/* Custom Calendar Styling */
+.calendar-card {
+  padding: 0.5rem !important;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .nutri-calendar {
+  width: 100% !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Internal padding reduction for compactness */
+::ng-deep .nutri-calendar .mat-calendar-header {
+  padding: 0.5rem 1rem !important;
+}
+
+::ng-deep .nutri-calendar .mat-calendar-content {
+  padding: 0 0.5rem 0.5rem 0.5rem !important;
+}
+
+::ng-deep .nutri-calendar .mat-calendar-table-header-divider::after {
+  display: none !important;
+}
+
+::ng-deep .nutri-calendar .mat-calendar-body-cell-content {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 11px !important;
+}
+
+::ng-deep .nutri-calendar .mat-calendar-period-button {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+::ng-deep .nutri-calendar .mat-calendar-body-selected {
+  background-color: #ff6b9b !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(255, 107, 155, 0.2) !important;
+}
+
+::ng-deep .nutri-calendar .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #ff6b9b !important;
+}
+
+/* Premium Form Fields */
+.nutri-field {
+  width: 100%;
+}
+
+::ng-deep .nutri-field .mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 1.5rem;
+  --mdc-outlined-text-field-focus-outline-color: #ff6b9b;
+  --mdc-outlined-text-field-outline-color: rgba(255, 107, 155, 0.1);
+  background-color: #faf9f6 !important;
+}
+
+::ng-deep .nutri-field .mdc-notched-outline__leading,
+::ng-deep .nutri-field .mdc-notched-outline__notch,
+::ng-deep .nutri-field .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+}
+
+::ng-deep .nutri-field .mat-mdc-form-field-focus-fill {
+  background-color: white !important;
+}
+
+::ng-deep .nutri-field .mat-mdc-select-arrow svg {
+  color: #ff6b9b !important;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 1023px) {
+  .appointment-container {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .appointment-body {
+    padding: 1.5rem !important;
+  }
+  .selection-grid {
+    gap: 1.5rem !important;
+  }
+  ::ng-deep .nutri-calendar .mat-calendar-body-cell-content {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Animations */
+.animate-fade-up {
+  animation: fadeUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.scroll-premium::-webkit-scrollbar {
+  width: 5px;
+}
+.scroll-premium::-webkit-scrollbar-thumb {
+  background: #ff6b9b20;
+  border-radius: 10px;
+}
+.scroll-premium::-webkit-scrollbar-thumb:hover {
+  background: #ff6b9b40;
+}

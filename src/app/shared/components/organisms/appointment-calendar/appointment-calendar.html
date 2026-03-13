@@ -1,0 +1,119 @@
+<div class="appointment-container">
+  <!-- Header -->
+  <div class="appointment-header px-8 py-6 flex items-center justify-between border-b border-nutri-rose/10">
+    <div class="header-content">
+      <h2 class="text-2xl font-bold italic text-nutri-rose serif">Agendar Cita</h2>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-nutri-text/30">Para:</span>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-nutri-text/60">{{ patientName }}</span>
+      </div>
+    </div>
+    <button (click)="closed.emit()" class="w-10 h-10 rounded-2xl bg-nutri-bg border border-nutri-rose/10 flex items-center justify-center text-nutri-text/40 hover:text-nutri-rose hover:border-nutri-rose/30 transition-all active:scale-95 group">
+      <mat-icon class="material-symbols-rounded group-hover:rotate-90 transition-transform duration-300">close</mat-icon>
+    </button>
+  </div>
+
+  <div class="appointment-body flex-1 overflow-visible p-8">
+    <div class="selection-grid grid grid-cols-1 lg:grid-cols-[1.2fr,1fr] gap-8">
+      
+      <!-- Calendar Section -->
+      <div class="space-y-4">
+        <h3 class="text-[9px] font-black text-nutri-text/30 uppercase tracking-[0.2em] mb-2 px-2">1. Selecciona Fecha</h3>
+        <mat-card class="calendar-card !rounded-3xl !border-none !shadow-sm overflow-hidden bg-nutri-bg/30">
+          <mat-calendar [(selected)]="selectedDate" class="nutri-calendar"></mat-calendar>
+        </mat-card>
+      </div>
+
+      <!-- Form Section -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- Time Section -->
+        <div class="space-y-4">
+          <h3 class="text-[9px] font-black text-nutri-text/30 uppercase tracking-[0.2em] px-2 text-center lg:text-left">2. Horario e Información</h3>
+          
+          <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+              <mat-form-field appearance="outline" class="nutri-field">
+                <mat-label>Inicio</mat-label>
+                <mat-select [(ngModel)]="startTime">
+                  @for (time of timeSlots; track time) {
+                    <mat-option [value]="time">{{ time }}</mat-option>
+                  }
+                </mat-select>
+                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 mr-2">schedule</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="nutri-field">
+                <mat-label>Fin</mat-label>
+                <mat-select [(ngModel)]="endTime" [disabled]="!startTime">
+                  @for (time of timeSlots; track time) {
+                    @if (time > startTime) {
+                      <mat-option [value]="time">{{ time }}</mat-option>
+                    }
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <mat-form-field appearance="outline" class="nutri-field">
+                <mat-label>Costo</mat-label>
+                <input matInput type="number" [(ngModel)]="cost" placeholder="400">
+                <span matPrefix class="text-nutri-rose/40 font-bold">$</span>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="nutri-field">
+                <mat-label># Cita</mat-label>
+                <input matInput [(ngModel)]="appointmentNumber" placeholder="1/4">
+                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 mr-2">tag</mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selection Summary Card -->
+        @if (selectedDate && startTime) {
+          <div class="bg-nutri-rose/5 border border-nutri-rose/20 p-5 rounded-3xl animate-fade-up">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
+                <mat-icon class="material-symbols-rounded">event_available</mat-icon>
+              </div>
+              <div class="space-y-1">
+                <p class="text-[8px] font-black text-nutri-rose uppercase tracking-widest">Resumen de Selección</p>
+                <p class="text-[11px] font-bold text-nutri-text leading-tight">{{ selectionSummary }}</p>
+                @if (cost) {
+                  <p class="text-[9px] font-medium text-nutri-text/40 italic">Costo estimado: ${{ cost }} MXN</p>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl flex items-center gap-3 text-rose-600 animate-shake">
+            <mat-icon class="material-symbols-rounded text-lg">error</mat-icon>
+            <span class="text-[11px] font-bold">{{ errorMessage }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="appointment-footer px-8 py-6 bg-nutri-bg/50 border-t border-nutri-rose/10 flex items-center justify-end gap-4">
+    <button (click)="closed.emit()" [disabled]="loading" class="px-6 py-3 text-[10px] font-black text-nutri-text/40 hover:text-rose-500 uppercase tracking-widest transition-all">
+      Cancelar
+    </button>
+    
+    <button [disabled]="!isFormValid || loading" (click)="onSchedule()" 
+            class="min-w-[200px] h-14 bg-nutri-rose text-white rounded-2xl px-8 flex items-center justify-center gap-3 font-bold shadow-lg shadow-nutri-rose/20 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale hover:bg-nutri-rose-dark">
+      @if (loading) {
+        <mat-icon class="material-symbols-rounded animate-spin">refresh</mat-icon>
+        <span class="text-[11px] uppercase tracking-widest">Agendando...</span>
+      } @else {
+        <mat-icon class="material-symbols-rounded">check_circle</mat-icon>
+        <span class="text-[11px] uppercase tracking-widest">Confirmar Cita</span>
+      }
+    </button>
+  </div>
+</div>

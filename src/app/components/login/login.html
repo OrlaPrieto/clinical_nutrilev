@@ -1,0 +1,39 @@
+<div class="min-h-screen bg-nutri-bg flex items-center justify-center p-6 selection:bg-nutri-rose/20">
+  <div class="max-w-md w-full space-y-12 animate-fade-up">
+    <!-- Logo -->
+    <div class="text-center">
+      <img src="images/logo.png" alt="Nutrilev Logo" class="h-32 w-auto mx-auto object-contain mb-2">
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white p-12 rounded-[3.5rem] shadow-nutri border border-nutri-rose/5 space-y-8 text-center relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-32 h-32 bg-nutri-rose/5 rounded-full blur-2xl"></div>
+      
+      <div class="space-y-2 relative">
+        <h2 class="text-2xl font-bold text-nutri-text">Acceso Restringido</h2>
+        <p class="text-sm text-nutri-text/40 font-medium">Inicia sesión con tu cuenta autorizada de Google para continuar.</p>
+      </div>
+
+      <div class="flex flex-col items-center justify-center gap-6 py-4">
+        <asl-google-signin-button type="standard" size="large" text="signin_with" shape="pill"></asl-google-signin-button>
+        
+        @if (errorMessage) {
+          <div class="p-4 bg-red-50 text-red-500 rounded-2xl text-xs font-bold border border-red-100 animate-shake">
+            {{ errorMessage }}
+          </div>
+        }
+      </div>
+
+      <div class="pt-4 border-t border-nutri-rose/5">
+        <p class="text-[9px] text-nutri-text/20 font-bold uppercase tracking-widest leading-relaxed">
+          Este sistema contiene datos clínicos confidenciales.<br>El acceso no autorizado está estrictamente prohibido.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-nutri-text/30 text-[10px] font-bold tracking-widest uppercase">
+      &copy; 2026 Nutrilev Premium Health
+    </p>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+
+.scroll-premium::-webkit-scrollbar {
+  width: 4px;
+}
+.scroll-premium::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-premium::-webkit-scrollbar-thumb {
+  background: rgba(235, 126, 122, 0.1);
+  border-radius: 10px;
+}
+.scroll-premium::-webkit-scrollbar-thumb:hover {
+  background: rgba(235, 126, 122, 0.2);
+}

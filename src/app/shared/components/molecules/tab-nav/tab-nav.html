@@ -1,0 +1,12 @@
+<div class="flex items-center space-x-4 md:space-x-6 py-3 min-w-max">
+  @for (tab of tabs(); track tab; let i = $index) {
+    <button (click)="onTabClick(i)"
+            class="relative py-1 text-[10px] md:text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
+            [ngClass]="activeTab() === i ? 'text-nutri-rose' : 'text-nutri-text/30 hover:text-nutri-text/60'">
+      {{ tab }}
+      @if (activeTab() === i) {
+        <div class="absolute -bottom-3 left-0 right-0 h-0.5 bg-nutri-rose rounded-full animate-fade-in shadow-[0_2px_10px_rgba(235,126,122,0.3)]"></div>
+      }
+    </button>
+  }
+</div>

@@ -1,0 +1,48 @@
+<div class="flex-none relative bg-white pt-6 pb-6 px-6 border-b border-nutri-rose/5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-center gap-6 relative">
+        <!-- Avatar -->
+        <div class="w-16 h-16 rounded-3xl bg-nutri-rose text-white flex items-center justify-center text-2xl font-bold shadow-lg ring-2 ring-nutri-rose/10">
+            {{ patient()?.nombre?.charAt(0) }}
+        </div>
+
+        <!-- Global Action Buttons -->
+        <div class="relative md:absolute md:top-2 md:right-24 flex gap-2 z-50 mb-4 md:mb-0">
+            <app-button 
+                [variant]="isEditing() ? 'secondary' : 'outline'" 
+                [icon]="isEditing() ? 'close' : 'edit'"
+                [label]="isEditing() ? 'Cancelar' : 'Editar'"
+                (onClick)="editToggle.emit()">
+            </app-button>
+            
+            @if (isEditing()) {
+                <app-button 
+                    variant="primary" 
+                    icon="check"
+                    [label]="saving() ? 'Guardando...' : 'Guardar Cambios'"
+                    [loading]="saving()"
+                    (onClick)="save.emit()">
+                </app-button>
+            }
+        </div>
+
+        <div class="flex-1 text-center md:text-left space-y-1">
+            <div class="flex items-center justify-between md:justify-start gap-4">
+                <span class="text-nutri-rose font-bold tracking-widest uppercase text-[9px] block">Expediente Clínico</span>
+            </div>
+            <h2 class="text-3xl font-bold serif">{{ patient()?.nombre }}</h2>
+            
+            <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                <div class="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-nutri-rose/10 text-[11px] text-nutri-text/60 shadow-sm transition-all duration-300">
+                    <mat-icon class="material-symbols-rounded text-[10px] text-nutri-rose">mail</mat-icon>
+                    @if (!isEditing()) {
+                        <span>{{ patient()?.email }}</span>
+                    } @else {
+                        <input [value]="patient()?.email" 
+                               (input)="emailChange.emit($any($event.target).value)"
+                               class="bg-transparent border-none p-0 w-40 outline-none text-nutri-rose font-medium">
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

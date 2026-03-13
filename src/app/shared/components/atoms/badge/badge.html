@@ -1,0 +1,7 @@
+<span [class]="badgeClasses">
+  @if (icon()) {
+    <i [class]="'pi ' + icon() + (size() === 'sm' ? ' text-[7px]' : ' text-[8px]')"></i>
+  }
+  {{ label() }}
+  <ng-content></ng-content>
+</span>
