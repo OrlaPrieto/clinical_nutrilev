@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientService } from '../../services/patient';
@@ -15,31 +15,60 @@ import { AppointmentModalComponent } from '../appointment-modal/appointment-moda
   styleUrl: './patient-list.css'
 })
 export class PatientListComponent implements OnInit {
-  patients: Patient[] = [];
-  uniquePatients: any[] = [];
-  filteredPatients: any[] = [];
-  searchTerm: string = '';
-  loading: boolean = true;
-  displayDetail: boolean = false;
-  selectedPatient: Patient | null = null;
+  patients = signal<Patient[]>([]);
+  uniquePatients = signal<any[]>([]);
+  searchTerm = signal<string>('');
+  loading = signal<boolean>(true);
+  displayDetail = signal<boolean>(false);
+  selectedPatient = signal<Patient | null>(null);
   
   // Delete confirm
-  showDeleteConfirm: boolean = false;
-  patientToDelete: Patient | null = null;
+  showDeleteConfirm = signal<boolean>(false);
+  patientToDelete = signal<Patient | null>(null);
   
   // Appointment
-  showAppointmentModal: boolean = false;
-  patientForAppointment: Patient | null = null;
-  appointmentSuccess: boolean = false;
+  showAppointmentModal = signal<boolean>(false);
+  patientForAppointment = signal<Patient | null>(null);
+  appointmentSuccess = signal<boolean>(false);
   
   // Pagination
-  currentPage: number = 1;
-  pageSize: number = 10;
-  totalPages: number = 1;
-  paginatedPatients: any[] = [];
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
 
   // Tooltip Interaction
-  activeTooltipId: string | null = null;
+  activeTooltipId = signal<string | null>(null);
+
+  // Computed state
+  filteredPatients = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    const patients = this.uniquePatients();
+    
+    if (!term) return patients;
+
+    return patients.filter(p => 
+      (p.nombre?.toLowerCase().includes(term)) || 
+      (p.email?.toLowerCase().includes(term)) ||
+      (p.telefono?.toLowerCase().includes(term))
+    );
+  });
+
+  totalPages = computed(() => {
+    return Math.ceil(this.filteredPatients().length / this.pageSize());
+  });
+
+  paginatedPatients = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredPatients().slice(start, end);
+  });
+
+  pageNumbers = computed(() => {
+    const pages = [];
+    for (let i = 1; i <= this.totalPages(); i++) {
+      pages.push(i);
+    }
+    return pages;
+  });
 
   constructor(
     private patientService: PatientService,
@@ -51,16 +80,16 @@ export class PatientListComponent implements OnInit {
   }
 
   loadPatients() {
-    this.loading = true;
+    this.loading.set(true);
     this.patientService.getPatients().subscribe({
       next: (data) => {
-        this.patients = data;
+        this.patients.set(data);
         this.groupPatients(data);
-        this.loading = false;
+        this.loading.set(false);
       },
       error: (err) => {
         console.error('Error loading patients', err);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -78,119 +107,89 @@ export class PatientListComponent implements OnInit {
       }
       return acc;
     }, {});
-    this.uniquePatients = Object.values(grouped).sort((a: any, b: any) => {
+    
+    const sorted = Object.values(grouped).sort((a: any, b: any) => {
       const dateA = a.ultima_actualizacion ? new Date(a.ultima_actualizacion).getTime() : 0;
       const dateB = b.ultima_actualizacion ? new Date(b.ultima_actualizacion).getTime() : 0;
       return dateB - dateA;
     });
     
-    this.applyFilters();
+    this.uniquePatients.set(sorted);
   }
 
   onSearch() {
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  applyFilters() {
-    if (!this.searchTerm) {
-      this.filteredPatients = [...this.uniquePatients];
-    } else {
-      const term = this.searchTerm.toLowerCase();
-      this.filteredPatients = this.uniquePatients.filter(p => 
-        (p.nombre && p.nombre.toLowerCase().includes(term)) || 
-        (p.email && p.email.toLowerCase().includes(term)) ||
-        (p.telefono && p.telefono.toLowerCase().includes(term))
-      );
-    }
-    this.updatePagination();
-  }
-
-  updatePagination() {
-    this.totalPages = Math.ceil(this.filteredPatients.length / this.pageSize);
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.paginatedPatients = this.filteredPatients.slice(start, end);
+    this.currentPage.set(1);
   }
 
   goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePagination();
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
     }
   }
 
   onPageSizeChange() {
-    this.currentPage = 1;
-    this.updatePagination();
-  }
-
-  get pageNumbers(): number[] {
-    const pages = [];
-    for (let i = 1; i <= this.totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    this.currentPage.set(1);
   }
 
   showDetail(patient: Patient) {
-    this.selectedPatient = patient;
-    this.displayDetail = true;
+    this.selectedPatient.set(patient);
+    this.displayDetail.set(true);
   }
 
   toggleTooltip(id: string, event: Event) {
     event.stopPropagation();
-    if (this.activeTooltipId === id) {
-      this.activeTooltipId = null;
+    if (this.activeTooltipId() === id) {
+      this.activeTooltipId.set(null);
     } else {
-      this.activeTooltipId = id;
+      this.activeTooltipId.set(id);
     }
   }
 
   @HostListener('document:click')
   onDocumentClick() {
-    this.activeTooltipId = null;
+    this.activeTooltipId.set(null);
   }
 
   openAppointment(patient: Patient, event: Event) {
     event.stopPropagation();
-    this.patientForAppointment = patient;
-    this.showAppointmentModal = true;
+    this.patientForAppointment.set(patient);
+    this.showAppointmentModal.set(true);
   }
 
   handleScheduled(event: any) {
-    this.showAppointmentModal = false;
-    this.appointmentSuccess = true;
-    setTimeout(() => this.appointmentSuccess = false, 5000);
+    this.showAppointmentModal.set(false);
+    this.appointmentSuccess.set(true);
+    setTimeout(() => this.appointmentSuccess.set(false), 5000);
   }
 
   openDeleteConfirm(patient: Patient, event: Event) {
     event.stopPropagation();
-    this.patientToDelete = patient;
-    this.showDeleteConfirm = true;
+    this.patientToDelete.set(patient);
+    this.showDeleteConfirm.set(true);
   }
 
   cancelDelete() {
-    this.showDeleteConfirm = false;
-    this.patientToDelete = null;
+    this.showDeleteConfirm.set(false);
+    this.patientToDelete.set(null);
   }
 
   confirmDelete() {
-    if (!this.patientToDelete) return;
+    const patient = this.patientToDelete();
+    if (!patient) return;
     
-    this.loading = true;
-    this.showDeleteConfirm = false;
+    this.loading.set(true);
+    this.showDeleteConfirm.set(false);
     
-    this.patientService.deletePatient(this.patientToDelete.email, this.patientToDelete.nombre).subscribe({
+    this.patientService.deletePatient(patient.email, patient.nombre).subscribe({
       next: () => {
         this.loadPatients();
-        this.patientToDelete = null;
+        this.patientToDelete.set(null);
       },
       error: (err) => {
         console.error('Error deleting patient', err);
         alert('Hubo un error al eliminar al paciente.');
-        this.loading = false;
-        this.patientToDelete = null;
+        this.loading.set(false);
+        this.patientToDelete.set(null);
       }
     });
   }
