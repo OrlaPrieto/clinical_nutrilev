@@ -1,16 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-social-login';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AuthService } from '../../services/auth.service';
+import { LoginCardOrganism } from '../../shared/components/organisms/login-card/login-card';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, GoogleSigninButtonModule],
-  templateUrl: './login.html',
-  styleUrl: './login.css'
+  imports: [CommonModule, LoginCardOrganism],
+  templateUrl: './login-page.html',
+  styleUrl: './login-page.css'
 })
-export class LoginComponent {
+export class LoginPage {
   private socialAuthService = inject(SocialAuthService);
   private authService = inject(AuthService);
   errorMessage: string | null = null;

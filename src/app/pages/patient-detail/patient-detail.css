@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.scroll-premium::-webkit-scrollbar { width: 4px; }
+.scroll-premium::-webkit-scrollbar-track { background: transparent; }
+.scroll-premium::-webkit-scrollbar-thumb { background: rgba(235, 126, 122, 0.1); border-radius: 10px; }
+.scroll-premium::-webkit-scrollbar-thumb:hover { background: rgba(235, 126, 122, 0.2); }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

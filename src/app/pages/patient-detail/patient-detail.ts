@@ -1,35 +1,53 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { PatientService } from '../../services/patient';
+import { PatientHeaderOrganism } from '../../shared/components/organisms/patient-header/patient-header';
+import { TabNavComponent } from '../../shared/components/molecules/tab-nav/tab-nav';
+import { StatCardComponent } from '../../shared/components/molecules/stat-card/stat-card';
+import { ButtonComponent } from '../../shared/components/atoms/button/button';
+import { BadgeComponent } from '../../shared/components/atoms/badge/badge';
 
 @Component({
-  selector: 'app-patient-detail',
+  selector: 'app-patient-detail-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    PatientHeaderOrganism, 
+    TabNavComponent, 
+    StatCardComponent,
+    BadgeComponent
+  ],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.css'
 })
-export class PatientDetailComponent {
-  patient = input<any | null>(null);
+export class PatientDetailPage {
+  patientInput = input<any | null>(null, { alias: 'patient' });
+  
+  // Signals
   activeTab = signal<number>(0);
   saving = signal<boolean>(false);
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
 
-  constructor(private patientService: PatientService) {}
+  private patientService = inject(PatientService);
 
   toggleEdit() {
     this.isEditing.update(val => !val);
   }
 
+  onEmailChange(newEmail: string) {
+    if (this.patientInput()) {
+      this.patientInput().email = newEmail;
+    }
+  }
+
   saveChanges() {
-    const currentPatient = this.patient();
+    const currentPatient = this.patientInput();
     if (!currentPatient) return;
     this.saving.set(true);
     
-    // Global update: Send everything
     const updatePayload = {
       ...currentPatient,
       action: "update"
@@ -39,7 +57,7 @@ export class PatientDetailComponent {
   }
 
   toggleDeactivation() {
-    const currentPatient = this.patient();
+    const currentPatient = this.patientInput();
     if (!currentPatient) return;
     
     const updatePayload = {

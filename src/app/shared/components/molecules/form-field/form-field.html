@@ -1,0 +1,15 @@
+<div class="space-y-2">
+  <label class="block text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em] ml-2">
+    {{ label() }}
+  </label>
+  
+  <div class="relative">
+    <ng-content></ng-content>
+  </div>
+
+  @if (error()) {
+    <p class="text-[9px] text-rose-500 font-bold mt-1 ml-4 animate-fade-in">
+      {{ error() }}
+    </p>
+  }
+</div>

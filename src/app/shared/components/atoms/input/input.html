@@ -1,0 +1,34 @@
+<div class="input-container" [class]="customClass()">
+  @if (label()) {
+    <label class="block text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em] mb-2 ml-2">
+      {{ label() }}
+    </label>
+  }
+  
+  <div class="relative group">
+    @if (icon()) {
+      <div class="absolute left-6 top-1/2 -translate-y-1/2 text-nutri-rose/40 pointer-events-none transition-colors group-focus-within:text-nutri-rose">
+        <mat-icon class="material-symbols-rounded text-lg">{{ icon() }}</mat-icon>
+      </div>
+    }
+
+    <input 
+      [type]="type()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      (input)="onInput($event)"
+      class="w-full h-14 bg-white/60 rounded-2xl border border-white focus:border-nutri-rose/20 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text placeholder:text-nutri-text/30"
+      [ngClass]="{
+        'pl-12': icon(),
+        'px-6': !icon(),
+        'border-rose-500/50 focus:border-rose-500': error()
+      }">
+  </div>
+
+  @if (error()) {
+    <p class="text-[9px] text-rose-500 font-bold mt-1 ml-4 animate-fade-in">
+      {{ error() }}
+    </p>
+  }
+</div>

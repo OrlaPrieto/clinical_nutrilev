@@ -1,0 +1,18 @@
+<button 
+  [type]="type()"
+  [disabled]="disabled() || loading()"
+  [class]="buttonClasses"
+  (click)="handleClick($event)">
+  
+  @if (loading()) {
+    <mat-icon [class]="iconClasses + ' animate-spin'">progress_activity</mat-icon>
+  } @else if (icon()) {
+    <mat-icon [class]="iconClasses">{{ icon() }}</mat-icon>
+  }
+
+  @if (label()) {
+    <span>{{ label() }}</span>
+  }
+  
+  <ng-content></ng-content>
+</button>
