@@ -28,3 +28,87 @@
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
 }
+
+/* Premium AI Design System */
+.glass-ai-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 10px 30px -10px rgba(255, 65, 155, 0.15),
+    inset 0 0 20px rgba(255, 255, 255, 0.5);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.glass-ai-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+  box-shadow: 
+    0 20px 40px -20px rgba(255, 65, 155, 0.3),
+    0 0 0 1px rgba(255, 65, 155, 0.1);
+}
+
+.magic-border-gradient {
+  position: relative;
+}
+
+.magic-border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(
+    45deg,
+    #FF419B,
+    #FFB3D9,
+    #FF419B,
+    #8A2BE2,
+    #FF419B
+  );
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: 1.5rem;
+  opacity: 0.15;
+  transition: opacity 0.3s ease;
+  animation: magic-rotation 8s linear infinite;
+}
+
+.glass-ai-card:hover .magic-border-gradient::before {
+  opacity: 0.4;
+}
+
+@keyframes magic-rotation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.ai-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: 0.7s;
+}
+
+.glass-ai-card:hover .ai-shimmer {
+  left: 150%;
+}
+
+.floating-sparkle {
+  animation: sparkle-float 3s ease-in-out infinite;
+}
+
+@keyframes sparkle-float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-3px) rotate(5deg); }
+}
