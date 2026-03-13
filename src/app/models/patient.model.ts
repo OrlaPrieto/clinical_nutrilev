@@ -22,7 +22,6 @@ export interface Patient {
   sueno: string;
   hace_ejercicio: string;
   ejercicio_detalles: string;
-  ocupacion: string;
   alergias_alimentarias: string;
   profesion: string;
   tipo_actividad_horario: string;

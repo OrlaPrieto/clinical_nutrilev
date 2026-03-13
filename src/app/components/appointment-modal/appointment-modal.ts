@@ -47,24 +47,28 @@ interface CalendarDay {
               </div>
 
               <div class="grid grid-cols-7 gap-1">
-                <div *ngFor="let day of ['D', 'L', 'M', 'M', 'J', 'V', 'S']" 
-                     class="text-center py-2 text-[8px] lg:text-[9px] font-black text-nutri-rose/40 uppercase tracking-widest">
-                  {{ day }}
-                </div>
-                <button *ngFor="let day of calendarDays" 
-                        (click)="selectDate(day)"
-                        [disabled]="day.isPast"
-                        class="aspect-square flex flex-col items-center justify-center rounded-xl lg:rounded-2xl transition-all relative group"
-                        [ngClass]="{
-                          'text-nutri-text/20': !day.isCurrentMonth,
-                          'text-nutri-text font-bold': day.isCurrentMonth && !isSelected(day.date),
-                          'bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20': isSelected(day.date),
-                          'bg-nutri-bg/50 hover:bg-nutri-rose/10': day.isCurrentMonth && !isSelected(day.date) && !day.isPast,
-                          'cursor-not-allowed opacity-30': day.isPast
-                        }">
-                  <span class="text-xs">{{ day.date.getDate() }}</span>
-                  <div *ngIf="day.isToday && !isSelected(day.date)" class="absolute bottom-1.5 lg:bottom-2 w-1 h-1 rounded-full bg-nutri-rose"></div>
-                </button>
+                @for (day of ['D', 'L', 'M', 'M', 'J', 'V', 'S']; track day) {
+                  <div class="text-center py-2 text-[8px] lg:text-[9px] font-black text-nutri-rose/40 uppercase tracking-widest">
+                    {{ day }}
+                  </div>
+                }
+                @for (day of calendarDays; track day.date) {
+                  <button (click)="selectDate(day)"
+                          [disabled]="day.isPast"
+                          class="aspect-square flex flex-col items-center justify-center rounded-xl lg:rounded-2xl transition-all relative group"
+                          [ngClass]="{
+                            'text-nutri-text/20': !day.isCurrentMonth,
+                            'text-nutri-text font-bold': day.isCurrentMonth && !isSelected(day.date),
+                            'bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20': isSelected(day.date),
+                            'bg-nutri-bg/50 hover:bg-nutri-rose/10': day.isCurrentMonth && !isSelected(day.date) && !day.isPast,
+                            'cursor-not-allowed opacity-30': day.isPast
+                          }">
+                    <span class="text-xs">{{ day.date.getDate() }}</span>
+                    @if (day.isToday && !isSelected(day.date)) {
+                      <div class="absolute bottom-1.5 lg:bottom-2 w-1 h-1 rounded-full bg-nutri-rose"></div>
+                    }
+                  </button>
+                }
               </div>
             </div>
 
@@ -72,15 +76,16 @@ interface CalendarDay {
             <div class="space-y-4">
               <label class="text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em] ml-2">Selecciona un horario</label>
               <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                <button *ngFor="let time of timeSlots" 
-                        (click)="startTime = time"
-                        class="h-11 rounded-xl text-[11px] font-bold transition-all border"
-                        [ngClass]="{
-                          'bg-nutri-rose text-white border-nutri-rose shadow-md shadow-nutri-rose/10': startTime === time,
-                          'bg-white text-nutri-text/60 border-nutri-rose/10 hover:border-nutri-rose/40': startTime !== time
-                        }">
-                  {{ time }}
-                </button>
+                @for (time of timeSlots; track time) {
+                  <button (click)="startTime = time"
+                          class="h-11 rounded-xl text-[11px] font-bold transition-all border"
+                          [ngClass]="{
+                            'bg-nutri-rose text-white border-nutri-rose shadow-md shadow-nutri-rose/10': startTime === time,
+                            'bg-white text-nutri-text/60 border-nutri-rose/10 hover:border-nutri-rose/40': startTime !== time
+                          }">
+                    {{ time }}
+                  </button>
+                }
               </div>
             </div>
           </div>
@@ -119,23 +124,27 @@ interface CalendarDay {
                       <p class="text-xs font-bold text-nutri-text">{{ formattedSelectedDate || 'Fecha no elegida' }}</p>
                     </div>
                   </div>
-                  <div *ngIf="startTime" class="flex items-center gap-3 animate-fade-in">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
-                      <i class="pi pi-clock text-sm"></i>
+                  @if (startTime) {
+                    <div class="flex items-center gap-3 animate-fade-in">
+                      <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                        <i class="pi pi-clock text-sm"></i>
+                      </div>
+                      <div>
+                        <p class="text-[9px] font-black text-nutri-text/30 uppercase tracking-widest">Hora de Inicio</p>
+                        <p class="text-xs font-bold text-nutri-text">{{ startTime }}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p class="text-[9px] font-black text-nutri-text/30 uppercase tracking-widest">Hora de Inicio</p>
-                      <p class="text-xs font-bold text-nutri-text">{{ startTime }}</p>
-                    </div>
-                  </div>
+                  }
                 </div>
               </div>
 
               <!-- Alert -->
-              <div *ngIf="errorMessage" class="p-4 bg-rose-50 rounded-2xl border border-rose-100 flex items-start gap-3 animate-fade-in">
-                <i class="pi pi-exclamation-circle text-rose-500 mt-0.5"></i>
-                <p class="text-[10px] text-rose-600 font-bold leading-relaxed">{{ errorMessage }}</p>
-              </div>
+              @if (errorMessage) {
+                <div class="p-4 bg-rose-50 rounded-2xl border border-rose-100 flex items-start gap-3 animate-fade-in">
+                  <i class="pi pi-exclamation-circle text-rose-500 mt-0.5"></i>
+                  <p class="text-[10px] text-rose-600 font-bold leading-relaxed">{{ errorMessage }}</p>
+                </div>
+              }
             </div>
 
             <div class="space-y-3 pt-6 lg:pt-0">

@@ -27,9 +27,11 @@ import { AuthService } from '../../services/auth.service';
           <div class="flex flex-col items-center justify-center gap-6 py-4">
             <asl-google-signin-button type="standard" size="large" text="signin_with" shape="pill"></asl-google-signin-button>
             
-            <div *ngIf="errorMessage" class="p-4 bg-red-50 text-red-500 rounded-2xl text-xs font-bold border border-red-100 animate-shake">
-              {{ errorMessage }}
-            </div>
+            @if (errorMessage) {
+              <div class="p-4 bg-red-50 text-red-500 rounded-2xl text-xs font-bold border border-red-100 animate-shake">
+                {{ errorMessage }}
+              </div>
+            }
           </div>
 
           <div class="pt-4 border-t border-nutri-rose/5">
