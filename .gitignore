@@ -45,3 +45,11 @@ Thumbs.db
 .vercel
 .env*.local
 .env
+
+# Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/

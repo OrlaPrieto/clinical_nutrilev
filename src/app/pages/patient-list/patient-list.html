@@ -31,6 +31,14 @@
                     <app-button 
                         variant="outline" 
                         size="md" 
+                        icon="bolt" 
+                        [customClass]="'!w-14 !h-14 !rounded-2xl !bg-nutri-rose/5 !text-nutri-rose mr-2'"
+                        (onClick)="navigateToAutomation()">
+                    </app-button>
+
+                    <app-button 
+                        variant="outline" 
+                        size="md" 
                         icon="sync" 
                         [loading]="loading()"
                         [customClass]="'!w-14 !h-14 !rounded-2xl'"
