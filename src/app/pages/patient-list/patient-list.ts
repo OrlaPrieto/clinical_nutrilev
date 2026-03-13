@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientService } from '../../services/patient';
@@ -11,6 +11,7 @@ import { PatientTableOrganism } from '../../shared/components/organisms/patient-
 import { AppointmentModalComponent } from '../../components/appointment-modal/appointment-modal';
 import { PatientDetailComponent } from '../../components/patient-detail/patient-detail';
 import { MatIconModule } from '@angular/material/icon';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-patient-list-page',
@@ -24,14 +25,16 @@ import { MatIconModule } from '@angular/material/icon';
     AppointmentModalComponent,
     PatientDetailComponent,
     BadgeComponent,
-    MatIconModule
+    MatIconModule,
+    RouterModule
   ],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.css'
 })
-export class PatientListPage {
+export class PatientListPage implements OnInit {
   public authService = inject(AuthService);
   private patientService = inject(PatientService);
+  private router = inject(Router);
 
   // Signals
   uniquePatients = signal<Patient[]>([]);
@@ -76,32 +79,34 @@ export class PatientListPage {
     return Array.from({ length: total }, (_, i) => i + 1);
   });
 
-  constructor() {
+  ngOnInit() {
     this.loadPatients();
   }
 
   loadPatients() {
     this.loading.set(true);
     this.patientService.getPatients().subscribe({
-      next: (data) => {
+      next: (data: Patient[]) => {
         this.processPatients(data);
         this.loading.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading patients', err);
         this.loading.set(false);
       }
     });
   }
 
+  navigateToAutomation() {
+    this.router.navigate(['/menu-automation']);
+  }
+
   private processPatients(data: Patient[]) {
     const grouped = data.reduce((acc: any, curr) => {
       const key = curr.email || curr.nombre;
-      // Si no existe el paciente o si la entrada actual es más reciente que la guardada
       if (!acc[key] || new Date(curr.fecha_hoy) > new Date(acc[key].fecha_hoy)) {
         acc[key] = { ...curr };
       }
-      // Asegurar que la fecha de actualización más reciente se conserve
       if (curr.ultima_actualizacion && (!acc[key].ultima_actualizacion || new Date(curr.ultima_actualizacion) > new Date(acc[key].ultima_actualizacion))) {
         acc[key].ultima_actualizacion = curr.ultima_actualizacion;
       }
@@ -167,7 +172,7 @@ export class PatientListPage {
         this.loadPatients();
         this.cancelDelete();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error deleting patient', err);
         alert('Error al eliminar paciente');
       }
