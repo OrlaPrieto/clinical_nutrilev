@@ -14,11 +14,26 @@ from google.genai import types as genai_types
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from dotenv import load_dotenv
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+# Security: Max upload size is 5MB to prevent OOM
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+
+# Security: Rate Limiting to prevent Denial of Wallet on Gemini API
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "10 per minute"],
+    storage_uri="memory://"
+)
+
+# Security: Restrict CORS to specific origins
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:4200", "https://app.clinicanutrilev.com"]}})
 
 NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
 NS_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"

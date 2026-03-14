@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientService } from '../../services/patient';
 import { AuthService } from '../../services/auth.service';
@@ -26,7 +26,8 @@ import { Router, RouterModule } from '@angular/router';
     PatientDetailComponent,
     BadgeComponent,
     MatIconModule,
-    RouterModule
+    RouterModule,
+    NgOptimizedImage
   ],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.css'
@@ -83,18 +84,16 @@ export class PatientListPage implements OnInit {
     this.loadPatients();
   }
 
-  loadPatients() {
+  async loadPatients() {
     this.loading.set(true);
-    this.patientService.getPatients().subscribe({
-      next: (data: Patient[]) => {
-        this.processPatients(data);
-        this.loading.set(false);
-      },
-      error: (err: any) => {
-        console.error('Error loading patients', err);
-        this.loading.set(false);
-      }
-    });
+    try {
+      const data = await this.patientService.getPatients();
+      this.processPatients(data);
+    } catch (err) {
+      console.error('Error loading patients', err);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   navigateToAutomation() {
@@ -163,19 +162,17 @@ export class PatientListPage implements OnInit {
     this.patientToDelete.set(null);
   }
 
-  confirmDelete() {
+  async confirmDelete() {
     const patient = this.patientToDelete();
     if (!patient) return;
 
-    this.patientService.deletePatient(patient.email, patient.nombre).subscribe({
-      next: () => {
-        this.loadPatients();
-        this.cancelDelete();
-      },
-      error: (err: any) => {
-        console.error('Error deleting patient', err);
-        alert('Error al eliminar paciente');
-      }
-    });
+    try {
+      await this.patientService.deletePatient(patient.email, patient.nombre);
+      this.loadPatients();
+      this.cancelDelete();
+    } catch (err) {
+      console.error('Error deleting patient', err);
+      alert('Error al eliminar paciente');
+    }
   }
 }

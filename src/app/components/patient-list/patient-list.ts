@@ -79,19 +79,17 @@ export class PatientListComponent implements OnInit {
     this.loadPatients();
   }
 
-  loadPatients() {
+  async loadPatients() {
     this.loading.set(true);
-    this.patientService.getPatients().subscribe({
-      next: (data) => {
-        this.patients.set(data);
-        this.groupPatients(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading patients', err);
-        this.loading.set(false);
-      }
-    });
+    try {
+      const data = await this.patientService.getPatients();
+      this.patients.set(data);
+      this.groupPatients(data);
+    } catch (err) {
+      console.error('Error loading patients', err);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   groupPatients(data: Patient[]) {
@@ -173,24 +171,22 @@ export class PatientListComponent implements OnInit {
     this.patientToDelete.set(null);
   }
 
-  confirmDelete() {
+  async confirmDelete() {
     const patient = this.patientToDelete();
     if (!patient) return;
     
     this.loading.set(true);
     this.showDeleteConfirm.set(false);
     
-    this.patientService.deletePatient(patient.email, patient.nombre).subscribe({
-      next: () => {
-        this.loadPatients();
-        this.patientToDelete.set(null);
-      },
-      error: (err) => {
-        console.error('Error deleting patient', err);
-        alert('Hubo un error al eliminar al paciente.');
-        this.loading.set(false);
-        this.patientToDelete.set(null);
-      }
-    });
+    try {
+      await this.patientService.deletePatient(patient.email, patient.nombre);
+      this.loadPatients();
+      this.patientToDelete.set(null);
+    } catch (err) {
+      console.error('Error deleting patient', err);
+      alert('Hubo un error al eliminar al paciente.');
+      this.loading.set(false);
+      this.patientToDelete.set(null);
+    }
   }
 }
