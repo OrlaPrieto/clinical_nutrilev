@@ -40,7 +40,7 @@
                     <mat-option [value]="time">{{ time }}</mat-option>
                   }
                 </mat-select>
-                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 mr-2">schedule</mat-icon>
+                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 ml-2 mr-2">schedule</mat-icon>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="nutri-field">
@@ -59,13 +59,13 @@
               <mat-form-field appearance="outline" class="nutri-field">
                 <mat-label>Costo</mat-label>
                 <input matInput type="number" [(ngModel)]="cost" placeholder="400">
-                <span matPrefix class="text-nutri-rose/40 font-bold">$</span>
+                <span matPrefix class="text-nutri-rose/40 font-bold ml-3 mr-2 text-lg">$</span>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="nutri-field">
                 <mat-label># Cita</mat-label>
                 <input matInput [(ngModel)]="appointmentNumber" placeholder="1/4">
-                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 mr-2">tag</mat-icon>
+                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 ml-2 mr-2">tag</mat-icon>
               </mat-form-field>
             </div>
           </div>
