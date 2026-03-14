@@ -11,6 +11,8 @@ from docx.oxml import OxmlElement
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from google import genai
 from google.genai import types as genai_types
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -1021,8 +1023,48 @@ def append_shopping_list(doc: Document, markdown_text: str):
 # RUTAS API
 # =============================================================================
 
+AUTHORIZED_EMAILS = [
+    'orla08i@gmail.com',
+    'velvetdelacruzvillegas@gmail.com'
+]
+
+from functools import wraps
+from flask import request, jsonify
+
+def require_google_auth(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # En development local o producción, chequear header
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'Falta el token de autorización (Bearer Token)'}), 401
+        
+        token = auth_header.split(' ')[1]
+        try:
+            # Especificar el Request object de google-auth
+            # En un entorno real, deberías pasar el CLIENT_ID de tu login de Google a id_token.verify_oauth2_token()
+            # Como puede depender del env, validaremos que fue emitido por Google y la firma es válida:
+            idinfo = id_token.verify_oauth2_token(token, google_requests.Request())
+            
+            # Verificar si el email está autorizado
+            email = idinfo.get('email', '').lower()
+            if email not in AUTHORIZED_EMAILS:
+                return jsonify({'error': f'Acceso denegado para {email}'}), 403
+            
+            # Guardamos info en request context por si se necesitara usar después
+            request.user_email = email
+            
+        except ValueError as e:
+            # Invalid token
+            return jsonify({'error': 'Token inválido', 'details': str(e)}), 401
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @app.route('/api/process-menu', methods=['POST'])
 @app.route('/process-menu', methods=['POST'])
+@require_google_auth
 def process_menu():
     if 'file' not in request.files:
         return jsonify({"error": "No se recibió ningún archivo"}), 400

@@ -4,6 +4,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-menu-automation',
@@ -19,7 +20,7 @@ export class MenuAutomationOrganism {
   success: boolean = false;
   apiKey: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -46,7 +47,14 @@ export class MenuAutomationOrganism {
       formData.append('api_key', this.apiKey);
     }
 
+    const token = this.authService.user?.idToken;
+    let headers = {};
+    if (token) {
+      headers = { 'Authorization': `Bearer ${token}` };
+    }
+
     this.http.post('/api/process-menu', formData, {
+      headers: headers,
       responseType: 'blob'
     }).subscribe({
       next: (blob: Blob) => {

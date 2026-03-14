@@ -41,8 +41,8 @@ export class AppointmentCalendarOrganism {
   selectedDate: Date | null = null;
   startTime: string = '';
   endTime: string = '';
-  cost: string = '';
-  appointmentNumber: string = '';
+  cost: string = '450';
+  appointmentNumber: string = '1/3';
 
   // Time options (7:00 AM to 8:00 PM)
   timeSlots: string[] = this.generateTimeSlots();
