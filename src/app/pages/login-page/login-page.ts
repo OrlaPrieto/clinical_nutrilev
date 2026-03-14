@@ -17,11 +17,11 @@ export class LoginPage {
   errorMessage: string | null = null;
 
   constructor() {
-    this.socialAuthService.authState.subscribe((user) => {
+    this.socialAuthService.authState.subscribe(async (user) => {
       if (user) {
-        const success = this.authService.login(user);
+        const success = await this.authService.login(user);
         if (!success) {
-          this.errorMessage = 'Acceso denegado. Este correo no está en la lista blanca.';
+          this.errorMessage = 'Acceso denegado. Este correo no está en la lista blanca o falló la verificación.';
           setTimeout(() => this.errorMessage = null, 5000);
         }
       }
