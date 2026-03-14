@@ -1,6 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { supabase } from '../supabase';
 
@@ -17,13 +16,13 @@ export class AuthService {
     'velvetdelacruzvillegas@gmail.com'
   ];
 
-  private currentUserSubject = new BehaviorSubject<any>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  // Replacing RxJS BehaviorSubject with Angular 19 Signals
+  public currentUser = signal<any>(null);
 
   constructor() {
     const savedUser = localStorage.getItem('nutrilev_user');
     if (savedUser) {
-      this.currentUserSubject.next(JSON.parse(savedUser));
+      this.currentUser.set(JSON.parse(savedUser));
     }
   }
 
@@ -42,7 +41,7 @@ export class AuthService {
         }
 
         localStorage.setItem('nutrilev_user', JSON.stringify(googleUser));
-        this.currentUserSubject.next(googleUser);
+        this.currentUser.set(googleUser);
         this.router.navigate(['/dashboard']);
         return true;
       } catch (err) {
@@ -61,16 +60,16 @@ export class AuthService {
       console.error('Error signing out', e);
     } finally {
       localStorage.removeItem('nutrilev_user');
-      this.currentUserSubject.next(null);
+      this.currentUser.set(null);
       this.router.navigate(['/login']);
     }
   }
 
   isLoggedIn(): boolean {
-    return this.currentUserSubject.value !== null;
+    return this.currentUser() !== null;
   }
 
   get user() {
-    return this.currentUserSubject.value;
+    return this.currentUser();
   }
 }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, map } from 'rxjs';
 import { Patient } from '../models/patient.model';
 import { supabase } from '../supabase';
 
@@ -9,49 +8,37 @@ import { supabase } from '../supabase';
 export class PatientService {
   constructor() { }
 
-  getPatients(): Observable<Patient[]> {
-    return from(
-      supabase
-        .from('patients')
-        .select('*')
-    ).pipe(
-      map(response => {
-        if (response.error) throw response.error;
-        return response.data as Patient[];
-      })
-    );
+  async getPatients(): Promise<Patient[]> {
+    const { data, error } = await supabase
+      .from('patients')
+      .select('*');
+      
+    if (error) throw error;
+    return data as Patient[];
   }
 
-  addPatientEntry(payload: any): Observable<any> {
+  async addPatientEntry(payload: any): Promise<any> {
     const { action, email, ...data } = payload;
     
     if (action === 'update') {
-      return from(
-        supabase
-          .from('patients')
-          .update({ ...data, ultima_actualizacion: new Date().toISOString() })
-          .eq('email', email)
-      ).pipe(
-        map(response => {
-          if (response.error) throw response.error;
-          return response.data;
-        })
-      );
+      const { data: resData, error } = await supabase
+        .from('patients')
+        .update({ ...data, ultima_actualizacion: new Date().toISOString() })
+        .eq('email', email);
+        
+      if (error) throw error;
+      return resData;
     }
 
-    return from(
-      supabase
-        .from('patients')
-        .insert({ ...payload, ultima_actualizacion: new Date().toISOString() })
-    ).pipe(
-      map(response => {
-        if (response.error) throw response.error;
-        return response.data;
-      })
-    );
+    const { data: resData, error } = await supabase
+      .from('patients')
+      .insert({ ...payload, ultima_actualizacion: new Date().toISOString() });
+      
+    if (error) throw error;
+    return resData;
   }
 
-  deletePatient(email: string, nombre: string): Observable<any> {
+  async deletePatient(email: string, nombre: string): Promise<any> {
     let query = supabase.from('patients').delete();
     
     if (email) {
@@ -60,11 +47,8 @@ export class PatientService {
       query = query.eq('nombre', nombre);
     }
 
-    return from(query).pipe(
-      map(response => {
-        if (response.error) throw response.error;
-        return response.data;
-      })
-    );
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
   }
 }

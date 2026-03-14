@@ -52,19 +52,17 @@ export class PatientDetailComponent {
     this.sendUpdate(updatePayload, false);
   }
 
-  private sendUpdate(payload: any, exitEditMode: boolean) {
-    this.patientService.addPatientEntry(payload).subscribe({
-      next: () => {
-        this.saving.set(false);
-        if (exitEditMode) this.isEditing.set(false);
-        this.showSuccess.set(true);
-        setTimeout(() => this.showSuccess.set(false), 3000);
-      },
-      error: (err) => {
-        console.error('Error al guardar cambios', err);
-        this.saving.set(false);
-        alert('Error al guardar los cambios');
-      }
-    });
+  private async sendUpdate(payload: any, exitEditMode: boolean) {
+    try {
+      await this.patientService.addPatientEntry(payload);
+      this.saving.set(false);
+      if (exitEditMode) this.isEditing.set(false);
+      this.showSuccess.set(true);
+      setTimeout(() => this.showSuccess.set(false), 3000);
+    } catch (err) {
+      console.error('Error al guardar cambios', err);
+      this.saving.set(false);
+      alert('Error al guardar los cambios');
+    }
   }
 }
