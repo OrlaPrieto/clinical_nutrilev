@@ -111,7 +111,7 @@
                             <input [(ngModel)]="patient().estatura" type="text" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
                         }
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
+                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
                          <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Civil</span>
                          @if (!isEditing()) {
                              <p class="text-md font-bold">{{patient()?.estado_civil || '---'}}</p>
@@ -120,6 +120,15 @@
                              <input [(ngModel)]="patient().estado_civil" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
                          }
                     </div>
+                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Profesión</span>
+                        @if (!isEditing()) {
+                            <p class="text-sm font-medium">{{patient()?.profesion || '---'}}</p>
+                        }
+                        @if (isEditing()) {
+                            <input [(ngModel)]="patient().profesion" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
+                        }
+                    </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm col-span-2 md:col-span-2">
                         <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Dirección</span>
                         @if (!isEditing()) {
@@ -127,15 +136,6 @@
                         }
                         @if (isEditing()) {
                             <input [(ngModel)]="patient().direccion" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm col-span-2 md:col-span-2">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Profesión</span>
-                        @if (!isEditing()) {
-                            <p class="text-sm font-medium">{{patient()?.profesion || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().profesion" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
                         }
                     </div>
                 </div>
@@ -342,74 +342,89 @@
     <!-- Tab 3: Nutrición Compacto -->
     @if (activeTab() === 3) {
             <div class="space-y-6 animate-fade-up">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-medium">🛒 Compra:</span>
-                                @if (!isEditing()) {
-                                    <p class="text-xs font-bold text-nutri-text/70">{{patient()?.comida_comprada}}</p>
-                                }
-                                @if (isEditing()) {
-                                    <input [(ngModel)]="patient().comida_comprada" class="flex-1 bg-nutri-rose/5 rounded px-2 py-0.5 text-xs outline-none">
-                                }
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-medium">🍳 Cocina:</span>
-                                @if (!isEditing()) {
-                                    <p class="text-xs font-bold text-nutri-text/70">{{patient()?.quien_cocina}}</p>
-                                }
-                                @if (isEditing()) {
-                                    <input [(ngModel)]="patient().quien_cocina" class="flex-1 bg-nutri-rose/5 rounded px-2 py-0.5 text-xs outline-none">
-                                }
-                            </div>
-                        </div>
-                    </div>
- 
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 space-y-4 relative overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Column 1: Preferencias (More Important) -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-nutri-rose/10 space-y-4 relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-20"></div>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Preferencias</h4>
+                                <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Preferencias Alimentarias</h4>
                                 @if (isEditing()) {
                                     <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
                                 }
                             </div>
-                            <div class="space-y-4">
-                                <div class="space-y-1.5">
-                                    <span class="font-black text-emerald-900 text-[10px] uppercase tracking-wider ml-2">Gusta:</span>
-                                    @if (!isEditing()) {
-                                        <p class="p-2.5 rounded-xl bg-emerald-100/20 text-xs font-bold text-emerald-900/60 leading-tight">{{patient()?.alimentos_preferidos || '---'}}</p>
-                                    }
-                                    @if (isEditing()) {
-                                        <input type="text" [(ngModel)]="patient().alimentos_preferidos" 
-                                               class="w-full p-2.5 rounded-xl bg-emerald-100/40 border border-emerald-200/50 text-xs font-bold text-emerald-900 outline-none focus:ring-2 focus:ring-emerald-500/20"
-                                               placeholder="¿Qué le gusta?">
-                                    }
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-4">
+                                    <div class="space-y-1.5">
+                                        <span class="font-black text-emerald-900 text-[10px] uppercase tracking-wider ml-2">Gusta:</span>
+                                        @if (!isEditing()) {
+                                            <p class="p-2.5 rounded-xl bg-emerald-100/20 text-xs font-bold text-emerald-900/60 leading-tight">{{patient()?.alimentos_preferidos || '---'}}</p>
+                                        }
+                                        @if (isEditing()) {
+                                            <input type="text" [(ngModel)]="patient().alimentos_preferidos" 
+                                                   class="w-full p-2.5 rounded-xl bg-emerald-100/40 border border-emerald-200/50 text-xs font-bold text-emerald-900 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                                                   placeholder="¿Qué le gusta?">
+                                        }
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <span class="font-black text-rose-900 text-[10px] uppercase tracking-wider ml-2">Evita:</span>
+                                        @if (!isEditing()) {
+                                            <p class="p-2.5 rounded-xl bg-rose-100/20 text-xs font-bold text-rose-900/60 leading-tight">{{patient()?.alimentos_no_agradan || '---'}}</p>
+                                        }
+                                        @if (isEditing()) {
+                                            <input type="text" [(ngModel)]="patient().alimentos_no_agradan" 
+                                                   class="w-full p-2.5 rounded-xl bg-rose-100/40 border border-rose-200/50 text-xs font-bold text-rose-900 outline-none focus:ring-2 focus:ring-rose-500/20"
+                                                   placeholder="¿Qué evita?">
+                                        }
+                                    </div>
                                 </div>
                                 <div class="space-y-1.5">
-                                    <span class="font-black text-rose-900 text-[10px] uppercase tracking-wider ml-2">Evita:</span>
-                                    @if (!isEditing()) {
-                                        <p class="p-2.5 rounded-xl bg-rose-100/20 text-xs font-bold text-rose-900/60 leading-tight">{{patient()?.alimentos_no_agradan || '---'}}</p>
-                                    }
-                                    @if (isEditing()) {
-                                        <input type="text" [(ngModel)]="patient().alimentos_no_agradan" 
-                                               class="w-full p-2.5 rounded-xl bg-rose-100/40 border border-rose-200/50 text-xs font-bold text-rose-900 outline-none focus:ring-2 focus:ring-rose-500/20"
-                                               placeholder="¿Qué evita?">
-                                    }
-                                </div>
-                                <div class="space-y-1.5 pt-2">
                                     <div class="flex items-center gap-2 ml-2">
                                         <mat-icon class="material-symbols-rounded text-[10px] text-yellow-700">warning</mat-icon>
                                         <span class="font-black text-yellow-900 text-[10px] uppercase tracking-wider">Alergias:</span>
                                     </div>
                                     @if (!isEditing()) {
-                                        <p class="p-2.5 rounded-xl bg-yellow-100/20 text-xs font-bold text-yellow-900/60 leading-tight">{{patient()?.alergias_alimentarias || '---'}}</p>
+                                        <p class="p-2.5 rounded-xl bg-yellow-100/20 text-xs font-bold text-yellow-900/60 leading-tight min-h-[100px]">{{patient()?.alergias_alimentarias || '---'}}</p>
                                     }
                                     @if (isEditing()) {
-                                        <input type="text" [(ngModel)]="patient().alergias_alimentarias" 
-                                               class="w-full p-2.5 rounded-xl bg-yellow-100/60 border border-yellow-200/50 text-xs font-bold text-yellow-900 outline-none focus:ring-2 focus:ring-yellow-500/20"
-                                               placeholder="¿Tiene alergias?">
+                                        <textarea [(ngModel)]="patient().alergias_alimentarias" 
+                                               class="w-full p-2.5 rounded-xl bg-yellow-100/60 border border-yellow-200/50 text-xs font-bold text-yellow-900 outline-none focus:ring-2 focus:ring-yellow-500/20 min-h-[100px] resize-none"
+                                               placeholder="¿Tiene alergias?"></textarea>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Logística / Compra (Less Important) -->
+                    <div class="lg:col-span-1 bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4 flex flex-col justify-center">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                                    <mat-icon class="material-symbols-rounded text-sm">shopping_cart</mat-icon>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Logística de Compra</h4>
+                                    @if (!isEditing()) {
+                                        <p class="text-xs font-bold text-nutri-text/70">{{patient()?.comida_comprada || '---'}}</p>
+                                    }
+                                    @if (isEditing()) {
+                                        <input [(ngModel)]="patient().comida_comprada" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30">
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 pt-4 border-t border-nutri-rose/[0.03]">
+                                <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                                    <mat-icon class="material-symbols-rounded text-sm">cooking</mat-icon>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">¿Quién prepara?</h4>
+                                    @if (!isEditing()) {
+                                        <p class="text-xs font-bold text-nutri-text/70">{{patient()?.quien_cocina || '---'}}</p>
+                                    }
+                                    @if (isEditing()) {
+                                        <input [(ngModel)]="patient().quien_cocina" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30">
                                     }
                                 </div>
                             </div>
