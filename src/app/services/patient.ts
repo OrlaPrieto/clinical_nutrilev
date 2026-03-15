@@ -38,13 +38,13 @@ export class PatientService {
     return resData;
   }
 
-  async deletePatient(email: string, nombre: string): Promise<any> {
+  async deletePatient(email: string, name: string): Promise<any> {
     let query = supabase.from('patients').delete();
     
     if (email) {
       query = query.eq('email', email);
     } else {
-      query = query.eq('nombre', nombre);
+      query = query.eq('nombre', name);
     }
 
     const { data, error } = await query;

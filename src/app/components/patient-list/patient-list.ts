@@ -95,11 +95,11 @@ export class PatientListComponent implements OnInit {
   groupPatients(data: Patient[]) {
     const grouped = data.reduce((acc: any, curr) => {
       const key = curr.email || curr.nombre;
-      // Si no existe el paciente o si la entrada actual es más reciente que la guardada
+      // If patient doesn't exist or current entry is more recent than the saved one
       if (!acc[key] || new Date(curr.fecha_hoy) > new Date(acc[key].fecha_hoy)) {
         acc[key] = { ...curr };
       }
-      // Asegurar que la fecha de actualización más reciente se conserve
+      // Ensure the most recent update date is kept
       if (curr.ultima_actualizacion && (!acc[key].ultima_actualizacion || new Date(curr.ultima_actualizacion) > new Date(acc[key].ultima_actualizacion))) {
         acc[key].ultima_actualizacion = curr.ultima_actualizacion;
       }
