@@ -76,7 +76,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <!-- Data Cards Compactas -->
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Nacimiento</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Nacimiento</span>
                         @if (!isEditing()) {
                             <p class="text-md font-bold">{{patient()?.fecha_nacimiento ? (patient()?.fecha_nacimiento | date:'dd/MM/yyyy') : '---'}}</p>
                         }
@@ -85,7 +85,7 @@
                         }
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Edad</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Edad</span>
                         @if (!isEditing()) {
                             <p class="text-md font-bold">{{patient()?.edad}} años</p>
                         }
@@ -94,7 +94,7 @@
                         }
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Género</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Género</span>
                         @if (!isEditing()) {
                             <p class="text-md font-bold">{{patient()?.genero || '---'}}</p>
                         }
@@ -103,7 +103,7 @@
                         }
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Estatura</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Estatura</span>
                         @if (!isEditing()) {
                             <p class="text-md font-bold">{{patient()?.estatura || '---'}} cm</p>
                         }
@@ -112,7 +112,7 @@
                         }
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                         <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Civil</span>
+                         <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Civil</span>
                          @if (!isEditing()) {
                              <p class="text-md font-bold">{{patient()?.estado_civil || '---'}}</p>
                          }
@@ -121,7 +121,7 @@
                          }
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Profesión</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Profesión</span>
                         @if (!isEditing()) {
                             <p class="text-sm font-medium">{{patient()?.profesion || '---'}}</p>
                         }
@@ -130,7 +130,7 @@
                         }
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm col-span-2 md:col-span-2">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Dirección</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Dirección</span>
                         @if (!isEditing()) {
                             <p class="text-sm font-medium leading-tight truncate">{{patient()?.direccion || '--'}}</p>
                         }
@@ -142,7 +142,7 @@
 
                 <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-4">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Motivo de Consulta</h4>
+                        <h4 class="text-nutri-rose font-black text-[10px] uppercase tracking-widest">Motivo de Consulta</h4>
                         @if (isEditing()) {
                             <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
                         }
@@ -173,7 +173,7 @@
                         <div class="flex gap-4 items-start">
                             <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">medical_services</mat-icon></div>
                             <div class="flex-1">
-                                <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Patologías</h4>
+                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Patologías</h4>
                                 @if (!isEditing()) {
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.antecedentes_patologicos || 'Ninguno'}}</p>
                                 }
@@ -185,7 +185,7 @@
                         <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
                             <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">favorite</mat-icon></div>
                             <div class="flex-1">
-                                <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Enfermedades</h4>
+                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Enfermedades</h4>
                                 @if (!isEditing()) {
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.enfermedades || 'Ninguno'}}</p>
                                 }
@@ -199,7 +199,7 @@
                         <div class="flex gap-4 items-start">
                             <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">edit_note</mat-icon></div>
                             <div class="flex-1">
-                                <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Med/Cirugías</h4>
+                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Med/Cirugías</h4>
                                 @if (!isEditing()) {
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.medicamentos || 'No'}} / {{patient()?.cirugias || 'No'}}</p>
                                 }
@@ -214,7 +214,7 @@
                         <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
                             <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">groups</mat-icon></div>
                             <div class="flex-1">
-                                <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Familiar</h4>
+                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Familiar</h4>
                                 @if (!isEditing()) {
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.antecedentes_familiares || 'Ninguno'}}</p>
                                 }
@@ -247,7 +247,7 @@
                     <!-- Habit Cards Compactas -->
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
                         <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">liquor</mat-icon>
-                        <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Alcohol</span>
+                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Alcohol</span>
                         @if (!isEditing()) {
                             <p class="text-xs font-bold">{{patient()?.alcohol || '---'}}</p>
                         }
@@ -257,7 +257,7 @@
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
                         <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">smoking_rooms</mat-icon>
-                        <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Tabaco</span>
+                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Tabaco</span>
                         @if (!isEditing()) {
                             <p class="text-xs font-bold">{{patient()?.tabaco || '---'}}</p>
                         }
@@ -267,7 +267,7 @@
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
                         <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">bedtime</mat-icon>
-                        <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Sueño</span>
+                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Sueño</span>
                         @if (!isEditing()) {
                             <p class="text-xs font-bold">{{patient()?.sueno || '---'}}</p>
                         }
@@ -277,7 +277,7 @@
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
                         <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">fitness_center</mat-icon>
-                        <span class="block text-[8px] font-bold text-nutri-rose/30 uppercase tracking-widest">Ejercicio</span>
+                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Ejercicio</span>
                         @if (!isEditing()) {
                             <p class="text-xs font-bold">{{patient()?.hace_ejercicio || '---'}}</p>
                         }
@@ -290,7 +290,7 @@
                 <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-6 relative overflow-hidden">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
                     <div class="flex items-center justify-between">
-                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Actividad Física y Horarios</h4>
+                        <h4 class="text-nutri-rose font-black text-[10px] uppercase tracking-widest">Actividad Física y Horarios</h4>
                         @if (isEditing()) {
                             <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
                         }
@@ -300,7 +300,7 @@
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
                                 <mat-icon class="material-symbols-rounded text-nutri-rose text-xs">bolt</mat-icon>
-                                <span class="text-[8px] font-bold text-nutri-text/40 uppercase tracking-widest">Actividad Física</span>
+                                <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Actividad Física</span>
                             </div>
                             @if (!isEditing()) {
                                 <p class="text-sm font-bold text-nutri-text/80">{{patient()?.hace_ejercicio}}</p>
@@ -323,7 +323,7 @@
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
                                 <mat-icon class="material-symbols-rounded text-nutri-rose text-xs">schedule</mat-icon>
-                                <span class="text-[8px] font-bold text-nutri-text/40 uppercase tracking-widest">Horarios y Actividad</span>
+                                <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Horarios y Actividad</span>
                             </div>
                             @if (!isEditing()) {
                                 <p class="text-sm border-l-2 border-nutri-rose/10 pl-4 py-2 text-nutri-text/70 leading-relaxed">{{patient()?.tipo_actividad_horario}}</p>
@@ -348,7 +348,7 @@
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-20"></div>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest">Preferencias Alimentarias</h4>
+                                <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest">Preferencias Alimentarias</h4>
                                 @if (isEditing()) {
                                     <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
                                 }
@@ -404,7 +404,7 @@
                                     <mat-icon class="material-symbols-rounded text-sm">shopping_cart</mat-icon>
                                 </div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">Logística de Compra</h4>
+                                    <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Logística de Compra</h4>
                                     @if (!isEditing()) {
                                         <p class="text-xs font-bold text-nutri-text/70">{{patient()?.comida_comprada || '---'}}</p>
                                     }
@@ -435,11 +435,11 @@
                 <div class="space-y-4">
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
-                        <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-4">Diario 24h (Resumen)</h4>
+                        <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest mb-4">Diario 24h (Resumen)</h4>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Desayuno</span>
+                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Desayuno</span>
                                 @if (!isEditing()) {
                                     <p class="text-xs font-medium">{{patient()?.diario_desayuno || '---'}}</p>
                                 }
@@ -448,7 +448,7 @@
                                 }
                             </div>
                             <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Colación (Mat)</span>
+                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Colación (Mat)</span>
                                 @if (!isEditing()) {
                                     <p class="text-xs font-medium">{{patient()?.diario_colacion_mat || '---'}}</p>
                                 }
@@ -457,7 +457,7 @@
                                 }
                             </div>
                             <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Comida</span>
+                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Comida</span>
                                 @if (!isEditing()) {
                                     <p class="text-xs font-medium">{{patient()?.diario_comida || '---'}}</p>
                                 }
@@ -466,7 +466,7 @@
                                 }
                             </div>
                             <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Colación (Vesp)</span>
+                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Colación (Vesp)</span>
                                 @if (!isEditing()) {
                                     <p class="text-xs font-medium">{{patient()?.diario_colacion_vesp || '---'}}</p>
                                 }
@@ -475,7 +475,7 @@
                                 }
                             </div>
                             <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Cena</span>
+                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Cena</span>
                                 @if (!isEditing()) {
                                     <p class="text-xs font-medium">{{patient()?.diario_cena || '---'}}</p>
                                 }
@@ -532,7 +532,7 @@
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-2">Peso Habitual</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Habitual</span>
                         @if (!isEditing()) {
                             <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/30">kg</span></p>
                         }
@@ -544,7 +544,7 @@
                         }
                     </div>
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-2">Peso Meta</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Meta</span>
                         @if (!isEditing()) {
                             <p class="text-2xl font-bold serif text-nutri-rose">{{patient()?.peso_meta || '---'}} <span class="text-xs font-normal text-nutri-rose/40">kg</span></p>
                         }
@@ -556,7 +556,7 @@
                         }
                     </div>
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
-                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-2">Cambios Recientes</span>
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Cambios Recientes</span>
                         @if (!isEditing()) {
                             <p class="text-sm font-medium">{{patient()?.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
                         }
