@@ -54,6 +54,38 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Backend Server
+
+To set up and run the Python Flask backend for menu processing, follow these steps:
+
+1. **Create a virtual environment (Recommended)**:
+   ```bash
+   python3 -m venv venv
+   ```
+
+2. **Activate the virtual environment**:
+   ```bash
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables**:
+   Create a `.env` file in the root directory and add your Gemini API key:
+   ```env
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+5. **Run the backend**:
+   ```bash
+   python api/index.py
+   ```
+
+The backend will be running on `http://127.0.0.1:5000`.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

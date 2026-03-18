@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { PatientListComponent } from './components/patient-list/patient-list';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +8,10 @@ import { PatientListComponent } from './components/patient-list/patient-list';
   imports: [RouterOutlet],
   template: '<router-outlet></router-outlet>',
 })
-export class App {
+export class App implements OnInit {
   title = 'clinical-nutrilev';
+
+  ngOnInit(): void {
+    injectSpeedInsights();
+  }
 }
