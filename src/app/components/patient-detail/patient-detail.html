@@ -582,6 +582,79 @@
                         }
                     </div>
                 </div>
+
+                <!-- HISTORIAL DE AVANCES -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Formulario Nuevo Registro -->
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-nutri-rose/10 shadow-sm space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
+                                <mat-icon class="material-symbols-rounded">add</mat-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold serif">Nuevo Avance</h3>
+                                <p class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Registrar medidas de hoy</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Peso (kg)</label>
+                                <input type="number" [(ngModel)]="newProgress().weight" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-sm font-bold border-none outline-none focus:ring-2 focus:ring-nutri-rose/10">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Grasa (%)</label>
+                                <input type="number" [(ngModel)]="newProgress().body_fat" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-sm font-bold border-none outline-none focus:ring-2 focus:ring-nutri-rose/10">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Músculo (kg)</label>
+                                <input type="number" [(ngModel)]="newProgress().muscle_mass" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-sm font-bold border-none outline-none focus:ring-2 focus:ring-nutri-rose/10">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Notas del avance</label>
+                            <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Comentarios sobre la evolución..."></textarea>
+                        </div>
+
+                        <button (click)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" class="w-full py-4 bg-nutri-rose text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-nutri-rose/20 active:scale-[0.98] transition-all disabled:opacity-50">
+                            {{ addingProgress() ? 'Registrando...' : 'Registrar Avance' }}
+                        </button>
+                    </div>
+
+                    <!-- Lista de Historial -->
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-nutri-rose/5 shadow-sm space-y-6 flex flex-col">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold serif">Evolución</h3>
+                            <span class="px-3 py-1 bg-nutri-bg rounded-full text-[9px] font-bold text-nutri-text/40 uppercase tracking-widest">{{ progressHistory().length }} Registros</span>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 space-y-4 scroll-premium">
+                            @if (progressHistory().length === 0) {
+                                <div class="h-full flex flex-col items-center justify-center opacity-20 py-20">
+                                    <mat-icon class="text-4xl">history</mat-icon>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest mt-2">Sin historial</p>
+                                </div>
+                            } @else {
+                                @for (record of progressHistory(); track record.id) {
+                                    <div class="p-4 rounded-2xl bg-nutri-bg/40 border border-nutri-rose/5 group hover:bg-white transition-all">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">{{ record.date | date:'dd MMM, yyyy' }}</span>
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex flex-col items-end">
+                                                    <span class="text-sm font-black">{{ record.weight }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (record.notes) {
+                                            <p class="text-[10px] text-nutri-text/50 italic leading-tight border-l-2 border-nutri-rose/10 pl-3 py-1">{{ record.notes }}</p>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         }
 

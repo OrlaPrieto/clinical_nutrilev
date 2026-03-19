@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, OnInit, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,14 +11,58 @@ import { PatientService } from '../../services/patient';
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.css'
 })
-export class PatientDetailComponent {
+export class PatientDetailComponent implements OnInit {
   patient = input<any | null>(null);
   activeTab = signal<number>(0);
   saving = signal<boolean>(false);
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
+  
+  // Progress signals
+  progressHistory = signal<any[]>([]);
+  newProgress = signal<any>({ weight: null, body_fat: null, muscle_mass: null, notes: '' });
+  addingProgress = signal<boolean>(false);
 
   constructor(private patientService: PatientService) {}
+
+  ngOnInit() {
+    this.loadProgress();
+  }
+
+  async loadProgress() {
+    const p = this.patient();
+    if (p && p.email) {
+      try {
+        const history = await this.patientService.getPatientProgress(p.email);
+        this.progressHistory.set(history);
+      } catch (err) {
+        console.error('Error loading progress history', err);
+      }
+    }
+  }
+
+  async addProgressRecord() {
+    const p = this.patient();
+    if (!p || !p.email) return;
+    
+    this.addingProgress.set(true);
+    try {
+      await this.patientService.addProgressEntry({
+        patient_email: p.email,
+        ...this.newProgress()
+      });
+      // Reset form and reload
+      this.newProgress.set({ weight: null, body_fat: null, muscle_mass: null, notes: '' });
+      await this.loadProgress();
+      this.showSuccess.set(true);
+      setTimeout(() => this.showSuccess.set(false), 3000);
+    } catch (err) {
+      console.error('Error adding progress entry', err);
+      alert('Error al agregar el registro de progreso');
+    } finally {
+      this.addingProgress.set(false);
+    }
+  }
 
   toggleEdit() {
     this.isEditing.update(val => !val);

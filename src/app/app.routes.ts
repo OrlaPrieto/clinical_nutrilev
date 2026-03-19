@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { 
@@ -9,13 +9,18 @@ export const routes: Routes = [
   { 
     path: 'dashboard', 
     loadComponent: () => import('./pages/patient-list/patient-list').then(c => c.PatientListPage), 
-    canActivate: [authGuard] 
+    canActivate: [roleGuard(['admin'])] 
+  },
+  { 
+    path: 'portal', 
+    loadComponent: () => import('./pages/portal-page/portal-page').then(c => c.PortalPage), 
+    canActivate: [roleGuard(['patient'])] 
   },
   { 
     path: 'menu-automation', 
     loadComponent: () => import('./shared/components/organisms/menu-automation/menu-automation-organism').then(c => c.MenuAutomationOrganism), 
-    canActivate: [authGuard] 
+    canActivate: [roleGuard(['admin'])] 
   },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];

@@ -18,38 +18,69 @@ export class AuthService {
 
   // Replacing RxJS BehaviorSubject with Angular 19 Signals
   public currentUser = signal<any>(null);
+  public userRole = signal<'admin' | 'patient' | null>(null);
 
   constructor() {
     const savedUser = localStorage.getItem('nutrilev_user');
+    const savedRole = localStorage.getItem('nutrilev_role');
     if (savedUser) {
       this.currentUser.set(JSON.parse(savedUser));
+      this.userRole.set(savedRole as any);
     }
   }
 
   async login(googleUser: any): Promise<boolean> {
-    if (this.AUTHORIZED_EMAILS.includes(googleUser.email.toLowerCase())) {
-      try {
-        // Enviar idToken a Supabase para iniciar sesión de forma segura
-        const { data, error } = await supabase.auth.signInWithIdToken({
-          provider: 'google',
-          token: googleUser.idToken
-        });
+    try {
+      const email = googleUser.email.toLowerCase();
+      
+      // Determinar rol provisionalmente
+      let role: 'admin' | 'patient' | null = null;
+      if (this.AUTHORIZED_EMAILS.includes(email)) {
+        role = 'admin';
+      } else {
+        // Verificar si es un paciente registrado
+        const { data: patient, error: pError } = await supabase
+          .from('patients')
+          .select('email')
+          .eq('email', email)
+          .maybeSingle();
         
-        if (error) {
-          console.error('Error authenticating with Supabase:', error);
-          return false;
+        if (patient) {
+          role = 'patient';
         }
+      }
 
-        localStorage.setItem('nutrilev_user', JSON.stringify(googleUser));
-        this.currentUser.set(googleUser);
-        this.router.navigate(['/dashboard']);
-        return true;
-      } catch (err) {
-        console.error('Unexpected error during login:', err);
+      if (!role) {
+        console.warn('Access denied for email:', email);
         return false;
       }
+
+      // Proceder con login de Supabase
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: googleUser.idToken
+      });
+      
+      if (error) {
+        console.error('Error authenticating with Supabase:', error);
+        return false;
+      }
+
+      localStorage.setItem('nutrilev_user', JSON.stringify(googleUser));
+      localStorage.setItem('nutrilev_role', role);
+      this.currentUser.set(googleUser);
+      this.userRole.set(role);
+
+      if (role === 'admin') {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.router.navigate(['/portal']);
+      }
+      return true;
+    } catch (err) {
+      console.error('Unexpected error during login:', err);
+      return false;
     }
-    return false;
   }
 
   async logout(): Promise<void> {
@@ -60,7 +91,9 @@ export class AuthService {
       console.error('Error signing out', e);
     } finally {
       localStorage.removeItem('nutrilev_user');
+      localStorage.removeItem('nutrilev_role');
       this.currentUser.set(null);
+      this.userRole.set(null);
       this.router.navigate(['/login']);
     }
   }

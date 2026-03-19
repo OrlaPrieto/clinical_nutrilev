@@ -51,4 +51,28 @@ export class PatientService {
     if (error) throw error;
     return data;
   }
+
+  // Progress Tracking Methods
+  async getPatientProgress(email: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('patient_progress')
+      .select('*')
+      .eq('patient_email', email)
+      .order('date', { ascending: false });
+      
+    if (error) throw error;
+    return data;
+  }
+
+  async addProgressEntry(entry: { patient_email: string, weight?: number, body_fat?: number, muscle_mass?: number, notes?: string }): Promise<any> {
+    const { data, error } = await supabase
+      .from('patient_progress')
+      .insert({
+        ...entry,
+        date: new Date().toISOString()
+      });
+      
+    if (error) throw error;
+    return data;
+  }
 }
