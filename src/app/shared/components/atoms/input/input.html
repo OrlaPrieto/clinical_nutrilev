@@ -1,6 +1,6 @@
 <div class="input-container" [class]="customClass()">
   @if (label()) {
-    <label class="block text-[10px] font-black text-nutri-text/30 uppercase tracking-[0.2em] mb-2 ml-2">
+    <label class="block text-[10px] font-black text-nutri-text/50 uppercase tracking-[0.2em] mb-2 ml-2">
       {{ label() }}
     </label>
   }
@@ -18,7 +18,7 @@
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       (input)="onInput($event)"
-      class="w-full h-14 bg-white/60 rounded-2xl border border-white focus:border-nutri-rose/20 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text placeholder:text-nutri-text/30"
+      class="w-full h-14 bg-white/60 rounded-2xl border border-white focus:border-nutri-rose/20 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text placeholder:text-nutri-text/50"
       [ngClass]="{
         'pl-12': icon(),
         'px-6': !icon(),

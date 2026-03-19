@@ -26,7 +26,7 @@ export class BadgeComponent {
       warning: 'bg-amber-50 text-amber-600 border border-amber-100',
       danger: 'bg-rose-50 text-rose-600 border border-rose-100',
       info: 'bg-blue-50 text-blue-600 border border-blue-100',
-      ghost: 'bg-white text-nutri-text/40 border border-nutri-rose/5'
+      ghost: 'bg-white text-nutri-text/60 border border-nutri-rose/5'
     };
 
     const sizes = {

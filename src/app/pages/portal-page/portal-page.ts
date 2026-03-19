@@ -25,6 +25,22 @@ export class PortalPage implements OnInit {
     return p.nombre.split(' ')[0];
   });
 
+  isMenuValid = computed(() => {
+    const p = this.patient();
+    if (!p || !p.menu_url || !p.menu_created_at) return false;
+    const createdAt = new Date(p.menu_created_at).getTime();
+    const now = Date.now();
+    const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
+    return diffDays <= 3;
+  });
+
+  openMenu() {
+    const p = this.patient();
+    if (p && p.menu_url) {
+      window.open(p.menu_url, '_blank');
+    }
+  }
+
   async ngOnInit() {
     const user = this.authService.user;
     if (user && user.email) {

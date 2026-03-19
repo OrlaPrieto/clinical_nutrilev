@@ -8,13 +8,42 @@
   <div class="bg-white p-12 rounded-[3.5rem] shadow-nutri border border-nutri-rose/5 space-y-8 text-center relative overflow-hidden">
     <div class="absolute -top-10 -right-10 w-32 h-32 bg-nutri-rose/5 rounded-full blur-2xl"></div>
     
-    <div class="space-y-2 relative">
-      <h2 class="text-2xl font-bold text-nutri-text">Acceso Restringido</h2>
-      <p class="text-sm text-nutri-text/40 font-medium">Inicia sesión con tu cuenta autorizada de Google para continuar.</p>
-    </div>
+    <div class="flex flex-col gap-6 py-4">
+      @if (!sent) {
+        <div class="space-y-4">
+          <div class="relative group">
+            <input type="email" [(ngModel)]="email" placeholder="tu@correo.com"
+                   class="w-full bg-nutri-rose/5 border border-nutri-rose/10 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-nutri-rose/20 transition-all placeholder:text-nutri-text/30">
+          </div>
+          
+          <button (click)="onMagicLink()" [disabled]="loading || !email.includes('@')"
+                  class="w-full bg-nutri-rose text-white rounded-[1.5rem] py-4 text-xs font-black uppercase tracking-widest shadow-lg shadow-nutri-rose/30 hover:scale-[1.02] disabled:opacity-50 disabled:scale-100 transition-all flex items-center justify-center gap-3">
+            @if (loading) {
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <span>Enviando...</span>
+            } @else {
+              <mat-icon class="material-symbols-rounded text-sm">mail</mat-icon>
+              <span>Enviar link de acceso</span>
+            }
+          </button>
+        </div>
+      } @else {
+        <div class="p-6 bg-emerald-50 border border-emerald-100 rounded-[2rem] text-center space-y-2 animate-fade-up">
+          <mat-icon class="material-symbols-rounded text-emerald-500 text-3xl">mark_email_read</mat-icon>
+          <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest">¡Link enviado!</p>
+          <p class="text-[10px] text-emerald-800/60 font-medium">Revisa tu bandeja de entrada para iniciar sesión.</p>
+        </div>
+      }
 
-    <div class="flex flex-col items-center justify-center gap-6 py-4">
-      <asl-google-signin-button type="standard" size="large" text="signin_with" shape="pill"></asl-google-signin-button>
+      <div class="flex items-center gap-4 py-2">
+        <div class="h-[1px] flex-1 bg-nutri-rose/10"></div>
+        <span class="text-[8px] font-black text-nutri-rose/30 uppercase tracking-widest">o también</span>
+        <div class="h-[1px] flex-1 bg-nutri-rose/10"></div>
+      </div>
+
+      <div class="flex justify-center">
+        <asl-google-signin-button type="standard" size="large" text="signin_with" shape="pill"></asl-google-signin-button>
+      </div>
       
       @if (errorMessage()) {
         <div class="p-4 bg-red-50 text-red-500 rounded-2xl text-xs font-bold border border-red-100 animate-shake">
@@ -31,7 +60,7 @@
   </div>
 
   <!-- Footer -->
-  <p class="text-center text-nutri-text/30 text-[10px] font-bold tracking-widest uppercase">
+  <p class="text-center text-nutri-text/50 text-[10px] font-bold tracking-widest uppercase">
     &copy; 2026 Nutrilev Premium Health
   </p>
 </div>

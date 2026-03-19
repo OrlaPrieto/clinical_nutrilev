@@ -18,13 +18,14 @@ export class PatientService {
   }
 
   async addPatientEntry(payload: any): Promise<any> {
-    const { action, email, ...data } = payload;
+    const { action, email, originalEmail, ...data } = payload;
     
     if (action === 'update') {
+      const filterEmail = originalEmail || email;
       const { data: resData, error } = await supabase
         .from('patients')
-        .update({ ...data, ultima_actualizacion: new Date().toISOString() })
-        .eq('email', email);
+        .update({ ...data, email, ultima_actualizacion: new Date().toISOString() })
+        .eq('email', filterEmail);
         
       if (error) throw error;
       return resData;

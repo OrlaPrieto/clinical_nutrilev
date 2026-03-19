@@ -21,81 +21,98 @@ export class AuthService {
   public userRole = signal<'admin' | 'patient' | null>(null);
 
   constructor() {
-    const savedUser = localStorage.getItem('nutrilev_user');
-    const savedRole = localStorage.getItem('nutrilev_role');
-    if (savedUser) {
-      this.currentUser.set(JSON.parse(savedUser));
-      this.userRole.set(savedRole as any);
+    this.initializeAuth();
+  }
+
+  private async initializeAuth() {
+    // Escuchar cambios de autenticación (Magic Link, Logout, etc)
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const role = await this.determineRole(session.user.email!);
+        if (role) {
+          this.currentUser.set(session.user);
+          this.userRole.set(role);
+          localStorage.setItem('nutrilev_role', role);
+          
+          // Redirección automática si estamos en login y venimos de un magic link
+          if (this.router.url.includes('/login')) {
+            this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+          }
+        }
+      } else if (event === 'SIGNED_OUT') {
+        this.clearLocalSession();
+      }
+    });
+
+    // Cargar sesión inicial
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      const role = await this.determineRole(session.user.email!);
+      this.currentUser.set(session.user);
+      this.userRole.set(role);
     }
+  }
+
+  private async determineRole(email: string): Promise<'admin' | 'patient' | null> {
+    const cleanEmail = email.toLowerCase();
+    
+    // 1. Check Admin whitelist
+    if (this.AUTHORIZED_EMAILS.includes(cleanEmail)) {
+      return 'admin';
+    }
+
+    // 2. Check Patients table
+    const { data: patient } = await supabase
+      .from('patients')
+      .select('email')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    return patient ? 'patient' : null;
   }
 
   async login(googleUser: any): Promise<boolean> {
     try {
-      const email = googleUser.email.toLowerCase();
-      
-      // Determinar rol provisionalmente
-      let role: 'admin' | 'patient' | null = null;
-      if (this.AUTHORIZED_EMAILS.includes(email)) {
-        role = 'admin';
-      } else {
-        // Verificar si es un paciente registrado
-        const { data: patient, error: pError } = await supabase
-          .from('patients')
-          .select('email')
-          .eq('email', email)
-          .maybeSingle();
-        
-        if (patient) {
-          role = 'patient';
-        }
-      }
+      const role = await this.determineRole(googleUser.email);
+      if (!role) return false;
 
-      if (!role) {
-        console.warn('Access denied for email:', email);
-        return false;
-      }
-
-      // Proceder con login de Supabase
-      const { data, error } = await supabase.auth.signInWithIdToken({
+      const { error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: googleUser.idToken
       });
       
-      if (error) {
-        console.error('Error authenticating with Supabase:', error);
-        return false;
-      }
-
-      localStorage.setItem('nutrilev_user', JSON.stringify(googleUser));
-      localStorage.setItem('nutrilev_role', role);
-      this.currentUser.set(googleUser);
-      this.userRole.set(role);
-
-      if (role === 'admin') {
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.router.navigate(['/portal']);
-      }
-      return true;
+      return !error;
     } catch (err) {
-      console.error('Unexpected error during login:', err);
+      console.error('Login error:', err);
       return false;
     }
+  }
+
+  async signInWithMagicLink(email: string): Promise<{error: any}> {
+    return await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin + '/login'
+      }
+    });
   }
 
   async logout(): Promise<void> {
     try {
       await supabase.auth.signOut();
-      await this.socialAuthService.signOut();
-    } catch (e) {
-      console.error('Error signing out', e);
+      try {
+        await this.socialAuthService.signOut();
+      } catch (e) {}
     } finally {
-      localStorage.removeItem('nutrilev_user');
-      localStorage.removeItem('nutrilev_role');
-      this.currentUser.set(null);
-      this.userRole.set(null);
+      this.clearLocalSession();
       this.router.navigate(['/login']);
     }
+  }
+
+  private clearLocalSession() {
+    localStorage.removeItem('nutrilev_role');
+    this.currentUser.set(null);
+    this.userRole.set(null);
   }
 
   isLoggedIn(): boolean {
@@ -104,5 +121,11 @@ export class AuthService {
 
   get user() {
     return this.currentUser();
+  }
+
+  get accessToken(): string | null {
+    // Supabase recovers session from cookies/storage automatically
+    // But we can also get it from the client
+    return (supabase.auth as any).session?.access_token || null;
   }
 }

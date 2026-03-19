@@ -11,6 +11,12 @@
 
             <!-- Global Action Buttons (Responsive positioning to avoid overlap) -->
             <div class="relative md:absolute md:top-2 md:right-24 flex gap-2 z-50 mb-4 md:mb-0">
+                <input type="file" #menuUpload (change)="uploadMenu($event)" accept=".pdf" class="hidden">
+                <button (click)="menuUpload.click()" [disabled]="isUploadingMenu()"
+                        class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-rose text-white font-bold transition-all duration-300 shadow-sm disabled:opacity-50 active:scale-95">
+                    <mat-icon class="material-symbols-rounded" [ngClass]="{'animate-spin': isUploadingMenu()}">{{ isUploadingMenu() ? 'sync' : 'upload_file' }}</mat-icon>
+                    <span class="text-[11px] uppercase tracking-widest">{{ isUploadingMenu() ? 'Subiendo...' : 'Subir Menú' }}</span>
+                </button>
                 <button (click)="toggleEdit()" 
                         class="flex items-center gap-2 px-4 py-2 rounded-2xl border-2 font-bold transition-all duration-300 shadow-sm"
                         [ngClass]="isEditing() 
@@ -49,6 +55,30 @@
         </div>
     </div>
 
+    <!-- Link de Descarga Reciente -->
+    @if (lastGeneratedUrl()) {
+        <div class="px-6 py-4 bg-nutri-rose/5 border-b border-nutri-rose/10 animate-fade-down flex flex-col md:flex-row items-center justify-center gap-4">
+            <div class="flex items-center gap-2">
+                <mat-icon class="material-symbols-rounded text-nutri-rose text-lg">link</mat-icon>
+                <span class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Link de descarga listo:</span>
+            </div>
+            
+            <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-nutri-rose/20 shadow-sm w-full md:w-auto overflow-hidden">
+                <code class="text-[10px] font-mono text-nutri-text/60 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
+                <button (click)="copyToClipboard()" 
+                        class="shrink-0 flex items-center gap-2 px-4 py-1.5 rounded-xl bg-nutri-rose text-white transition-all active:scale-95 hover:bg-nutri-rose/90 shadow-sm shadow-nutri-rose/20">
+                    <mat-icon class="material-symbols-rounded text-[16px]">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+                    <span class="text-[9px] font-bold uppercase tracking-wider">{{ copied() ? 'Copiado' : 'Copiar' }}</span>
+                </button>
+            </div>
+            
+            <button (click)="lastGeneratedUrl.set(null)" 
+                    class="p-2 rounded-full hover:bg-nutri-rose/5 text-nutri-rose/30 hover:text-nutri-rose/60 transition-colors">
+                <mat-icon class="material-symbols-rounded text-md">close</mat-icon>
+            </button>
+        </div>
+    }
+
     <!-- Navigation Tabs Compactas (Fixed Header) -->
     <div class="flex-none bg-white border-b border-nutri-rose/5">
         <div class="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto scrollbar-hide">
@@ -56,7 +86,7 @@
                 @for (tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Seguimiento', 'Notas']; track tab; let i = $index) {
                     <button (click)="activeTab.set(i)"
                             class="relative py-1 text-[10px] md:text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
-                            [ngClass]="activeTab() === i ? 'text-nutri-rose' : 'text-nutri-text/30 hover:text-nutri-text/60'">
+                            [ngClass]="activeTab() === i ? 'text-nutri-rose' : 'text-nutri-text/50 hover:text-nutri-text/60'">
                         {{tab}}
                         @if (activeTab() === i) {
                              <div class="absolute -bottom-3 left-0 right-0 h-0.5 bg-nutri-rose rounded-full animate-fade-in"></div>
@@ -419,7 +449,7 @@
                                     <mat-icon class="material-symbols-rounded text-sm">cooking</mat-icon>
                                 </div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/40 mb-1">¿Quién prepara?</h4>
+                                    <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/60 mb-1">¿Quién prepara?</h4>
                                     @if (!isEditing()) {
                                         <p class="text-xs font-bold text-nutri-text/70">{{patient()?.quien_cocina || '---'}}</p>
                                     }
@@ -500,7 +530,7 @@
                             <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Suplementos</h4>
                             <div class="flex flex-col gap-2">
                                 @if (!isEditing()) {
-                                    <div class="text-sm font-bold">{{patient()?.suplementos_si_no === 'Si' ? '✅ Sí' : '❌ No'}} <span class="font-normal text-xs text-nutri-text/40 ml-2">{{patient()?.suplementos_cuales}}</span></div>
+                                    <div class="text-sm font-bold">{{patient()?.suplementos_si_no === 'Si' ? '✅ Sí' : '❌ No'}} <span class="font-normal text-xs text-nutri-text/60 ml-2">{{patient()?.suplementos_cuales}}</span></div>
                                 }
                                 @if (isEditing()) {
                                     <div class="flex items-center gap-3">
@@ -534,12 +564,12 @@
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
                         <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Habitual</span>
                         @if (!isEditing()) {
-                            <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/30">kg</span></p>
+                            <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/50">kg</span></p>
                         }
                         @if (isEditing()) {
                             <div class="flex items-center gap-2">
                                 <input [(ngModel)]="patient().peso_habitual" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center">
-                                <span class="text-xs font-normal text-nutri-text/30">kg</span>
+                                <span class="text-xs font-normal text-nutri-text/50">kg</span>
                             </div>
                         }
                     </div>
@@ -593,7 +623,7 @@
                             </div>
                             <div>
                                 <h3 class="text-xl font-bold serif">Nuevo Avance</h3>
-                                <p class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Registrar medidas de hoy</p>
+                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Registrar medidas de hoy</p>
                             </div>
                         </div>
 
@@ -626,7 +656,7 @@
                     <div class="bg-white p-8 rounded-[2.5rem] border border-nutri-rose/5 shadow-sm space-y-6 flex flex-col">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-bold serif">Evolución</h3>
-                            <span class="px-3 py-1 bg-nutri-bg rounded-full text-[9px] font-bold text-nutri-text/40 uppercase tracking-widest">{{ progressHistory().length }} Registros</span>
+                            <span class="px-3 py-1 bg-nutri-bg rounded-full text-[9px] font-bold text-nutri-text/60 uppercase tracking-widest">{{ progressHistory().length }} Registros</span>
                         </div>
 
                         <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 space-y-4 scroll-premium">
@@ -664,7 +694,7 @@
                 <div class="flex items-center justify-between bg-white p-4 rounded-3xl border border-nutri-rose/5 shadow-sm">
                     <div class="space-y-0.5">
                         <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
-                        <p class="text-[9px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronización automática activa</p>
+                        <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Sincronización automática activa</p>
                     </div>
                     <button class="btn-primary" [disabled]="saving()" (click)="saveChanges()">
                         <mat-icon class="material-symbols-rounded mr-2" [ngClass]="{'animate-spin': saving()}">{{ saving() ? 'sync' : 'save' }}</mat-icon>
@@ -693,7 +723,7 @@
             </div>
             <div class="space-y-0.5">
                 <p class="font-bold text-nutri-text text-sm">Cambios Guardados</p>
-                <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest">Sincronizado con Supabase</p>
+                <p class="text-[10px] font-bold text-nutri-text/50 uppercase tracking-widest">Sincronizado con Supabase</p>
             </div>
         </div>
     }
@@ -703,7 +733,7 @@
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg border border-nutri-rose/10 transition-all" [ngClass]="patient()?.dado_de_baja ? 'bg-rose-50 border-rose-200' : ''">
                 <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" id="activeToggle" class="accent-nutri-rose w-4 h-4 cursor-pointer">
-                <label for="activeToggle" class="text-[10px] font-black uppercase tracking-widest cursor-pointer" [ngClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-nutri-text/40'">
+                <label for="activeToggle" class="text-[10px] font-black uppercase tracking-widest cursor-pointer" [ngClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-nutri-text/60'">
                     {{ patient()?.dado_de_baja ? 'Paciente Dado de Baja' : 'Dar de Baja' }}
                 </label>
             </div>

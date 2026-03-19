@@ -7,7 +7,7 @@
     <p class="text-md font-bold text-nutri-text">
       {{ value() ? (type() === 'date' ? (value() | date:'dd/MM/yyyy') : value()) : '---' }}
       @if (value() && suffix()) {
-        <span class="text-[10px] text-nutri-text/40 ml-1 font-medium">{{ suffix() }}</span>
+        <span class="text-[10px] text-nutri-text/60 ml-1 font-medium">{{ suffix() }}</span>
       }
     </p>
   } @else {

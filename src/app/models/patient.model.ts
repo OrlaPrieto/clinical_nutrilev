@@ -51,4 +51,6 @@ export interface Patient {
   notas: string;
   ultima_actualizacion: string;
   dado_de_baja: boolean;
+  menu_url?: string;
+  menu_created_at?: string;
 }

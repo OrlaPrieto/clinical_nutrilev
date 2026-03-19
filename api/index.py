@@ -16,6 +16,12 @@ from google.auth.transport import requests as google_requests
 from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import urllib.request
+import urllib.parse
+from datetime import datetime, timezone, timedelta
+import json
+import resend 
+import jwt
 
 load_dotenv()
 
@@ -1049,38 +1055,69 @@ from flask import request, jsonify
 def require_google_auth(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # En development local o producción, chequear header
+        if request.method == 'OPTIONS':
+            return f(*args, **kwargs)
+        
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'Falta el token de autorización (Bearer Token)'}), 401
+            return jsonify({'error': 'Falta el token de autorización'}), 401
         
         token = auth_header.split(' ')[1]
+        email = None
+
+        # 1. Intentar como Google IdToken
         try:
-            # Especificar el Request object de google-auth
-            # En un entorno real, deberías pasar el CLIENT_ID de tu login de Google a id_token.verify_oauth2_token()
-            # Como puede depender del env, validaremos que fue emitido por Google y la firma es válida:
             idinfo = id_token.verify_oauth2_token(token, google_requests.Request())
-            
-            # Verificar si el email está autorizado
             email = idinfo.get('email', '').lower()
-            if email not in AUTHORIZED_EMAILS:
-                return jsonify({'error': f'Acceso denegado para {email}'}), 403
+        except Exception:
+            # 2. Si falla Google, intentar como Supabase JWT
+            supabase_secret = os.environ.get("SUPABASE_JWT_SECRET")
             
-            # Guardamos info en request context por si se necesitara usar después
-            request.user_email = email
-            
-        except ValueError as e:
-            # Invalid token
-            return jsonify({'error': 'Token inválido', 'details': str(e)}), 401
-            
+            # Verificación OFFLINE si el secreto está configurado
+            if supabase_secret and supabase_secret != "tu_secreto_aqui_para_verificar_tokens_offline":
+                try:
+                    # Supabase usa algoritmos HS256 por defecto
+                    payload = jwt.decode(token, supabase_secret, algorithms=["HS256"], audience="authenticated")
+                    email = payload.get("email", "").lower()
+                except Exception as e:
+                    return jsonify({'error': 'Token de Supabase inválido (Offline)', 'details': str(e)}), 401
+            else:
+                # FALLBACK: Verificación vía API de Supabase (más lento)
+                try:
+                    supabase_url = os.environ.get("VITE_SUPABASE_URL", "https://zjkqyqwhmqqtrknxxryk.supabase.co")
+                    supabase_key = os.environ.get("VITE_SUPABASE_ANON_KEY", "sb_publishable_vb_QCq6e74XxWRwtsyLEgA__qnd93_j")
+                    
+                    req = urllib.request.Request(
+                        f"{supabase_url}/auth/v1/user",
+                        headers={
+                            "Authorization": f"Bearer {token}",
+                            "apikey": supabase_key
+                        }
+                    )
+                    with urllib.request.urlopen(req) as response:
+                        res_data = json.loads(response.read().decode())
+                        email = res_data.get("email", "").lower()
+                except Exception as e:
+                    return jsonify({'error': 'Token inválido o expirado (API Fallback)', 'details': str(e)}), 401
+        
+        if not email:
+            return jsonify({'error': 'No se pudo obtener el email del token'}), 401
+
+        # Verificar si el email está autorizado (Administradores)
+        if email not in AUTHORIZED_EMAILS:
+            return jsonify({'error': f'Acceso denegado para {email}'}), 403
+        
+        request.user_email = email
         return f(*args, **kwargs)
     return decorated_function
 
 
-@app.route('/api/process-menu', methods=['POST'])
-@app.route('/process-menu', methods=['POST'])
+@app.route('/api/process-menu', methods=['POST', 'OPTIONS'])
+@app.route('/process-menu', methods=['POST', 'OPTIONS'])
 @require_google_auth
 def process_menu():
+    if request.method == 'OPTIONS':
+        return '', 200
     if 'file' not in request.files:
         return jsonify({"error": "No se recibió ningún archivo"}), 400
 
@@ -1167,5 +1204,138 @@ def root():
     return jsonify({"message": "Nutrilev API is running"}), 200
 
 
+@app.route('/api/cron/cleanup-menus', methods=['GET', 'POST'])
+def cleanup_menus():
+    try:
+        supabase_url = 'https://zjkqyqwhmqqtrknxxryk.supabase.co'
+        supabase_key = 'sb_publishable_vb_QCq6e74XxWRwtsyLEgA__qnd93_j'
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}"
+        }
+        
+        three_days_ago = (datetime.now(timezone.utc) - timedelta(days=3)).isoformat()
+        
+        url = f"{supabase_url}/rest/v1/patients?select=email,menu_url&menu_created_at=lt.{urllib.parse.quote(three_days_ago)}"
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req) as response:
+            patients = json.loads(response.read().decode())
+            
+        deleted_count = 0
+        
+        for p in patients:
+            email = p.get("email")
+            if not email:
+                continue
+                
+            file_name = f"menu_{email}.pdf"
+            
+            try:
+                del_storage_url = f"{supabase_url}/storage/v1/object/patient_menus/{urllib.parse.quote(file_name)}"
+                req_del = urllib.request.Request(del_storage_url, headers=headers, method='DELETE')
+                with urllib.request.urlopen(req_del) as resp_del:
+                    pass
+            except Exception as e:
+                print(f"Error deleting storage file {file_name}: {e}")
+            
+            try:
+                update_url = f"{supabase_url}/rest/v1/patients?email=eq.{urllib.parse.quote(email)}"
+                update_headers = {**headers, "Content-Type": "application/json", "Prefer": "return=minimal"}
+                req_update = urllib.request.Request(update_url, data=json.dumps({"menu_url": None, "menu_created_at": None}).encode('utf-8'), headers=update_headers, method='PATCH')
+                with urllib.request.urlopen(req_update) as resp_update:
+                    pass
+            except Exception as e:
+                print(f"Error updating patient {email}: {e}")
+                
+            deleted_count += 1
+            
+        return jsonify({"status": "success", "cleaned_menus": deleted_count}), 200
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+resend.api_key = os.environ.get("RESEND_API_KEY", "")
+
+@app.route('/api/notify-menu', methods=['POST', 'OPTIONS'])
+@limiter.limit("50 per day", methods=["POST"])
+@require_google_auth
+def notify_menu():
+    if request.method == 'OPTIONS':
+        return '', 200
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        email = data.get('email', '').strip()
+        nombre = data.get('nombre', 'Paciente').strip()
+        menu_url = data.get('menu_url')
+        
+        print(f"[Email] Intentando enviar a: '{email}' (URL: {menu_url is not None})")
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+            
+        if not resend.api_key:
+            return jsonify({'error': 'Resend API Key is missing. Email skipped.'}), 500
+
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+        </head>
+        <body style="font-family: 'Inter', -apple-system, sans-serif; background-color: #faf9f6; padding: 20px; color: #444;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 25px rgba(255, 65, 248, 0.05);">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #ff41f8; font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin: 0;">Nutrilev</h1>
+                </div>
+                
+                <h2 style="font-size: 20px; color: #222; margin-bottom: 15px; font-weight: 600;">¡Hola, {nombre}!</h2>
+                <p style="font-size: 15px; line-height: 1.6; margin-bottom: 25px; color: #555;">
+                    Tu especialista en nutrición acaba de subir tu nuevo plan alimenticio estructurado a tu portal.
+                </p>
+                
+                <div style="text-align: center; margin: 35px 0;">
+                    {f'<a href="{menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px;">Descargar Plan PDF</a><br>' if menu_url else ''}
+                    <a href="https://app.clinicanutrilev.com/portal" style="color: #ff41f8; text-decoration: none; font-size: 14px; font-weight: 500;">
+                        O ingresa a tu Portal »
+                    </a>
+                </div>
+                
+                <div style="background-color: #fdf5ff; border: 1px solid #ffd9fd; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+                    <p style="font-size: 13px; margin: 0; line-height: 1.5; color: #b32eb0;">
+                        <strong>⚠️ Aviso de Privacidad:</strong> Por seguridad de tu expediente, el menú estará disponible para previsualización y descarga únicamente durante <strong>3 días</strong>. Asegúrate de guardarlo localmente.
+                    </p>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid #f0f0f0; margin: 30px 0;">
+                <p style="font-size: 11px; color: #999; text-align: center; line-height: 1.5;">
+                    Este es un correo automático generado por la plataforma clínica Nutrilev.<br>Por favor no respondas a este mensaje.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+
+        email_from = os.environ.get("EMAIL_FROM", "onboarding@resend.dev")
+        
+        response = resend.Emails.send({
+            "from": f"Nutrilev <{email_from}>",
+            "to": [email],
+            "subject": "🍏 ¡Tu plan nutricional está listo!",
+            "html": html_content
+        })
+        
+        return jsonify({'success': True, 'data': response}), 200
+        
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return jsonify({'error': str(e)}), 500
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)

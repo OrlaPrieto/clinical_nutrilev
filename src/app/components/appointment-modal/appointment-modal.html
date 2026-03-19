@@ -1,5 +1,5 @@
-<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-nutri-text/40 backdrop-blur-md animate-fade-in" (click)="close()">
-  <div class="bg-white w-full max-w-5xl rounded-[3rem] shadow-2xl border border-nutri-rose/10 pointer-events-auto animate-scale-up overflow-hidden" (click)="$event.stopPropagation()">
+<div class="fixed inset-0 z-[100] flex flex-col justify-end md:items-center md:justify-center p-0 pt-12 md:p-4 bg-nutri-text/60 backdrop-blur-md animate-fade-in" (click)="close()">
+  <div class="bg-white w-full max-w-4xl rounded-t-[2.5rem] rounded-b-none md:rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto animate-scale-up border border-nutri-rose/10 flex flex-col h-full md:h-auto max-h-[92vh]" (click)="$event.stopPropagation()">
     
     <app-appointment-calendar
       [patientName]="patientName"

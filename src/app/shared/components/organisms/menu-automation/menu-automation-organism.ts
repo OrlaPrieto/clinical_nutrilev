@@ -47,7 +47,7 @@ export class MenuAutomationOrganism {
       formData.append('api_key', this.apiKey);
     }
 
-    const token = this.authService.user?.idToken;
+    const token = this.authService.accessToken;
     let headers = {};
     if (token) {
       headers = { 'Authorization': `Bearer ${token}` };

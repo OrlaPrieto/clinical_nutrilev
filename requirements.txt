@@ -7,3 +7,6 @@ flask
 flask-cors
 python-dotenv
 openai
+resend==2.1.0
+PyJWT
+

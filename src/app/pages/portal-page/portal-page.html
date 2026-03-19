@@ -9,7 +9,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-bold serif leading-tight">Hola, {{ firstName() }}</h1>
-                        <p class="text-[10px] uppercase tracking-widest font-bold text-nutri-text/40">Tu Portal de Bienestar</p>
+                        <p class="text-[10px] uppercase tracking-widest font-bold text-nutri-text/60">Tu Portal de Bienestar</p>
                     </div>
                 </div>
                 <button (click)="logout()" class="px-4 py-2 rounded-xl border border-nutri-rose/20 text-nutri-rose text-[10px] font-bold uppercase tracking-widest hover:bg-nutri-rose/5 transition-all">
@@ -33,7 +33,7 @@
                         <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 rounded-full"></div>
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">Tu Objetivo</span>
-                            <h2 class="text-4xl font-bold serif">{{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/30">kg</span></h2>
+                            <h2 class="text-4xl font-bold serif">{{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50">kg</span></h2>
                         </div>
                         <p class="text-xs text-nutri-text/50 mt-4 leading-relaxed italic">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
                     </div>
@@ -60,7 +60,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-2xl font-bold serif">Tu Historial de Avances</h3>
-                            <p class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-widest mt-1">Registros de peso y mediciones</p>
+                            <p class="text-[10px] font-bold text-nutri-text/50 uppercase tracking-widest mt-1">Registros de peso y mediciones</p>
                         </div>
                     </div>
 
@@ -75,23 +75,23 @@
                                 <div class="flex items-center gap-6 p-6 rounded-2xl hover:bg-nutri-bg/50 transition-all border border-transparent hover:border-nutri-rose/10 group">
                                     <div class="w-12 h-12 rounded-2xl bg-nutri-bg flex flex-col items-center justify-center group-hover:bg-white transition-all shadow-sm">
                                         <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ entry.date | date:'dd' }}</span>
-                                        <span class="text-[8px] font-black uppercase text-nutri-text/30 leading-none mt-1">{{ entry.date | date:'MMM' }}</span>
+                                        <span class="text-[8px] font-black uppercase text-nutri-text/50 leading-none mt-1">{{ entry.date | date:'MMM' }}</span>
                                     </div>
                                     <div class="flex-1">
                                         <div class="flex items-center gap-4">
                                             <div class="flex items-baseline gap-1">
                                                 <span class="text-xl font-bold serif">{{ entry.weight }}</span>
-                                                <span class="text-[10px] font-bold text-nutri-text/30 uppercase">kg</span>
+                                                <span class="text-[10px] font-bold text-nutri-text/50 uppercase">kg</span>
                                             </div>
                                             @if (entry.body_fat) {
                                                 <div class="h-4 w-px bg-nutri-rose/10"></div>
                                                 <div class="flex items-baseline gap-1">
                                                     <span class="text-md font-bold text-nutri-rose/60">{{ entry.body_fat }}%</span>
-                                                    <span class="text-[9px] font-bold text-nutri-text/30 uppercase">grasa</span>
+                                                    <span class="text-[9px] font-bold text-nutri-text/50 uppercase">grasa</span>
                                                 </div>
                                             }
                                         </div>
-                                        <p class="text-[10px] text-nutri-text/40 mt-1 italic">{{ entry.notes || 'Consulta de seguimiento rutinaria' }}</p>
+                                        <p class="text-[10px] text-nutri-text/60 mt-1 italic">{{ entry.notes || 'Consulta de seguimiento rutinaria' }}</p>
                                     </div>
                                     <div class="hidden md:block">
                                         <i class="pi pi-chevron-right text-nutri-rose/20 group-hover:translate-x-1 transition-all"></i>
@@ -106,18 +106,30 @@
                 </div>
 
                 <!-- Sección Nutrición -->
-                <div class="bg-emerald-50/30 p-8 rounded-[3rem] border border-emerald-100 shadow-sm flex flex-col md:flex-row items-center gap-8">
-                    <div class="w-20 h-20 rounded-3xl bg-emerald-500 text-white flex items-center justify-center text-3xl shadow-lg shadow-emerald-200">
-                        <i class="pi pi-file-pdf"></i>
+                @if (isMenuValid()) {
+                    <div class="bg-emerald-50/30 p-8 rounded-[3rem] border border-emerald-100 shadow-sm flex flex-col md:flex-row items-center gap-8">
+                        <div class="w-20 h-20 rounded-3xl bg-emerald-500 text-white flex items-center justify-center text-3xl shadow-lg shadow-emerald-200">
+                            <i class="pi pi-file-pdf"></i>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-xl font-bold serif text-emerald-900">Tu Plan Nutricional Actual</h3>
+                            <p class="text-sm text-emerald-800/60 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. (Disponible por 3 días)</p>
+                        </div>
+                        <button (click)="openMenu()" class="px-8 py-3 bg-emerald-500 text-white font-bold rounded-2xl shadow-xl shadow-emerald-200 hover:scale-105 transition-all text-xs uppercase tracking-widest">
+                            Descargar PDF
+                        </button>
                     </div>
-                    <div class="flex-1 text-center md:text-left">
-                        <h3 class="text-xl font-bold serif text-emerald-900">Tu Plan Nutricional Actual</h3>
-                        <p class="text-sm text-emerald-800/60 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión.</p>
+                } @else {
+                    <div class="bg-nutri-bg/50 p-8 rounded-[3rem] border border-nutri-rose/10 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-12">
+                        <div class="w-16 h-16 rounded-2xl bg-nutri-bg shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
+                            <i class="pi pi-file-excel"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold serif text-nutri-text/60">No hay plan activo</h3>
+                            <p class="text-xs text-nutri-text/60 mt-1 max-w-sm mx-auto">Tu menú nutricional aparecerá aquí cuando sea asignado, y estará disponible por 3 días para su descarga.</p>
+                        </div>
                     </div>
-                    <button class="px-8 py-3 bg-emerald-500 text-white font-bold rounded-2xl shadow-xl shadow-emerald-200 hover:scale-105 transition-all text-xs uppercase tracking-widest">
-                        Ver Plan
-                    </button>
-                </div>
+                }
             }
         </main>
 
@@ -138,7 +150,7 @@
         <i class="pi pi-user-minus text-5xl text-nutri-rose/20"></i>
         <div class="space-y-2">
             <h2 class="text-2xl font-bold serif">Expediente no encontrado</h2>
-            <p class="text-xs font-bold text-nutri-text/40 uppercase tracking-widest max-w-xs mx-auto">No hemos podido localizar un expediente asociado a tu correo electrónico.</p>
+            <p class="text-xs font-bold text-nutri-text/60 uppercase tracking-widest max-w-xs mx-auto">No hemos podido localizar un expediente asociado a tu correo electrónico.</p>
         </div>
         <button (click)="logout()" class="px-8 py-3 bg-nutri-rose text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-xl shadow-nutri-rose/20">
             Regresar al Login
