@@ -1,0 +1,10 @@
+Flask
+Flask-Cors
+Flask-Limiter
+python-docx
+google-genai
+python-dotenv
+resend
+Pillow
+lxml
+requests

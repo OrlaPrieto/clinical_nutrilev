@@ -1,91 +1,79 @@
-# ClinicalNutrilev
+# Clinical Nutrilev - Arquitectura Híbrida 🚀
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
+Este repositorio contiene la plataforma Clinical Nutrilev, organizada como un **Monorepo** con tres servicios principales que trabajan en conjunto.
 
-## Development server
+## 🏗️ Estructura del Proyecto
 
-To start a local development server, run:
+- **`apps/frontend`**: Aplicación Angular (Interfaz de usuario).
+- **`apps/api-main`**: Backend NestJS (TypeScript). Es el gateway principal que maneja Autenticación, Pacientes y actúa como puente.
+- **`apps/api-python`**: Microservicio Flask (Python). Se encarga exclusivamente del procesamiento de IA (Gemini) y generación de documentos `.docx`.
 
-```bash
-ng serve
+---
+
+## 🛠️ Configuración Paso a Paso
+
+### 1. Requisitos Previos
+- **Node.js**: v18 o superior.
+- **Python**: v3.9 o superior.
+- **Supabase**: Proyecto configurado con las tablas `patients` y `patient_progress`.
+
+### 2. Variables de Entorno
+Crea un archivo `.env` en la **raíz** del proyecto (fuera de la carpeta `apps`) con el siguiente contenido:
+
+```env
+# Supabase (Frontend & NestJS)
+VITE_SUPABASE_URL=tu_url_de_supabase
+VITE_SUPABASE_ANON_KEY=tu_anon_key
+SUPABASE_JWT_SECRET=tu_jwt_secret
+
+# AI & Email (Python)
+GEMINI_API_KEY=tu_api_key_de_gemini
+OPENAI_API_KEY=tu_api_key_de_openai
+RESEND_API_KEY=tu_api_key_de_resend
+EMAIL_FROM=tu_correo_configurado
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 3. Instalación de Dependencias
+Ejecuta los siguientes comandos desde la **raíz** del proyecto:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+#### Dependencias de Node (Frontend y NestJS)
 ```bash
-ng generate component component-name
+npm install
+```
+*Este comando instalará `concurrently` en la raíz y configurará los enlaces de los workspaces.*
+
+#### Dependencias de Python
+```bash
+cd apps/api-python
+python3 -m venv venv
+source venv/bin/activate  # (En Windows: venv\Scripts\activate)
+pip install -r requirements.txt
+cd ../..
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
+## 🚀 Ejecución del Proyecto
+
+### Opción A: Arranque Unificado (Recomendado)
+Desde la raíz del proyecto, ejecuta:
 ```bash
-ng generate --help
+npm start
 ```
+Este comando iniciará simultáneamente:
+- **Frontend**: `http://localhost:4200`
+- **NestJS Gateway**: `http://localhost:3000`
+- **Python Flask**: `http://localhost:8000`
 
-## Building
+### Opción B: Arranque Individual
+Si prefieres ver los logs por separado, puedes abrir 3 terminales:
+1. **Frontend**: `npm start --workspace=apps/frontend`
+2. **NestJS**: `npm run start:dev --workspace=apps/api-main`
+3. **Python**: `cd apps/api-python && source venv/bin/activate && python index.py`
 
-To build the project run:
+---
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Backend Server
-
-To set up and run the Python Flask backend for menu processing, follow these steps:
-
-1. **Create a virtual environment (Recommended)**:
-   ```bash
-   python3 -m venv venv
-   ```
-
-2. **Activate the virtual environment**:
-   ```bash
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment variables**:
-   Create a `.env` file in the root directory and add your Gemini API key:
-   ```env
-   GEMINI_API_KEY=your_api_key_here
-   ```
-
-5. **Run the backend**:
-   ```bash
-   python api/index.py
-   ```
-
-The backend will be running on `http://127.0.0.1:5000`.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📝 Notas Adicionales
+- La aplicación de Angular se comunica con NestJS (Puerto 3000).
+- NestJS redirige las peticiones de IA a Python (Puerto 8000).
+- Asegúrate de tener el bucket `patient_menus` creado en Supabase Storage para la subida de archivos.

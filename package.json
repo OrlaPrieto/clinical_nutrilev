@@ -1,43 +1,20 @@
 {
   "name": "clinical-nutrilev",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
+  "version": "1.0.1",
   "private": true,
-  "packageManager": "npm@11.9.0",
-  "dependencies": {
-    "@abacritt/angularx-social-login": "^2.5.1",
-    "@angular/animations": "^21.2.2",
-    "@angular/cdk": "^21.2.2",
-    "@angular/common": "^21.2.0",
-    "@angular/compiler": "^21.2.0",
-    "@angular/core": "^21.2.0",
-    "@angular/forms": "^21.2.0",
-    "@angular/material": "^21.2.2",
-    "@angular/platform-browser": "^21.2.0",
-    "@angular/router": "^21.2.0",
-    "@supabase/supabase-js": "^2.99.1",
-    "@tailwindcss/postcss": "^4.2.1",
-    "@types/luxon": "^3.7.1",
-    "@vercel/speed-insights": "^2.0.0",
-    "autoprefixer": "^10.4.27",
-    "luxon": "^3.7.2",
-    "postcss": "^8.5.8",
-    "rxjs": "~7.8.0",
-    "tailwindcss": "^3.4.17",
-    "tslib": "^2.3.0",
-    "zone.js": "^0.16.1"
+  "workspaces": [
+    "apps/frontend",
+    "apps/api-main"
+  ],
+  "scripts": {
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:api-main\" \"npm run start:api-python\"",
+    "start:frontend": "npm run start --workspace=apps/frontend",
+    "start:api-main": "npm run start:dev --workspace=apps/api-main",
+    "start:api-python": "python apps/api-python/index.py",
+    "install:all": "npm install && npm install --workspace=apps/frontend && npm install --workspace=apps/api-main",
+    "test": "npm test --workspaces"
   },
   "devDependencies": {
-    "@angular/build": "^21.2.1",
-    "@angular/cli": "^21.2.1",
-    "@angular/compiler-cli": "^21.2.0",
-    "prettier": "^3.8.1",
-    "typescript": "~5.9.2"
+    "concurrently": "^8.2.2"
   }
 }
