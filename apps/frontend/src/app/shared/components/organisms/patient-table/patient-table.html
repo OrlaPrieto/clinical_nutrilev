@@ -2,13 +2,13 @@
 <div class="hidden lg:flex flex-1 flex-col min-h-0 bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 dark:border-white/5 animate-fade-up relative transition-colors overflow-hidden">
   <div class="flex-1 overflow-y-auto scroll-premium">
     <table class="w-full text-left border-collapse min-w-[800px]">
-      <thead class="sticky top-0 z-30 bg-white dark:bg-[#111111]">
+      <thead class="sticky top-0 z-[60] bg-white dark:bg-[#111111]">
         <tr class="bg-nutri-rose/[0.04] dark:bg-white/5 border-b border-nutri-rose/10 dark:border-white/10">
-          <th class="px-12 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
-          <th class="px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Nacimiento</th>
-          <th class="px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Prefs</th>
-          <th class="px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Notas</th>
-          <th class="px-12 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
+          <th class="w-[50%] pl-6 pr-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Nacimiento</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Prefs</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Notas</th>
+          <th class="w-[20%] px-12 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-nutri-rose/[0.03] dark:divide-white/5">
@@ -19,8 +19,26 @@
                   '!bg-amber-50/40 dark:!bg-amber-500/5 border-amber-100/50 dark:border-amber-500/10': !patient.acceso_portal && !patient.dado_de_baja
               }">
             
-            <td class="px-12 py-5">
-              <div class="flex items-center gap-4">
+            <td class="pl-6 pr-8 py-5">
+              <div class="flex items-center gap-3">
+                <!-- Menu Status Icon (Always present for alignment) -->
+                <div class="flex items-center gap-0.5 transition-all duration-300"
+                     [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-help' : 'opacity-20 grayscale'">
+                  <div class="w-1 h-1 rounded-full" 
+                    [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
+                  </div>
+                  <app-a-icon name="restaurant_menu" 
+                    [customClass]="(getMenuStatus(patient) === 'active' ? 'text-emerald-500' : 'text-amber-400') + ' text-[12px]'">
+                  </app-a-icon>
+                  
+                  @if (getMenuStatus(patient) !== 'none') {
+                    <!-- Tooltip -->
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-nutri-text dark:bg-black text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-50">
+                      Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
+                    </div>
+                  }
+                </div>
+
                 <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 dark:bg-nutri-rose/20 flex items-center justify-center text-nutri-rose font-bold text-sm ring-1 ring-nutri-rose/10 group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
                   {{ patient.nombre.charAt(0) }}
                 </div>
@@ -32,23 +50,6 @@
                       <app-a-badge label="BAJA" variant="danger" size="sm" icon="person_off"></app-a-badge>
                     } @else if (!patient.acceso_portal) {
                       <app-a-badge label="PENDIENTE" variant="warning" size="sm" customClass="animate-pulse" icon="schedule"></app-a-badge>
-                    }
-
-                    <!-- Menu Status Icon -->
-                    @if (getMenuStatus(patient) !== 'none') {
-                      <div class="flex items-center gap-1 group/menu relative cursor-help ml-1">
-                        <div class="w-1.5 h-1.5 rounded-full" 
-                          [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
-                        </div>
-                        <app-a-icon name="restaurant_menu" 
-                          [customClass]="(getMenuStatus(patient) === 'active' ? 'text-emerald-500' : 'text-amber-400') + ' text-[14px]'">
-                        </app-a-icon>
-                        
-                        <!-- Tooltip -->
-                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-nutri-text dark:bg-black text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-50">
-                          Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
-                        </div>
-                      </div>
                     }
                   </div>
                   <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
@@ -182,7 +183,25 @@
          }">
       
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <!-- Menu Status Mobile (Always present for alignment) -->
+          <div class="flex items-center gap-0.5 transition-all duration-300"
+               [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-help' : 'opacity-20 grayscale'">
+            <div class="w-1 h-1 rounded-full" 
+              [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
+            </div>
+            <app-a-icon name="restaurant_menu" 
+              [customClass]="(getMenuStatus(patient) === 'active' ? 'text-emerald-500' : 'text-amber-400') + ' text-[12px]'">
+            </app-a-icon>
+            
+            @if (getMenuStatus(patient) !== 'none') {
+              <!-- Tooltip Mobile -->
+              <div class="absolute top-full left-0 mt-2 px-3 py-1.5 bg-nutri-text dark:bg-black text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-50">
+                Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
+              </div>
+            }
+          </div>
+
           <div class="w-12 h-12 rounded-2xl bg-nutri-rose/5 dark:bg-nutri-rose/20 flex items-center justify-center text-nutri-rose font-bold text-lg ring-1 ring-nutri-rose/10">
             {{ patient.nombre.charAt(0) }}
           </div>
@@ -193,18 +212,6 @@
                 <app-a-badge label="BAJA" variant="danger" size="sm" icon="person_off"></app-a-badge>
               } @else if (!patient.acceso_portal) {
                 <app-a-badge label="PENDIENTE" variant="warning" size="sm" icon="schedule"></app-a-badge>
-              }
-
-              <!-- Menu Status Mobile -->
-              @if (getMenuStatus(patient) !== 'none') {
-                <div class="flex items-center gap-1">
-                  <div class="w-1.5 h-1.5 rounded-full" 
-                    [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500' : 'bg-amber-400'">
-                  </div>
-                  <app-a-icon name="restaurant_menu" 
-                    [customClass]="(getMenuStatus(patient) === 'active' ? 'text-emerald-500' : 'text-amber-400') + ' text-[12px]'">
-                  </app-a-icon>
-                </div>
               }
             </div>
             <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>

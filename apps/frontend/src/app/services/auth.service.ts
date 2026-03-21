@@ -52,11 +52,9 @@ export class AuthService {
           
           if (role) localStorage.setItem('nutrilev_role', role);
 
-          // Automated redirect ONLY for explicit login events
-          if (event === 'SIGNED_IN') {
-             if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
-                this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
-             }
+          // Redirect if user is on login page and has a valid role
+          if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
+             this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
           }
         }
       } else {
@@ -75,6 +73,10 @@ export class AuthService {
         this.currentUser.set(session.user);
         this.userRole.set(role);
         if (role) localStorage.setItem('nutrilev_role', role);
+
+        if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
+          this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+        }
       }
     } catch (err) {
       console.error('Auth: Initial recovery error', err);
@@ -142,6 +144,9 @@ export class AuthService {
       const role = await this.determineRole(data.user.email!);
       
       if (role === 'admin' || role === 'patient') {
+        if (this.router.url.includes('/login')) {
+          this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+        }
         return 'success';
       }
 
