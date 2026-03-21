@@ -7,7 +7,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-button',
+  selector: 'app-a-button',
   standalone: true,
   imports: [CommonModule, MatIconModule],
   templateUrl: './button.html',

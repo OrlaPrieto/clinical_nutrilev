@@ -12,10 +12,10 @@
                         <p class="text-[10px] uppercase tracking-widest font-bold text-nutri-text/60">Tu Portal de Bienestar</p>
                     </div>
                 </div>
-                <app-button variant="outline" label="Cerrar Sesión" size="sm" icon="logout"
+                <app-a-button variant="outline" label="Cerrar Sesión" size="sm" icon="logout"
                     customClass="!rounded-xl border-nutri-rose/10 hover:border-nutri-rose/30 text-[10px] font-bold uppercase tracking-widest transition-all"
                     (onClick)="logout()">
-                </app-button>
+                </app-a-button>
             </div>
         </header>
 
@@ -47,7 +47,7 @@
                         </div>
                         <div class="flex items-center gap-2 mt-4">
                             <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs">
-                                <i class="pi pi-calendar"></i>
+                                <app-a-icon name="calendar_today" customClass="text-white"></app-a-icon>
                             </div>
                             <span class="text-xs font-bold uppercase tracking-widest text-white/80">
                                 {{ progress().length > 0 ? (progress()[0].date | date:'dd MMM, yyyy') : 'Sin registros aún' }}
@@ -110,20 +110,20 @@
                 @if (isMenuValid()) {
                     <div class="bg-emerald-50/30 p-8 rounded-[3rem] border border-emerald-100 shadow-sm flex flex-col md:flex-row items-center gap-8">
                         <div class="w-20 h-20 rounded-3xl bg-emerald-500 text-white flex items-center justify-center text-3xl shadow-lg shadow-emerald-200">
-                            <i class="pi pi-file-pdf"></i>
+                            <app-a-icon name="picture_as_pdf" customClass="text-2xl text-white"></app-a-icon>
                         </div>
                         <div class="flex-1 text-center md:text-left">
                             <h3 class="text-xl font-bold serif text-emerald-900">Tu Plan Nutricional Actual</h3>
                             <p class="text-sm text-emerald-800/60 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. (Disponible por 7 días)</p>
                         </div>
-                        <button (click)="openMenu()" class="px-8 py-3 bg-emerald-500 text-white font-bold rounded-2xl shadow-xl shadow-emerald-200 hover:scale-105 transition-all text-xs uppercase tracking-widest">
-                            Descargar PDF
-                        </button>
+                        <app-a-button (onClick)="openMenu()" label="Descargar PDF" variant="primary" size="lg"
+                                    customClass="!px-8 !py-3 !rounded-2xl !shadow-xl !shadow-emerald-200 hover:scale-105 transition-all !text-xs !uppercase !tracking-widest">
+                        </app-a-button>
                     </div>
                 } @else {
                     <div class="bg-nutri-bg/50 p-8 rounded-[3rem] border border-nutri-rose/10 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-12">
                         <div class="w-16 h-16 rounded-2xl bg-nutri-bg shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
-                            <i class="pi pi-file-excel"></i>
+                            <app-a-icon name="folder_off" customClass="text-2xl"></app-a-icon>
                         </div>
                         <div>
                             <h3 class="text-xl font-bold serif text-nutri-text/60">No hay plan activo</h3>
@@ -148,13 +148,13 @@
 } @else {
     <!-- Error State -->
     <div class="min-h-screen bg-nutri-bg flex flex-col items-center justify-center p-10 text-center space-y-6">
-        <i class="pi pi-user-minus text-5xl text-nutri-rose/20"></i>
+        <app-a-icon name="person_off" customClass="text-5xl text-nutri-rose/20"></app-a-icon>
         <div class="space-y-2">
             <h2 class="text-2xl font-bold serif">Expediente no encontrado</h2>
             <p class="text-xs font-bold text-nutri-text/60 uppercase tracking-widest max-w-xs mx-auto">No hemos podido localizar un expediente asociado a tu correo electrónico.</p>
         </div>
-        <button (click)="logout()" class="px-8 py-3 bg-nutri-rose text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-xl shadow-nutri-rose/20">
-            Regresar al Login
-        </button>
+        <app-a-button (onClick)="logout()" label="Regresar al Login" variant="primary" size="lg"
+                    customClass="!px-8 !py-3 !rounded-2xl !font-bold !text-[10px] !uppercase !tracking-widest !shadow-xl !shadow-nutri-rose/20">
+        </app-a-button>
     </div>
 }

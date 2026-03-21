@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GoogleCalendarService } from '../../services/google-calendar.service';
-import { AppointmentCalendarOrganism } from '../../shared/components/organisms/appointment-calendar/appointment-calendar';
+import { GoogleCalendarService } from '../../../../services/google-calendar.service';
+import { AppointmentCalendarOrganism } from '../appointment-calendar/appointment-calendar';
 
 @Component({
-  selector: 'app-appointment-modal',
+  selector: 'app-o-appointment-modal',
   standalone: true,
   imports: [CommonModule, AppointmentCalendarOrganism],
   templateUrl: './appointment-modal.html',

@@ -8,9 +8,10 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { SearchInputComponent } from '../../shared/components/molecules/search-input/search-input';
 import { BadgeComponent } from '../../shared/components/atoms/badge/badge';
 import { PatientTableOrganism } from '../../shared/components/organisms/patient-table/patient-table';
-import { AppointmentModalComponent } from '../../components/appointment-modal/appointment-modal';
-import { PatientDetailComponent } from '../../components/patient-detail/patient-detail';
+import { AppointmentModalComponent } from '../../shared/components/organisms/appointment-modal/appointment-modal';
+import { PatientDetailComponent } from '../../shared/components/organisms/patient-detail/patient-detail';
 import { MatIconModule } from '@angular/material/icon';
+import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { Router, RouterModule } from '@angular/router';
 import { APP_VERSION } from '../../version';
 
@@ -26,9 +27,9 @@ import { APP_VERSION } from '../../version';
     AppointmentModalComponent,
     PatientDetailComponent,
     BadgeComponent,
-    MatIconModule,
     RouterModule,
-    NgOptimizedImage
+    NgOptimizedImage,
+    IconComponent
   ],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.css'

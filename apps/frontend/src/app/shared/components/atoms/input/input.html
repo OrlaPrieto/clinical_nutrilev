@@ -19,6 +19,7 @@
       [disabled]="disabled()"
       (input)="onInput($event)"
       class="w-full h-14 bg-white/60 rounded-2xl border border-white focus:border-nutri-rose/20 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text placeholder:text-nutri-text/50"
+      [class]="inputClass()"
       [ngClass]="{
         'pl-12': icon(),
         'px-6': !icon(),

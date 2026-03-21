@@ -2,12 +2,12 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../atoms/input/input';
-import { MatIconModule } from '@angular/material/icon';
+import { IconComponent } from '../../atoms/icon/icon';
 
 @Component({
-  selector: 'app-search-input',
+  selector: 'app-m-search-input',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputComponent, MatIconModule],
+  imports: [CommonModule, FormsModule, InputComponent, IconComponent],
   templateUrl: './search-input.html',
   styleUrl: './search-input.css'
 })

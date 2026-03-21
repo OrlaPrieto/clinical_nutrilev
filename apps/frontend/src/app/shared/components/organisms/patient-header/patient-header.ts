@@ -1,12 +1,12 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../../atoms/button/button';
-import { MatIconModule } from '@angular/material/icon';
+import { IconComponent } from '../../atoms/icon/icon';
 
 @Component({
-  selector: 'app-patient-header',
+  selector: 'app-o-patient-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, MatIconModule],
+  imports: [CommonModule, ButtonComponent, IconComponent],
   templateUrl: './patient-header.html',
   styleUrl: './patient-header.css'
 })

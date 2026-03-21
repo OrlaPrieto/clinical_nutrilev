@@ -8,9 +8,9 @@
         <span class="text-[10px] font-black uppercase tracking-[0.2em] text-nutri-text/60">{{ patientName }}</span>
       </div>
     </div>
-    <button (click)="closed.emit()" class="w-10 h-10 rounded-2xl bg-nutri-bg border border-nutri-rose/10 flex items-center justify-center text-nutri-text/60 hover:text-nutri-rose hover:border-nutri-rose/30 transition-all active:scale-95 group">
-      <mat-icon class="material-symbols-rounded group-hover:rotate-90 transition-transform duration-300">close</mat-icon>
-    </button>
+    <app-a-button (onClick)="closed.emit()" variant="ghost" icon="close" size="md"
+                customClass="!w-10 !h-10 !rounded-2xl !bg-nutri-bg !border !border-nutri-rose/10 !text-nutri-text/60 hover:!text-nutri-rose hover:!border-nutri-rose/30 transition-all active:scale-95 group">
+    </app-a-button>
   </div>
 
   <div class="appointment-body flex-1 overflow-visible p-8">
@@ -19,9 +19,7 @@
       <!-- Calendar Section -->
       <div class="space-y-4">
         <h3 class="text-[9px] font-black text-nutri-text/50 uppercase tracking-[0.2em] mb-2 px-2">1. Selecciona Fecha</h3>
-        <mat-card class="calendar-card !rounded-3xl !border-none !shadow-sm overflow-hidden bg-nutri-bg/30">
-          <mat-calendar [(selected)]="selectedDate" class="nutri-calendar"></mat-calendar>
-        </mat-card>
+        <app-a-calendar [selected]="selectedDate" (selectedChange)="selectedDate = $event"></app-a-calendar>
       </div>
 
       <!-- Form Section -->
@@ -31,42 +29,15 @@
         <div class="space-y-4">
           <h3 class="text-[9px] font-black text-nutri-text/50 uppercase tracking-[0.2em] px-2 text-center lg:text-left">2. Horario e Información</h3>
           
-          <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-4">
             <div class="grid grid-cols-2 gap-4">
-              <mat-form-field appearance="outline" class="nutri-field">
-                <mat-label>Inicio</mat-label>
-                <mat-select [(ngModel)]="startTime">
-                  @for (time of timeSlots; track time) {
-                    <mat-option [value]="time">{{ time }}</mat-option>
-                  }
-                </mat-select>
-                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 ml-2 mr-2">schedule</mat-icon>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="nutri-field">
-                <mat-label>Fin</mat-label>
-                <mat-select [(ngModel)]="endTime" [disabled]="!startTime">
-                  @for (time of timeSlots; track time) {
-                    @if (time > startTime) {
-                      <mat-option [value]="time">{{ time }}</mat-option>
-                    }
-                  }
-                </mat-select>
-              </mat-form-field>
+              <app-a-select label="Inicio" [value]="startTime" [options]="timeSlots" (valueChange)="startTime = $event" icon="schedule"></app-a-select>
+              <app-a-select label="Fin" [value]="endTime" [options]="timeSlots" (valueChange)="endTime = $event" [disabled]="!startTime"></app-a-select>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <mat-form-field appearance="outline" class="nutri-field">
-                <mat-label>Costo</mat-label>
-                <input matInput type="number" [(ngModel)]="cost" placeholder="400">
-                <span matPrefix class="text-nutri-rose/40 font-bold ml-3 mr-2 text-lg">$</span>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="nutri-field">
-                <mat-label># Cita</mat-label>
-                <input matInput [(ngModel)]="appointmentNumber" placeholder="1/4">
-                <mat-icon matPrefix class="material-symbols-rounded text-nutri-rose/40 ml-2 mr-2">tag</mat-icon>
-              </mat-form-field>
+              <app-a-input label="Costo" type="number" [value]="cost" (valueChange)="cost = $event" icon="payments" placeholder="400"></app-a-input>
+              <app-a-input label="# Cita" [value]="appointmentNumber" (valueChange)="appointmentNumber = $event" icon="tag" placeholder="1/4"></app-a-input>
             </div>
           </div>
         </div>
@@ -76,7 +47,7 @@
           <div class="bg-nutri-rose/5 border border-nutri-rose/20 p-5 rounded-3xl animate-fade-up">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
-                <mat-icon class="material-symbols-rounded">event_available</mat-icon>
+                <app-a-icon name="event_available"></app-a-icon>
               </div>
               <div class="space-y-1">
                 <p class="text-[8px] font-black text-nutri-rose uppercase tracking-widest">Resumen de Selección</p>
@@ -91,7 +62,7 @@
 
         @if (errorMessage) {
           <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl flex items-center gap-3 text-rose-600 animate-shake">
-            <mat-icon class="material-symbols-rounded text-lg">error</mat-icon>
+            <app-a-icon name="error" customClass="text-lg"></app-a-icon>
             <span class="text-[11px] font-bold">{{ errorMessage }}</span>
           </div>
         }
@@ -101,19 +72,10 @@
 
   <!-- Actions -->
   <div class="appointment-footer px-8 py-6 bg-nutri-bg/50 border-t border-nutri-rose/10 flex items-center justify-end gap-4">
-    <button (click)="closed.emit()" [disabled]="loading" class="px-6 py-3 text-[10px] font-black text-nutri-text/60 hover:text-rose-500 uppercase tracking-widest transition-all">
-      Cancelar
-    </button>
-    
-    <button [disabled]="!isFormValid || loading" (click)="onSchedule()" 
-            class="min-w-[200px] h-14 bg-nutri-rose text-white rounded-2xl px-8 flex items-center justify-center gap-3 font-bold shadow-lg shadow-nutri-rose/20 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale hover:bg-nutri-rose-dark">
-      @if (loading) {
-        <mat-icon class="material-symbols-rounded animate-spin">refresh</mat-icon>
-        <span class="text-[11px] uppercase tracking-widest">Agendando...</span>
-      } @else {
-        <mat-icon class="material-symbols-rounded">check_circle</mat-icon>
-        <span class="text-[11px] uppercase tracking-widest">Confirmar Cita</span>
-      }
-    </button>
+    <app-a-button variant="ghost" label="Cancelar" size="md" (onClick)="closed.emit()" [disabled]="loading"></app-a-button>
+    <app-a-button [disabled]="!isFormValid || loading" [loading]="loading" (onClick)="onSchedule()" 
+                label="Confirmar Cita" icon="check_circle" variant="primary" size="lg"
+                customClass="!min-w-[200px] !h-14 !shadow-lg !shadow-nutri-rose/20">
+    </app-a-button>
   </div>
 </div>

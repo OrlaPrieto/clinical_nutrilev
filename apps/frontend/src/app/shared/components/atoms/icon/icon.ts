@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-icon',
+  selector: 'app-a-icon',
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `

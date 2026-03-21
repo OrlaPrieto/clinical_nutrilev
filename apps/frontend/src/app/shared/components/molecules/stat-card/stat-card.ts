@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../atoms/input/input';
 
 @Component({
-  selector: 'app-stat-card',
+  selector: 'app-m-stat-card',
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './stat-card.html',

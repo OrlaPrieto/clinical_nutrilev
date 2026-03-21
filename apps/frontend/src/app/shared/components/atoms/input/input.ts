@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-input',
+  selector: 'app-a-input',
   standalone: true,
   imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './input.html',
@@ -19,6 +19,7 @@ export class InputComponent {
   disabled = input<boolean>(false);
   error = input<string | undefined>();
   customClass = input<string>('');
+  inputClass = input<string>('');
 
   valueChange = output<any>();
 

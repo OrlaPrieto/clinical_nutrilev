@@ -1,15 +1,19 @@
 import { Component, OnInit, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { PatientService } from '../../services/patient';
-import { AuthService } from '../../services/auth.service';
-import { supabase } from '../../supabase';
+import { ButtonComponent } from '../../atoms/button/button';
+import { IconComponent } from '../../atoms/icon/icon';
+import { InputComponent } from '../../atoms/input/input';
+import { BadgeComponent } from '../../atoms/badge/badge';
+import { StatCardComponent } from '../../molecules/stat-card/stat-card';
+import { PatientService } from '../../../../services/patient';
+import { AuthService } from '../../../../services/auth.service';
+import { supabase } from '../../../../supabase';
 
 @Component({
-  selector: 'app-patient-detail',
+  selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.css'
 })

@@ -12,25 +12,18 @@
             <!-- Global Action Buttons (Responsive positioning to avoid overlap) -->
             <div class="relative md:absolute md:top-2 md:right-24 flex gap-2 z-50 mb-4 md:mb-0">
                 <input type="file" #menuUpload (change)="uploadMenu($event)" accept=".pdf" class="hidden">
-                <button (click)="menuUpload.click()" [disabled]="isUploadingMenu()"
-                        class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-rose text-white font-bold transition-all duration-300 shadow-sm disabled:opacity-50 active:scale-95">
-                    <mat-icon class="material-symbols-rounded" [ngClass]="{'animate-spin': isUploadingMenu()}">{{ isUploadingMenu() ? 'sync' : 'upload_file' }}</mat-icon>
-                    <span class="text-[11px] uppercase tracking-widest">{{ isUploadingMenu() ? 'Subiendo...' : 'Subir Menú' }}</span>
-                </button>
-                <button (click)="toggleEdit()" 
-                        class="flex items-center gap-2 px-4 py-2 rounded-2xl border-2 font-bold transition-all duration-300 shadow-sm"
-                        [ngClass]="isEditing() 
-                            ? 'bg-nutri-rose/10 border-nutri-rose text-nutri-rose' 
-                            : 'bg-white border-nutri-rose/20 text-nutri-rose hover:bg-nutri-rose/5'">
-                    <mat-icon class="material-symbols-rounded">{{ isEditing() ? 'close' : 'edit' }}</mat-icon>
-                    <span class="text-[11px] uppercase tracking-widest">{{ isEditing() ? 'Cancelar' : 'Editar' }}</span>
-                </button>
+                <app-a-button (onClick)="menuUpload.click()" [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
+                            label="Subir Menú" icon="upload_file" variant="primary" size="md">
+                </app-a-button>
+                <app-a-button (onClick)="toggleEdit()" [variant]="isEditing() ? 'secondary' : 'outline'" 
+                            [icon]="isEditing() ? 'close' : 'edit'"
+                            [label]="isEditing() ? 'Cancelar' : 'Editar'" size="md">
+                </app-a-button>
                 @if (isEditing()) {
-                    <button (click)="saveChanges()" [disabled]="saving()"
-                            class="flex items-center gap-2 px-6 py-2 rounded-2xl bg-nutri-rose text-white font-bold transition-all duration-300 shadow-lg shadow-nutri-rose/20 active:scale-95 disabled:opacity-50">
-                        <mat-icon class="material-symbols-rounded" [ngClass]="{'animate-spin': saving()}">{{ saving() ? 'sync' : 'check' }}</mat-icon>
-                        <span class="text-[11px] uppercase tracking-widest">{{ saving() ? 'Guardando...' : 'Guardar Cambios' }}</span>
-                    </button>
+                    <app-a-button (onClick)="saveChanges()" [disabled]="saving()" [loading]="saving()"
+                                label="Guardar Cambios" icon="check" variant="primary" size="md"
+                                customClass="!shadow-lg !shadow-nutri-rose/20">
+                    </app-a-button>
                 }
             </div>
 
@@ -42,12 +35,14 @@
                 
                 <div class="flex flex-wrap justify-center md:justify-start gap-3">
                     <div class="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-nutri-rose/10 text-[11px] text-nutri-text/60 shadow-sm">
-                    <mat-icon class="material-symbols-rounded text-[10px] text-nutri-rose">mail</mat-icon>
+                    <app-a-icon name="mail" customClass="text-[10px] text-nutri-rose"></app-a-icon>
                         @if (!isEditing()) {
                             <span>{{patient()?.email}}</span>
                         }
                         @if (isEditing()) {
-                            <input [(ngModel)]="patient().email" class="bg-transparent border-none p-0 w-40 outline-none text-nutri-rose">
+                            <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
+                                        customClass="!bg-transparent !border-none !p-0 !w-40 !outline-none !text-nutri-rose !h-auto">
+                            </app-a-input>
                         }
                     </div>
                 </div>
@@ -59,22 +54,21 @@
     @if (lastGeneratedUrl()) {
         <div class="px-6 py-4 bg-nutri-rose/5 border-b border-nutri-rose/10 animate-fade-down flex flex-col md:flex-row items-center justify-center gap-4">
             <div class="flex items-center gap-2">
-                <mat-icon class="material-symbols-rounded text-nutri-rose text-lg">link</mat-icon>
+                <app-a-icon name="link" customClass="text-nutri-rose text-lg"></app-a-icon>
                 <span class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Link de descarga listo:</span>
             </div>
             
             <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-nutri-rose/20 shadow-sm w-full md:w-auto overflow-hidden">
                 <code class="text-[10px] font-mono text-nutri-text/60 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
-                <button (click)="copyToClipboard()" 
-                        class="shrink-0 flex items-center gap-2 px-4 py-1.5 rounded-xl bg-nutri-rose text-white transition-all active:scale-95 hover:bg-nutri-rose/90 shadow-sm shadow-nutri-rose/20">
-                    <mat-icon class="material-symbols-rounded text-[16px]">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
-                    <span class="text-[9px] font-bold uppercase tracking-wider">{{ copied() ? 'Copiado' : 'Copiar' }}</span>
-                </button>
+                <app-a-button (onClick)="copyToClipboard()" 
+                            [label]="copied() ? 'Copiado' : 'Copiar'" [icon]="copied() ? 'check' : 'content_copy'"
+                            variant="primary" size="sm" customClass="!shadow-sm !shadow-nutri-rose/20">
+                </app-a-button>
             </div>
             
             <button (click)="lastGeneratedUrl.set(null)" 
                     class="p-2 rounded-full hover:bg-nutri-rose/5 text-nutri-rose/30 hover:text-nutri-rose/60 transition-colors">
-                <mat-icon class="material-symbols-rounded text-md">close</mat-icon>
+                <app-a-icon name="close" customClass="text-md"></app-a-icon>
             </button>
         </div>
     }
@@ -104,70 +98,27 @@
         @if (activeTab() === 0) {
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <!-- Data Cards Compactas -->
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Nacimiento</span>
-                        @if (!isEditing()) {
-                            <p class="text-md font-bold">{{patient()?.fecha_nacimiento ? (patient()?.fecha_nacimiento | date:'dd/MM/yyyy') : '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().fecha_nacimiento" type="text" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30" placeholder="DD/MM/AAAA">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Edad</span>
-                        @if (!isEditing()) {
-                            <p class="text-md font-bold">{{patient()?.edad}} años</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().edad" type="number" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Género</span>
-                        @if (!isEditing()) {
-                            <p class="text-md font-bold">{{patient()?.genero || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().genero" type="text" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Estatura</span>
-                        @if (!isEditing()) {
-                            <p class="text-md font-bold">{{patient()?.estatura || '---'}} cm</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().estatura" type="text" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                         <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Civil</span>
-                         @if (!isEditing()) {
-                             <p class="text-md font-bold">{{patient()?.estado_civil || '---'}}</p>
-                         }
-                         @if (isEditing()) {
-                             <input [(ngModel)]="patient().estado_civil" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-bold border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                         }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Profesión</span>
-                        @if (!isEditing()) {
-                            <p class="text-sm font-medium">{{patient()?.profesion || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().profesion" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm col-span-2 md:col-span-2">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Dirección</span>
-                        @if (!isEditing()) {
-                            <p class="text-sm font-medium leading-tight truncate">{{patient()?.direccion || '--'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().direccion" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-sm font-medium border-none outline-none focus:ring-1 focus:ring-nutri-rose/30">
-                        }
-                    </div>
+                    <app-m-stat-card label="Nacimiento" [value]="patient()?.fecha_nacimiento" type="date" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().fecha_nacimiento = $event" placeholder="DD/MM/AAAA">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Edad" [value]="patient()?.edad" type="number" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().edad = $event" suffix="años">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Género" [value]="patient()?.genero" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().genero = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Estatura" [value]="patient()?.estatura" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().estatura = $event" suffix="cm">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Civil" [value]="patient()?.estado_civil" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().estado_civil = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Profesión" [value]="patient()?.profesion" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().profesion = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Dirección" [value]="patient()?.direccion" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().direccion = $event" customClass="col-span-2 md:col-span-2">
+                    </app-m-stat-card>
                 </div>
 
                 <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-4">
@@ -201,7 +152,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
                         <div class="flex gap-4 items-start">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">medical_services</mat-icon></div>
+                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="medical_services" customClass="text-sm"></app-a-icon></div>
                             <div class="flex-1">
                                 <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Patologías</h4>
                                 @if (!isEditing()) {
@@ -213,7 +164,7 @@
                             </div>
                         </div>
                         <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">favorite</mat-icon></div>
+                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="favorite" customClass="text-sm"></app-a-icon></div>
                             <div class="flex-1">
                                 <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Enfermedades</h4>
                                 @if (!isEditing()) {
@@ -227,7 +178,7 @@
                     </div>
                     <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
                         <div class="flex gap-4 items-start">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">edit_note</mat-icon></div>
+                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="edit_note" customClass="text-sm"></app-a-icon></div>
                             <div class="flex-1">
                                 <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Med/Cirugías</h4>
                                 @if (!isEditing()) {
@@ -242,7 +193,7 @@
                             </div>
                         </div>
                         <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><mat-icon class="material-symbols-rounded text-sm">groups</mat-icon></div>
+                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="groups" customClass="text-sm"></app-a-icon></div>
                             <div class="flex-1">
                                 <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Familiar</h4>
                                 @if (!isEditing()) {
@@ -274,47 +225,18 @@
         @if (activeTab() === 2) {
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Habit Cards Compactas -->
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
-                        <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">liquor</mat-icon>
-                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Alcohol</span>
-                        @if (!isEditing()) {
-                            <p class="text-xs font-bold">{{patient()?.alcohol || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().alcohol" class="w-full bg-nutri-rose/5 rounded px-1 py-0.5 text-[10px] text-center font-bold outline-none border-none">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
-                        <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">smoking_rooms</mat-icon>
-                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Tabaco</span>
-                        @if (!isEditing()) {
-                            <p class="text-xs font-bold">{{patient()?.tabaco || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().tabaco" class="w-full bg-nutri-rose/5 rounded px-1 py-0.5 text-[10px] text-center font-bold outline-none border-none">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
-                        <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">bedtime</mat-icon>
-                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Sueño</span>
-                        @if (!isEditing()) {
-                            <p class="text-xs font-bold">{{patient()?.sueno || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().sueno" class="w-full bg-nutri-rose/5 rounded px-1 py-0.5 text-[10px] text-center font-bold outline-none border-none">
-                        }
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-nutri-rose/5 shadow-sm text-center">
-                        <mat-icon class="material-symbols-rounded text-nutri-rose/30 text-xs mb-1 block">fitness_center</mat-icon>
-                        <span class="block text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest">Ejercicio</span>
-                        @if (!isEditing()) {
-                            <p class="text-xs font-bold">{{patient()?.hace_ejercicio || '---'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().hace_ejercicio" class="w-full bg-nutri-rose/5 rounded px-1 py-0.5 text-[10px] text-center font-bold outline-none border-none">
-                        }
-                    </div>
+                    <app-m-stat-card label="Alcohol" [value]="patient()?.alcohol" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().alcohol = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Tabaco" [value]="patient()?.tabaco" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().tabaco = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Sueño" [value]="patient()?.sueno" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().sueno = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Ejercicio" [value]="patient()?.hace_ejercicio" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().hace_ejercicio = $event">
+                    </app-m-stat-card>
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-6 relative overflow-hidden">
@@ -329,7 +251,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
-                                <mat-icon class="material-symbols-rounded text-nutri-rose text-xs">bolt</mat-icon>
+                                <app-a-icon name="bolt" customClass="text-nutri-rose text-xs"></app-a-icon>
                                 <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Actividad Física</span>
                             </div>
                             @if (!isEditing()) {
@@ -352,7 +274,7 @@
 
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
-                                <mat-icon class="material-symbols-rounded text-nutri-rose text-xs">schedule</mat-icon>
+                                <app-a-icon name="schedule" customClass="text-nutri-rose text-xs"></app-a-icon>
                                 <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Horarios y Actividad</span>
                             </div>
                             @if (!isEditing()) {
@@ -410,7 +332,7 @@
                                 </div>
                                 <div class="space-y-1.5">
                                     <div class="flex items-center gap-2 ml-2">
-                                        <mat-icon class="material-symbols-rounded text-[10px] text-yellow-700">warning</mat-icon>
+                                        <app-a-icon name="warning" customClass="text-[10px] text-yellow-700"></app-a-icon>
                                         <span class="font-black text-yellow-900 text-[10px] uppercase tracking-wider">Alergias:</span>
                                     </div>
                                     @if (!isEditing()) {
@@ -431,7 +353,7 @@
                         <div class="space-y-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
-                                    <mat-icon class="material-symbols-rounded text-sm">shopping_cart</mat-icon>
+                                    <app-a-icon name="shopping_cart" customClass="text-sm"></app-a-icon>
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Logística de Compra</h4>
@@ -446,7 +368,7 @@
                             
                             <div class="flex items-center gap-3 pt-4 border-t border-nutri-rose/[0.03]">
                                 <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
-                                    <mat-icon class="material-symbols-rounded text-sm">cooking</mat-icon>
+                                    <app-a-icon name="restaurant" customClass="text-sm"></app-a-icon>
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/60 mb-1">¿Quién prepara?</h4>
@@ -599,7 +521,7 @@
                 <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
-                             <mat-icon class="material-symbols-rounded">calendar_month</mat-icon>
+                             <app-a-icon name="calendar_month"></app-a-icon>
                         </div>
                         <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/60">Salud Femenina / Ciclo</h4>
                     </div>
@@ -619,7 +541,7 @@
                     <div class="bg-white p-8 rounded-[2.5rem] border border-nutri-rose/10 shadow-sm space-y-6">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
-                                <mat-icon class="material-symbols-rounded">add</mat-icon>
+                                <app-a-icon name="add"></app-a-icon>
                             </div>
                             <div>
                                 <h3 class="text-xl font-bold serif">Nuevo Avance</h3>
@@ -630,15 +552,21 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Peso (kg)</label>
-                                <input type="number" [(ngModel)]="newProgress().weight" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-sm font-bold border-none outline-none focus:ring-2 focus:ring-nutri-rose/10">
+                                <app-a-input type="number" [value]="newProgress().weight" (valueChange)="newProgress().weight = $event" 
+                                            customClass="!bg-nutri-bg !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto">
+                                </app-a-input>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Grasa (%)</label>
-                                <input type="number" [(ngModel)]="newProgress().body_fat" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-sm font-bold border-none outline-none focus:ring-2 focus:ring-nutri-rose/10">
+                                <app-a-input type="number" [value]="newProgress().body_fat" (valueChange)="newProgress().body_fat = $event" 
+                                            customClass="!bg-nutri-bg !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto">
+                                </app-a-input>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Músculo (kg)</label>
-                                <input type="number" [(ngModel)]="newProgress().muscle_mass" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-sm font-bold border-none outline-none focus:ring-2 focus:ring-nutri-rose/10">
+                                <app-a-input type="number" [value]="newProgress().muscle_mass" (valueChange)="newProgress().muscle_mass = $event" 
+                                            customClass="!bg-nutri-bg !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto">
+                                </app-a-input>
                             </div>
                         </div>
 
@@ -648,9 +576,10 @@
                         </div>
 
                         <!-- Registrar Button -->
-                        <button (click)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" class="w-full py-4 bg-nutri-rose text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-nutri-rose/20 active:scale-[0.98] transition-all disabled:opacity-50">
-                            {{ addingProgress() ? 'Registrando...' : 'Registrar Avance' }}
-                        </button>
+                        <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
+                                    label="Registrar Avance" variant="primary" size="lg"
+                                    customClass="!w-full !py-8 !rounded-2xl !text-[10px] !uppercase !tracking-[0.2em] !shadow-xl !shadow-nutri-rose/20 active:scale-[0.98] transition-all">
+                        </app-a-button>
                     </div>
 
                     <!-- Lista de Historial -->
@@ -663,7 +592,7 @@
                         <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 space-y-4 scroll-premium">
                             @if (progressHistory().length === 0) {
                                 <div class="h-full flex flex-col items-center justify-center opacity-20 py-20">
-                                    <mat-icon class="text-4xl">history</mat-icon>
+                                    <app-a-icon name="history" customClass="!text-4xl"></app-a-icon>
                                     <p class="text-[10px] font-bold uppercase tracking-widest mt-2">Sin historial</p>
                                 </div>
                             } @else {
@@ -716,7 +645,7 @@
                         <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Sincronización automática activa</p>
                     </div>
                     <button class="btn-primary" [disabled]="saving()" (click)="saveChanges()">
-                        <mat-icon class="material-symbols-rounded mr-2" [ngClass]="{'animate-spin': saving()}">{{ saving() ? 'sync' : 'save' }}</mat-icon>
+                        <app-a-icon [name]="saving() ? 'sync' : 'save'" customClass="mr-2" [ngClass]="{'animate-spin': saving()}"></app-a-icon>
                         <span class="text-[10px]">{{ saving() ? 'GUARDANDO...' : 'GUARDAR' }}</span>
                     </button>
                 </div>
@@ -738,7 +667,7 @@
     @if (showSuccess()) {
         <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white rounded-3xl shadow-2xl border border-nutri-rose/10 animate-fade-up">
             <div class="w-10 h-10 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 shadow-inner">
-                <mat-icon class="material-symbols-rounded">check</mat-icon>
+                <app-a-icon name="check"></app-a-icon>
             </div>
             <div class="space-y-0.5">
                 <p class="font-bold text-nutri-text text-sm">Cambios Guardados</p>
@@ -752,15 +681,23 @@
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg border border-nutri-rose/10 transition-all" [ngClass]="patient()?.acceso_portal ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'">
                 <input type="checkbox" [(ngModel)]="patient().acceso_portal" (change)="togglePortalAccess()" id="portalToggle" class="accent-emerald-500 w-4 h-4 cursor-pointer">
-                <label for="portalToggle" class="text-[10px] font-black uppercase tracking-widest cursor-pointer" [ngClass]="patient()?.acceso_portal ? 'text-emerald-600' : 'text-amber-600'">
-                    {{ patient()?.acceso_portal ? 'Acceso Portal: ACTIVO' : 'Acceso Portal: PENDIENTE' }}
+                <label for="portalToggle" class="flex gap-2 cursor-pointer">
+                    <app-a-badge [label]="patient()?.acceso_portal ? 'Portal: Acceso Concedido' : 'Portal: Acceso Restringido'" 
+                               [variant]="patient()?.acceso_portal ? 'success' : 'warning'" 
+                               [icon]="patient()?.acceso_portal ? 'vpn_key' : 'lock'"
+                               size="sm">
+                    </app-a-badge>
                 </label>
             </div>
             <div class="h-8 w-px bg-nutri-rose/10 mx-2"></div>
             <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg border border-nutri-rose/10 transition-all" [ngClass]="patient()?.dado_de_baja ? 'bg-rose-50 border-rose-200' : ''">
                 <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" id="activeToggle" class="accent-nutri-rose w-4 h-4 cursor-pointer">
-                <label for="activeToggle" class="text-[10px] font-black uppercase tracking-widest cursor-pointer" [ngClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-nutri-text/60'">
-                    {{ patient()?.dado_de_baja ? 'Paciente Dado de Baja' : 'Dar de Baja' }}
+                <label for="activeToggle" class="cursor-pointer">
+                    <app-a-badge [label]="patient()?.dado_de_baja ? 'Expediente: INACTIVO (Baja)' : 'Expediente: ACTIVO'" 
+                               [variant]="patient()?.dado_de_baja ? 'danger' : 'info'" 
+                               [icon]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'"
+                               size="sm">
+                    </app-a-badge>
                 </label>
             </div>
             @if (patient()?.dado_de_baja) {

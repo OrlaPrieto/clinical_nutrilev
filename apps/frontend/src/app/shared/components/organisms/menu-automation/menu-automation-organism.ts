@@ -5,11 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../../services/auth.service';
+import { ButtonComponent } from '../../atoms/button/button';
+import { IconComponent } from '../../atoms/icon/icon';
+import { InputComponent } from '../../atoms/input/input';
 
 @Component({
-  selector: 'app-menu-automation',
+  selector: 'app-o-menu-automation',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule, RouterModule, MatIconModule],
+  imports: [CommonModule, HttpClientModule, FormsModule, RouterModule, MatIconModule, ButtonComponent, IconComponent, InputComponent],
   templateUrl: './menu-automation-organism.html',
   styleUrl: './menu-automation-organism.css'
 })

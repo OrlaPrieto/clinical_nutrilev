@@ -1,12 +1,13 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconComponent } from '../icon/icon';
 
 export type BadgeVariant = 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'ghost';
 
 @Component({
-  selector: 'app-badge',
+  selector: 'app-a-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './badge.html',
   styleUrl: './badge.css'
 })

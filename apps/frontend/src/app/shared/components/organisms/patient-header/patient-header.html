@@ -7,21 +7,21 @@
 
         <!-- Global Action Buttons -->
         <div class="relative md:absolute md:top-2 md:right-24 flex gap-2 z-50 mb-4 md:mb-0">
-            <app-button 
+            <app-a-button 
                 [variant]="isEditing() ? 'secondary' : 'outline'" 
                 [icon]="isEditing() ? 'close' : 'edit'"
                 [label]="isEditing() ? 'Cancelar' : 'Editar'"
                 (onClick)="editToggle.emit()">
-            </app-button>
+            </app-a-button>
             
             @if (isEditing()) {
-                <app-button 
+                <app-a-button 
                     variant="primary" 
                     icon="check"
                     [label]="saving() ? 'Guardando...' : 'Guardar Cambios'"
                     [loading]="saving()"
                     (onClick)="save.emit()">
-                </app-button>
+                </app-a-button>
             }
         </div>
 
@@ -33,7 +33,7 @@
             
             <div class="flex flex-wrap justify-center md:justify-start gap-3">
                 <div class="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-nutri-rose/10 text-[11px] text-nutri-text/60 shadow-sm transition-all duration-300">
-                    <mat-icon class="material-symbols-rounded text-[10px] text-nutri-rose">mail</mat-icon>
+                    <app-a-icon name="mail" customClass="text-[10px] text-nutri-rose"></app-a-icon>
                     @if (!isEditing()) {
                         <span>{{ patient()?.email }}</span>
                     } @else {

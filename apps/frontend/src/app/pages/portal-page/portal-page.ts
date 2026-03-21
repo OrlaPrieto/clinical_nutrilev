@@ -4,12 +4,13 @@ import { AuthService } from '../../services/auth.service';
 import { PatientService } from '../../services/patient';
 import { Patient } from '../../models/patient.model';
 import { ButtonComponent } from '../../shared/components/atoms/button/button';
+import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { APP_VERSION } from '../../version';
 
 @Component({
   selector: 'app-portal-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule, ButtonComponent, IconComponent],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css'
 })

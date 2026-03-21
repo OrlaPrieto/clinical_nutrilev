@@ -8,7 +8,7 @@
                         <span class="text-nutri-rose font-bold tracking-[0.3em] uppercase text-[10px] block">Módulo Especial</span>
                         <span class="w-1 h-1 rounded-full bg-nutri-rose/20"></span>
                         <a routerLink="/dashboard" class="text-[10px] font-bold text-nutri-text/60 hover:text-nutri-rose transition-colors uppercase tracking-widest flex items-center gap-2">
-                            <mat-icon class="material-symbols-rounded !text-[10px]">arrow_back</mat-icon>
+                            <app-a-icon name="arrow_back" customClass="!text-[10px]"></app-a-icon>
                             Regresar al Panel
                         </a>
                     </div>
@@ -26,13 +26,13 @@
             <div class="space-y-4">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-8 h-8 rounded-xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
-                        <mat-icon class="material-symbols-rounded !text-sm">key</mat-icon>
+                        <app-a-icon name="key" customClass="!text-sm"></app-a-icon>
                     </div>
                     <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Configuración (Opcional)</label>
                 </div>
-                <input type="password" [(ngModel)]="apiKey" 
-                       placeholder="Tu Gemini API Key de Google AI Studio..."
-                       class="w-full px-6 py-4 bg-nutri-bg rounded-2xl border border-transparent focus:border-nutri-rose/20 focus:bg-white focus:ring-4 focus:ring-nutri-rose/5 transition-all outline-none font-medium text-nutri-text placeholder:text-nutri-text/20">
+                <app-a-input [value]="apiKey" (valueChange)="apiKey = $event" type="password" 
+                           placeholder="Tu Gemini API Key de Google AI Studio..."
+                           inputClass="!px-6 !py-4"></app-a-input>
                 <p class="text-[9px] text-nutri-text/50 font-bold px-2">Si se deja vacío, se usará la API Key configurada por defecto en el sistema.</p>
             </div>
 
@@ -40,7 +40,7 @@
             <div class="space-y-6">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-8 h-8 rounded-xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
-                        <mat-icon class="material-symbols-rounded !text-sm">description</mat-icon>
+                        <app-a-icon name="description" customClass="!text-sm"></app-a-icon>
                     </div>
                     <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Documento del Menú</label>
                 </div>
@@ -51,7 +51,7 @@
                     
                     <div class="border-2 border-dashed border-nutri-rose/10 rounded-[2.5rem] p-12 text-center transition-all bg-nutri-bg group-hover:bg-white group-hover:border-nutri-rose/30 group-hover:ring-8 group-hover:ring-nutri-rose/5">
                         <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-nutri-rose mx-auto mb-6 shadow-sm border border-nutri-rose/5 group-hover:scale-110 transition-transform duration-500">
-                            <mat-icon class="material-symbols-rounded !text-3xl">cloud_upload</mat-icon>
+                            <app-a-icon name="cloud_upload" customClass="!text-3xl"></app-a-icon>
                         </div>
                         
                         <div class="space-y-2">
@@ -65,26 +65,20 @@
 
             <!-- Action Button -->
             <div class="pt-4">
-                <button (click)="processMenu()" [disabled]="!selectedFile || processing"
-                        class="w-full py-6 rounded-3xl bg-nutri-rose text-white font-bold text-sm tracking-[0.2em] uppercase shadow-lg shadow-nutri-rose/30 hover:bg-nutri-rose/90 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:translate-y-0 disabled:scale-100 disabled:shadow-none overflow-hidden relative">
-                    
-                    <div *ngIf="processing" class="absolute inset-0 bg-white/20 animate-pulse"></div>
-                    
-                    <mat-icon class="material-symbols-rounded" *ngIf="!processing">auto_awesome</mat-icon>
-                    <mat-icon class="material-symbols-rounded animate-spin" *ngIf="processing">sync</mat-icon>
-                    
-                    <span>{{ processing ? 'PROCESANDO CON IA...' : 'GENERAR IMÁGENES Y LISTA' }}</span>
-                </button>
+                <app-a-button (onClick)="processMenu()" [disabled]="!selectedFile || processing" [loading]="processing"
+                            variant="primary" size="lg" icon="auto_awesome" label="GENERAR IMÁGENES Y LISTA"
+                            customClass="!w-full !py-8 !rounded-3xl !text-sm !tracking-[0.2em] !shadow-lg !shadow-nutri-rose/30">
+                </app-a-button>
             </div>
 
             <!-- Feedback States -->
             <div *ngIf="error" class="p-6 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-4 animate-fade-in">
-                <mat-icon class="material-symbols-rounded text-rose-500">error</mat-icon>
+                <app-a-icon name="error" customClass="text-rose-500"></app-a-icon>
                 <p class="text-sm font-bold text-rose-900">{{ error }}</p>
             </div>
 
             <div *ngIf="success" class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-4 animate-fade-in text-emerald-900">
-                <mat-icon class="material-symbols-rounded text-emerald-500">check_circle</mat-icon>
+                <app-a-icon name="check_circle" customClass="text-emerald-500"></app-a-icon>
                 <div class="space-y-0.5">
                     <p class="text-sm font-bold">¡Menú Procesado con Éxito!</p>
                     <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest">El archivo ha sido descargado automáticamente.</p>

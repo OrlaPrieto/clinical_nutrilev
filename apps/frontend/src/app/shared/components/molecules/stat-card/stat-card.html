@@ -11,12 +11,12 @@
       }
     </p>
   } @else {
-    <app-input 
+    <app-a-input 
       [type]="type()"
       [value]="value()"
       [placeholder]="placeholder()"
-      [customClass]="'!h-8 !border-none !bg-nutri-rose/5 !px-2 !font-bold !text-sm'"
+      [inputClass]="'!h-8 !border-none !bg-nutri-rose/5 !px-2 !font-bold !text-sm'"
       (valueChange)="onValueChange($event)">
-    </app-input>
+    </app-a-input>
   }
 </div>

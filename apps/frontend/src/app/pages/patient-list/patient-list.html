@@ -4,26 +4,26 @@
         <div class="max-w-7xl mx-auto space-y-8">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div class="space-y-4">
-                    <app-badge label="Panel de Control" variant="primary" size="sm" customClass="mb-2"></app-badge>
+                    <app-a-badge label="Panel de Control" variant="primary" size="sm" customClass="mb-2"></app-a-badge>
                     <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="160" height="61" class="h-20 w-auto object-contain" priority>
                     <p class="text-nutri-text/60 font-medium max-w-lg mt-2">Gestión eficiente de expedientes clínicos.</p>
                 </div>
 
                 <!-- Right Column: Premium Search Controls & Logout -->
                 <div class="w-full md:w-auto flex flex-col items-end gap-6">
-                    <app-button variant="outline" label="Cerrar Sesión" size="sm" icon="logout" 
+                    <app-a-button variant="outline" label="Cerrar Sesión" size="sm" icon="logout" 
                         customClass="!rounded-xl border-nutri-rose/10 hover:border-nutri-rose/30 text-[10px] font-bold uppercase tracking-widest transition-all"
                         (onClick)="authService.logout()">
-                    </app-button>
+                    </app-a-button>
                     <!-- Search & Controls Sub-bar -->
                     <div class="mt-4 flex items-center gap-3 w-full md:w-auto">
-                        <app-search-input [value]="searchTerm()" [loading]="loading()" placeholder="Buscar paciente..."
+                        <app-m-search-input [value]="searchTerm()" [loading]="loading()" placeholder="Buscar paciente..."
                             (search)="searchTerm.set($event); onSearch()" (clear)="searchTerm.set(''); onSearch()">
-                        </app-search-input>
+                        </app-m-search-input>
 
-                        <app-button variant="outline" size="md" icon="sync" [loading]="loading()"
+                        <app-a-button variant="outline" size="md" icon="sync" [loading]="loading()"
                             [customClass]="'!w-12 !h-12 !rounded-2xl border-nutri-rose/10 hover:border-nutri-rose/30 transition-all'" (onClick)="loadPatients()">
-                        </app-button>
+                        </app-a-button>
                     </div>
                 </div>
             </div>
@@ -32,35 +32,11 @@
 
     <!-- Main Content Area -->
     <div class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 py-10">
-        <!-- Compact Status Bar -->
         <div class="flex flex-wrap items-center gap-3 mb-8 animate-fade-up">
-            <!-- Total Pill -->
-            <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-2xl border border-nutri-rose/5 shadow-sm">
-                <mat-icon class="material-symbols-rounded text-nutri-rose text-sm">groups</mat-icon>
-                <span class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Total:</span>
-                <span class="text-xs font-black text-nutri-text">{{ totalCount() }}</span>
-            </div>
-
-            <!-- Active Pill -->
-            <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-2xl border border-nutri-rose/5 shadow-sm">
-                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                <span class="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest text-[9px]">Activos:</span>
-                <span class="text-xs font-black text-emerald-600">{{ activeCount() }}</span>
-            </div>
-
-            <!-- Pending Pill -->
-            <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-2xl border border-nutri-rose/5 shadow-sm">
-                <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
-                <span class="text-[10px] font-bold text-amber-600/60 uppercase tracking-widest text-[9px]">Pendientes:</span>
-                <span class="text-xs font-black text-amber-600">{{ pendingCount() }}</span>
-            </div>
-
-            <!-- Baja Pill -->
-            <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-2xl border border-nutri-rose/5 shadow-sm">
-                <div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
-                <span class="text-[10px] font-bold text-gray-500/60 uppercase tracking-widest text-[9px]">Baja:</span>
-                <span class="text-xs font-black text-gray-500">{{ bajaCount() }}</span>
-            </div>
+            <app-a-badge [label]="'Total: ' + totalCount()" variant="primary" icon="groups"></app-a-badge>
+            <app-a-badge [label]="'Activos: ' + activeCount()" variant="success" icon="check_circle"></app-a-badge>
+            <app-a-badge [label]="'Pendientes: ' + pendingCount()" variant="warning" icon="schedule"></app-a-badge>
+            <app-a-badge [label]="'Baja: ' + bajaCount()" variant="ghost" icon="person_off"></app-a-badge>
         </div>
 
         <!-- Loading State -->
@@ -77,23 +53,23 @@
         <div
             class="flex flex-col items-center justify-center py-40 space-y-6 bg-white rounded-[3rem] border border-nutri-rose/5 shadow-nutri animate-fade-up">
             <div class="w-20 h-20 rounded-4xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose/20">
-                <mat-icon class="material-symbols-rounded text-4xl">groups</mat-icon>
+                <app-a-icon name="groups" customClass="text-4xl"></app-a-icon>
             </div>
             <div class="text-center space-y-2">
                 <h3 class="text-xl font-bold text-nutri-text serif">No se encontraron pacientes</h3>
                 <p class="text-sm text-nutri-text/50 font-medium">Intenta con otro término de búsqueda o actualiza los
                     datos.</p>
             </div>
-            <app-button variant="secondary" label="Ver todos los pacientes"
-                (onClick)="searchTerm.set(''); onSearch()"></app-button>
+            <app-a-button variant="secondary" label="Ver todos los pacientes"
+                (onClick)="searchTerm.set(''); onSearch()"></app-a-button>
         </div>
         }
 
         <!-- Patient Table Organism -->
         @if (!loading() && filteredPatients().length > 0) {
-        <app-patient-table [patients]="paginatedPatients()" (view)="showDetail($event)"
+        <app-o-patient-table [patients]="paginatedPatients()" (view)="showDetail($event)"
             (schedule)="openAppointment($event)" (delete)="openDeleteConfirm($event)">
-        </app-patient-table>
+        </app-o-patient-table>
 
         <!-- Pagination Molecule (inline for now as it's specific) -->
         <div class="mt-10 flex flex-col md:flex-row items-center justify-between gap-6 px-6">
@@ -109,16 +85,16 @@
                             <option [value]="50">50 filas</option>
                         </select>
                         <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-nutri-rose/50 flex transition-transform">
-                            <mat-icon class="material-symbols-rounded text-base">expand_more</mat-icon>
+                            <app-a-icon name="expand_more" customClass="text-base"></app-a-icon>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <app-button variant="ghost" size="sm" icon="chevron_left" [disabled]="currentPage() === 1"
+                <app-a-button variant="ghost" size="sm" icon="chevron_left" [disabled]="currentPage() === 1"
                     (onClick)="goToPage(currentPage() - 1)">
-                </app-button>
+                </app-a-button>
 
                 <div class="flex items-center gap-1">
                     @for (p of pageNumbers(); track p) {
@@ -131,9 +107,9 @@
                     }
                 </div>
 
-                <app-button variant="ghost" size="sm" icon="chevron_right" [disabled]="currentPage() === totalPages()"
+                <app-a-button variant="ghost" size="sm" icon="chevron_right" [disabled]="currentPage() === totalPages()"
                     (onClick)="goToPage(currentPage() + 1)">
-                </app-button>
+                </app-a-button>
             </div>
         </div>
         }
@@ -147,10 +123,10 @@
 
 <!-- Modals -->
 @if (showAppointmentModal()) {
-<app-appointment-modal [patientName]="patientForAppointment()?.nombre || ''"
+<app-o-appointment-modal [patientName]="patientForAppointment()?.nombre || ''"
     [patientEmail]="patientForAppointment()?.email || ''" (onScheduled)="handleScheduled($event)"
     (onClosed)="showAppointmentModal.set(false)">
-</app-appointment-modal>
+</app-o-appointment-modal>
 }
 
 @if (displayDetail() && selectedPatient()) {
@@ -158,11 +134,10 @@
     (click)="displayDetail.set(false)">
     <div class="bg-white w-full h-full max-w-7xl rounded-t-[2.5rem] md:rounded-[3.5rem] shadow-2xl overflow-hidden border border-nutri-rose/10 pointer-events-auto animate-scale-up relative"
         (click)="$event.stopPropagation()">
-        <app-patient-detail [patient]="selectedPatient()"></app-patient-detail>
-        <button (click)="displayDetail.set(false)"
-            class="absolute top-4 right-4 md:top-8 md:right-8 w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/80 backdrop-blur-md flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-xl z-[110] border border-nutri-rose/10">
-            <mat-icon class="material-symbols-rounded text-xl">close</mat-icon>
-        </button>
+        <app-o-patient-detail [patient]="selectedPatient()"></app-o-patient-detail>
+        <app-a-button (onClick)="displayDetail.set(false)" variant="ghost" size="md" icon="close"
+                    customClass="!absolute !top-4 !right-4 md:!top-8 md:!right-8 !w-10 !h-10 md:!w-12 md:!h-12 !rounded-2xl !bg-white/80 !backdrop-blur-md !shadow-xl !z-[110] !border !border-nutri-rose/10">
+        </app-a-button>
     </div>
 </div>
 }
@@ -173,9 +148,8 @@
     <div class="bg-white w-full max-w-sm rounded-t-[3rem] md:rounded-[3rem] p-8 md:p-10 pb-12 shadow-2xl border border-nutri-rose/10 pointer-events-auto animate-scale-up text-center space-y-8"
         (click)="$event.stopPropagation()">
 
-        <div
-            class="w-20 h-20 rounded-[2.5rem] bg-rose-50 flex items-center justify-center text-rose-500 mx-auto shadow-sm">
-            <mat-icon class="material-symbols-rounded text-3xl">warning</mat-icon>
+        <div class="w-20 h-20 rounded-[2.5rem] bg-rose-50 flex items-center justify-center text-rose-500 mx-auto shadow-sm">
+            <app-a-icon name="warning" customClass="text-3xl text-rose-500"></app-a-icon>
         </div>
 
         <div class="space-y-3">
@@ -187,8 +161,8 @@
         </div>
 
         <div class="flex flex-col gap-3">
-            <app-button variant="danger" label="ELIMINAR AHORA" size="lg" (onClick)="confirmDelete()"></app-button>
-            <app-button variant="ghost" label="CANCELAR" size="md" (onClick)="cancelDelete()"></app-button>
+            <app-a-button variant="danger" label="ELIMINAR AHORA" size="lg" (onClick)="confirmDelete()"></app-a-button>
+            <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="cancelDelete()"></app-a-button>
         </div>
     </div>
 </div>
@@ -198,7 +172,7 @@
 <div
     class="fixed bottom-10 right-10 z-[200] bg-emerald-500 text-white px-8 py-5 rounded-[2rem] shadow-2xl shadow-emerald-500/30 flex items-center gap-4 animate-fade-up">
     <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-        <mat-icon class="material-symbols-rounded">check</mat-icon>
+        <app-a-icon name="check" customClass="text-white"></app-a-icon>
     </div>
     <div class="flex flex-col">
         <span class="text-[9px] font-black uppercase tracking-widest opacity-60">Éxito</span>

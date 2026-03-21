@@ -1,27 +1,25 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
+import { CalendarComponent } from '../../atoms/calendar/calendar';
+import { SelectComponent } from '../../atoms/select/select';
+import { IconComponent } from '../../atoms/icon/icon';
+import { InputComponent } from '../../atoms/input/input';
+import { ButtonComponent } from '../../atoms/button/button';
 
 @Component({
-  selector: 'app-appointment-calendar',
+  selector: 'app-o-appointment-calendar',
   standalone: true,
   imports: [
     CommonModule, 
     FormsModule, 
-    MatDatepickerModule, 
-    MatInputModule, 
-    MatFormFieldModule, 
-    MatSelectModule, 
-    MatButtonModule, 
     MatIconModule,
-    MatCardModule
+    CalendarComponent,
+    SelectComponent,
+    IconComponent,
+    InputComponent,
+    ButtonComponent
   ],
   templateUrl: './appointment-calendar.html',
   styleUrl: './appointment-calendar.css',
@@ -45,14 +43,14 @@ export class AppointmentCalendarOrganism {
   appointmentNumber: string = '1/3';
 
   // Time options (7:00 AM to 8:00 PM)
-  timeSlots: string[] = this.generateTimeSlots();
+  timeSlots: {label: string, value: string}[] = this.generateTimeSlots();
 
-  generateTimeSlots(): string[] {
+  generateTimeSlots(): {label: string, value: string}[] {
     const slots = [];
     for (let hour = 7; hour <= 20; hour++) {
       const h = hour.toString().padStart(2, '0');
-      slots.push(`${h}:00`);
-      if (hour < 20) slots.push(`${h}:30`);
+      slots.push({label: `${h}:00`, value: `${h}:00`});
+      if (hour < 20) slots.push({label: `${h}:30`, value: `${h}:30`});
     }
     return slots;
   }

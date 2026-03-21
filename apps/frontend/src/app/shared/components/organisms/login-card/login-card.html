@@ -12,20 +12,15 @@
       @if (!sent) {
         <div class="space-y-4">
           <div class="relative group">
-            <input type="email" [(ngModel)]="email" placeholder="tu@correo.com"
-                   class="w-full bg-nutri-rose/5 border border-nutri-rose/10 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-nutri-rose/20 transition-all placeholder:text-nutri-text/30">
+            <app-a-input type="email" [value]="email" (valueChange)="email = $event" placeholder="tu@correo.com"
+                        inputClass="!bg-nutri-rose/5 !border-nutri-rose/10 !rounded-2xl !px-6 !py-4 focus:!ring-2 focus:!ring-nutri-rose/20 transition-all placeholder:!text-nutri-text/30">
+            </app-a-input>
           </div>
           
-          <button (click)="onMagicLink()" [disabled]="loading || !email.includes('@')"
-                  class="w-full bg-nutri-rose text-white rounded-[1.5rem] py-4 text-xs font-black uppercase tracking-widest shadow-lg shadow-nutri-rose/30 hover:scale-[1.02] disabled:opacity-50 disabled:scale-100 transition-all flex items-center justify-center gap-3">
-            @if (loading) {
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              <span>Enviando...</span>
-            } @else {
-              <mat-icon class="material-symbols-rounded text-sm">mail</mat-icon>
-              <span>Enviar link de acceso</span>
-            }
-          </button>
+          <app-a-button (onClick)="onMagicLink()" [disabled]="loading || !email.includes('@')" [loading]="loading"
+                  label="Enviar link de acceso" icon="mail" variant="primary" size="lg"
+                  customClass="!w-full !rounded-[1.5rem] !py-8 !text-xs !font-black !uppercase !tracking-widest !shadow-lg !shadow-nutri-rose/30 hover:scale-[1.02] disabled:opacity-50 disabled:scale-100 transition-all">
+          </app-a-button>
         </div>
       }
 

@@ -2,12 +2,13 @@ import { Component, input, output, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Patient } from '../../../../models/patient.model';
 import { ButtonComponent } from '../../atoms/button/button';
-import { MatIconModule } from '@angular/material/icon';
+import { BadgeComponent } from '../../atoms/badge/badge';
+import { IconComponent } from '../../atoms/icon/icon';
 
 @Component({
-  selector: 'app-patient-table',
+  selector: 'app-o-patient-table',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, MatIconModule],
+  imports: [CommonModule, ButtonComponent, BadgeComponent, IconComponent],
   templateUrl: './patient-table.html',
   styleUrl: './patient-table.css'
 })
