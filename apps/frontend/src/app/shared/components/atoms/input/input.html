@@ -18,17 +18,17 @@
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       (input)="onInput($event)"
-      class="w-full h-14 bg-white/60 dark:bg-white/[0.03] rounded-2xl border border-white dark:border-white/5 focus:border-nutri-rose/20 dark:focus:border-nutri-rose/40 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text dark:text-slate-200 placeholder:text-nutri-text/50 dark:placeholder:text-slate-600"
-      [ngClass]="[inputClass(), icon() ? 'pl-12' : 'px-6', type() === 'number' ? 'pr-20' : '', error() ? 'border-rose-500/50 focus:border-rose-500' : '']">
+      class="w-full h-14 bg-white/70 dark:bg-white/[0.03] rounded-2xl border border-nutri-rose/10 dark:border-white/5 focus:border-nutri-rose/20 dark:focus:border-nutri-rose/40 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text dark:text-slate-200 placeholder:text-nutri-text/50 dark:placeholder:text-slate-600"
+      [ngClass]="[inputClass(), icon() ? 'pl-12' : 'px-6', (type() === 'number' && showSpinner()) ? 'pr-24' : 'pr-6', error() ? 'border-rose-500/50 focus:border-rose-500' : '']">
     
-    @if (type() === 'number') {
-      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 p-1 bg-black/20 dark:bg-white/5 rounded-xl border border-white/5">
-        <button (click)="decrement()" type="button" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-nutri-rose hover:text-white transition-all text-nutri-rose/60 active:scale-90">
-          <mat-icon class="material-symbols-rounded !text-sm">remove</mat-icon>
+    @if (type() === 'number' && showSpinner()) {
+      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 p-1 bg-nutri-rose/5 dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 backdrop-blur-sm">
+        <button (click)="decrement()" type="button" class="group w-8 h-8 flex items-center justify-center rounded-lg hover:bg-nutri-rose transition-all text-nutri-rose/60 active:scale-90">
+          <mat-icon class="material-symbols-rounded !text-sm group-hover:text-white transition-colors">remove</mat-icon>
         </button>
-        <div class="w-[1px] h-4 bg-white/10 mx-0.5"></div>
-        <button (click)="increment()" type="button" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-nutri-rose hover:text-white transition-all text-nutri-rose/60 active:scale-90">
-          <mat-icon class="material-symbols-rounded !text-sm">add</mat-icon>
+        <div class="w-[1px] h-4 bg-nutri-rose/10 dark:bg-white/10 mx-0.5"></div>
+        <button (click)="increment()" type="button" class="group w-8 h-8 flex items-center justify-center rounded-lg hover:bg-nutri-rose transition-all text-nutri-rose/60 active:scale-90">
+          <mat-icon class="material-symbols-rounded !text-sm group-hover:text-white transition-colors">add</mat-icon>
         </button>
       </div>
     }

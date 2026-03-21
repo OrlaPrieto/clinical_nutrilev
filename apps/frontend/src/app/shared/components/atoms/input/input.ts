@@ -21,6 +21,8 @@ export class InputComponent {
   error = input<string | undefined>();
   customClass = input<string>('');
   inputClass = input<string>('');
+  step = input<number>(1);
+  showSpinner = input<boolean>(true);
 
   valueChange = output<any>();
 
@@ -31,14 +33,21 @@ export class InputComponent {
   increment() {
     if (this.disabled()) return;
     const currentVal = parseFloat(this.value() || 0);
-    const newVal = (currentVal + 0.1).toFixed(1);
-    this.valueChange.emit(newVal);
+    const stepVal = this.step();
+    const newVal = currentVal + stepVal;
+    this.valueChange.emit(this.formatValue(newVal));
   }
 
   decrement() {
     if (this.disabled()) return;
     const currentVal = parseFloat(this.value() || 0);
-    const newVal = Math.max(0, currentVal - 0.1).toFixed(1);
-    this.valueChange.emit(newVal);
+    const stepVal = this.step();
+    const newVal = Math.max(0, currentVal - stepVal);
+    this.valueChange.emit(this.formatValue(newVal));
+  }
+
+  private formatValue(val: number): string | number {
+    // If step is an integer, return an integer. Otherwise, keep 1 decimal place.
+    return Number.isInteger(this.step()) ? Math.round(val) : parseFloat(val.toFixed(1));
   }
 }

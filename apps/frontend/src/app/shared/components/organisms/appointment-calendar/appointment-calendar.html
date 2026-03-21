@@ -36,7 +36,7 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <app-a-input label="Costo" type="number" [value]="cost" (valueChange)="cost = $event" icon="payments" placeholder="400"></app-a-input>
+              <app-a-input label="Costo" type="number" [value]="cost" (valueChange)="cost = $event" [showSpinner]="false" icon="payments" placeholder="400"></app-a-input>
               <app-a-input label="# Cita" [value]="appointmentNumber" (valueChange)="appointmentNumber = $event" icon="tag" placeholder="1/4"></app-a-input>
             </div>
           </div>

@@ -1,19 +1,19 @@
 <!-- Desktop Table View -->
-<div class="hidden lg:block bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 dark:border-white/5 animate-fade-up relative transition-colors overflow-hidden">
-  <div class="w-full">
+<div class="hidden lg:flex flex-1 flex-col min-h-0 bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 dark:border-white/5 animate-fade-up relative transition-colors overflow-hidden">
+  <div class="flex-1 overflow-y-auto scroll-premium">
     <table class="w-full text-left border-collapse min-w-[800px]">
-      <thead>
-        <tr class="bg-nutri-rose/[0.02] dark:bg-white/5 border-b border-nutri-rose/5 dark:border-white/10">
-          <th class="px-12 py-6 text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
-          <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Nacimiento</th>
-          <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Prefs</th>
-          <th class="px-8 py-6 text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Notas</th>
-          <th class="px-12 py-6 text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
+      <thead class="sticky top-0 z-30 bg-white dark:bg-[#111111]">
+        <tr class="bg-nutri-rose/[0.04] dark:bg-white/5 border-b border-nutri-rose/10 dark:border-white/10">
+          <th class="px-12 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
+          <th class="px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Nacimiento</th>
+          <th class="px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Prefs</th>
+          <th class="px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Notas</th>
+          <th class="px-12 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-nutri-rose/[0.03] dark:divide-white/5">
         @for (patient of patients(); track patient.email || $index; let i = $index) {
-          <tr class="group relative hover:bg-nutri-rose/[0.01] dark:hover:bg-white/[0.02] transition-all duration-300 hover:z-40"
+          <tr class="group relative hover:bg-nutri-rose/[0.01] dark:hover:bg-white/[0.02] transition-all duration-300 hover:z-50"
               [ngClass]="{
                   'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40 border-gray-300/50 dark:border-gray-700/50': patient.dado_de_baja,
                   '!bg-amber-50/40 dark:!bg-amber-500/5 border-amber-100/50 dark:border-amber-500/10': !patient.acceso_portal && !patient.dado_de_baja
@@ -74,7 +74,12 @@
                      [class.opacity-100]="activeTooltipId() === i + '-prefs'"
                      [class.visible]="activeTooltipId() === i + '-prefs'"
                      [class.translate-x-0]="activeTooltipId() === i + '-prefs'"
-                     class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-all transition-colors duration-500">
+                     [ngClass]="{
+                        'top-[-1rem] translate-y-0': i < 2,
+                        'bottom-[-1rem] translate-y-0 shadow-[-10px_-10px_30px_rgba(0,0,0,0.1)]': i >= patients().length - 3,
+                        'top-1/2 -translate-y-1/2 translate-x-2': i >= 2 && i < patients().length - 3
+                     }"
+                     class="absolute right-full mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-colors duration-500">
                     <div class="space-y-4 max-h-64 overflow-y-auto pr-2 scroll-premium">
                       <h4 class="text-[9px] font-black text-nutri-rose uppercase tracking-[0.2em] mb-3">Preferencias Alimentarias</h4>
                       <div class="space-y-3">
@@ -92,7 +97,12 @@
                         </div>
                       </div>
                     </div>
-                    <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 rotate-45"></div>
+                    <div [ngClass]="{
+                            'top-4 !translate-y-0 rotate-[135deg]': i < 2,
+                            'bottom-4 !translate-y-0 rotate-[225deg] top-auto': i >= patients().length - 3,
+                            'top-1/2 -translate-y-1/2 rotate-45': i >= 2 && i < patients().length - 3
+                         }"
+                         class="absolute -right-2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 transition-all"></div>
                 </div>
               </div>
             </td>
@@ -101,6 +111,7 @@
               <div class="relative group/tooltip inline-block">
                 <app-a-button (onClick)="toggleTooltip(i + '-notes', $event)" [disabled]="!patient.notas"
                         variant="ghost" icon="edit_note" size="sm"
+                        class="block"
                         customClass="!w-9 !h-9 !rounded-xl !bg-nutri-bg/50 dark:!bg-white/5 !text-emerald-500 hover:!bg-emerald-500 hover:!text-white disabled:!opacity-20 active:scale-95 transition-all">
                 </app-a-button>
 
@@ -108,7 +119,12 @@
                      [class.opacity-100]="activeTooltipId() === i + '-notes'"
                      [class.visible]="activeTooltipId() === i + '-notes'"
                      [class.translate-x-0]="activeTooltipId() === i + '-notes'"
-                     class="absolute top-1/2 right-full -translate-y-1/2 mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] translate-x-2 group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-colors duration-500">
+                     [ngClass]="{
+                        'top-[-1rem] translate-y-0': i < 2,
+                        'bottom-[-1rem] translate-y-0 shadow-[-10px_-10px_30px_rgba(0,0,0,0.1)]': i >= patients().length - 3,
+                        'top-1/2 -translate-y-1/2 translate-x-2': i >= 2 && i < patients().length - 3
+                     }"
+                     class="absolute right-full mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-colors duration-500">
                     <div class="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-premium">
                       <div class="flex items-center gap-2 mb-2">
                         <app-a-icon name="description" customClass="text-emerald-500 text-sm"></app-a-icon>
@@ -116,7 +132,12 @@
                       </div>
                       <p class="text-[11px] text-nutri-text/60 dark:text-slate-400 font-medium leading-relaxed italic bg-nutri-bg/30 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5">{{ patient.notas || 'Sin notas registradas.' }}</p>
                     </div>
-                    <div class="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 rotate-45"></div>
+                    <div [ngClass]="{
+                            'top-4 !translate-y-0 rotate-[135deg]': i < 2,
+                            'bottom-4 !translate-y-0 rotate-[225deg] top-auto': i >= patients().length - 3,
+                            'top-1/2 -translate-y-1/2 rotate-45': i >= 2 && i < patients().length - 3
+                         }"
+                         class="absolute -right-2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 transition-all"></div>
                 </div>
               </div>
             </td>
@@ -152,7 +173,7 @@
 </div>
 
 <!-- Mobile Card View -->
-<div class="lg:hidden space-y-4 animate-fade-up">
+<div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-4 space-y-4 animate-fade-up scroll-premium lg:hidden text-left">
   @for (patient of patients(); track patient.email || $index; let i = $index) {
     <div class="bg-white dark:bg-[#111111] rounded-3xl p-6 shadow-nutri border border-nutri-rose/5 dark:border-white/5 space-y-4 transition-all duration-300"
          [ngClass]="{
