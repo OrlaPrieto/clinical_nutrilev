@@ -1,0 +1,71 @@
+<header class="fixed top-0 left-0 right-0 z-[100] bg-white/80 dark:bg-[#080808]/80 backdrop-blur-xl border-b border-nutri-rose/5 dark:border-white/5 transition-all duration-500">
+    <div class="max-w-7xl mx-auto h-24 px-6 md:px-12 flex items-center justify-between gap-8">
+        
+        <!-- Left: Branding -->
+        <div class="flex items-center gap-6 shrink-0">
+            <div class="flex flex-col">
+                <app-a-badge label="Panel de Control" variant="primary" size="sm" customClass="mb-1 !px-2 !py-0.5 !text-[8px]"></app-a-badge>
+                <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="120" height="46" 
+                     class="h-12 w-auto object-contain dark:brightness-110 dark:contrast-125 transition-all" priority>
+            </div>
+        </div>
+
+        <!-- Center: Search -->
+        <div class="hidden md:flex flex-1 max-w-xl animate-fade-in">
+            <app-m-search-input 
+                [value]="searchTerm()" 
+                [loading]="loading()" 
+                placeholder="Buscar paciente por nombre o correo..."
+                (search)="search.emit($event)" 
+                (clear)="search.emit('')"
+                class="w-full">
+            </app-m-search-input>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="flex items-center gap-2 md:gap-4 shrink-0">
+            
+            <div class="flex items-center bg-nutri-bg/50 dark:bg-white/5 rounded-2xl p-1 gap-1 border border-nutri-rose/10 dark:border-white/5 transition-colors">
+                <!-- Sync -->
+                <button (click)="sync.emit()" 
+                        [disabled]="loading()"
+                        class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white dark:hover:bg-white/10 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose dark:hover:text-nutri-rose disabled:opacity-50 group">
+                    <app-a-icon [name]="loading() ? 'sync' : 'sync'" size="18px" [customClass]="loading() ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'"></app-a-icon>
+                </button>
+
+                <!-- Theme -->
+                <button (click)="toggleTheme.emit()" 
+                        class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white dark:hover:bg-white/10 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose dark:hover:text-nutri-rose">
+                    <app-a-icon [name]="themeService.isDarkMode() ? 'light_mode' : 'dark_mode'" size="18px"></app-a-icon>
+                </button>
+            </div>
+
+            <!-- Logout -->
+            <app-a-button 
+                variant="outline" 
+                label="Salir" 
+                size="sm" 
+                icon="logout" 
+                customClass="!rounded-2xl border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 !h-12 !px-5 text-[10px] font-black uppercase tracking-widest transition-all dark:text-slate-400 hidden sm:flex"
+                (onClick)="logout.emit()">
+            </app-a-button>
+
+            <!-- Mobile Logout (Icon only) -->
+            <button (click)="logout.emit()" class="sm:hidden w-12 h-12 rounded-2xl border border-nutri-rose/10 dark:border-white/10 flex items-center justify-center text-nutri-text/40">
+                <app-a-icon name="logout" size="20px"></app-a-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Search Bar (Only visible on small screens) -->
+    <div class="md:hidden px-6 pb-4 animate-fade-in">
+        <app-m-search-input 
+            [value]="searchTerm()" 
+            [loading]="loading()" 
+            placeholder="Buscar..."
+            (search)="search.emit($event)" 
+            (clear)="search.emit('')"
+            class="w-full">
+        </app-m-search-input>
+    </div>
+</header>

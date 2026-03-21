@@ -27,4 +27,18 @@ export class InputComponent {
   onInput(event: any) {
     this.valueChange.emit(event.target.value);
   }
+
+  increment() {
+    if (this.disabled()) return;
+    const currentVal = parseFloat(this.value() || 0);
+    const newVal = (currentVal + 0.1).toFixed(1);
+    this.valueChange.emit(newVal);
+  }
+
+  decrement() {
+    if (this.disabled()) return;
+    const currentVal = parseFloat(this.value() || 0);
+    const newVal = Math.max(0, currentVal - 0.1).toFixed(1);
+    this.valueChange.emit(newVal);
+  }
 }

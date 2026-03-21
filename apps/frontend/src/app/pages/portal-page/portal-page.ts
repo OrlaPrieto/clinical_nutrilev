@@ -1,11 +1,10 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { PatientService } from '../../services/patient';
 import { Patient } from '../../models/patient.model';
 import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
-import { APP_VERSION } from '../../version';
 import { ThemeService } from '../../shared/services/theme.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
@@ -14,13 +13,12 @@ import { MilestoneBadgeComponent } from '../../shared/components/molecules/miles
 @Component({
   selector: 'app-portal-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent],
+  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
   providers: [DatePipe]
 })
 export class PortalPage implements OnInit {
-  public version = APP_VERSION;
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);

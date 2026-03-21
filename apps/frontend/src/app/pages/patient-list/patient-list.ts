@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientService } from '../../services/patient';
 import { AuthService } from '../../services/auth.service';
@@ -11,6 +11,7 @@ import { ThemeService } from '../../shared/services/theme.service';
 import { PatientTableOrganism } from '../../shared/components/organisms/patient-table/patient-table';
 import { AppointmentModalComponent } from '../../shared/components/organisms/appointment-modal/appointment-modal';
 import { PatientDetailComponent } from '../../shared/components/organisms/patient-detail/patient-detail';
+import { DashboardHeaderComponent } from '../../shared/components/organisms/dashboard-header/dashboard-header';
 import { MatIconModule } from '@angular/material/icon';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { Router, RouterModule } from '@angular/router';
@@ -23,20 +24,18 @@ import { APP_VERSION } from '../../version';
     CommonModule, 
     FormsModule, 
     ButtonComponent, 
-    SearchInputComponent, 
     PatientTableOrganism,
     AppointmentModalComponent,
     PatientDetailComponent,
+    DashboardHeaderComponent,
     BadgeComponent,
     RouterModule,
-    NgOptimizedImage,
     IconComponent
   ],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.css'
 })
 export class PatientListPage implements OnInit {
-  public version = APP_VERSION;
   public authService = inject(AuthService);
   public themeService = inject(ThemeService);
   private patientService = inject(PatientService);

@@ -1,45 +1,15 @@
-<div class="min-h-screen bg-nutri-bg dark:bg-[#080808] selection:bg-nutri-rose/20 pb-20 transition-colors duration-700">
-    <!-- Header Hero -->
-    <div class="relative z-10 bg-white dark:bg-[#080808] border-b border-nutri-rose/5 dark:border-white/5 pt-12 pb-8 px-6 md:px-12 transition-colors">
-        <div class="max-w-7xl mx-auto space-y-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div class="space-y-4">
-                    <app-a-badge label="Panel de Control" variant="primary" size="sm" customClass="mb-2"></app-a-badge>
-                    <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="160" height="61" class="h-20 w-auto object-contain dark:brightness-110 dark:contrast-125" priority>
-                    <p class="text-nutri-text/60 dark:text-slate-500 font-medium max-w-lg mt-2">Gestión eficiente de expedientes clínicos.</p>
-                </div>
-
-                <!-- Right Column: Premium Search Controls & Logout -->
-                <div class="w-full md:w-auto flex flex-col items-end gap-6">
-                    <div class="flex items-center gap-3">
-                        <!-- Theme Toggle -->
-                        <button (click)="toggleTheme()" 
-                                class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose dark:hover:text-nutri-rose">
-                            <app-a-icon [name]="themeService.isDarkMode() ? 'light_mode' : 'dark_mode'" size="20px"></app-a-icon>
-                        </button>
-
-                        <app-a-button variant="outline" label="Salir" size="sm" icon="logout" 
-                            customClass="!rounded-xl border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-[10px] font-bold uppercase tracking-widest transition-all dark:text-slate-400"
-                            (onClick)="authService.logout()">
-                        </app-a-button>
-                    </div>
-                    <!-- Search & Controls Sub-bar -->
-                    <div class="mt-4 flex items-center gap-3 w-full md:w-auto">
-                        <app-m-search-input [value]="searchTerm()" [loading]="loading()" placeholder="Buscar paciente..."
-                            (search)="searchTerm.set($event); onSearch()" (clear)="searchTerm.set(''); onSearch()">
-                        </app-m-search-input>
-
-                        <app-a-button variant="outline" size="md" icon="sync" [loading]="loading()"
-                            [customClass]="'!w-12 !h-12 !rounded-2xl border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 transition-all dark:text-slate-400'" (onClick)="loadPatients()">
-                        </app-a-button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="min-h-screen bg-nutri-bg dark:bg-[#080808] selection:bg-nutri-rose/20 transition-colors duration-700">
+    <app-o-dashboard-header 
+        [loading]="loading()" 
+        [searchTerm]="searchTerm()"
+        (search)="searchTerm.set($event); onSearch()"
+        (sync)="loadPatients()"
+        (toggleTheme)="toggleTheme()"
+        (logout)="authService.logout()">
+    </app-o-dashboard-header>
 
     <!-- Main Content Area -->
-    <div class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 py-10">
+    <div class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24">
         <div class="flex flex-wrap items-center gap-3 mb-8 animate-fade-up">
             <app-a-badge [label]="'Total: ' + totalCount()" variant="primary" icon="groups"></app-a-badge>
             <app-a-badge [label]="'Activos: ' + activeCount()" variant="success" icon="check_circle"></app-a-badge>
@@ -121,11 +91,6 @@
             </div>
         </div>
         }
-    </div>
-
-    <!-- Footer Version -->
-    <div class="max-w-7xl mx-auto px-6 md:px-12 py-10 flex justify-center border-t border-nutri-rose/5 dark:border-white/5 opacity-10">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] dark:text-white">v{{version}} · Clínica Nutrilev</p>
     </div>
 </div>
 

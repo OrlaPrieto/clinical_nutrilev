@@ -64,7 +64,7 @@
             </div>
             
             <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-nutri-rose/20 shadow-sm w-full md:w-auto overflow-hidden">
-                <code class="text-[10px] font-mono text-nutri-text/60 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
+                <code class="text-[10px] font-mono text-nutri-text/60 dark:text-slate-400 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
                 <app-a-button (onClick)="copyToClipboard()" 
                             [label]="copied() ? 'Copiado' : 'Copiar'" [icon]="copied() ? 'check' : 'content_copy'"
                             variant="primary" size="sm" customClass="!shadow-sm !shadow-nutri-rose/20">
@@ -138,14 +138,15 @@
                               class="w-full bg-white/50 dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 p-4 text-sm font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[80px] dark:text-slate-300 transition-colors"
                               [ngClass]="!isEditing() ? 'cursor-default border-transparent' : ''"
                               placeholder="Escribe el motivo de consulta..."></textarea>
-                    <div class="flex items-center gap-2">
-                        <p class="text-[9px] text-nutri-rose/40 font-bold uppercase tracking-widest">Fuente: </p>
-                        @if (!isEditing()) {
-                            <span class="text-[9px] font-bold text-nutri-text/60 uppercase">{{patient()?.recomendacion_fuente || '---'}}</span>
-                        }
-                        @if (isEditing()) {
-                            <input [(ngModel)]="patient().recomendacion_fuente" class="bg-nutri-rose/5 rounded px-2 py-0.5 text-[9px] font-bold outline-none border-none text-nutri-rose">
-                        }
+                    <div class="pt-4 border-t border-nutri-rose/[0.03]">
+                        <app-m-detail-field
+                            label="Fuente de recomendación"
+                            [value]="patient()?.recomendacion_fuente"
+                            icon="campaign"
+                            [isEditing]="isEditing()"
+                            placeholder="¿Quién recomendó?..."
+                            (valueChange)="patient().recomendacion_fuente = $event">
+                        </app-m-detail-field>
                     </div>
                 </div>
             </div>
@@ -156,72 +157,68 @@
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
-                        <div class="flex gap-4 items-start">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 dark:bg-white/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="medical_services" customClass="text-sm"></app-a-icon></div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Patologías</h4>
-                                @if (!isEditing()) {
-                                    <p class="text-sm leading-relaxed font-medium">{{patient()?.antecedentes_patologicos || 'Ninguno'}}</p>
-                                }
-                                @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().antecedentes_patologicos" class="w-full bg-nutri-rose/5 dark:bg-white/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300"></textarea>
-                                }
-                            </div>
-                        </div>
-                        <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="favorite" customClass="text-sm"></app-a-icon></div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Enfermedades</h4>
-                                @if (!isEditing()) {
-                                    <p class="text-sm leading-relaxed font-medium">{{patient()?.enfermedades || 'Ninguno'}}</p>
-                                }
-                                @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().enfermedades" class="w-full bg-nutri-rose/5 dark:bg-white/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300"></textarea>
-                                }
-                            </div>
+                        <app-m-detail-field
+                            label="Patologías"
+                            [value]="patient()?.antecedentes_patologicos"
+                            icon="medical_services"
+                            [isEditing]="isEditing()"
+                            type="textarea"
+                            placeholder="Describir patologías..."
+                            (valueChange)="patient().antecedentes_patologicos = $event">
+                        </app-m-detail-field>
+                        <div class="border-t border-nutri-rose/[0.03] pt-4">
+                            <app-m-detail-field
+                                label="Enfermedades"
+                                [value]="patient()?.enfermedades"
+                                icon="favorite"
+                                [isEditing]="isEditing()"
+                                type="textarea"
+                                placeholder="Describir enfermedades..."
+                                (valueChange)="patient().enfermedades = $event">
+                            </app-m-detail-field>
                         </div>
                     </div>
                     <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
-                        <div class="flex gap-4 items-start">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="edit_note" customClass="text-sm"></app-a-icon></div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Med/Cirugías</h4>
-                                @if (!isEditing()) {
-                                    <p class="text-sm leading-relaxed font-medium">{{patient()?.medicamentos || 'No'}} / {{patient()?.cirugias || 'No'}}</p>
-                                }
-                                @if (isEditing()) {
-                                    <div class="space-y-2">
-                                        <input [(ngModel)]="patient().medicamentos" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs outline-none" placeholder="Medicamentos">
-                                        <input [(ngModel)]="patient().cirugias" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs outline-none" placeholder="Cirugías">
-                                    </div>
-                                }
-                            </div>
+                        <app-m-detail-field
+                            label="Medicamentos"
+                            [value]="patient()?.medicamentos"
+                            icon="medication"
+                            [isEditing]="isEditing()"
+                            placeholder="Medicamentos..."
+                            (valueChange)="patient().medicamentos = $event">
+                        </app-m-detail-field>
+                        <div class="border-t border-nutri-rose/[0.03] pt-4">
+                            <app-m-detail-field
+                                label="Cirugías"
+                                [value]="patient()?.cirugias"
+                                icon="content_cut"
+                                [isEditing]="isEditing()"
+                                placeholder="Cirugías..."
+                                (valueChange)="patient().cirugias = $event">
+                            </app-m-detail-field>
                         </div>
-                        <div class="flex gap-4 items-start border-t border-nutri-rose/[0.03] pt-4">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="groups" customClass="text-sm"></app-a-icon></div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Familiar</h4>
-                                @if (!isEditing()) {
-                                    <p class="text-sm leading-relaxed font-medium">{{patient()?.antecedentes_familiares || 'Ninguno'}}</p>
-                                }
-                                @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().antecedentes_familiares" class="w-full bg-nutri-rose/5 dark:bg-white/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300"></textarea>
-                                }
-                            </div>
-                        </div>
+                        <app-m-detail-field
+                            label="Familiar"
+                            [value]="patient()?.antecedentes_familiares"
+                            icon="groups"
+                            [isEditing]="isEditing()"
+                            type="textarea"
+                            placeholder="Antecedentes familiares..."
+                            (valueChange)="patient().antecedentes_familiares = $event">
+                        </app-m-detail-field>
                     </div>
                 </div>
     
                 <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm transition-colors">
-                    <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest mb-3">Laboratorios</h4>
-                    <div class="text-sm leading-relaxed text-nutri-text/60 dark:text-slate-400 italic bg-nutri-bg/30 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5">
-                        @if (!isEditing()) {
-                            <p>{{patient()?.laboratorios || 'No registrados.'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <textarea [(ngModel)]="patient().laboratorios" class="w-full bg-transparent p-0 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300" placeholder="Registrar laboratorios..."></textarea>
-                        }
-                    </div>
+                    <app-m-detail-field
+                        label="Laboratorios"
+                        [value]="patient()?.laboratorios"
+                        icon="science"
+                        [isEditing]="isEditing()"
+                        type="textarea"
+                        placeholder="Registrar laboratorios..."
+                        (valueChange)="patient().laboratorios = $event">
+                    </app-m-detail-field>
                 </div>
             </div>
         }
@@ -254,43 +251,34 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2">
-                                <app-a-icon name="bolt" customClass="text-nutri-rose text-xs"></app-a-icon>
-                                <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Actividad Física</span>
-                            </div>
-                            @if (!isEditing()) {
-                                <p class="text-sm font-bold text-nutri-text/80 dark:text-slate-200">{{patient()?.hace_ejercicio}}</p>
-                            }
-                            @if (isEditing()) {
-                                <input type="text" [(ngModel)]="patient().hace_ejercicio" 
-                                       class="w-full p-3 rounded-xl bg-nutri-bg/50 dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 text-xs font-bold outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 dark:text-slate-300 transition-colors"
-                                       placeholder="¿Hace ejercicio?">
-                            }
-                            @if (!isEditing()) {
-                                <p class="text-xs italic text-nutri-text/60 dark:text-slate-500 leading-relaxed">{{patient()?.ejercicio_detalles}}</p>
-                            }
-                            @if (isEditing()) {
-                                <textarea [(ngModel)]="patient().ejercicio_detalles" 
-                                          class="w-full bg-nutri-bg/20 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[100px] dark:text-slate-300 transition-colors"
-                                          placeholder="Detalles del ejercicio..."></textarea>
-                            }
+                        <div class="space-y-4">
+                            <app-m-detail-field
+                                label="Actividad Física"
+                                [value]="patient()?.hace_ejercicio"
+                                icon="bolt"
+                                [isEditing]="isEditing()"
+                                placeholder="¿Hace ejercicio?..."
+                                (valueChange)="patient().hace_ejercicio = $event">
+                            </app-m-detail-field>
+                            <app-m-detail-field
+                                label="Detalles"
+                                [value]="patient()?.ejercicio_detalles"
+                                [isEditing]="isEditing()"
+                                type="textarea"
+                                placeholder="Detalles del ejercicio..."
+                                (valueChange)="patient().ejercicio_detalles = $event">
+                            </app-m-detail-field>
                         </div>
 
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2">
-                                <app-a-icon name="schedule" customClass="text-nutri-rose text-xs"></app-a-icon>
-                                <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Horarios y Actividad</span>
-                            </div>
-                            @if (!isEditing()) {
-                                <p class="text-sm border-l-2 border-nutri-rose/10 dark:border-white/10 pl-4 py-2 text-nutri-text/70 dark:text-slate-400 leading-relaxed">{{patient()?.tipo_actividad_horario}}</p>
-                            }
-                            @if (isEditing()) {
-                                <textarea [(ngModel)]="patient().tipo_actividad_horario" 
-                                          class="w-full bg-nutri-bg/20 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[145px] dark:text-slate-300 transition-colors"
-                                          placeholder="Describe horarios y tipo de actividad diaria..."></textarea>
-                            }
-                </div>
+                        <app-m-detail-field
+                            label="Horarios y Actividad"
+                            [value]="patient()?.tipo_actividad_horario"
+                            icon="schedule"
+                            [isEditing]="isEditing()"
+                            type="textarea"
+                            placeholder="Describe horarios y actividad..."
+                            (valueChange)="patient().tipo_actividad_horario = $event">
+                        </app-m-detail-field>
             </div>
         </div>
     </div>
@@ -356,35 +344,25 @@
                     <!-- Column 2: Logística / Compra (Less Important) -->
                     <div class="lg:col-span-1 bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 flex flex-col justify-center transition-colors">
                         <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
-                                    <app-a-icon name="shopping_cart" customClass="text-sm"></app-a-icon>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Logística de Compra</h4>
-                                    @if (!isEditing()) {
-                                        <p class="text-xs font-bold text-nutri-text/70 dark:text-slate-400 transition-colors">{{patient()?.comida_comprada || '---'}}</p>
-                                    }
-                                    @if (isEditing()) {
-                                        <input [(ngModel)]="patient().comida_comprada" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30 transition-colors">
-                                    }
-                                </div>
-                            </div>
+                                <app-m-detail-field
+                                    label="Logística de Compra"
+                                    [value]="patient()?.comida_comprada"
+                                    icon="shopping_cart"
+                                    [isEditing]="isEditing()"
+                                    placeholder="¿Dónde compra?..."
+                                    (valueChange)="patient().comida_comprada = $event">
+                                </app-m-detail-field>
                             
-                            <div class="flex items-center gap-3 pt-4 border-t border-nutri-rose/[0.03]">
-                                <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
-                                    <app-a-icon name="restaurant" customClass="text-sm"></app-a-icon>
+                                <div class="pt-4 border-t border-nutri-rose/[0.03]">
+                                    <app-m-detail-field
+                                        label="¿Quién prepara?"
+                                        [value]="patient()?.quien_cocina"
+                                        icon="restaurant"
+                                        [isEditing]="isEditing()"
+                                        placeholder="¿Quién cocina?..."
+                                        (valueChange)="patient().quien_cocina = $event">
+                                    </app-m-detail-field>
                                 </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/60 mb-1">¿Quién prepara?</h4>
-                                    @if (!isEditing()) {
-                                        <p class="text-xs font-bold text-nutri-text/70 dark:text-slate-400 transition-colors">{{patient()?.quien_cocina || '---'}}</p>
-                                    }
-                                    @if (isEditing()) {
-                                        <input [(ngModel)]="patient().quien_cocina" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30 transition-colors">
-                                    }
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -558,19 +536,22 @@
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Peso (kg)</label>
                                 <app-a-input type="number" [value]="newProgress().weight" (valueChange)="newProgress().weight = $event" 
-                                            customClass="!bg-nutri-bg dark:!bg-white/5 !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto dark:!text-slate-200">
+                                            placeholder="00.0"
+                                            inputClass="!h-12 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-sm !font-bold">
                                 </app-a-input>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Grasa (%)</label>
                                 <app-a-input type="number" [value]="newProgress().body_fat" (valueChange)="newProgress().body_fat = $event" 
-                                            customClass="!bg-nutri-bg !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto">
+                                            placeholder="00.0"
+                                            inputClass="!h-12 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-sm !font-bold">
                                 </app-a-input>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Músculo (kg)</label>
                                 <app-a-input type="number" [value]="newProgress().muscle_mass" (valueChange)="newProgress().muscle_mass = $event" 
-                                            customClass="!bg-nutri-bg !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto">
+                                            placeholder="00.0"
+                                            inputClass="!h-12 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-sm !font-bold">
                                 </app-a-input>
                             </div>
                         </div>
@@ -606,7 +587,7 @@
                                         <div class="flex items-start justify-between mb-4">
                                             <div class="w-12 h-12 rounded-2xl bg-white dark:bg-black shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5 dark:border-white/10 transition-colors">
                                                 <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ record.date | date:'dd' }}</span>
-                                                <span class="text-[8px] font-black uppercase text-nutri-text/50 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
+                                                <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
                                             </div>
                                             <div class="flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
                                                 <div class="flex flex-col items-end">
@@ -647,7 +628,7 @@
                 <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                     <div class="space-y-0.5">
                         <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
-                        <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Sincronización automática activa</p>
+                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Sincronización automática activa</p>
                     </div>
                     <button class="btn-primary" [disabled]="saving()" (click)="saveChanges()">
                         <app-a-icon [name]="saving() ? 'sync' : 'save'" customClass="mr-2" [ngClass]="{'animate-spin': saving()}"></app-a-icon>
@@ -709,7 +690,7 @@
                 <span class="text-[9px] font-bold text-rose-500 uppercase italic animate-pulse">Este registro aparecerá desactivado en la lista</span>
             }
         </div>
-        <p class="text-[8px] font-bold text-nutri-text/20 uppercase tracking-[0.2em]">Nutrilev Admin Panel</p>
+        <p class="text-[8px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.2em]">Nutrilev Admin Panel</p>
     </div>
 </div>
 }

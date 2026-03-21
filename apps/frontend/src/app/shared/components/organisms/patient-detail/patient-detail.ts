@@ -6,6 +6,7 @@ import { IconComponent } from '../../atoms/icon/icon';
 import { InputComponent } from '../../atoms/input/input';
 import { BadgeComponent } from '../../atoms/badge/badge';
 import { StatCardComponent } from '../../molecules/stat-card/stat-card';
+import { DetailFieldComponent } from '../../molecules/detail-field/detail-field';
 import { PatientService } from '../../../../services/patient';
 import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
@@ -14,7 +15,7 @@ import { NutriImagePipe } from '../../../pipes/nutri-image.pipe';
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, NutriImagePipe],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, NutriImagePipe],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.css'
 })
