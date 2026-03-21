@@ -5,7 +5,8 @@
         (search)="searchTerm.set($event); onSearch()"
         (sync)="loadPatients()"
         (toggleTheme)="toggleTheme()"
-        (logout)="authService.logout()">
+        (logout)="authService.logout()"
+        (openAi)="navigateToAutomation()">
     </app-o-dashboard-header>
 
     <!-- Main Content Area -->

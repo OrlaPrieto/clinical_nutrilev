@@ -26,6 +26,12 @@
         <div class="flex items-center gap-2 md:gap-4 shrink-0">
             
             <div class="flex items-center bg-nutri-bg/50 dark:bg-white/5 rounded-2xl p-1 gap-1 border border-nutri-rose/10 dark:border-white/5 transition-colors">
+                <!-- AI Button -->
+                <button (click)="openAi.emit()" 
+                        class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-nutri-rose/10 text-nutri-rose/70 dark:text-nutri-rose/60 hover:text-nutri-rose hover:shadow-[0_0_15px_rgba(235,100,105,0.3)]">
+                    <app-a-icon name="auto_awesome" size="18px" customClass="animate-pulse"></app-a-icon>
+                </button>
+
                 <!-- Sync -->
                 <button (click)="sync.emit()" 
                         [disabled]="loading()"

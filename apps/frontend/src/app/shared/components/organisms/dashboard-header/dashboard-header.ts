@@ -32,4 +32,5 @@ export class DashboardHeaderComponent {
   toggleTheme = output<void>();
   sync = output<void>();
   logout = output<void>();
+  openAi = output<void>();
 }
