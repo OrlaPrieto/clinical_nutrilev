@@ -1,17 +1,20 @@
-import { Component, input, output, ViewEncapsulation } from '@angular/core';
+import { Component, input, output, ViewEncapsulation, HostListener, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { CalendarComponent } from '../calendar/calendar';
 
 @Component({
   selector: 'app-a-input',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, CalendarComponent],
   templateUrl: './input.html',
   styleUrl: './input.css',
   encapsulation: ViewEncapsulation.None
 })
 export class InputComponent {
+  private elementRef = inject(ElementRef);
+  
   label = input<string>('');
   placeholder = input<string>('');
   value = input<any>('');
@@ -30,6 +33,24 @@ export class InputComponent {
     this.valueChange.emit(event.target.value);
   }
 
+  showCalendar = false;
+
+  toggleCalendar() {
+    if (this.disabled()) return;
+    this.showCalendar = !this.showCalendar;
+  }
+
+  onDateSelect(date: Date | null) {
+    if (date) {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+      this.valueChange.emit(formattedDate);
+    }
+    this.showCalendar = false;
+  }
+
   handleDateClick(input: HTMLInputElement) {
     if (this.type() === 'date' && !this.disabled()) {
       try {
@@ -38,6 +59,8 @@ export class InputComponent {
         // Fallback or ignore if not supported
         input.focus();
       }
+    } else if (this.type() === 'calendar') {
+      this.toggleCalendar();
     }
   }
 

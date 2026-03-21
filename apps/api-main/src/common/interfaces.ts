@@ -6,8 +6,14 @@ export type PatientUpdate = Database['public']['Tables']['patients']['Update'];
 
 export type PatientProgress =
   Database['public']['Tables']['patient_progress']['Row'];
-export type PatientProgressInsert =
-  Database['public']['Tables']['patient_progress']['Insert'];
+export type PatientProgressInsert = Omit<
+  Database['public']['Tables']['patient_progress']['Insert'],
+  'weight' | 'body_fat' | 'muscle_mass'
+> & {
+  weight: string | number;
+  body_fat?: string | number | null;
+  muscle_mass?: string | number | null;
+};
 
 export interface AiResponse<T = unknown> {
   success: boolean;

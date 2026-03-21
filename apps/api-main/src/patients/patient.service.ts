@@ -78,11 +78,20 @@ export class PatientService {
   async addProgress(
     progressData: PatientProgressInsert,
   ): Promise<PatientProgress> {
+    const { weight, body_fat, muscle_mass, ...rest } = progressData;
+
+    const formattedData = {
+      ...rest,
+      weight: weight.toString(),
+      body_fat: body_fat?.toString() || null,
+      muscle_mass: muscle_mass?.toString() || null,
+    };
+
     const { data, error } = await this.supabaseService
       .getClient()
       .from('patient_progress')
       // @ts-expect-error Supabase inference issue with 'patient_progress' table
-      .insert(progressData)
+      .insert(formattedData)
       .select()
       .single();
 

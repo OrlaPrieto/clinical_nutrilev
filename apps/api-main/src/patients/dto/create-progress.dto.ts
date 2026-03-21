@@ -1,27 +1,31 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumberString,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProgressDto {
   @IsEmail()
   @IsNotEmpty()
   patient_email: string;
 
-  @IsNumberString()
+  @IsNumber()
   @IsNotEmpty()
-  weight: string;
+  @Type(() => Number)
+  weight: number;
 
-  @IsNumberString()
+  @IsNumber()
   @IsOptional()
-  body_fat?: string;
+  @Type(() => Number)
+  body_fat?: number;
 
-  @IsNumberString()
+  @IsNumber()
   @IsOptional()
-  muscle_mass?: string;
+  @Type(() => Number)
+  muscle_mass?: number;
 
   @IsString()
   @IsOptional()

@@ -64,8 +64,8 @@
                 <span class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Link de descarga listo:</span>
             </div>
             
-            <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-nutri-rose/20 shadow-sm w-full md:w-auto overflow-hidden">
-                <code class="text-[10px] font-mono text-nutri-text/60 dark:text-slate-400 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
+            <div class="flex items-center gap-3 bg-white dark:bg-white/10 px-4 py-2 rounded-2xl border border-nutri-rose/20 dark:border-white/10 shadow-sm w-full md:w-auto overflow-hidden transition-colors">
+                <code class="text-[10px] font-mono text-nutri-text/60 dark:text-slate-200 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
                 <app-a-button (onClick)="copyToClipboard()" 
                             [label]="copied() ? 'Copiado' : 'Copiar'" [icon]="copied() ? 'check' : 'content_copy'"
                             variant="primary" size="sm" customClass="!shadow-sm !shadow-nutri-rose/20">
@@ -104,8 +104,8 @@
         @if (activeTab() === 0) {
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <app-m-stat-card label="Nacimiento" [value]="patient()?.fecha_nacimiento" type="date" [isEditing]="isEditing()" 
-                                  [showSpinner]="false" (valueChange)="patient().fecha_nacimiento = $event" placeholder="DD/MM/AAAA">
+                    <app-m-stat-card label="Nacimiento" [value]="patient()?.fecha_nacimiento" type="calendar" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().fecha_nacimiento = $event" placeholder="DD/MM/AAAA">
                     </app-m-stat-card>
                     <app-m-stat-card label="Edad" [value]="patient()?.edad" type="number" [isEditing]="isEditing()" 
                                   [showSpinner]="false" (valueChange)="patient().edad = $event" suffix="años">
