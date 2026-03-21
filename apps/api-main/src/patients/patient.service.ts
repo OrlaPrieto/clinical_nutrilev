@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../common/supabase.service';
-import type {
+import {
   Patient,
   PatientProgress,
   PatientUpdate,
   PatientProgressInsert,
-} from '../common/interfaces';
+} from '@shared/index';
 
 @Injectable()
 export class PatientService {

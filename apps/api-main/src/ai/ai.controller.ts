@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Headers } from '@nestjs/common';
 import { AiService } from './ai.service';
-import { AiResponse } from '../common/interfaces';
+import { AiResponse } from '@shared/index';
 import { ProcessMenuDto, NotifyMenuDto } from './dto/ai-request.dto';
 
 @Controller('api')

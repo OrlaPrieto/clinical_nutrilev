@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseService } from '../common/supabase.service';
-import { AuthResponse } from '../common/interfaces';
+import { AuthResponse } from '@shared/index';
 
 @Injectable()
 export class AuthService {

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { NotifyMenuRequest } from './interfaces';
+import { NotifyMenuRequest } from '@shared/index';
 
 @Injectable()
 export class EmailService {

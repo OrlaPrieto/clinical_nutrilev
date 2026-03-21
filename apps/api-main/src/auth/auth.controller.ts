@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthResponse } from '../common/interfaces';
+import { AuthResponse } from '@shared/index';
 
 @Controller('api/auth')
 export class AuthController {

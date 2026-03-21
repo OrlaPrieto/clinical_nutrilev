@@ -113,10 +113,18 @@ export class PatientListPage implements OnInit {
   private processPatients(data: Patient[]) {
     const grouped = data.reduce((acc: any, curr) => {
       const key = curr.email || curr.nombre;
-      if (!acc[key] || new Date(curr.fecha_hoy) > new Date(acc[key].fecha_hoy)) {
+      
+      const currFechaHoy = curr.fecha_hoy ? new Date(curr.fecha_hoy).getTime() : 0;
+      const accFechaHoy = (acc[key]?.fecha_hoy) ? new Date(acc[key].fecha_hoy).getTime() : 0;
+
+      if (!acc[key] || currFechaHoy > accFechaHoy) {
         acc[key] = { ...curr };
       }
-      if (curr.ultima_actualizacion && (!acc[key].ultima_actualizacion || new Date(curr.ultima_actualizacion) > new Date(acc[key].ultima_actualizacion))) {
+
+      const currUltima = curr.ultima_actualizacion ? new Date(curr.ultima_actualizacion).getTime() : 0;
+      const accUltima = (acc[key]?.ultima_actualizacion) ? new Date(acc[key].ultima_actualizacion).getTime() : 0;
+
+      if (currUltima > accUltima) {
         acc[key].ultima_actualizacion = curr.ultima_actualizacion;
       }
       return acc;

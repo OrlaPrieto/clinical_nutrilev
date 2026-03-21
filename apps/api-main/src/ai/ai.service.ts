@@ -6,7 +6,7 @@ import {
   AiResponse,
   ProcessMenuRequest,
   NotifyMenuRequest,
-} from '../common/interfaces';
+} from '@shared/index';
 import { EmailService } from '../common/email.service';
 
 @Injectable()

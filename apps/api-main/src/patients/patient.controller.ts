@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
-import { Patient, PatientProgress } from '../common/interfaces';
+import { Patient, PatientProgress } from '@shared/index';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { CreateProgressDto } from './dto/create-progress.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
