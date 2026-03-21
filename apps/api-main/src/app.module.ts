@@ -11,8 +11,11 @@ import { AiController } from './ai/ai.controller';
 import { AiService } from './ai/ai.service';
 import { EmailService } from './common/email.service';
 
+import { HttpModule } from '@nestjs/axios';
+
 @Module({
   imports: [
+    HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../../.env',

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import {
   AiResponse,
   ProcessMenuRequest,
@@ -15,6 +16,7 @@ export class AiService {
   constructor(
     private configService: ConfigService,
     private emailService: EmailService,
+    private httpService: HttpService,
   ) {
     this.flaskBaseUrl =
       this.configService.get<string>('FLASK_API_URL') ||
@@ -25,17 +27,19 @@ export class AiService {
     data: ProcessMenuRequest,
     authHeader: string,
   ): Promise<AiResponse> {
-    const response = await axios.post<AiResponse>(
-      `${this.flaskBaseUrl}/api/process-menu`,
-      data,
-      {
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
+    const { data: responseData } = await firstValueFrom(
+      this.httpService.post<AiResponse>(
+        `${this.flaskBaseUrl}/api/process-menu`,
+        data,
+        {
+          headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+          },
         },
-      },
+      ),
     );
-    return response.data;
+    return responseData;
   }
 
   async notifyMenu(data: NotifyMenuRequest): Promise<AiResponse> {
