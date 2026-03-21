@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,7 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './input.html',
-  styleUrl: './input.css'
+  styleUrl: './input.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class InputComponent {
   label = input<string>('');

@@ -1,8 +1,8 @@
 @if (patient()) {
-    <div class="flex flex-col h-full bg-nutri-bg selection:bg-nutri-rose/20 text-nutri-text">
+    <div class="flex flex-col h-full bg-nutri-bg dark:bg-[#080808] selection:bg-nutri-rose/20 text-nutri-text dark:text-slate-200 transition-colors duration-500">
     
     <!-- Profile Banner Compacto (Fixed Header) -->
-    <div class="flex-none relative bg-white pt-6 pb-6 px-6 border-b border-nutri-rose/5">
+    <div class="flex-none relative bg-white dark:bg-[#0b0b0b] pt-6 pb-6 px-6 border-b border-nutri-rose/5 dark:border-white/5 transition-colors">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-center gap-6 relative">
             <!-- Avatar más pequeño -->
             <div class="w-16 h-16 rounded-3xl bg-nutri-rose text-white flex items-center justify-center text-2xl font-bold shadow-lg ring-2 ring-nutri-rose/10 overflow-hidden">
@@ -21,7 +21,8 @@
                 </app-a-button>
                 <app-a-button (onClick)="toggleEdit()" [variant]="isEditing() ? 'secondary' : 'outline'" 
                             [icon]="isEditing() ? 'close' : 'edit'"
-                            [label]="isEditing() ? 'Cancelar' : 'Editar'" size="md">
+                            [label]="isEditing() ? 'Cancelar' : 'Editar'" size="md"
+                            [customClass]="isEditing() ? '' : 'dark:!text-slate-400 dark:!border-white/10'">
                 </app-a-button>
                 @if (isEditing()) {
                     <app-a-button (onClick)="saveChanges()" [disabled]="saving()" [loading]="saving()"
@@ -38,7 +39,7 @@
                 <h2 class="text-3xl font-bold serif">{{patient()?.nombre}}</h2>
                 
                 <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                    <div class="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-nutri-rose/10 text-[11px] text-nutri-text/60 shadow-sm">
+                    <div class="flex items-center gap-2 px-3 py-1 bg-white dark:bg-white/5 rounded-full border border-nutri-rose/10 dark:border-white/10 text-[11px] text-nutri-text/60 dark:text-slate-400 shadow-sm">
                     <app-a-icon name="mail" customClass="text-[10px] text-nutri-rose"></app-a-icon>
                         @if (!isEditing()) {
                             <span>{{patient()?.email}}</span>
@@ -78,13 +79,13 @@
     }
 
     <!-- Navigation Tabs Compactas (Fixed Header) -->
-    <div class="flex-none bg-white border-b border-nutri-rose/5">
+    <div class="flex-none bg-white dark:bg-[#0b0b0b] border-b border-nutri-rose/5 dark:border-white/5 transition-colors">
         <div class="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto scrollbar-hide">
             <div class="flex items-center space-x-4 md:space-x-6 py-3 min-w-max">
                 @for (tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Seguimiento', 'Notas']; track tab; let i = $index) {
                     <button (click)="activeTab.set(i)"
                             class="relative py-1 text-[10px] md:text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
-                            [ngClass]="activeTab() === i ? 'text-nutri-rose' : 'text-nutri-text/50 hover:text-nutri-text/60'">
+                            [ngClass]="activeTab() === i ? 'text-nutri-rose' : 'text-nutri-text/50 dark:text-slate-500 hover:text-nutri-text/60 dark:hover:text-slate-400'">
                         {{tab}}
                         @if (activeTab() === i) {
                              <div class="absolute -bottom-3 left-0 right-0 h-0.5 bg-nutri-rose rounded-full animate-fade-in"></div>
@@ -125,7 +126,7 @@
                     </app-m-stat-card>
                 </div>
 
-                <div class="bg-nutri-rose/[0.03] p-6 rounded-3xl border border-nutri-rose/10 space-y-4">
+                <div class="bg-nutri-rose/[0.03] dark:bg-white/5 p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 space-y-4">
                     <div class="flex items-center justify-between">
                         <h4 class="text-nutri-rose font-black text-[10px] uppercase tracking-widest">Motivo de Consulta</h4>
                         @if (isEditing()) {
@@ -134,7 +135,7 @@
                     </div>
                     <textarea [(ngModel)]="patient().motivos_consulta" 
                               [disabled]="!isEditing()"
-                              class="w-full bg-white/50 rounded-2xl border border-nutri-rose/10 p-4 text-sm font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[80px]"
+                              class="w-full bg-white/50 dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 p-4 text-sm font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[80px] dark:text-slate-300 transition-colors"
                               [ngClass]="!isEditing() ? 'cursor-default border-transparent' : ''"
                               placeholder="Escribe el motivo de consulta..."></textarea>
                     <div class="flex items-center gap-2">
@@ -154,16 +155,16 @@
         @if (activeTab() === 1) {
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                         <div class="flex gap-4 items-start">
-                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="medical_services" customClass="text-sm"></app-a-icon></div>
+                            <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 dark:bg-white/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="medical_services" customClass="text-sm"></app-a-icon></div>
                             <div class="flex-1">
                                 <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Patologías</h4>
                                 @if (!isEditing()) {
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.antecedentes_patologicos || 'Ninguno'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().antecedentes_patologicos" class="w-full bg-nutri-rose/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px]"></textarea>
+                                    <textarea [(ngModel)]="patient().antecedentes_patologicos" class="w-full bg-nutri-rose/5 dark:bg-white/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300"></textarea>
                                 }
                             </div>
                         </div>
@@ -175,12 +176,12 @@
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.enfermedades || 'Ninguno'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().enfermedades" class="w-full bg-nutri-rose/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px]"></textarea>
+                                    <textarea [(ngModel)]="patient().enfermedades" class="w-full bg-nutri-rose/5 dark:bg-white/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300"></textarea>
                                 }
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                         <div class="flex gap-4 items-start">
                             <div class="w-8 h-8 shrink-0 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose text-xs"><app-a-icon name="edit_note" customClass="text-sm"></app-a-icon></div>
                             <div class="flex-1">
@@ -190,8 +191,8 @@
                                 }
                                 @if (isEditing()) {
                                     <div class="space-y-2">
-                                        <input [(ngModel)]="patient().medicamentos" class="w-full bg-nutri-rose/5 rounded px-2 py-1 text-xs outline-none" placeholder="Medicamentos">
-                                        <input [(ngModel)]="patient().cirugias" class="w-full bg-nutri-rose/5 rounded px-2 py-1 text-xs outline-none" placeholder="Cirugías">
+                                        <input [(ngModel)]="patient().medicamentos" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs outline-none" placeholder="Medicamentos">
+                                        <input [(ngModel)]="patient().cirugias" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs outline-none" placeholder="Cirugías">
                                     </div>
                                 }
                             </div>
@@ -204,21 +205,21 @@
                                     <p class="text-sm leading-relaxed font-medium">{{patient()?.antecedentes_familiares || 'Ninguno'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().antecedentes_familiares" class="w-full bg-nutri-rose/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px]"></textarea>
+                                    <textarea [(ngModel)]="patient().antecedentes_familiares" class="w-full bg-nutri-rose/5 dark:bg-white/5 rounded-xl p-2 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300"></textarea>
                                 }
                             </div>
                         </div>
                     </div>
                 </div>
     
-                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm">
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm transition-colors">
                     <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest mb-3">Laboratorios</h4>
-                    <div class="text-sm leading-relaxed text-nutri-text/60 italic bg-nutri-bg/30 p-4 rounded-2xl border border-nutri-rose/5">
+                    <div class="text-sm leading-relaxed text-nutri-text/60 dark:text-slate-400 italic bg-nutri-bg/30 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5">
                         @if (!isEditing()) {
                             <p>{{patient()?.laboratorios || 'No registrados.'}}</p>
                         }
                         @if (isEditing()) {
-                            <textarea [(ngModel)]="patient().laboratorios" class="w-full bg-transparent p-0 text-sm font-medium outline-none border-none resize-none min-h-[60px]" placeholder="Registrar laboratorios..."></textarea>
+                            <textarea [(ngModel)]="patient().laboratorios" class="w-full bg-transparent p-0 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-300" placeholder="Registrar laboratorios..."></textarea>
                         }
                     </div>
                 </div>
@@ -243,7 +244,7 @@
                     </app-m-stat-card>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm space-y-6 relative overflow-hidden">
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 relative overflow-hidden transition-colors">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
                     <div class="flex items-center justify-between">
                         <h4 class="text-nutri-rose font-black text-[10px] uppercase tracking-widest">Actividad Física y Horarios</h4>
@@ -259,19 +260,19 @@
                                 <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Actividad Física</span>
                             </div>
                             @if (!isEditing()) {
-                                <p class="text-sm font-bold text-nutri-text/80">{{patient()?.hace_ejercicio}}</p>
+                                <p class="text-sm font-bold text-nutri-text/80 dark:text-slate-200">{{patient()?.hace_ejercicio}}</p>
                             }
                             @if (isEditing()) {
                                 <input type="text" [(ngModel)]="patient().hace_ejercicio" 
-                                       class="w-full p-3 rounded-xl bg-nutri-bg/50 border border-nutri-rose/10 text-xs font-bold outline-none focus:ring-2 focus:ring-nutri-rose/10"
+                                       class="w-full p-3 rounded-xl bg-nutri-bg/50 dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 text-xs font-bold outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 dark:text-slate-300 transition-colors"
                                        placeholder="¿Hace ejercicio?">
                             }
                             @if (!isEditing()) {
-                                <p class="text-xs italic text-nutri-text/60 leading-relaxed">{{patient()?.ejercicio_detalles}}</p>
+                                <p class="text-xs italic text-nutri-text/60 dark:text-slate-500 leading-relaxed">{{patient()?.ejercicio_detalles}}</p>
                             }
                             @if (isEditing()) {
                                 <textarea [(ngModel)]="patient().ejercicio_detalles" 
-                                          class="w-full bg-nutri-bg/20 rounded-2xl border border-nutri-rose/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[100px]"
+                                          class="w-full bg-nutri-bg/20 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[100px] dark:text-slate-300 transition-colors"
                                           placeholder="Detalles del ejercicio..."></textarea>
                             }
                         </div>
@@ -282,11 +283,11 @@
                                 <span class="text-[10px] font-bold text-nutri-text/70 uppercase tracking-widest">Horarios y Actividad</span>
                             </div>
                             @if (!isEditing()) {
-                                <p class="text-sm border-l-2 border-nutri-rose/10 pl-4 py-2 text-nutri-text/70 leading-relaxed">{{patient()?.tipo_actividad_horario}}</p>
+                                <p class="text-sm border-l-2 border-nutri-rose/10 dark:border-white/10 pl-4 py-2 text-nutri-text/70 dark:text-slate-400 leading-relaxed">{{patient()?.tipo_actividad_horario}}</p>
                             }
                             @if (isEditing()) {
                                 <textarea [(ngModel)]="patient().tipo_actividad_horario" 
-                                          class="w-full bg-nutri-bg/20 rounded-2xl border border-nutri-rose/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none min-h-[145px]"
+                                          class="w-full bg-nutri-bg/20 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 p-4 text-xs font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[145px] dark:text-slate-300 transition-colors"
                                           placeholder="Describe horarios y tipo de actividad diaria..."></textarea>
                             }
                 </div>
@@ -300,7 +301,7 @@
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- Column 1: Preferencias (More Important) -->
-                    <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-nutri-rose/10 space-y-4 relative overflow-hidden">
+                    <div class="lg:col-span-2 bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 space-y-4 relative overflow-hidden transition-colors">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-20"></div>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
@@ -314,22 +315,22 @@
                                     <div class="space-y-1.5">
                                         <span class="font-black text-emerald-900 text-[10px] uppercase tracking-wider ml-2">Gusta:</span>
                                         @if (!isEditing()) {
-                                            <p class="p-2.5 rounded-xl bg-emerald-100/20 text-xs font-bold text-emerald-900/60 leading-tight">{{patient()?.alimentos_preferidos || '---'}}</p>
+                                            <p class="p-2.5 rounded-xl bg-emerald-100/20 dark:bg-emerald-900/10 text-xs font-bold text-emerald-900/60 dark:text-emerald-100/60 leading-tight transition-colors">{{patient()?.alimentos_preferidos || '---'}}</p>
                                         }
                                         @if (isEditing()) {
                                             <input type="text" [(ngModel)]="patient().alimentos_preferidos" 
-                                                   class="w-full p-2.5 rounded-xl bg-emerald-100/40 border border-emerald-200/50 text-xs font-bold text-emerald-900 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                                                   class="w-full p-2.5 rounded-xl bg-emerald-100/40 dark:bg-emerald-900/10 border border-emerald-200/50 dark:border-emerald-900/20 text-xs font-bold text-emerald-900 dark:text-emerald-300 outline-none focus:ring-2 focus:ring-emerald-500/20 dark:focus:ring-emerald-500/10 transition-colors"
                                                    placeholder="¿Qué le gusta?">
                                         }
                                     </div>
                                     <div class="space-y-1.5">
                                         <span class="font-black text-rose-900 text-[10px] uppercase tracking-wider ml-2">Evita:</span>
                                         @if (!isEditing()) {
-                                            <p class="p-2.5 rounded-xl bg-rose-100/20 text-xs font-bold text-rose-900/60 leading-tight">{{patient()?.alimentos_no_agradan || '---'}}</p>
+                                            <p class="p-2.5 rounded-xl bg-rose-100/20 dark:bg-rose-900/10 text-xs font-bold text-rose-900/60 dark:text-rose-100/60 leading-tight transition-colors">{{patient()?.alimentos_no_agradan || '---'}}</p>
                                         }
                                         @if (isEditing()) {
                                             <input type="text" [(ngModel)]="patient().alimentos_no_agradan" 
-                                                   class="w-full p-2.5 rounded-xl bg-rose-100/40 border border-rose-200/50 text-xs font-bold text-rose-900 outline-none focus:ring-2 focus:ring-rose-500/20"
+                                                   class="w-full p-2.5 rounded-xl bg-rose-100/40 dark:bg-rose-900/10 border border-rose-200/50 dark:border-rose-900/20 text-xs font-bold text-rose-900 dark:text-rose-300 outline-none focus:ring-2 focus:ring-rose-500/20 dark:focus:ring-rose-500/10 transition-colors"
                                                    placeholder="¿Qué evita?">
                                         }
                                     </div>
@@ -340,11 +341,11 @@
                                         <span class="font-black text-yellow-900 text-[10px] uppercase tracking-wider">Alergias:</span>
                                     </div>
                                     @if (!isEditing()) {
-                                        <p class="p-2.5 rounded-xl bg-yellow-100/20 text-xs font-bold text-yellow-900/60 leading-tight min-h-[100px]">{{patient()?.alergias_alimentarias || '---'}}</p>
+                                        <p class="p-2.5 rounded-xl bg-yellow-100/20 dark:bg-yellow-900/10 text-xs font-bold text-yellow-900/60 dark:text-yellow-100/60 leading-tight min-h-[100px] transition-colors">{{patient()?.alergias_alimentarias || '---'}}</p>
                                     }
                                     @if (isEditing()) {
                                         <textarea [(ngModel)]="patient().alergias_alimentarias" 
-                                               class="w-full p-2.5 rounded-xl bg-yellow-100/60 border border-yellow-200/50 text-xs font-bold text-yellow-900 outline-none focus:ring-2 focus:ring-yellow-500/20 min-h-[100px] resize-none"
+                                               class="w-full p-2.5 rounded-xl bg-yellow-100/60 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-900/20 text-xs font-bold text-yellow-900 dark:text-yellow-300 outline-none focus:ring-2 focus:ring-yellow-500/20 dark:focus:ring-yellow-500/10 min-h-[100px] resize-none transition-colors"
                                                placeholder="¿Tiene alergias?"></textarea>
                                     }
                                 </div>
@@ -353,7 +354,7 @@
                     </div>
 
                     <!-- Column 2: Logística / Compra (Less Important) -->
-                    <div class="lg:col-span-1 bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4 flex flex-col justify-center">
+                    <div class="lg:col-span-1 bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 flex flex-col justify-center transition-colors">
                         <div class="space-y-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
@@ -362,10 +363,10 @@
                                 <div class="flex-1">
                                     <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/70 mb-1">Logística de Compra</h4>
                                     @if (!isEditing()) {
-                                        <p class="text-xs font-bold text-nutri-text/70">{{patient()?.comida_comprada || '---'}}</p>
+                                        <p class="text-xs font-bold text-nutri-text/70 dark:text-slate-400 transition-colors">{{patient()?.comida_comprada || '---'}}</p>
                                     }
                                     @if (isEditing()) {
-                                        <input [(ngModel)]="patient().comida_comprada" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30">
+                                        <input [(ngModel)]="patient().comida_comprada" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30 transition-colors">
                                     }
                                 </div>
                             </div>
@@ -377,10 +378,10 @@
                                 <div class="flex-1">
                                     <h4 class="font-bold text-[9px] uppercase tracking-widest text-nutri-text/60 mb-1">¿Quién prepara?</h4>
                                     @if (!isEditing()) {
-                                        <p class="text-xs font-bold text-nutri-text/70">{{patient()?.quien_cocina || '---'}}</p>
+                                        <p class="text-xs font-bold text-nutri-text/70 dark:text-slate-400 transition-colors">{{patient()?.quien_cocina || '---'}}</p>
                                     }
                                     @if (isEditing()) {
-                                        <input [(ngModel)]="patient().quien_cocina" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30">
+                                        <input [(ngModel)]="patient().quien_cocina" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-lg px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-nutri-rose/30 transition-colors">
                                     }
                                 </div>
                             </div>
@@ -389,70 +390,70 @@
                 </div>
 
                 <div class="space-y-4">
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm relative overflow-hidden">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm relative overflow-hidden transition-colors">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
                         <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest mb-4">Diario 24h (Resumen)</h4>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Desayuno</span>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Desayuno</span>
                                 @if (!isEditing()) {
-                                    <p class="text-xs font-medium">{{patient()?.diario_desayuno || '---'}}</p>
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_desayuno || '---'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().diario_desayuno" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px]"></textarea>
+                                    <textarea [(ngModel)]="patient().diario_desayuno" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
                                 }
                             </div>
-                            <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Colación (Mat)</span>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Colación (Mat)</span>
                                 @if (!isEditing()) {
-                                    <p class="text-xs font-medium">{{patient()?.diario_colacion_mat || '---'}}</p>
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_colacion_mat || '---'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().diario_colacion_mat" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px]"></textarea>
+                                    <textarea [(ngModel)]="patient().diario_colacion_mat" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
                                 }
                             </div>
-                            <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Comida</span>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Comida</span>
                                 @if (!isEditing()) {
-                                    <p class="text-xs font-medium">{{patient()?.diario_comida || '---'}}</p>
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_comida || '---'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().diario_comida" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px]"></textarea>
+                                    <textarea [(ngModel)]="patient().diario_comida" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
                                 }
                             </div>
-                            <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Colación (Vesp)</span>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Colación (Vesp)</span>
                                 @if (!isEditing()) {
-                                    <p class="text-xs font-medium">{{patient()?.diario_colacion_vesp || '---'}}</p>
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_colacion_vesp || '---'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().diario_colacion_vesp" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px]"></textarea>
+                                    <textarea [(ngModel)]="patient().diario_colacion_vesp" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
                                 }
                             </div>
-                            <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-1">Cena</span>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Cena</span>
                                 @if (!isEditing()) {
-                                    <p class="text-xs font-medium">{{patient()?.diario_cena || '---'}}</p>
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_cena || '---'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().diario_cena" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px]"></textarea>
+                                    <textarea [(ngModel)]="patient().diario_cena" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
                                 }
                             </div>
-                            <div class="bg-nutri-bg/20 p-4 rounded-2xl border border-nutri-rose/5">
-                                <span class="text-[8px] font-bold text-nutri-rose/40 uppercase tracking-widest block mb-1">Extras / Otros</span>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[8px] font-bold text-nutri-rose/40 dark:text-nutri-rose/50 uppercase tracking-widest block mb-1">Extras / Otros</span>
                                 @if (!isEditing()) {
-                                    <p class="text-xs font-medium">{{patient()?.diario_extras || '---'}}</p>
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_extras || '---'}}</p>
                                 }
                                 @if (isEditing()) {
-                                    <textarea [(ngModel)]="patient().diario_extras" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px]"></textarea>
+                                    <textarea [(ngModel)]="patient().diario_extras" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
                                 }
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white p-5 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                        <div class="bg-white dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                             <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Suplementos</h4>
                             <div class="flex flex-col gap-2">
                                 @if (!isEditing()) {
@@ -460,22 +461,22 @@
                                 }
                                 @if (isEditing()) {
                                     <div class="flex items-center gap-3">
-                                        <select [(ngModel)]="patient().suplementos_si_no" class="bg-nutri-rose/5 rounded px-2 py-1 text-xs font-bold outline-none border-none">
+                                        <select [(ngModel)]="patient().suplementos_si_no" class="bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs font-bold outline-none border-none">
                                             <option value="Si">Sí</option>
                                             <option value="No">No</option>
                                         </select>
-                                        <input [(ngModel)]="patient().suplementos_cuales" class="flex-1 bg-nutri-rose/5 rounded px-2 py-1 text-xs outline-none" placeholder="¿Cuáles?">
+                                        <input [(ngModel)]="patient().suplementos_cuales" class="flex-1 bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs outline-none" placeholder="¿Cuáles?">
                                     </div>
                                 }
                             </div>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl border border-nutri-rose/5 shadow-sm">
+                        <div class="bg-white dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                             <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Dieta Especial</h4>
                             @if (!isEditing()) {
                                 <p class="text-sm font-bold leading-tight">{{patient()?.dieta_especial || 'Ninguna'}}</p>
                             }
                             @if (isEditing()) {
-                                <input [(ngModel)]="patient().dieta_especial" class="w-full bg-nutri-rose/5 rounded px-2 py-1 text-sm font-bold outline-none border-none" placeholder="Especifique dieta...">
+                                <input [(ngModel)]="patient().dieta_especial" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-sm font-bold outline-none border-none" placeholder="Especifique dieta...">
                             }
                         </div>
                     </div>
@@ -487,7 +488,7 @@
         @if (activeTab() === 4) {
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
                         <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Habitual</span>
                         @if (!isEditing()) {
                             <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/50">kg</span></p>
@@ -499,7 +500,7 @@
                             </div>
                         }
                     </div>
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center transition-colors">
                         <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Meta</span>
                         @if (!isEditing()) {
                             <p class="text-2xl font-bold serif text-nutri-rose">{{patient()?.peso_meta || '---'}} <span class="text-xs font-normal text-nutri-rose/40">kg</span></p>
@@ -511,7 +512,7 @@
                             </div>
                         }
                     </div>
-                    <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm flex flex-col items-center justify-center text-center">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
                         <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Cambios Recientes</span>
                         @if (!isEditing()) {
                             <p class="text-sm font-medium">{{patient()?.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
@@ -522,19 +523,19 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl border border-nutri-rose/5 shadow-sm space-y-4">
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
                              <app-a-icon name="calendar_month"></app-a-icon>
                         </div>
                         <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/60">Salud Femenina / Ciclo</h4>
                     </div>
-                    <div class="p-4 bg-nutri-bg/30 rounded-2xl border border-nutri-rose/5">
+                    <div class="p-4 bg-nutri-bg/30 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
                         @if (!isEditing()) {
                             <p class="text-sm font-medium leading-relaxed">{{patient()?.salud_femenina_ciclo || 'Información no registrada o no aplica.'}}</p>
                         }
                         @if (isEditing()) {
-                            <textarea [(ngModel)]="patient().salud_femenina_ciclo" class="w-full bg-transparent p-0 text-sm font-medium outline-none border-none resize-none min-h-[60px]" placeholder="Información del ciclo o salud femenina..."></textarea>
+                            <textarea [(ngModel)]="patient().salud_femenina_ciclo" class="w-full bg-transparent p-0 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-200" placeholder="Información del ciclo o salud femenina..."></textarea>
                         }
                     </div>
                 </div>
@@ -542,13 +543,13 @@
                 <!-- HISTORIAL DE AVANCES -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Formulario Nuevo Registro -->
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-nutri-rose/10 shadow-sm space-y-6">
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
                                 <app-a-icon name="add"></app-a-icon>
                             </div>
                             <div>
-                                <h3 class="text-xl font-bold serif">Nuevo Avance</h3>
+                                <h3 class="text-xl font-bold serif dark:text-slate-200">Nuevo Avance</h3>
                                 <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Registrar medidas de hoy</p>
                             </div>
                         </div>
@@ -557,7 +558,7 @@
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Peso (kg)</label>
                                 <app-a-input type="number" [value]="newProgress().weight" (valueChange)="newProgress().weight = $event" 
-                                            customClass="!bg-nutri-bg !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto">
+                                            customClass="!bg-nutri-bg dark:!bg-white/5 !rounded-xl !px-3 !py-2 !text-sm !font-bold !border-none !outline-none focus:!ring-2 focus:!ring-nutri-rose/10 !h-auto dark:!text-slate-200">
                                 </app-a-input>
                             </div>
                             <div class="space-y-1">
@@ -576,7 +577,7 @@
 
                         <div class="space-y-1">
                             <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Notas del avance</label>
-                            <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg rounded-xl px-3 py-2 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Comentarios sobre la evolución..."></textarea>
+                            <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg dark:bg-white/5 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Comentarios sobre la evolución..."></textarea>
                         </div>
 
                         <!-- Registrar Button -->
@@ -587,10 +588,10 @@
                     </div>
 
                     <!-- Lista de Historial -->
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-nutri-rose/5 shadow-sm space-y-6 flex flex-col">
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[2.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-6 flex flex-col transition-colors">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-bold serif">Evolución</h3>
-                            <span class="px-3 py-1 bg-nutri-bg rounded-full text-[9px] font-bold text-nutri-text/60 uppercase tracking-widest">{{ progressHistory().length }} Registros</span>
+                            <span class="px-3 py-1 bg-nutri-bg dark:bg-white/5 rounded-full text-[9px] font-bold text-nutri-text/60 dark:text-slate-500 uppercase tracking-widest transition-colors">{{ progressHistory().length }} Registros</span>
                         </div>
 
                         <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 space-y-4 scroll-premium">
@@ -601,34 +602,34 @@
                                 </div>
                             } @else {
                                 @for (record of progressHistory(); track record.id) {
-                                    <div class="p-5 rounded-2xl bg-nutri-bg/40 border border-nutri-rose/5 group hover:bg-white transition-all">
+                                    <div class="p-5 rounded-2xl bg-nutri-bg/40 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/10 group hover:bg-white dark:hover:bg-white/10 transition-all">
                                         <div class="flex items-start justify-between mb-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5">
+                                            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-black shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5 dark:border-white/10 transition-colors">
                                                 <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ record.date | date:'dd' }}</span>
                                                 <span class="text-[8px] font-black uppercase text-nutri-text/50 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
                                             </div>
                                             <div class="flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
                                                 <div class="flex flex-col items-end">
                                                     <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-tighter">Peso</span>
-                                                    <span class="text-sm font-black">{{ record.weight }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
+                                                    <span class="text-sm font-black dark:text-slate-200 transition-colors">{{ record.weight }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
                                                 </div>
                                                 @if (record.body_fat) {
                                                     <div class="flex flex-col items-end">
                                                         <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-tighter">Grasa</span>
-                                                        <span class="text-sm font-black text-nutri-rose/80">{{ record.body_fat }}<span class="text-[8px] ml-0.5 opacity-30">%</span></span>
+                                                    <span class="text-sm font-black text-nutri-rose/80 dark:text-nutri-rose/90 transition-colors">{{ record.body_fat }}<span class="text-[8px] ml-0.5 opacity-30">%</span></span>
                                                     </div>
                                                 }
                                                 @if (record.muscle_mass) {
                                                     <div class="flex flex-col items-end">
                                                         <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-tighter">Músculo</span>
-                                                        <span class="text-sm font-black text-nutri-rose/80">{{ record.muscle_mass }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
+                                                    <span class="text-sm font-black text-nutri-rose/80 dark:text-nutri-rose/90 transition-colors">{{ record.muscle_mass }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
                                                     </div>
                                                 }
                                             </div>
                                         </div>
                                         @if (record.notes) {
                                             <div class="pt-3 border-t border-nutri-rose/5">
-                                                <p class="text-[10px] text-nutri-text/60 italic leading-relaxed">{{ record.notes }}</p>
+                                                <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 italic leading-relaxed transition-colors">{{ record.notes }}</p>
                                             </div>
                                         }
                                     </div>
@@ -643,7 +644,7 @@
         <!-- Tab 5: Notas Persistentes Optimizadas -->
         @if (activeTab() === 5) {
             <div class="space-y-4 animate-fade-up h-full flex flex-col">
-                <div class="flex items-center justify-between bg-white p-4 rounded-3xl border border-nutri-rose/5 shadow-sm">
+                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                     <div class="space-y-0.5">
                         <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
                         <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Sincronización automática activa</p>
@@ -657,7 +658,7 @@
                 <div class="relative flex-1">
                     <textarea [(ngModel)]="patient().notas" 
                               placeholder="Escribe aquí las notas, seguimiento o evolución..."
-                              class="w-full min-h-[500px] h-full bg-white rounded-[2rem] border border-nutri-rose/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 outline-none resize-none scroll-premium"></textarea>
+                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"></textarea>
                     
                     <div class="absolute bottom-4 right-6 text-[8px] text-nutri-rose/20 font-bold uppercase tracking-[0.4em]">
                         Nutrilev Management System
@@ -669,21 +670,21 @@
 
     <!-- Floating Success Toast -->
     @if (showSuccess()) {
-        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white rounded-3xl shadow-2xl border border-nutri-rose/10 animate-fade-up">
+        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 animate-fade-up transition-colors">
             <div class="w-10 h-10 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 shadow-inner">
                 <app-a-icon name="check"></app-a-icon>
             </div>
             <div class="space-y-0.5">
-                <p class="font-bold text-nutri-text text-sm">Cambios Guardados</p>
-                <p class="text-[10px] font-bold text-nutri-text/50 uppercase tracking-widest">Sincronizado con Supabase</p>
+                <p class="font-bold text-nutri-text dark:text-slate-200 text-sm">Cambios Guardados</p>
+                <p class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest">Sincronizado con Supabase</p>
             </div>
         </div>
     }
 
     <!-- Deactivation Footer (Fixed Footer) -->
-    <div class="flex-none bg-white/90 backdrop-blur-md border-t border-nutri-rose/10 px-8 py-4 flex items-center justify-between shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)]">
+    <div class="flex-none bg-white/90 dark:bg-black/80 backdrop-blur-md border-t border-nutri-rose/10 dark:border-white/10 px-8 py-4 flex items-center justify-between shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] transition-colors">
         <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg border border-nutri-rose/10 transition-all" [ngClass]="patient()?.acceso_portal ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 transition-all" [ngClass]="patient()?.acceso_portal ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-900/20' : 'bg-amber-50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/20'">
                 <input type="checkbox" [(ngModel)]="patient().acceso_portal" (change)="togglePortalAccess()" id="portalToggle" class="accent-emerald-500 w-4 h-4 cursor-pointer">
                 <label for="portalToggle" class="flex gap-2 cursor-pointer">
                     <app-a-badge [label]="patient()?.acceso_portal ? 'Portal: Acceso Concedido' : 'Portal: Acceso Restringido'" 
@@ -694,7 +695,7 @@
                 </label>
             </div>
             <div class="h-8 w-px bg-nutri-rose/10 mx-2"></div>
-            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg border border-nutri-rose/10 transition-all" [ngClass]="patient()?.dado_de_baja ? 'bg-rose-50 border-rose-200' : ''">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 transition-all" [ngClass]="patient()?.dado_de_baja ? 'bg-rose-50 border-rose-200 dark:bg-rose-900/10 dark:border-rose-900/20' : ''">
                 <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" id="activeToggle" class="accent-nutri-rose w-4 h-4 cursor-pointer">
                 <label for="activeToggle" class="cursor-pointer">
                     <app-a-badge [label]="patient()?.dado_de_baja ? 'Expediente: INACTIVO (Baja)' : 'Expediente: ACTIVO'" 

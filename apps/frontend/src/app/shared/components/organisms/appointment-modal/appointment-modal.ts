@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GoogleCalendarService } from '../../../../services/google-calendar.service';
 import { AppointmentCalendarOrganism } from '../appointment-calendar/appointment-calendar';
@@ -8,7 +8,8 @@ import { AppointmentCalendarOrganism } from '../appointment-calendar/appointment
   standalone: true,
   imports: [CommonModule, AppointmentCalendarOrganism],
   templateUrl: './appointment-modal.html',
-  styleUrl: './appointment-modal.css'
+  styleUrl: './appointment-modal.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class AppointmentModalComponent {
   @Input() patientName: string = '';

@@ -1,6 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-m-milestone-badge',
@@ -11,16 +12,17 @@ import { IconComponent } from '../../atoms/icon/icon';
          [ngClass]="unlocked() ? 'opacity-100' : 'opacity-30 grayscale blur-[1.5px]'">
       
       <!-- Premium White Medal (Clean & High Visibility) -->
-      <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 transition-all duration-700 relative bg-white shadow-sm"
-           [ngClass]="unlocked() ? 'border-nutri-rose/30 shadow-xl shadow-nutri-rose/10 animate-pulse-soft scale-105' : 'border-slate-100 opacity-60'">
+      <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 transition-all duration-700 relative bg-white dark:bg-[#1a1a1a] shadow-sm"
+           [ngClass]="unlocked() ? 'border-nutri-rose/30 dark:border-nutri-rose/50 shadow-xl shadow-nutri-rose/10 animate-pulse-soft scale-105' : 'border-slate-100 dark:border-white/5 opacity-60'">
         
-        <!-- Star Image - Now seamlessly blends with the white background -->
+        <!-- Star Image - Now seamlessly blends with the background -->
         <img [src]="image()" [alt]="title()" 
-             class="w-16 h-16 object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-sm mix-blend-multiply">
+             class="w-16 h-16 object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-sm"
+             [ngClass]="{'mix-blend-multiply': !themeService.isDarkMode(), 'brightness-110': themeService.isDarkMode()}">
         
         <!-- Unlocked Checkmark - Positioned outside to avoid clipping -->
         @if (unlocked()) {
-          <div class="absolute -top-1 -right-1 w-7 h-7 bg-nutri-rose text-white rounded-full flex items-center justify-center border-4 border-white shadow-lg animate-pop-in z-20">
+          <div class="absolute -top-1 -right-1 w-7 h-7 bg-nutri-rose text-white rounded-full flex items-center justify-center border-4 border-white dark:border-[#1a1a1a] shadow-lg animate-pop-in z-20">
             <app-a-icon name="check" size="14px"></app-a-icon>
           </div>
         }
@@ -29,15 +31,15 @@ import { IconComponent } from '../../atoms/icon/icon';
       <!-- Content -->
       <div class="text-center space-y-1">
         <h4 class="text-[11px] font-black uppercase tracking-[0.25em] serif transition-colors"
-            [ngClass]="unlocked() ? 'text-nutri-text' : 'text-slate-400'">
+            [ngClass]="unlocked() ? 'text-nutri-text dark:text-slate-200' : 'text-slate-400 dark:text-slate-600'">
           {{ title() }}
         </h4>
-        <p class="text-[9px] text-nutri-text/40 font-medium leading-tight max-w-[120px] mx-auto">{{ description() }}</p>
+        <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 font-medium leading-tight max-w-[120px] mx-auto">{{ description() }}</p>
       </div>
 
       <!-- Prominent Status Pill -->
       <div class="px-5 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.3em] transition-all"
-           [ngClass]="unlocked() ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20' : 'bg-slate-50 text-slate-300'">
+           [ngClass]="unlocked() ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20' : 'bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-slate-700'">
         {{ unlocked() ? 'Logro Desbloqueado' : 'Por Descubrir' }}
       </div>
     </div>
@@ -61,6 +63,7 @@ import { IconComponent } from '../../atoms/icon/icon';
   `]
 })
 export class MilestoneBadgeComponent {
+  themeService = inject(ThemeService);
   image = input.required<string>();
   title = input.required<string>();
   description = input.required<string>();

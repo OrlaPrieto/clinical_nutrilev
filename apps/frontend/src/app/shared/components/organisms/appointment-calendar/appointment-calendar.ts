@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,7 +23,8 @@ import { ButtonComponent } from '../../atoms/button/button';
   ],
   templateUrl: './appointment-calendar.html',
   styleUrl: './appointment-calendar.css',
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
+  encapsulation: ViewEncapsulation.None
 })
 export class AppointmentCalendarOrganism {
   private cdr = inject(ChangeDetectorRef);

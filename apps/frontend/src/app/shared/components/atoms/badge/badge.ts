@@ -22,12 +22,12 @@ export class BadgeComponent {
     const base = 'inline-flex items-center gap-1.5 font-bold uppercase tracking-widest transition-all duration-300';
     
     const variants = {
-      primary: 'bg-nutri-rose/10 text-nutri-rose border border-nutri-rose/10',
-      success: 'bg-emerald-50 text-emerald-600 border border-emerald-100',
-      warning: 'bg-amber-50 text-amber-600 border border-amber-100',
-      danger: 'bg-rose-50 text-rose-600 border border-rose-100',
-      info: 'bg-blue-50 text-blue-600 border border-blue-100',
-      ghost: 'bg-white text-nutri-text/60 border border-nutri-rose/5'
+      primary: 'bg-nutri-rose/10 dark:bg-nutri-rose/20 text-nutri-rose border border-nutri-rose/10 dark:border-nutri-rose/30',
+      success: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border border-emerald-100 dark:border-emerald-500/20',
+      warning: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-500/20',
+      danger: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-100 dark:border-rose-500/20',
+      info: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-500 border border-blue-100 dark:border-blue-500/20',
+      ghost: 'bg-white dark:bg-white/5 text-nutri-text/60 dark:text-slate-400 border border-nutri-rose/5 dark:border-white/5'
     };
 
     const sizes = {

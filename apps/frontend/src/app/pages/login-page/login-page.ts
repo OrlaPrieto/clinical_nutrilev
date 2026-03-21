@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AuthService } from '../../services/auth.service';
 import { LoginCardOrganism } from '../../shared/components/organisms/login-card/login-card';
+import { ThemeService } from '../../shared/services/theme.service';
+import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { APP_VERSION } from '../../version';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, LoginCardOrganism],
+  imports: [CommonModule, LoginCardOrganism, IconComponent],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css'
 })
@@ -16,6 +18,7 @@ export class LoginPage {
   public version = APP_VERSION;
   private socialAuthService = inject(SocialAuthService);
   private authService = inject(AuthService);
+  public themeService = inject(ThemeService);
   errorMessage: string | null = null;
 
   constructor() {

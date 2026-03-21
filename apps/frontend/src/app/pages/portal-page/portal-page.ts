@@ -6,6 +6,7 @@ import { Patient } from '../../models/patient.model';
 import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { APP_VERSION } from '../../version';
+import { ThemeService } from '../../shared/services/theme.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -22,6 +23,7 @@ export class PortalPage implements OnInit {
   public version = APP_VERSION;
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
+  public themeService = inject(ThemeService);
 
   patient = signal<Patient | null>(null);
   progress = signal<any[]>([]);
@@ -55,9 +57,12 @@ export class PortalPage implements OnInit {
     if (!p || !p.estatura) return null;
     
     const weight = prog.length > 0 ? prog[0].weight : parseFloat(p.peso_habitual || '0');
-    const height = parseFloat(p.estatura) / 100;
+    let height = parseFloat(p.estatura);
     
-    if (!weight || !height) return null;
+    // Auto-detect cm or meters (if > 3 assume it's cm)
+    if (height > 3) height = height / 100;
+    
+    if (!weight || !height || height === 0) return null;
     return (weight / (height * height)).toFixed(1);
   });
 
@@ -179,5 +184,9 @@ export class PortalPage implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }

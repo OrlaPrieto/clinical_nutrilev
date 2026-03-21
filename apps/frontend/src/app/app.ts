@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { ThemeService } from './shared/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,7 @@ import { injectSpeedInsights } from '@vercel/speed-insights';
 })
 export class App implements OnInit {
   title = 'clinical-nutrilev';
+  private themeService = inject(ThemeService);
 
   ngOnInit(): void {
     injectSpeedInsights();

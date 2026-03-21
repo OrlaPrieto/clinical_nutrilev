@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,8 +23,9 @@ import { MatIconModule } from '@angular/material/icon';
     </mat-form-field>
   `,
   styles: [`
-    :host ::ng-deep .mat-mdc-form-field { width: 100%; }
-  `]
+    .mat-mdc-form-field { width: 100%; }
+  `],
+  encapsulation: ViewEncapsulation.None
 })
 export class SelectComponent {
   label = input<string>('');

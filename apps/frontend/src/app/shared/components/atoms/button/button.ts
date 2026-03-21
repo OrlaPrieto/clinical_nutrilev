@@ -35,10 +35,10 @@ export class ButtonComponent {
     const base = 'flex items-center justify-center gap-2 font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none';
     
     const variants = {
-      primary: 'bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20 hover:bg-nutri-rose/90',
-      secondary: 'bg-nutri-rose/10 text-nutri-rose hover:bg-nutri-rose/20',
-      outline: 'bg-white border-2 border-nutri-rose/20 text-nutri-rose hover:bg-nutri-rose/5 hover:border-nutri-rose',
-      ghost: 'bg-transparent text-nutri-rose hover:bg-nutri-rose/5',
+      primary: 'bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20 hover:bg-nutri-rose/90 transition-all',
+      secondary: 'bg-nutri-rose/10 dark:bg-nutri-rose/20 text-nutri-rose hover:bg-nutri-rose/20 dark:hover:bg-nutri-rose/30',
+      outline: 'bg-white dark:bg-transparent border-2 border-nutri-rose/20 dark:border-white/10 text-nutri-rose dark:text-slate-300 hover:bg-nutri-rose/5 hover:border-nutri-rose dark:hover:border-nutri-rose',
+      ghost: 'bg-transparent text-nutri-rose dark:text-slate-400 hover:bg-nutri-rose/5 dark:hover:bg-white/5',
       danger: 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:bg-rose-600'
     };
 

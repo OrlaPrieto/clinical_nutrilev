@@ -7,6 +7,7 @@ import { Patient } from '../../models/patient.model';
 import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { SearchInputComponent } from '../../shared/components/molecules/search-input/search-input';
 import { BadgeComponent } from '../../shared/components/atoms/badge/badge';
+import { ThemeService } from '../../shared/services/theme.service';
 import { PatientTableOrganism } from '../../shared/components/organisms/patient-table/patient-table';
 import { AppointmentModalComponent } from '../../shared/components/organisms/appointment-modal/appointment-modal';
 import { PatientDetailComponent } from '../../shared/components/organisms/patient-detail/patient-detail';
@@ -37,6 +38,7 @@ import { APP_VERSION } from '../../version';
 export class PatientListPage implements OnInit {
   public version = APP_VERSION;
   public authService = inject(AuthService);
+  public themeService = inject(ThemeService);
   private patientService = inject(PatientService);
   private router = inject(Router);
 
@@ -183,5 +185,9 @@ export class PatientListPage implements OnInit {
       console.error('Error deleting patient', err);
       alert('Error al eliminar paciente');
     }
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }
