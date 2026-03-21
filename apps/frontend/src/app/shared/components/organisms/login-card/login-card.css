@@ -5,6 +5,54 @@
   width: 100%;
 }
 
+::ng-deep .login-glass {
+  @apply backdrop-blur-[40px] bg-white/5 dark:bg-[#0a0a0a]/40 shadow-2xl relative overflow-hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 
+              0 0 80px rgba(255, 59, 92, 0.1);
+}
+
+::ng-deep .login-glass::before {
+  content: "";
+  @apply absolute inset-0 opacity-30 pointer-events-none;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transform: translateX(-100%) rotate(45deg);
+  animation: shine 10s infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-200%) translateY(-200%) rotate(45deg); }
+  25%, 100% { transform: translateX(200%) translateY(200%) rotate(45deg); }
+}
+
+::ng-deep .premium-gradient {
+  background: linear-gradient(135deg, #FF3B5C 0%, #FF8A5C 100%) !important;
+  @apply text-white border-none transition-all duration-500 relative overflow-hidden !important;
+  box-shadow: 0 10px 30px -5px rgba(255, 59, 92, 0.5) !important;
+}
+
+::ng-deep .premium-gradient::after {
+  content: "";
+  @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
+  background: linear-gradient(135deg, #FF8A5C 0%, #FF3B5C 100%);
+}
+
+::ng-deep .premium-gradient:hover::after {
+  @apply opacity-100;
+}
+
+::ng-deep .premium-gradient:hover {
+  @apply shadow-2xl shadow-nutri-rose/60 scale-[1.03] -translate-y-1 !important;
+}
+
+.premium-gradient:hover {
+  @apply brightness-110 shadow-xl shadow-nutri-rose/30 scale-[1.02];
+}
+
+.premium-gradient:active {
+  @apply scale-[0.98] brightness-95;
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-4px); }

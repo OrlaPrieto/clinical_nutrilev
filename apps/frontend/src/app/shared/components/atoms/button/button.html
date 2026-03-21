@@ -5,13 +5,13 @@
   (click)="handleClick($event)">
   
   @if (loading()) {
-    <mat-icon [class]="iconClasses + ' animate-spin'">progress_activity</mat-icon>
+    <mat-icon [class]="iconClasses + ' animate-spin relative z-10'">progress_activity</mat-icon>
   } @else if (icon()) {
-    <mat-icon [class]="iconClasses">{{ icon() }}</mat-icon>
+    <mat-icon [class]="iconClasses + ' relative z-10'">{{ icon() }}</mat-icon>
   }
 
   @if (label()) {
-    <span>{{ label() }}</span>
+    <span class="relative z-10">{{ label() }}</span>
   }
   
   <ng-content></ng-content>

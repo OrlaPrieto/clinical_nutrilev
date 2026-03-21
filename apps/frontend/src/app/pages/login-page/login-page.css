@@ -2,3 +2,55 @@
   display: block;
   width: 100%;
 }
+
+.login-bg {
+  @apply fixed inset-0 overflow-hidden pointer-events-none -z-10 transition-colors duration-700 bg-[#050505];
+  background: radial-gradient(circle at center, #0a0a0a 0%, #050505 100%);
+}
+
+.login-bg::after {
+  content: "";
+  @apply absolute inset-0 opacity-[0.05] pointer-events-none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3C%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Background Blobs (Aurora Effect) - VIBRANT */
+.blob {
+  @apply absolute filter blur-[120px] opacity-80 dark:opacity-60;
+  width: 80vw;
+  height: 80vw;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+
+.blob-1 {
+  @apply bg-nutri-rose/40;
+  top: -25%;
+  left: -15%;
+  animation: float 25s infinite alternate;
+}
+
+.blob-2 {
+  @apply bg-orange-600/30;
+  bottom: -25%;
+  right: -15%;
+  animation: float 30s infinite alternate-reverse;
+}
+
+.blob-3 {
+  @apply bg-pink-500/20;
+  top: 35%;
+  right: -15%;
+  animation: float 20s infinite alternate;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1) rotate(12deg); }
+  33% { transform: translate(5%, 10%) scale(1.1) rotate(15deg); }
+  66% { transform: translate(-5%, 5%) scale(0.9) rotate(10deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(12deg); }
+}
+
+.animate-float {
+  animation: float 15s ease-in-out infinite alternate;
+}
