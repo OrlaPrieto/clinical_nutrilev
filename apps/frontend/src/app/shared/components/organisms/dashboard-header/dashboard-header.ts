@@ -27,6 +27,7 @@ export class DashboardHeaderComponent {
 
   loading = input<boolean>(false);
   searchTerm = input<string>('');
+  showSearch = input<boolean>(true);
 
   search = output<string>();
   toggleTheme = output<void>();

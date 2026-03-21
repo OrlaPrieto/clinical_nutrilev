@@ -1,18 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../../services/auth.service';
+import { ThemeService } from '../../../../shared/services/theme.service';
 import { ButtonComponent } from '../../atoms/button/button';
 import { IconComponent } from '../../atoms/icon/icon';
-import { InputComponent } from '../../atoms/input/input';
+import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header';
 
 @Component({
   selector: 'app-o-menu-automation',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule, RouterModule, MatIconModule, ButtonComponent, IconComponent, InputComponent],
+  imports: [
+    CommonModule, 
+    HttpClientModule, 
+    FormsModule, 
+    RouterModule, 
+    MatIconModule, 
+    ButtonComponent, 
+    IconComponent, 
+    DashboardHeaderComponent
+  ],
   templateUrl: './menu-automation-organism.html',
   styleUrl: './menu-automation-organism.css'
 })
@@ -21,9 +31,12 @@ export class MenuAutomationOrganism {
   processing: boolean = false;
   error: string | null = null;
   success: boolean = false;
-  apiKey: string = '';
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient, 
+    public authService: AuthService,
+    public themeService: ThemeService
+  ) {}
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -46,9 +59,6 @@ export class MenuAutomationOrganism {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    if (this.apiKey) {
-      formData.append('api_key', this.apiKey);
-    }
 
     const token = this.authService.accessToken;
     let headers = {};

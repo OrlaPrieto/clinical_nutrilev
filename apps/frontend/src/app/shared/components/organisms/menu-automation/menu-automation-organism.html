@@ -1,40 +1,31 @@
-<div class="min-h-screen bg-nutri-bg selection:bg-nutri-rose/20 pb-12">
-    <!-- Header Hero -->
-    <div class="bg-white border-b border-nutri-rose/5 pt-12 pb-8 px-6 md:px-12">
-        <div class="max-w-7xl mx-auto space-y-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div class="space-y-4">
-                    <div class="flex items-center gap-4 mb-2">
-                        <span class="text-nutri-rose font-bold tracking-[0.3em] uppercase text-[10px] block">Módulo Especial</span>
-                        <span class="w-1 h-1 rounded-full bg-nutri-rose/20"></span>
-                        <a routerLink="/dashboard" class="text-[10px] font-bold text-nutri-text/60 hover:text-nutri-rose transition-colors uppercase tracking-widest flex items-center gap-2">
-                            <app-a-icon name="arrow_back" customClass="!text-[10px]"></app-a-icon>
-                            Regresar al Panel
-                        </a>
-                    </div>
-                    <h1 class="text-4xl font-bold text-nutri-text serif">Automatizador de Menús</h1>
-                    <p class="text-nutri-text/60 font-medium max-w-lg">Transforma tus menús de Word con imágenes de IA Imagen 3 y listas de compras de Gemini 2.0.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="h-screen flex flex-col overflow-hidden bg-nutri-bg dark:bg-[#080808] selection:bg-nutri-rose/20 transition-colors duration-700">
+    <app-o-dashboard-header 
+        [loading]="processing" 
+        [showSearch]="false"
+        (toggleTheme)="themeService.toggleTheme()"
+        (logout)="authService.logout()">
+    </app-o-dashboard-header>
 
-    <div class="max-w-4xl mx-auto px-6 py-12">
-        <div class="bg-white rounded-[3rem] shadow-nutri border border-nutri-rose/5 p-8 md:p-12 space-y-10 animate-fade-up">
-            
-            <!-- API Key Section -->
-            <div class="space-y-4">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
-                        <app-a-icon name="key" customClass="!text-sm"></app-a-icon>
-                    </div>
-                    <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Configuración (Opcional)</label>
-                </div>
-                <app-a-input [value]="apiKey" (valueChange)="apiKey = $event" type="password" 
-                           placeholder="Tu Gemini API Key de Google AI Studio..."
-                           inputClass="!px-6 !py-4"></app-a-input>
-                <p class="text-[9px] text-nutri-text/50 font-bold px-2">Si se deja vacío, se usará la API Key configurada por defecto en el sistema.</p>
+    <!-- Main Content Area / Scrollable Wrapper -->
+    <div class="flex-1 flex flex-col min-h-0 relative z-20 max-w-7xl mx-auto w-full px-6 md:px-12 pt-48 md:pt-32 pb-16 overflow-y-auto">
+        
+        <div class="space-y-4 mb-8">
+            <div class="flex items-center gap-4 mb-2">
+                <span class="text-nutri-rose font-bold tracking-[0.3em] uppercase text-[10px] block">Módulo Especial</span>
+                <span class="w-1 h-1 rounded-full bg-nutri-rose/20"></span>
+                <a routerLink="/dashboard" class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400 hover:text-nutri-rose dark:hover:text-nutri-rose transition-colors uppercase tracking-widest flex items-center gap-2">
+                    <app-a-icon name="arrow_back" customClass="!text-[10px]"></app-a-icon>
+                    Regresar al Panel
+                </a>
             </div>
+            <h1 class="text-4xl font-bold text-nutri-text dark:text-slate-200 serif">Automatizador de Menús</h1>
+            <p class="text-nutri-text/60 dark:text-slate-500 font-medium max-w-lg">Transforma tus menús de Word con imágenes generadas por IA y listas de compras de Gemini 2.0 Instant.</p>
+        </div>
+
+        <!-- Glassmorphism Main Card -->
+        <div class="bg-white/70 dark:bg-[#111111]/70 backdrop-blur-md rounded-[2.5rem] shadow-nutri dark:shadow-2xl border border-nutri-rose/10 dark:border-white/5 p-8 md:p-12 space-y-10 animate-fade-up">
+            
+
 
             <!-- Upload Area -->
             <div class="space-y-6">
@@ -49,15 +40,15 @@
                     <input type="file" (change)="onFileSelected($event)" accept=".docx"
                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                     
-                    <div class="border-2 border-dashed border-nutri-rose/10 rounded-[2.5rem] p-12 text-center transition-all bg-nutri-bg group-hover:bg-white group-hover:border-nutri-rose/30 group-hover:ring-8 group-hover:ring-nutri-rose/5">
-                        <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-nutri-rose mx-auto mb-6 shadow-sm border border-nutri-rose/5 group-hover:scale-110 transition-transform duration-500">
+                    <div class="border-2 border-dashed border-nutri-rose/10 dark:border-white/10 rounded-[2.5rem] p-12 text-center transition-all bg-nutri-bg dark:bg-white/[0.02] group-hover:bg-white dark:group-hover:bg-white/5 group-hover:border-nutri-rose/30 group-hover:ring-8 group-hover:ring-nutri-rose/5">
+                        <div class="w-20 h-20 bg-white dark:bg-[#111111] rounded-3xl flex items-center justify-center text-nutri-rose mx-auto mb-6 shadow-sm border border-nutri-rose/5 dark:border-white/5 group-hover:scale-110 transition-transform duration-500">
                             <app-a-icon name="cloud_upload" customClass="!text-3xl"></app-a-icon>
                         </div>
                         
                         <div class="space-y-2">
-                            <p class="text-xl font-bold text-nutri-text serif" *ngIf="!selectedFile">Arrastra tu archivo de Word</p>
+                            <p class="text-xl font-bold text-nutri-text dark:text-slate-200 serif" *ngIf="!selectedFile">Arrastra tu archivo de Word</p>
                             <p class="text-xl font-bold text-nutri-rose serif" *ngIf="selectedFile">{{ selectedFile.name }}</p>
-                            <p class="text-sm text-nutri-text/60 font-medium">Formato soportado: .docx</p>
+                            <p class="text-sm text-nutri-text/60 dark:text-slate-500 font-medium">Formato soportado: .docx</p>
                         </div>
                     </div>
                 </div>
@@ -72,33 +63,33 @@
             </div>
 
             <!-- Feedback States -->
-            <div *ngIf="error" class="p-6 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-4 animate-fade-in">
+            <div *ngIf="error" class="p-6 bg-rose-50 dark:bg-rose-950/20 rounded-2xl border border-rose-100 dark:border-rose-900/30 flex items-center gap-4 animate-fade-in">
                 <app-a-icon name="error" customClass="text-rose-500"></app-a-icon>
-                <p class="text-sm font-bold text-rose-900">{{ error }}</p>
+                <p class="text-sm font-bold text-rose-900 dark:text-rose-300">{{ error }}</p>
             </div>
 
-            <div *ngIf="success" class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-4 animate-fade-in text-emerald-900">
+            <div *ngIf="success" class="p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4 animate-fade-in text-emerald-900 dark:text-emerald-300">
                 <app-a-icon name="check_circle" customClass="text-emerald-500"></app-a-icon>
                 <div class="space-y-0.5">
                     <p class="text-sm font-bold">¡Menú Procesado con Éxito!</p>
-                    <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest">El archivo ha sido descargado automáticamente.</p>
+                    <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest dark:opacity-50">El archivo ha sido descargado automáticamente.</p>
                 </div>
             </div>
 
             <!-- Instructions -->
-            <div class="pt-10 border-t border-nutri-rose/5">
+            <div class="pt-10 border-t border-nutri-rose/5 dark:border-white/5">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg flex items-center justify-center text-nutri-text text-sm font-bold">1</div>
-                        <p class="text-xs font-bold text-nutri-text">Sube tu archivo de Word con el formato de menú estándar.</p>
+                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text dark:text-slate-300 text-sm font-bold border border-nutri-rose/5 dark:border-white/5">1</div>
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-400">Sube tu archivo de Word con el formato de menú estándar.</p>
                     </div>
                     <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg flex items-center justify-center text-nutri-text text-sm font-bold">2</div>
-                        <p class="text-xs font-bold text-nutri-text">La IA detectará automáticamente los platillos e insertará imágenes realistas.</p>
+                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text dark:text-slate-300 text-sm font-bold border border-nutri-rose/5 dark:border-white/5">2</div>
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-400">La IA detectará automáticamente los platillos e insertará imágenes realistas.</p>
                     </div>
                     <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg flex items-center justify-center text-nutri-text text-sm font-bold">3</div>
-                        <p class="text-xs font-bold text-nutri-text">Se generará una lista de compras organizada al final del documento.</p>
+                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text dark:text-slate-300 text-sm font-bold border border-nutri-rose/5 dark:border-white/5">3</div>
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-400">Se generará una lista de compras organizada al final del documento.</p>
                     </div>
                 </div>
             </div>

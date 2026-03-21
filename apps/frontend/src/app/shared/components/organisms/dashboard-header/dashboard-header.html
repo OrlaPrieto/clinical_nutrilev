@@ -11,6 +11,7 @@
         </div>
 
         <!-- Center: Search -->
+        @if (showSearch()) {
         <div class="hidden md:flex flex-1 max-w-xl animate-fade-in">
             <app-m-search-input 
                 [value]="searchTerm()" 
@@ -21,6 +22,7 @@
                 class="w-full">
             </app-m-search-input>
         </div>
+        }
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-2 md:gap-4 shrink-0">
