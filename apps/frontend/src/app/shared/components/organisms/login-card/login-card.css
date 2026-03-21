@@ -6,18 +6,18 @@
 }
 
 ::ng-deep .login-glass {
-  @apply backdrop-blur-[40px] bg-white/5 dark:bg-[#0a0a0a]/40 shadow-2xl relative overflow-hidden;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  @apply backdrop-blur-[40px] bg-white/5 dark:bg-white/[0.07] shadow-2xl relative overflow-hidden;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 
-              0 0 80px rgba(255, 59, 92, 0.1);
+              0 0 40px rgba(255, 59, 92, 0.05);
 }
 
 ::ng-deep .login-glass::before {
   content: "";
-  @apply absolute inset-0 opacity-30 pointer-events-none;
-  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  @apply absolute inset-0 opacity-10 pointer-events-none;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
   transform: translateX(-100%) rotate(45deg);
-  animation: shine 10s infinite;
+  animation: shine 12s infinite;
 }
 
 @keyframes shine {
@@ -28,7 +28,7 @@
 ::ng-deep .premium-gradient {
   background: linear-gradient(135deg, #FF3B5C 0%, #FF8A5C 100%) !important;
   @apply text-white border-none transition-all duration-500 relative overflow-hidden !important;
-  box-shadow: 0 10px 30px -5px rgba(255, 59, 92, 0.5) !important;
+  box-shadow: 0 10px 20px -5px rgba(255, 59, 92, 0.3) !important;
 }
 
 ::ng-deep .premium-gradient::after {
