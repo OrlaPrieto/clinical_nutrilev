@@ -3,15 +3,17 @@ import { RouterOutlet } from '@angular/router';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import { ThemeService } from './shared/services/theme.service';
 import { DashboardFooterComponent } from './shared/components/organisms/dashboard-footer/dashboard-footer';
+import { PwaBannerComponent } from './shared/components/molecules/pwa-banner/pwa-banner';
 import { APP_VERSION } from './version';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, DashboardFooterComponent],
+  imports: [RouterOutlet, DashboardFooterComponent, PwaBannerComponent],
   template: `
     <router-outlet></router-outlet>
     <app-o-dashboard-footer [version]="version"></app-o-dashboard-footer>
+    <app-pwa-banner></app-pwa-banner>
   `,
 })
 export class App implements OnInit {

@@ -1,0 +1,23 @@
+{
+  "name": "Clinical Nutrilev",
+  "short_name": "Nutrilev",
+  "theme_color": "#ff6b9b",
+  "background_color": "#faf9f6",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "images/nutrition-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/nutrition-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

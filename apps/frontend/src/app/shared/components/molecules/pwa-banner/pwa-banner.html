@@ -1,0 +1,25 @@
+@if (pwaService.showInstallBanner()) {
+  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-nutri border border-nutri-rose/20 p-4 flex items-center justify-between gap-4 animate-fade-up">
+    <div class="flex items-center gap-3">
+      <img src="images/nutrition-icon.png" alt="Nutrilev Logo" class="w-10 h-10 object-cover" />
+      <div class="flex flex-col">
+        <span class="font-semibold text-sm text-nutri-text dark:text-slate-200">Instalar Nutrilev</span>
+        <span class="text-xs text-nutri-text/70 dark:text-slate-400">Acceso rápido y offline</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button (click)="pwaService.dismissBanner()" class="p-2 text-nutri-text/50 hover:text-nutri-text transition-colors">
+        <span class="material-symbols-rounded text-lg">close</span>
+      </button>
+      @if (pwaService.isIos) {
+         <div class="text-[10px] text-nutri-text/70 dark:text-slate-400 text-right pr-2 leading-tight">
+            Toca <span class="material-symbols-rounded !text-[14px] align-middle">ios_share</span> y luego<br>"Añadir a inicio"
+         </div>
+      } @else {
+         <button (click)="pwaService.installApp()" class="bg-[#ff6b9b] text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-[#ff6b9b]/90 transition-colors shadow-pink-soft">
+           Instalar
+         </button>
+      }
+    </div>
+  </div>
+}

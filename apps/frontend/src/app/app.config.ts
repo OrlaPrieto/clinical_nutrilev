@@ -1,12 +1,18 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { SocialAuthServiceConfig, GoogleLoginProvider, SocialAuthService, SOCIAL_AUTH_CONFIG } from '@abacritt/angularx-social-login';
+import {
+  SocialAuthServiceConfig,
+  GoogleLoginProvider,
+  SocialAuthService,
+  SOCIAL_AUTH_CONFIG,
+} from '@abacritt/angularx-social-login';
 
 import { routes } from './app.routes';
 import { httpResilienceInterceptor } from './interceptors/http-resilience.interceptor';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,15 +34,19 @@ export const appConfig: ApplicationConfig = {
               {
                 oneTapEnabled: false,
                 prompt_parent_id: 'google-login-button',
-                scopes: 'https://www.googleapis.com/auth/calendar'
-              }
-            )
-          }
+                scopes: 'https://www.googleapis.com/auth/calendar',
+              },
+            ),
+          },
         ],
         onError: (err) => {
           console.error(err);
-        }
+        },
       } as SocialAuthServiceConfig,
-    }
-  ]
+    },
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+  ],
 };
