@@ -6,14 +6,13 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
-import type {
-  Patient,
-  PatientProgress,
-  PatientUpdate,
-  PatientProgressInsert,
-} from '../common/interfaces';
+import { Patient, PatientProgress } from '../common/interfaces';
+import { UpdatePatientDto } from './dto/update-patient.dto';
+import { CreateProgressDto } from './dto/create-progress.dto';
+import { AdminGuard } from '../common/guards/admin.guard';
 
 @Controller('api/patients')
 export class PatientController {
@@ -30,10 +29,10 @@ export class PatientController {
   }
 
   @Put(':id')
+  @UseGuards(AdminGuard)
   async update(
     @Param('id') id: string,
-    @Body()
-    updateData: PatientUpdate & { action?: string; originalEmail?: string },
+    @Body() updateData: UpdatePatientDto,
   ): Promise<Patient> {
     return this.patientService.update(id, updateData);
   }
@@ -44,13 +43,15 @@ export class PatientController {
   }
 
   @Post('progress')
+  @UseGuards(AdminGuard)
   async addProgress(
-    @Body() progressData: PatientProgressInsert,
+    @Body() progressData: CreateProgressDto,
   ): Promise<PatientProgress> {
     return this.patientService.addProgress(progressData);
   }
 
   @Delete(':identifier')
+  @UseGuards(AdminGuard)
   async remove(
     @Param('identifier') identifier: string,
   ): Promise<{ success: boolean }> {

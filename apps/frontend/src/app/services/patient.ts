@@ -1,14 +1,28 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Patient } from '../models/patient.model';
-import { supabase } from '../supabase';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
   private readonly apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/patients' : '/api/patients';
+  private authService = inject(AuthService);
 
   constructor() { }
+
+  private get headers(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    
+    const userEmail = this.authService.currentUser()?.email;
+    if (userEmail) {
+      headers['x-user-email'] = userEmail;
+    }
+    
+    return headers;
+  }
 
   async getPatients(): Promise<Patient[]> {
     const response = await fetch(this.apiUrl);
@@ -20,11 +34,11 @@ export class PatientService {
     const { action, email, originalEmail, ...data } = payload;
     
     if (action === 'update') {
-      const id = payload.id; // Assume id is present if it's an update
+      const id = payload.id;
       const targetId = id || originalEmail || email;
       const response = await fetch(`${this.apiUrl}/${targetId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: this.headers,
         body: JSON.stringify(payload)
       });
       if (!response.ok) throw new Error('Error updating patient');
@@ -33,7 +47,7 @@ export class PatientService {
 
     const response = await fetch(this.apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.headers,
       body: JSON.stringify(payload)
     });
     if (!response.ok) throw new Error('Error adding patient');
@@ -41,9 +55,9 @@ export class PatientService {
   }
 
   async deletePatient(email: string, name: string): Promise<any> {
-    // Note: delete endpoint not yet implemented in NestJS, but we'll adapt it
     const response = await fetch(`${this.apiUrl}/${email || name}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: this.headers
     });
     if (!response.ok) throw new Error('Error deleting patient');
     return response.json();
@@ -59,7 +73,7 @@ export class PatientService {
   async addProgressEntry(entry: any): Promise<any> {
     const response = await fetch(`${this.apiUrl}/progress`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.headers,
       body: JSON.stringify(entry)
     });
     if (!response.ok) throw new Error('Error adding progress entry');

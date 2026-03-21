@@ -18,6 +18,7 @@ export class StatCardComponent {
   suffix = input<string>('');
   placeholder = input<string>('');
   icon = input<string | undefined>();
+  showSpinner = input<boolean>(true);
 
   valueChange = output<any>();
 

@@ -30,6 +30,17 @@ export class InputComponent {
     this.valueChange.emit(event.target.value);
   }
 
+  handleDateClick(input: HTMLInputElement) {
+    if (this.type() === 'date' && !this.disabled()) {
+      try {
+        (input as any).showPicker();
+      } catch (e) {
+        // Fallback or ignore if not supported
+        input.focus();
+      }
+    }
+  }
+
   increment() {
     if (this.disabled()) return;
     const currentVal = parseFloat(this.value() || 0);

@@ -46,7 +46,8 @@
                         }
                         @if (isEditing()) {
                             <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
-                                        customClass="!bg-transparent !border-none !p-0 !w-40 !outline-none !text-nutri-rose !h-auto">
+                                        customClass="!flex-1 min-w-[200px]"
+                                        inputClass="!bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto !font-bold">
                             </app-a-input>
                         }
                     </div>
@@ -104,10 +105,10 @@
             <div class="space-y-6 animate-fade-up">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <app-m-stat-card label="Nacimiento" [value]="patient()?.fecha_nacimiento" type="date" [isEditing]="isEditing()" 
-                                  (valueChange)="patient().fecha_nacimiento = $event" placeholder="DD/MM/AAAA">
+                                  [showSpinner]="false" (valueChange)="patient().fecha_nacimiento = $event" placeholder="DD/MM/AAAA">
                     </app-m-stat-card>
                     <app-m-stat-card label="Edad" [value]="patient()?.edad" type="number" [isEditing]="isEditing()" 
-                                  (valueChange)="patient().edad = $event" suffix="años">
+                                  [showSpinner]="false" (valueChange)="patient().edad = $event" suffix="años">
                     </app-m-stat-card>
                     <app-m-stat-card label="Género" [value]="patient()?.genero" [isEditing]="isEditing()" 
                                   (valueChange)="patient().genero = $event">

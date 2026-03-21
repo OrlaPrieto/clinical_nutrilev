@@ -5,20 +5,24 @@ import { AuthResponse } from '../common/interfaces';
 
 @Injectable()
 export class AuthService {
+  private readonly adminEmails: string[];
+
   constructor(
     private supabaseService: SupabaseService,
     private configService: ConfigService,
-  ) {}
+  ) {
+    const adminStr = this.configService.get<string>('ADMIN_EMAILS') || '';
+    this.adminEmails = adminStr
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => e.length > 0);
+  }
 
   async signInWithMagicLink(email: string): Promise<AuthResponse> {
     const cleanEmail = email.toLowerCase();
-    const ADMIN_EMAILS = [
-      'orla08i@gmail.com',
-      'velvetdelacruzvillegas@gmail.com',
-    ];
 
     // 1. Check if Admin
-    if (!ADMIN_EMAILS.includes(cleanEmail)) {
+    if (!this.adminEmails.includes(cleanEmail)) {
       // 2. Check if Approved Patient
       const { data, error: pError } = await this.supabaseService
         .getClient()
@@ -67,12 +71,8 @@ export class AuthService {
 
   async getRole(email: string): Promise<{ role: string }> {
     const cleanEmail = email.toLowerCase();
-    const ADMIN_EMAILS = [
-      'orla08i@gmail.com',
-      'velvetdelacruzvillegas@gmail.com',
-    ];
 
-    if (ADMIN_EMAILS.includes(cleanEmail)) {
+    if (this.adminEmails.includes(cleanEmail)) {
       return { role: 'admin' };
     }
 
