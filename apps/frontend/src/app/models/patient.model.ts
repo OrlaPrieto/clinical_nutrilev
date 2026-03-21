@@ -54,4 +54,5 @@ export interface Patient {
   acceso_portal: boolean;
   menu_url?: string;
   menu_created_at?: string;
+  foto_url?: string;
 }

@@ -9,11 +9,12 @@ import { StatCardComponent } from '../../molecules/stat-card/stat-card';
 import { PatientService } from '../../../../services/patient';
 import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
+import { NutriImagePipe } from '../../../pipes/nutri-image.pipe';
 
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, NutriImagePipe],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.css'
 })

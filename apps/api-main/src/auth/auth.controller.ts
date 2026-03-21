@@ -12,4 +12,9 @@ export class AuthController {
   ): Promise<AuthResponse> {
     return this.authService.signInWithMagicLink(email);
   }
+
+  @Post('get-role')
+  async getRole(@Body('email') email: string): Promise<{ role: string }> {
+    return this.authService.getRole(email);
+  }
 }

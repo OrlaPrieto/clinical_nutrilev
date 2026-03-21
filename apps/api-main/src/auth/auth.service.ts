@@ -20,18 +20,32 @@ export class AuthService {
     // 1. Check if Admin
     if (!ADMIN_EMAILS.includes(cleanEmail)) {
       // 2. Check if Approved Patient
-      const { data: patient, error: pError } = await this.supabaseService
+      const { data, error: pError } = await this.supabaseService
         .getClient()
         .from('patients')
-        .select('acceso_portal, dado_de_baja')
-        .eq('email', cleanEmail)
+        .select('email, acceso_portal, dado_de_baja')
+        .ilike('email', cleanEmail)
         .maybeSingle();
 
-      const p = patient as unknown as { acceso_portal: boolean; dado_de_baja: boolean };
-      if (pError || !p || !p.acceso_portal || p.dado_de_baja) {
-        throw new Error(
-          'Unauthorized: Account not approved, unsubscribed, or not found.',
-        );
+      interface PatientAuthData {
+        email: string;
+        acceso_portal: boolean;
+        dado_de_baja: boolean;
+      }
+
+      const patient = data as unknown as PatientAuthData;
+
+      if (pError || !patient) {
+        console.error('Auth check failed:', {
+          email: cleanEmail,
+          error: pError,
+          found: !!patient,
+        });
+        throw new Error('Unauthorized or not found.');
+      }
+
+      if (!patient.acceso_portal || patient.dado_de_baja) {
+        throw new Error('Unauthorized: Access revoked or pending.');
       }
     }
 
@@ -49,5 +63,29 @@ export class AuthService {
 
     if (error) throw error;
     return data as AuthResponse;
+  }
+
+  async getRole(email: string): Promise<{ role: string }> {
+    const cleanEmail = email.toLowerCase();
+    const ADMIN_EMAILS = [
+      'orla08i@gmail.com',
+      'velvetdelacruzvillegas@gmail.com',
+    ];
+
+    if (ADMIN_EMAILS.includes(cleanEmail)) {
+      return { role: 'admin' };
+    }
+
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('patients')
+      .select('acceso_portal, dado_de_baja')
+      .ilike('email', cleanEmail)
+      .maybeSingle();
+
+    if (error || !data) return { role: 'none' };
+    const patient = data as { acceso_portal: boolean; dado_de_baja: boolean };
+    if (patient.dado_de_baja) return { role: 'denied' };
+    return { role: patient.acceso_portal ? 'patient' : 'pending' };
   }
 }

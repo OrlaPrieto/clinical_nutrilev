@@ -31,62 +31,99 @@ export class AuthService {
   }
 
   private async initializeAuth() {
-    // Escuchar cambios de autenticación (Magic Link, Logout, etc)
+    console.log('Auth: Initializing...');
+    
+    // Set up listener for ALL events
     supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(`Auth: Event [${event}]`, session?.user?.email);
+      
+      if (event === 'SIGNED_OUT') {
+        this.clearLocalSession();
+        return;
+      }
+
+      // If we have a user, ensure we have their role
       if (session?.user) {
-        const role = await this.determineRole(session.user.email!);
-        if (role) {
+        // Only fetch if session changed or role is missing
+        if (this.currentUser()?.id !== session.user.id || !this.userRole()) {
+          const role = await this.determineRole(session.user.email!);
           this.currentUser.set(session.user);
           this.userRole.set(role);
-          localStorage.setItem('nutrilev_role', role);
           
-          // Redirección automática si estamos en login y el rol es válido
-          if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
-            this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
-          }
+          if (role) localStorage.setItem('nutrilev_role', role);
 
-          // Si el rol es restringido, forzamos salida para seguridad
-          if (role === 'denied' || role === 'pending') {
-            // No navegamos, dejamos que el componente de Login muestre el error
-            // pero nos aseguramos de no persistir sesión si no es necesario
+          // Automated redirect ONLY for explicit login events
+          if (event === 'SIGNED_IN') {
+             if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
+                this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+             }
           }
         }
-      } else if (event === 'SIGNED_OUT') {
-        this.clearLocalSession();
+      } else {
+        this.currentUser.set(null);
+        this.userRole.set(null);
       }
     });
 
-    // Cargar sesión inicial
+    // Initial session recovery - this will also trigger onAuthStateChange
+    // but we await it here to ensure 'ready' promise is correct for guards
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+        console.log('Auth: Initial session recovery started');
         const role = await this.determineRole(session.user.email!);
         this.currentUser.set(session.user);
         this.userRole.set(role);
+        if (role) localStorage.setItem('nutrilev_role', role);
       }
+    } catch (err) {
+      console.error('Auth: Initial recovery error', err);
     } finally {
+      console.log('Auth: Ready');
       this.resolveReady();
     }
   }
 
+  private roleCheckPromise: Promise<any> | null = null;
+  private lastCheckedEmail: string | null = null;
+
   private async determineRole(email: string): Promise<'admin' | 'patient' | 'pending' | 'denied' | null> {
     const cleanEmail = email.toLowerCase();
     
-    // 1. Check Admin whitelist
-    if (this.AUTHORIZED_EMAILS.includes(cleanEmail)) {
-      return 'admin';
+    // Deduplicate concurrent checks for the same email
+    if (this.roleCheckPromise && this.lastCheckedEmail === cleanEmail) {
+      return this.roleCheckPromise;
     }
 
-    // 2. Check Patients table
-    const { data: patient } = await supabase
-      .from('patients')
-      .select('email, acceso_portal, dado_de_baja')
-      .eq('email', cleanEmail)
-      .maybeSingle();
+    this.lastCheckedEmail = cleanEmail;
+    this.roleCheckPromise = (async () => {
+      try {
+        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/get-role' : '/api/auth/get-role';
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail })
+        });
+        
+        if (!response.ok) throw new Error('Error fetching role');
+        const { role } = await response.json();
+        return role === 'none' ? null : role;
+      } catch (err) {
+        console.error('Auth: Error fetching role from server', err);
+        // Fallback to cache during network issues
+        const cached = localStorage.getItem('nutrilev_role');
+        return (cached as any) || null;
+      } finally {
+        setTimeout(() => {
+          if (this.lastCheckedEmail === cleanEmail) {
+            this.roleCheckPromise = null;
+            this.lastCheckedEmail = null;
+          }
+        }, 2000);
+      }
+    })();
 
-    if (!patient) return null;
-    if (patient.dado_de_baja) return 'denied'; 
-    return patient.acceso_portal ? 'patient' : 'pending';
+    return this.roleCheckPromise;
   }
 
   async login(googleUser: any): Promise<'success' | 'pending' | 'denied'> {
