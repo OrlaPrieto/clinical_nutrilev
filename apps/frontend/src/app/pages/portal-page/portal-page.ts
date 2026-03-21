@@ -8,11 +8,12 @@ import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { APP_VERSION } from '../../version';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
+import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
 
 @Component({
   selector: 'app-portal-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe],
+  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
   providers: [DatePipe]
@@ -116,6 +117,42 @@ export class PortalPage implements OnInit {
     const currentDist = Math.abs(start - current);
     const pct = (currentDist / totalDist) * 100;
     return Math.min(Math.max(pct, 0), 100);
+  });
+
+  milestones = computed(() => {
+    const p = this.patient();
+    const prog = this.progress();
+    if (!p || !p.peso_habitual) return [];
+
+    const startWeight = parseFloat(p.peso_habitual);
+    const currentWeight = prog.length > 0 ? prog[0].weight : startWeight;
+    const targetWeight = parseFloat(p.peso_meta || '0');
+    const lostWeight = startWeight - currentWeight;
+    const goalPct = this.goalPercentage();
+
+    return [
+      {
+        id: 'first-2kg',
+        image: 'images/milestones/star_bronze.png',
+        title: 'Primer Paso',
+        description: 'Pierde tus primeros 2kg.',
+        unlocked: lostWeight >= 2
+      },
+      {
+        id: 'halfway',
+        image: 'images/milestones/star_gold.png',
+        title: 'A Medio Camino',
+        description: 'Logra el 50% de tu meta.',
+        unlocked: goalPct >= 50
+      },
+      {
+        id: 'goal-reached',
+        image: 'images/milestones/star_diamond.png',
+        title: 'Meta Lograda',
+        description: 'Alcanza tu peso objetivo.',
+        unlocked: targetWeight > 0 && currentWeight <= targetWeight
+      }
+    ];
   });
 
   async ngOnInit() {

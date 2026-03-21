@@ -205,6 +205,30 @@
                         </div>
                     </div>
                 }
+                
+                <!-- Sección de Logros (Enhanced Star Milestones) -->
+                <div class="py-16 border-y border-nutri-rose/5 animate-fade-up" style="animation-delay: 250ms">
+                    <div class="flex flex-col items-center gap-12">
+                        <div class="text-center space-y-2">
+                            <h3 class="text-xl font-bold serif">Estrellas Nutrilev</h3>
+                            <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 uppercase">Celebrando tus grandes victorias</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-start justify-center gap-12 md:gap-32 relative w-full max-w-5xl">
+                            <!-- Progress Path Line (Adjusted for larger circles) -->
+                            <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-slate-50 -z-10 hidden md:block"></div>
+                            
+                            @for (ms of milestones(); track ms.id) {
+                                <app-m-milestone-badge 
+                                    [image]="ms.image" 
+                                    [title]="ms.title" 
+                                    [description]="ms.description" 
+                                    [unlocked]="ms.unlocked">
+                                </app-m-milestone-badge>
+                            }
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Evolución Lista -->
                 <div class="bg-white p-8 rounded-[3rem] border border-nutri-rose/10 shadow-sm space-y-8 animate-fade-up" style="animation-delay: 300ms">
