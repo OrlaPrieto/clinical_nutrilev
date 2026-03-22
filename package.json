@@ -7,7 +7,7 @@
     "apps/api-main"
   ],
   "scripts": {
-    "build": "npm run build --workspace=apps/frontend",
+    "build": "npm run build --workspace=apps/frontend && rm -rf dist && mkdir -p dist && cp -R apps/frontend/dist/* dist/",
     "start": "concurrently \"npm run start:frontend\" \"npm run start:api-main\" \"npm run start:api-python\"",
     "start:frontend": "npm run start --workspace=apps/frontend",
     "start:api-main": "npm run start:dev --workspace=apps/api-main",
