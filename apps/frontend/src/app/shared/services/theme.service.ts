@@ -22,8 +22,8 @@ export class ThemeService {
     const saved = localStorage.getItem(this.THEME_KEY);
     if (saved) return saved === 'dark';
     
-    // Fallback to system preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Forzar Light Mode por defecto
+    return false;
   }
 
   private updateTheme(isDark: boolean) {
