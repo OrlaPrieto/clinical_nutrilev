@@ -100,7 +100,7 @@ export class AuthService {
     this.lastCheckedEmail = cleanEmail;
     this.roleCheckPromise = (async () => {
       try {
-        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/get-role' : '/api/auth/get-role';
+        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/get-role' : 'https://clinical-nutrilev.onrender.com/api/auth/get-role';
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -160,7 +160,7 @@ export class AuthService {
   }
 
   async signInWithMagicLink(email: string): Promise<{error: any}> {
-    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/magic-link' : '/api/auth/magic-link';
+    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/magic-link' : 'https://clinical-nutrilev.onrender.com/api/auth/magic-link';
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',

@@ -182,7 +182,7 @@ export class PatientDetailComponent implements OnInit {
       try {
         this.lastGeneratedUrl.set(p.menu_url);
         
-        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/notify-menu' : '/api/notify-menu';
+        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/notify-menu' : 'https://clinical-nutrilev.onrender.com/api/notify-menu';
         const token = this.authService.accessToken;
         
         await fetch(apiUrl, {

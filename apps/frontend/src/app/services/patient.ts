@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class PatientService {
-  private readonly apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/patients' : '/api/patients';
+  private readonly apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/patients' : 'https://clinical-nutrilev.onrender.com/api/patients';
   private authService = inject(AuthService);
 
   constructor() { }
