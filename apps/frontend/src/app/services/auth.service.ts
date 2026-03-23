@@ -16,12 +16,13 @@ export class AuthService {
     'velvetdelacruzvillegas@gmail.com'
   ];
 
-  // Replacing RxJS BehaviorSubject with Angular 19 Signals
   public currentUser = signal<any>(null);
   public userRole = signal<'admin' | 'patient' | 'pending' | 'denied' | null>(null);
+  public isInitialLoading = signal<boolean>(true);
   
   public ready: Promise<void>;
   private resolveReady!: () => void;
+  public roleReady = signal<boolean>(false);
 
   constructor() {
     this.ready = new Promise((resolve) => {
@@ -42,75 +43,63 @@ export class AuthService {
         return;
       }
 
-      // If we have a user, ensure we have their role
       if (session?.user) {
-        // Only fetch if session changed or role is missing
         if (this.currentUser()?.id !== session.user.id || !this.userRole()) {
-          const role = await this.determineRole(session.user.email!);
           this.currentUser.set(session.user);
+          const role = await this.determineRole(session.user.email!);
           this.userRole.set(role);
-          
           if (role) localStorage.setItem('nutrilev_role', role);
-
-          // Redirect if user is on login page and has a valid role
-          if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
-             this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
-          }
+          this.roleReady.set(true);
         }
       } else {
-        this.currentUser.set(null);
-        this.userRole.set(null);
+        this.clearLocalSession();
       }
     });
 
-    // Initial session recovery - this will also trigger onAuthStateChange
-    // but we await it here to ensure 'ready' promise is correct for guards
+    // Initial session recovery
     try {
+      // Fast check for session to unblock guards ASAP
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (session?.user) {
-        console.log('Auth: Initial session recovery started');
+        this.currentUser.set(session.user);
         
         // Optimistic restore to avoid Render cold-start blocking PWA load
-        const cachedRole = localStorage.getItem('nutrilev_role') as 'admin' | 'patient' | null;
+        const cachedRole = localStorage.getItem('nutrilev_role') as any;
         if (cachedRole) {
-          this.currentUser.set(session.user);
+          console.log('Auth: Using cached role', cachedRole);
           this.userRole.set(cachedRole);
+          this.roleReady.set(true);
+          this.isInitialLoading.set(false);
           
-          if (this.router.url.includes('/login')) {
-            this.router.navigate([cachedRole === 'admin' ? '/dashboard' : '/portal']);
-          }
-
-          // Background verification
+          // Verify in background
           this.determineRole(session.user.email!).then(role => {
             if (role && role !== cachedRole) {
+              console.log('Auth: Role updated from server', role);
               this.userRole.set(role);
               localStorage.setItem('nutrilev_role', role);
-              if (this.router.url.includes('/login')) {
-                this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
-              }
-            } else if (!role && cachedRole) {
-              // Role was revoked!
-              console.warn('Auth: Cached role was revoked on server.');
-              this.logout();
             }
           });
         } else {
-          // We have to wait for the first time fetch since cache is empty
-          const role = await this.determineRole(session.user.email!);
-          this.currentUser.set(session.user);
-          this.userRole.set(role);
-          if (role) localStorage.setItem('nutrilev_role', role);
-
-          if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
-            this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
-          }
+          // No cache, must fetch initial role but we allow guards to wait
+          this.determineRole(session.user.email!).then(role => {
+            this.userRole.set(role);
+            if (role) localStorage.setItem('nutrilev_role', role);
+            this.roleReady.set(true);
+            this.isInitialLoading.set(false);
+          });
         }
+      } else {
+        this.isInitialLoading.set(false);
       }
     } catch (err) {
       console.error('Auth: Initial recovery error', err);
+      this.isInitialLoading.set(false);
     } finally {
-      console.log('Auth: Ready');
+      console.log('Auth: Ready (resolved)');
       this.resolveReady();
+      // Guard against stuck loading state
+      setTimeout(() => this.isInitialLoading.set(false), 2000);
     }
   }
 
@@ -129,7 +118,8 @@ export class AuthService {
     this.roleCheckPromise = (async () => {
       const controller = new AbortController();
       // Fast timeout to fallback to cache if server is sleeping
-      const timeoutId = setTimeout(() => controller.abort(), 6000); 
+      // 15s is safer for Render cold starts than 6s
+      const timeoutId = setTimeout(() => controller.abort(), 15000); 
 
       try {
         const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/get-role' : 'https://clinical-nutrilev.onrender.com/api/auth/get-role';
@@ -177,11 +167,14 @@ export class AuthService {
 
       // 2. Una vez autenticados, validamos el rol con permisos de usuario logueado
       const role = await this.determineRole(data.user.email!);
-      
+      this.userRole.set(role);
+      if (role) localStorage.setItem('nutrilev_role', role);
+      this.roleReady.set(true);
+
       if (role === 'admin' || role === 'patient') {
-        if (this.router.url.includes('/login')) {
-          this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
-        }
+        const target = role === 'admin' ? '/dashboard' : '/portal';
+        console.log(`Auth: Login success, navigating to ${target}`);
+        await this.router.navigate([target]);
         return 'success';
       }
 
@@ -233,6 +226,27 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.currentUser() !== null;
+  }
+
+  async waitForRole(): Promise<void> {
+    if (this.roleReady()) return;
+    
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn('Auth: waitForRole timed out after 15s');
+        resolve();
+      }, 15000);
+
+      // Re-use check interval or use a more reactive approach if preferred
+      // For now, simple polling of the signal is very reliable in guards
+      const interval = setInterval(() => {
+        if (this.roleReady()) {
+          clearTimeout(timeout);
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
   }
 
   get user() {

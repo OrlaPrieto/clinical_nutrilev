@@ -9,6 +9,11 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
 
     await authService.ready; // Esperar a que Supabase recupere la sesión
     
+    // If logged in but role is missing, wait for it
+    if (authService.isLoggedIn() && !authService.userRole()) {
+      await authService.waitForRole();
+    }
+
     const role = authService.userRole();
 
     if (authService.isLoggedIn() && role && allowedRoles.includes(role)) {

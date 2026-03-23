@@ -31,11 +31,11 @@ export class PatientService {
   }
 
   async addPatientEntry(payload: any): Promise<any> {
-    const { action, email, originalEmail, ...data } = payload;
+    const { action, email, originalEmail } = payload;
     
     if (action === 'update') {
-      const id = payload.id;
-      const targetId = id || originalEmail || email;
+      // Prioritize ID (UUID) for reliable identification with non-unique emails
+      const targetId = payload.id || originalEmail || email;
       const response = await fetch(`${this.apiUrl}/${targetId}`, {
         method: 'PUT',
         headers: this.headers,
