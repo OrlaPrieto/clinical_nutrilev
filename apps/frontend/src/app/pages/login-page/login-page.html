@@ -14,15 +14,23 @@
         <app-a-icon [name]="themeService.isDarkMode() ? 'light_mode' : 'dark_mode'" size="20px"></app-a-icon>
     </button>
 
-    <div class="relative z-10 w-full flex justify-center">
+    <div class="relative z-10 w-full flex flex-col items-center">
+        <!-- Logo Entrance -->
+        <div class="text-center mb-8 stagger-1">
+            <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="160" height="61" 
+                 class="h-40 w-auto mx-auto object-contain dark:brightness-110 drop-shadow-2xl" priority>
+        </div>
+
         @if (isLoggingIn) {
-            <div class="flex flex-col items-center justify-center bg-white/5 backdrop-blur-xl rounded-3xl p-10 ring-1 ring-black/5 dark:ring-white/10 shadow-2xl animate-fade-in text-center max-w-[320px] w-full">
+            <div class="flex flex-col items-center justify-center bg-white/5 backdrop-blur-xl rounded-3xl p-10 ring-1 ring-black/5 dark:ring-white/10 shadow-2xl animate-fade-in text-center max-w-[320px] w-full stagger-2">
                 <div class="w-12 h-12 rounded-full border-[3px] border-nutri-rose/20 border-t-nutri-rose animate-spin mb-5"></div>
                 <h3 class="text-nutri-text dark:text-white font-semibold text-lg">Iniciando sesión...</h3>
                 <p class="text-sm text-nutri-text/60 dark:text-white/50 mt-2">Conectando de forma segura con el servidor, esto puede tomar unos segundos.</p>
             </div>
         } @else {
-            <app-o-login-card [errorMessage]="errorMessage"></app-o-login-card>
+            <div class="w-full max-w-md stagger-2">
+                <app-o-login-card [errorMessage]="errorMessage"></app-o-login-card>
+            </div>
         }
     </div>
 </div>

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AuthService } from '../../services/auth.service';
 import { LoginCardOrganism } from '../../shared/components/organisms/login-card/login-card';
@@ -9,7 +9,7 @@ import { IconComponent } from '../../shared/components/atoms/icon/icon';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, LoginCardOrganism, IconComponent],
+  imports: [CommonModule, LoginCardOrganism, IconComponent, NgOptimizedImage],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css'
 })

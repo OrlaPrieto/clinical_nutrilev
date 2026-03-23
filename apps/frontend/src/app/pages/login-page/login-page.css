@@ -1,6 +1,7 @@
 :host {
   display: block;
   width: 100%;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .login-bg {
@@ -35,12 +36,13 @@
 .blob {
   position: absolute;
   filter: blur(100px);
-  opacity: 0.2;
-  width: 70vw;
-  height: 70vw;
+  opacity: 0.15;
+  width: 60vw;
+  height: 60vw;
   border-radius: 50%;
   mix-blend-mode: multiply;
-  transition: opacity 0.7s ease;
+  transition: opacity 0.7s var(--ease-out-expo);
+  will-change: transform, opacity;
 }
 
 :host-context(.dark) .blob {
@@ -52,32 +54,54 @@
 }
 
 .blob-1 {
-  background-color: rgba(216, 27, 96, 0.3);
-  top: -10%;
-  left: -10%;
-  animation: float 20s infinite alternate-reverse;
+  background-color: rgba(216, 27, 96, 0.25);
+  top: -15%;
+  left: -15%;
+  animation: aurora-drift 25s infinite alternate var(--ease-out-expo);
 }
 
 .blob-2 {
-  background-color: rgba(249, 115, 22, 0.25);
-  bottom: -15%;
-  right: -5%;
-  animation: float 25s infinite alternate;
+  background-color: rgba(249, 115, 22, 0.2);
+  bottom: -20%;
+  right: -10%;
+  animation: aurora-drift 30s infinite alternate-reverse var(--ease-out-expo);
 }
 
 .blob-3 {
-  background-color: rgba(16, 185, 129, 0.25);
-  bottom: 20%;
-  left: -5%;
-  animation: float 30s infinite alternate-reverse;
+  background-color: rgba(16, 185, 129, 0.2);
+  bottom: 15%;
+  left: -10%;
+  animation: aurora-drift 28s infinite alternate var(--ease-out-expo);
 }
 
 .blob-4 {
-  background-color: rgba(216, 27, 96, 0.15);
-  top: 20%;
-  right: -10%;
-  animation: float 22s infinite alternate;
+  background-color: rgba(216, 27, 96, 0.1);
+  top: 25%;
+  right: -15%;
+  animation: aurora-drift 22s infinite alternate-reverse var(--ease-out-expo);
 }
+
+@keyframes aurora-drift {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(10%, 5%) scale(1.1) rotate(15deg); }
+  100% { transform: translate(-5%, 10%) scale(0.9) rotate(-10deg); }
+}
+
+@keyframes fade-up-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 { animation: fade-up-entrance 1.2s var(--ease-out-expo) forwards; opacity: 0; }
+.stagger-2 { animation: fade-up-entrance 1.2s var(--ease-out-expo) 0.15s forwards; opacity: 0; }
+.stagger-3 { animation: fade-up-entrance 1.2s var(--ease-out-expo) 0.3s forwards; opacity: 0; }
+.stagger-4 { animation: fade-up-entrance 1.2s var(--ease-out-expo) 0.45s forwards; opacity: 0; }
 
 @keyframes float {
   0% { transform: translate(0, 0) scale(1) rotate(12deg); }

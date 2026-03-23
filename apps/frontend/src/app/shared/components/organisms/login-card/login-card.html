@@ -1,8 +1,5 @@
-<div class="max-w-md w-full space-y-12 animate-fade-up">
-  <!-- Logo -->
-  <div class="text-center">
-    <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="160" height="61" class="h-32 w-auto mx-auto object-contain mb-2" priority>
-  </div>
+<div class="w-full space-y-12">
+  <!-- Logo is now handled by parent page for better staggered entrance -->
 
   <!-- Login Card -->
   <div class="login-glass p-12 rounded-[3.5rem] border border-white/20 dark:border-white/10 space-y-8 text-center relative overflow-hidden transition-all duration-500 group/card">
@@ -10,17 +7,17 @@
     <div class="absolute -top-20 -right-20 w-64 h-64 bg-nutri-rose/5 rounded-full blur-3xl transition-colors duration-700"></div>
     <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-orange-400/3 rounded-full blur-3xl"></div>
     
-    <div class="flex flex-col gap-6 py-4">
+    <div class="flex flex-col gap-6 py-2">
       @if (!sent) {
         <div class="space-y-6">
-          <div class="space-y-3">
-            <h1 class="text-4xl font-bold serif text-nutri-text dark:text-white tracking-tight">Bienvenido</h1>
-            <p class="text-[9px] font-black text-nutri-text/40 dark:text-white/80 uppercase tracking-[0.3em]">Ingresa tu correo para recibir un enlace de acceso</p>
+          <div class="space-y-2 stagger-3">
+            <h1 class="text-5xl font-medium serif text-nutri-text dark:text-white tracking-tight leading-none mb-1">Bienvenido</h1>
+            <p class="text-[8px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-[0.4em]">Nutrición de Élite</p>
           </div>
 
-          <div class="relative group mt-8">
+          <div class="relative group mt-10 stagger-4">
             <app-a-input type="email" [value]="email" (valueChange)="email = $event" placeholder="tu@correo.com"
-                        inputClass="!bg-white/10 !border-white/20 !rounded-2xl !px-6 !py-4 focus:!ring-2 focus:!ring-nutri-rose/40 transition-all placeholder:!text-nutri-text/30 dark:placeholder:!text-white/30">
+                        inputClass="!bg-white/10 !border-white/20 !rounded-2xl !px-6 !py-5 focus:!ring-2 focus:!ring-nutri-rose/40 transition-all placeholder:!text-nutri-text/30 dark:placeholder:!text-white/20 !text-base">
             </app-a-input>
           </div>
           
@@ -46,13 +43,13 @@
             </div>
         }
 
-      <div class="flex items-center gap-4 py-2">
-        <div class="h-[1px] flex-1 bg-nutri-rose/10 dark:bg-white/20"></div>
-        <span class="text-[8px] font-black text-nutri-rose/30 dark:text-white/50 uppercase tracking-widest">o también</span>
-        <div class="h-[1px] flex-1 bg-nutri-rose/10 dark:bg-white/20"></div>
+      <div class="flex items-center gap-4 py-2 opacity-30">
+        <div class="h-[1px] flex-1 bg-nutri-text/20 dark:bg-white/20"></div>
+        <span class="text-[8px] font-black text-nutri-text/60 dark:text-white/50 uppercase tracking-widest">o accede con</span>
+        <div class="h-[1px] flex-1 bg-nutri-text/20 dark:bg-white/20"></div>
       </div>
 
-      <div class="flex justify-center dark:brightness-90 dark:contrast-125 transition-all">
+      <div class="flex justify-center transition-all hover:scale-[1.02] active:scale-95">
         <asl-google-signin-button type="standard" size="large" text="signin_with" shape="pill"></asl-google-signin-button>
       </div>
       
