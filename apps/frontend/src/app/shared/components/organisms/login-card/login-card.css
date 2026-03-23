@@ -6,8 +6,13 @@
 }
 
 ::ng-deep .login-glass {
-  @apply backdrop-blur-[40px] bg-white/5 dark:bg-white/[0.07] shadow-2xl relative overflow-hidden;
+  @apply backdrop-blur-[40px] bg-white/40 dark:bg-white/[0.07] shadow-2xl relative overflow-hidden;
   border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1), 
+              0 0 40px rgba(255, 59, 92, 0.05);
+}
+
+:host-context(.dark) ::ng-deep .login-glass {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 
               0 0 40px rgba(255, 59, 92, 0.05);
 }
@@ -42,11 +47,11 @@
 }
 
 ::ng-deep .premium-gradient:hover {
-  @apply shadow-2xl shadow-nutri-rose/60 scale-[1.03] -translate-y-1 !important;
+  @apply shadow-xl shadow-nutri-rose/40 !important;
 }
 
 .premium-gradient:hover {
-  @apply brightness-110 shadow-xl shadow-nutri-rose/30 scale-[1.02];
+  @apply brightness-110 shadow-lg shadow-nutri-rose/20;
 }
 
 .premium-gradient:active {

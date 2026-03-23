@@ -4,44 +4,79 @@
 }
 
 .login-bg {
-  @apply fixed inset-0 overflow-hidden pointer-events-none -z-10 transition-colors duration-700 bg-[#050505];
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background: #fdfdfd;
+  background: radial-gradient(circle at center, #ffffff 0%, #f0f0f0 100%);
+  transition: background 0.7s ease;
+}
+
+:host-context(.dark) .login-bg {
   background: radial-gradient(circle at center, #0a0a0a 0%, #050505 100%);
 }
 
 .login-bg::after {
   content: "";
-  @apply absolute inset-0 opacity-[0.05] pointer-events-none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3C%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  transition: opacity 0.7s ease;
 }
 
-/* Background Blobs (Aurora Effect) - VIBRANT */
+:host-context(.dark) .login-bg::after {
+  opacity: 0.03;
+}
+
 .blob {
-  @apply absolute filter blur-[120px] opacity-60 dark:opacity-30;
+  position: absolute;
+  filter: blur(100px);
+  opacity: 0.2;
+  width: 70vw;
+  height: 70vw;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  transition: opacity 0.7s ease;
+}
+
+:host-context(.dark) .blob {
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  filter: blur(120px);
   width: 80vw;
   height: 80vw;
-  border-radius: 50%;
-  mix-blend-mode: screen;
 }
 
 .blob-1 {
-  @apply bg-nutri-rose/40;
-  top: -25%;
-  left: -15%;
-  animation: float 25s infinite alternate;
+  background-color: rgba(216, 27, 96, 0.3);
+  top: -10%;
+  left: -10%;
+  animation: float 20s infinite alternate-reverse;
 }
 
 .blob-2 {
-  @apply bg-orange-600/30;
-  bottom: -25%;
-  right: -15%;
-  animation: float 30s infinite alternate-reverse;
+  background-color: rgba(249, 115, 22, 0.25);
+  bottom: -15%;
+  right: -5%;
+  animation: float 25s infinite alternate;
 }
 
 .blob-3 {
-  @apply bg-pink-500/20;
-  top: 35%;
-  right: -15%;
-  animation: float 20s infinite alternate;
+  background-color: rgba(16, 185, 129, 0.25);
+  bottom: 20%;
+  left: -5%;
+  animation: float 30s infinite alternate-reverse;
+}
+
+.blob-4 {
+  background-color: rgba(216, 27, 96, 0.15);
+  top: 20%;
+  right: -10%;
+  animation: float 22s infinite alternate;
 }
 
 @keyframes float {
