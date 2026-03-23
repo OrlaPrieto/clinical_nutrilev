@@ -11,6 +11,7 @@ import { PatientService } from '../../../../services/patient';
 import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
 import { NutriImagePipe } from '../../../pipes/nutri-image.pipe';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-o-patient-detail',
@@ -182,7 +183,7 @@ export class PatientDetailComponent implements OnInit {
       try {
         this.lastGeneratedUrl.set(p.menu_url);
         
-        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/notify-menu' : 'https://clinical-nutrilev.onrender.com/api/notify-menu';
+        const apiUrl = `${environment.apiUrl}/notify-menu`;
         const token = this.authService.accessToken;
         
         await fetch(apiUrl, {

@@ -1,11 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Pipe({
   name: 'nutriImage',
   standalone: true
 })
 export class NutriImagePipe implements PipeTransform {
-  private readonly supabaseUrl = 'https://zjkqyqwhmqqtrknxxryk.supabase.co';
+  private readonly supabaseUrl = environment.supabaseUrl;
 
   transform(url: string | null | undefined, width?: number, height?: number): string {
     if (!url) return '';

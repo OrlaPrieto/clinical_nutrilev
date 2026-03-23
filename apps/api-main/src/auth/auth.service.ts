@@ -24,12 +24,12 @@ export class AuthService {
     // 1. Check if Admin
     if (!this.adminEmails.includes(cleanEmail)) {
       // 2. Check if Approved Patient
-      const { data, error: pError } = await this.supabaseService
+      // Use select() without maybeSingle() to handle multiple records for the same email
+      const { data: patients, error: pError } = await this.supabaseService
         .getClient()
         .from('patients')
         .select('email, acceso_portal, dado_de_baja')
-        .ilike('email', cleanEmail)
-        .maybeSingle();
+        .ilike('email', cleanEmail);
 
       interface PatientAuthData {
         email: string;
@@ -37,18 +37,29 @@ export class AuthService {
         dado_de_baja: boolean;
       }
 
-      const patient = data as unknown as PatientAuthData;
+      if (pError) {
+        console.error('Auth check error (DB):', pError);
+        throw new Error('Database error during auth check.');
+      }
 
-      if (pError || !patient) {
-        console.error('Auth check failed:', {
-          email: cleanEmail,
-          error: pError,
-          found: !!patient,
-        });
+      const results = patients as unknown as PatientAuthData[];
+      if (!results || results.length === 0) {
+        console.warn(`Auth check: No patient found for ${cleanEmail}`);
         throw new Error('Unauthorized or not found.');
       }
 
-      if (!patient.acceso_portal || patient.dado_de_baja) {
+      const activePatient = results.find(
+        (p) => p.acceso_portal && !p.dado_de_baja,
+      );
+
+      if (!activePatient) {
+        console.warn(
+          `Auth check: Patient found for ${cleanEmail} but access is not authorized or is banned. Statuses:`,
+          results.map((r) => ({
+            portal: r.acceso_portal,
+            baja: r.dado_de_baja,
+          })),
+        );
         throw new Error('Unauthorized: Access revoked or pending.');
       }
     }
@@ -76,16 +87,28 @@ export class AuthService {
       return { role: 'admin' };
     }
 
-    const { data, error } = await this.supabaseService
+    // Use select() to avoid .single() errors if multiple records exist
+    const { data: patients, error } = await this.supabaseService
       .getClient()
       .from('patients')
       .select('acceso_portal, dado_de_baja')
-      .ilike('email', cleanEmail)
-      .maybeSingle();
+      .ilike('email', cleanEmail);
 
-    if (error || !data) return { role: 'none' };
-    const patient = data as { acceso_portal: boolean; dado_de_baja: boolean };
-    if (patient.dado_de_baja) return { role: 'denied' };
-    return { role: patient.acceso_portal ? 'patient' : 'pending' };
+    if (error || !patients || patients.length === 0) return { role: 'none' };
+
+    const results = patients as {
+      acceso_portal: boolean;
+      dado_de_baja: boolean;
+    }[];
+
+    // Logic: If any record is an active patient, they are a patient
+    const isPatient = results.some((p) => p.acceso_portal && !p.dado_de_baja);
+    if (isPatient) return { role: 'patient' };
+
+    // If any record is pending (not banned)
+    const isPending = results.some((p) => !p.acceso_portal && !p.dado_de_baja);
+    if (isPending) return { role: 'pending' };
+    
+    return { role: 'denied' };
   }
 }

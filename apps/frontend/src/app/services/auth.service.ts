@@ -1,13 +1,18 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom, of } from 'rxjs';
+import { catchError, timeout } from 'rxjs/operators';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { supabase } from '../supabase';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private router = inject(Router);
+  private http = inject(HttpClient);
   private socialAuthService = inject(SocialAuthService);
   
   // Lista blanca de correos autorizados
@@ -29,6 +34,15 @@ export class AuthService {
       this.resolveReady = resolve;
     });
     this.initializeAuth();
+    this.pingServer(); // Wake up backend ASAP
+  }
+
+  private pingServer() {
+    const apiUrl = `${environment.apiUrl}/auth/health`;
+    // Silently ping to wake up Render (Cold Start)
+    this.http.get(apiUrl, { responseType: 'text' })
+      .pipe(catchError(() => of(null)))
+      .subscribe();
   }
 
   private async initializeAuth() {
@@ -116,30 +130,22 @@ export class AuthService {
 
     this.lastCheckedEmail = cleanEmail;
     this.roleCheckPromise = (async () => {
-      const controller = new AbortController();
-      // Fast timeout to fallback to cache if server is sleeping
-      // 15s is safer for Render cold starts than 6s
-      const timeoutId = setTimeout(() => controller.abort(), 15000); 
-
       try {
-        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/get-role' : 'https://clinical-nutrilev.onrender.com/api/auth/get-role';
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: cleanEmail }),
-          signal: controller.signal
-        });
+        const apiUrl = `${environment.apiUrl}/auth/get-role`;
         
-        clearTimeout(timeoutId);
-        if (!response.ok) throw new Error('Error fetching role');
-        const { role } = await response.json();
-        return role === 'none' ? null : role;
-      } catch (err) {
-        clearTimeout(timeoutId);
-        console.error('Auth: Error fetching role from server', err);
-        // Fallback to cache during network issues or timeouts
-        const cached = localStorage.getItem('nutrilev_role');
-        return (cached as any) || null;
+        // We use HttpClient here to benefit from the httpResilienceInterceptor (retries)
+        const obs = this.http.post<{role: string}>(apiUrl, { email: cleanEmail }).pipe(
+          timeout(40000), // Wait up to 40s for cold starts (interceptor will retry within this)
+          catchError((err) => {
+             console.error('Auth: Error fetching role from server', err);
+             const cached = localStorage.getItem('nutrilev_role');
+             return of({ role: (cached as any) || 'none' });
+          })
+        );
+
+        const response = await firstValueFrom(obs);
+        const role = response?.role;
+        return role === 'none' ? null : (role as any);
       } finally {
         setTimeout(() => {
           if (this.lastCheckedEmail === cleanEmail) {
@@ -188,7 +194,7 @@ export class AuthService {
   }
 
   async signInWithMagicLink(email: string): Promise<{error: any}> {
-    const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/magic-link' : 'https://clinical-nutrilev.onrender.com/api/auth/magic-link';
+    const apiUrl = `${environment.apiUrl}/auth/magic-link`;
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',

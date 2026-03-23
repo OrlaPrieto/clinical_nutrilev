@@ -42,7 +42,7 @@ export class EmailService {
             
             <div style="text-align: center; margin: 35px 0;">
                 ${menu_url ? `<a href="${menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px;">Descargar Plan PDF</a><br>` : ''}
-                <a href="https://app.clinicanutrilev.com/portal" style="color: #ff41f8; text-decoration: none; font-size: 14px; font-weight: 500;">
+                <a href="${this.configService.get('FRONTEND_URL') || 'http://localhost:4200'}/portal" style="color: #ff41f8; text-decoration: none; font-size: 14px; font-weight: 500;">
                     O ingresa a tu Portal »
                 </a>
             </div>
