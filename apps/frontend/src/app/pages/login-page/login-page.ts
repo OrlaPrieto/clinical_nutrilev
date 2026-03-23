@@ -18,11 +18,15 @@ export class LoginPage {
   private authService = inject(AuthService);
   public themeService = inject(ThemeService);
   errorMessage: string | null = null;
+  isLoggingIn = false;
 
   constructor() {
     this.socialAuthService.authState.subscribe(async (user) => {
       if (user) {
+        this.isLoggingIn = true;
         const status = await this.authService.login(user);
+        this.isLoggingIn = false;
+        
         if (status === 'denied') {
           this.errorMessage = 'Acceso denegado. Este correo no está autorizado.';
         } else if (status === 'pending') {

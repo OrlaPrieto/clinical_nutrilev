@@ -69,13 +69,41 @@ export class AuthService {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         console.log('Auth: Initial session recovery started');
-        const role = await this.determineRole(session.user.email!);
-        this.currentUser.set(session.user);
-        this.userRole.set(role);
-        if (role) localStorage.setItem('nutrilev_role', role);
+        
+        // Optimistic restore to avoid Render cold-start blocking PWA load
+        const cachedRole = localStorage.getItem('nutrilev_role') as 'admin' | 'patient' | null;
+        if (cachedRole) {
+          this.currentUser.set(session.user);
+          this.userRole.set(cachedRole);
+          
+          if (this.router.url.includes('/login')) {
+            this.router.navigate([cachedRole === 'admin' ? '/dashboard' : '/portal']);
+          }
 
-        if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
-          this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+          // Background verification
+          this.determineRole(session.user.email!).then(role => {
+            if (role && role !== cachedRole) {
+              this.userRole.set(role);
+              localStorage.setItem('nutrilev_role', role);
+              if (this.router.url.includes('/login')) {
+                this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+              }
+            } else if (!role && cachedRole) {
+              // Role was revoked!
+              console.warn('Auth: Cached role was revoked on server.');
+              this.logout();
+            }
+          });
+        } else {
+          // We have to wait for the first time fetch since cache is empty
+          const role = await this.determineRole(session.user.email!);
+          this.currentUser.set(session.user);
+          this.userRole.set(role);
+          if (role) localStorage.setItem('nutrilev_role', role);
+
+          if (this.router.url.includes('/login') && (role === 'admin' || role === 'patient')) {
+            this.router.navigate([role === 'admin' ? '/dashboard' : '/portal']);
+          }
         }
       }
     } catch (err) {
@@ -99,20 +127,27 @@ export class AuthService {
 
     this.lastCheckedEmail = cleanEmail;
     this.roleCheckPromise = (async () => {
+      const controller = new AbortController();
+      // Fast timeout to fallback to cache if server is sleeping
+      const timeoutId = setTimeout(() => controller.abort(), 6000); 
+
       try {
         const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000/api/auth/get-role' : 'https://clinical-nutrilev.onrender.com/api/auth/get-role';
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: cleanEmail })
+          body: JSON.stringify({ email: cleanEmail }),
+          signal: controller.signal
         });
         
+        clearTimeout(timeoutId);
         if (!response.ok) throw new Error('Error fetching role');
         const { role } = await response.json();
         return role === 'none' ? null : role;
       } catch (err) {
+        clearTimeout(timeoutId);
         console.error('Auth: Error fetching role from server', err);
-        // Fallback to cache during network issues
+        // Fallback to cache during network issues or timeouts
         const cached = localStorage.getItem('nutrilev_role');
         return (cached as any) || null;
       } finally {
