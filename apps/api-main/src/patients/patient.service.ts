@@ -125,13 +125,24 @@ export class PatientService {
       throw new Error('FLASK_API_URL is not defined in environment variables');
     }
 
-    const response = await firstValueFrom(
-      this.httpService.post(`${flaskApiUrl.replace(/\/$/, '')}/api/shopping-list`, {
-        menu_url: menuUrl,
-        api_key: geminiKey,
-      }),
-    );
-
-    return response.data;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${flaskApiUrl.replace(/\/$/, '')}/api/shopping-list`,
+          {
+            menu_url: menuUrl,
+            api_key: geminiKey,
+          },
+          { timeout: 30000 }, // 30 second timeout
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        'Error calling Python AI service (Shopping List):',
+        error instanceof Error ? error.message : error,
+      );
+      throw error;
+    }
   }
 }

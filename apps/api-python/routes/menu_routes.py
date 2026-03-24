@@ -15,7 +15,7 @@ from services.document_service import (
     replace_shopping_tables
 )
 import requests
-from pypdf import PdfReader
+# import pypdf (Moved inside route to avoid import-time crashes)
 
 menu_bp = Blueprint('menu_routes', __name__)
 
@@ -122,21 +122,37 @@ def get_shopping_list():
             doc = Document(io.BytesIO(file_bytes))
             menu_data = extract_menu_data(doc)
         elif 'pdf' in content_type or menu_url.endswith('.pdf'):
+            print("[ShoppingList] Processing PDF...")
+            try:
+                from pypdf import PdfReader
+            except ImportError:
+                print("[ShoppingList] ERROR: pypdf not found in environment!")
+                return jsonify({"error": "PDF support is not installed (pypdf missing)"}), 500
+                
             reader = PdfReader(io.BytesIO(file_bytes))
             full_text = ""
             for page in reader.pages:
-                full_text += page.extract_text() + "\n"
+                text = page.extract_text() or ""
+                full_text += text + "\n"
+            
+            if not full_text.strip():
+                print("[ShoppingList] WARNING: No text extracted from PDF")
+                
             menu_data["todos_ingredientes"] = [full_text]
         else:
+            print(f"[ShoppingList] Unsupported format: {content_type}")
             return jsonify({"error": "Unsupported file format. Please use .docx or .pdf"}), 400
 
         # 3. Generate JSON
+        print("[ShoppingList] Calling AI service...")
         from services.ai_service import generate_shopping_list_json
         shopping_json = generate_shopping_list_json(menu_data, gemini_key)
-
+        
+        print("[ShoppingList] Success!")
         return jsonify(shopping_json)
 
     except Exception as e:
         print(f"Error generating shopping list: {e}")
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+

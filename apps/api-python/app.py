@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 from config import ALLOWED_ORIGINS, MAX_CONTENT_LENGTH
@@ -23,6 +23,18 @@ def create_app() -> Flask:
     app.register_blueprint(health_bp, url_prefix='/api')
     # Health routes without /api
     app.register_blueprint(health_bp, url_prefix='/', name='health_routes_root')
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        import traceback
+        # Real error log for Vercel
+        print(f"DEBUG - Global Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "error": "Internal Server Error",
+            "details": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
 
     return app
 
