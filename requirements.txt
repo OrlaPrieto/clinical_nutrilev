@@ -5,8 +5,10 @@ Pillow
 lxml
 flask
 flask-cors
+flask-limiter
 python-dotenv
 openai
 resend==2.1.0
 PyJWT
+pypdf
 

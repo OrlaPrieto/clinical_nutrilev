@@ -122,7 +122,7 @@ export class PatientService {
     const geminiKey = this.configService.get<string>('GEMINI_API_KEY');
 
     const response = await firstValueFrom(
-      this.httpService.post(`${flaskApiUrl}/api/shopping-list`, {
+      this.httpService.post(`${flaskApiUrl.replace(/\/$/, '')}/api/shopping-list`, {
         menu_url: menuUrl,
         api_key: geminiKey,
       }),
