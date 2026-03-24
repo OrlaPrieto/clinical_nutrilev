@@ -59,20 +59,27 @@ export class AuthService {
       console.log(`Auth: Event [${event}]`, session?.user?.email);
       
       if (event === 'SIGNED_OUT') {
-        this.clearLocalSession();
+        // Only clear if we were previously logged in or if this is an explicit sign out
+        if (this.currentUser()) {
+          console.warn('Auth: Session signed out, clearing local state');
+          this.clearLocalSession();
+        }
         return;
+      }
+
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('Auth: Token refreshed successfully');
       }
 
       if (session?.user) {
         if (this.currentUser()?.id !== session.user.id || !this.userRole()) {
+          console.log('Auth: User state updated from event', session.user.email);
           this.currentUser.set(session.user);
           const role = await this.determineRole(session.user.email!);
           this.userRole.set(role);
           if (role) localStorage.setItem('nutrilev_role', role);
           this.roleReady.set(true);
         }
-      } else {
-        this.clearLocalSession();
       }
     });
 

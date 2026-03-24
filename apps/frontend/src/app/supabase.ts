@@ -4,4 +4,11 @@ import { environment } from '../environments/environment';
 const supabaseUrl = environment.supabaseUrl;
 const supabaseKey = environment.supabaseKey;
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: localStorage
+  }
+});
