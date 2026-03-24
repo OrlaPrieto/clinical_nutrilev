@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResponse } from '@shared/index';
 
@@ -11,6 +11,11 @@ export class AuthController {
     @Body('email') email: string,
   ): Promise<AuthResponse> {
     return this.authService.signInWithMagicLink(email);
+  }
+
+  @Get('health')
+  getHealth(): string {
+    return 'OK';
   }
 
   @Post('get-role')

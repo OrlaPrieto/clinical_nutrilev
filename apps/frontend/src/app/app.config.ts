@@ -12,13 +12,14 @@ import {
 
 import { routes } from './app.routes';
 import { httpResilienceInterceptor } from './interceptors/http-resilience.interceptor';
+import { authInterceptor } from './interceptors/auth.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([httpResilienceInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, httpResilienceInterceptor])),
     provideAnimations(),
     provideNativeDateAdapter(),
     SocialAuthService,

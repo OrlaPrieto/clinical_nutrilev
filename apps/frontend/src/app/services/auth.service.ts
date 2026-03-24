@@ -38,10 +38,16 @@ export class AuthService {
   }
 
   private pingServer() {
+    // Ping with health endpoint. We use /api/auth/health now.
     const apiUrl = `${environment.apiUrl}/auth/health`;
-    // Silently ping to wake up Render (Cold Start)
+    
+    // Check if we are already logged in to avoid unnecessary pings if session is restored
+    // But Render might still need a wake up call
     this.http.get(apiUrl, { responseType: 'text' })
-      .pipe(catchError(() => of(null)))
+      .pipe(
+        timeout(5000), 
+        catchError(() => of(null))
+      )
       .subscribe();
   }
 
@@ -76,6 +82,7 @@ export class AuthService {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session?.user) {
+        console.log('Auth: Session recovered for', session.user.email);
         this.currentUser.set(session.user);
         
         // Optimistic restore to avoid Render cold-start blocking PWA load
@@ -96,24 +103,28 @@ export class AuthService {
           });
         } else {
           // No cache, must fetch initial role but we allow guards to wait
-          this.determineRole(session.user.email!).then(role => {
-            this.userRole.set(role);
-            if (role) localStorage.setItem('nutrilev_role', role);
-            this.roleReady.set(true);
-            this.isInitialLoading.set(false);
-          });
+          const role = await this.determineRole(session.user.email!);
+          this.userRole.set(role);
+          if (role) localStorage.setItem('nutrilev_role', role);
+          this.roleReady.set(true);
+          this.isInitialLoading.set(false);
         }
       } else {
+        console.log('Auth: No session found');
         this.isInitialLoading.set(false);
       }
     } catch (err) {
       console.error('Auth: Initial recovery error', err);
       this.isInitialLoading.set(false);
     } finally {
-      console.log('Auth: Ready (resolved)');
       this.resolveReady();
       // Guard against stuck loading state
-      setTimeout(() => this.isInitialLoading.set(false), 2000);
+      setTimeout(() => {
+        if (this.isInitialLoading()) {
+          console.warn('Auth: Loading state safeguard triggered');
+          this.isInitialLoading.set(false);
+        }
+      }, 5000);
     }
   }
 
