@@ -189,9 +189,8 @@ export class UpdatePatientDto {
   @IsOptional()
   musculo_meta?: string | number;
 
-  @IsString()
   @IsOptional()
-  meta_objetivo?: string;
+  meta_objetivo?: 'bajar_peso' | 'bajar_grasa' | 'subir_musculo' | null;
 
   @IsString()
   @IsOptional()
