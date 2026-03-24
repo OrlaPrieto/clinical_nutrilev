@@ -1,4 +1,4 @@
-import { Component, OnInit, input, signal } from '@angular/core';
+import { Component, OnInit, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -41,6 +41,72 @@ export class PatientDetailComponent implements OnInit {
   ngOnInit() {
     this.loadProgress();
   }
+
+  currentGoal = computed(() => this.patient()?.meta_objetivo || null);
+
+  progressPercentage = computed(() => {
+    const p = this.patient();
+    const history = this.progressHistory();
+    const goal = this.currentGoal();
+    if (!p || !goal || history.length === 0) return 0;
+
+    const currentRecord = history[0];
+    const initialRecord = history[history.length - 1];
+
+    let start = 0;
+    let current = 0;
+    let target = 0;
+
+    switch (goal) {
+      case 'bajar_peso':
+        start = Number(p.peso_habitual || initialRecord.weight || 0);
+        current = Number(currentRecord.weight || 0);
+        target = Number(p.peso_meta || 0);
+        break;
+      case 'bajar_grasa':
+        start = Number(initialRecord.body_fat || 0);
+        current = Number(currentRecord.body_fat || 0);
+        target = Number(p.grasa_meta || 0);
+        break;
+      case 'subir_musculo':
+        // Muscle Gain: start is the oldest record that HAS muscle_mass. If none, using 0 is risky for progress %.
+        // Let's assume the first recorded muscle mass is the 'start'.
+        const firstRecordWithMuscle = [...history].reverse().find(r => r.muscle_mass);
+        start = firstRecordWithMuscle ? Number(firstRecordWithMuscle.muscle_mass) : Number(currentRecord.muscle_mass || 0);
+        current = Number(currentRecord.muscle_mass || 0);
+        target = Number(p.musculo_meta || 0);
+        break;
+    }
+
+    if (target === 0 || start === target) return 0;
+    
+    let progress = 0;
+    if (goal === 'subir_musculo') {
+      // For muscle gain, increase is the goal.
+      // (amount gained) / (total gain needed)
+      const gainNeeded = target - start;
+      if (gainNeeded <= 0) return current >= target ? 100 : 0;
+      progress = ((current - start) / gainNeeded) * 100;
+    } else {
+      // For losing weight/fat, decrease is the goal.
+      // (amount lost) / (total loss needed)
+      const lossNeeded = start - target;
+      if (lossNeeded <= 0) return current <= target ? 100 : 0;
+      progress = ((start - current) / lossNeeded) * 100;
+    }
+
+    return Math.max(0, Math.min(100, Math.round(progress)));
+  });
+
+  milestones = computed(() => {
+    const p = this.progressPercentage();
+    return [
+      { label: '25%', achieved: p >= 25 },
+      { label: '50%', achieved: p >= 50 },
+      { label: '75%', achieved: p >= 75 },
+      { label: '100%', achieved: p >= 100 }
+    ];
+  });
 
   async loadProgress() {
     const p = this.patient();

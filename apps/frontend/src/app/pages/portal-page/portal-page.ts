@@ -54,8 +54,8 @@ export class PortalPage implements OnInit {
     const prog = this.progress();
     if (!p || !p.estatura) return null;
     
-    const weight = prog.length > 0 ? prog[0].weight : parseFloat(p.peso_habitual || '0');
-    let height = parseFloat(p.estatura);
+    const weight = prog.length > 0 ? Number(prog[0].weight) : Number(p.peso_habitual || 0);
+    let height = Number(p.estatura);
     
     // Auto-detect cm or meters (if > 3 assume it's cm)
     if (height > 3) height = height / 100;
@@ -64,96 +64,139 @@ export class PortalPage implements OnInit {
     return (weight / (height * height)).toFixed(1);
   });
 
-  weightTrendPath = computed(() => {
-    const prog = [...this.progress()].reverse();
-    if (prog.length < 2) return '';
+  currentGoal = computed(() => this.patient()?.meta_objetivo || null);
+
+  goalPercentage = computed(() => {
+    const p = this.patient();
+    const history = this.progress();
+    const goal = this.currentGoal();
+    if (!p || !goal || history.length === 0) return 0;
+
+    const currentRecord = history[0];
     
-    const weights = prog.map(p => p.weight);
-    const minWeight = Math.min(...weights) - 2;
-    const maxWeight = Math.max(...weights) + 2;
-    const range = maxWeight - minWeight;
+    let start = 0;
+    let current = 0;
+    let target = 0;
+
+    switch (goal) {
+      case 'bajar_peso':
+        const firstWeight = [...history].reverse().find(r => r.weight);
+        start = Number(p.peso_habitual || (firstWeight ? firstWeight.weight : 0));
+        current = Number(currentRecord.weight || 0);
+        target = Number(p.peso_meta || 0);
+        break;
+      case 'bajar_grasa':
+        const firstFat = [...history].reverse().find(r => r.body_fat);
+        start = firstFat ? Number(firstFat.body_fat) : Number(currentRecord.body_fat || 0);
+        current = Number(currentRecord.body_fat || 0);
+        target = Number(p.grasa_meta || 0);
+        break;
+      case 'subir_musculo':
+        const firstMuscle = [...history].reverse().find(r => r.muscle_mass);
+        start = firstMuscle ? Number(firstMuscle.muscle_mass) : Number(currentRecord.muscle_mass || 0);
+        current = Number(currentRecord.muscle_mass || 0);
+        target = Number(p.musculo_meta || 0);
+        break;
+    }
+
+    if (target === 0 || start === target) return 0;
+    
+    let progress = 0;
+    if (goal === 'subir_musculo') {
+      const gainNeeded = target - start;
+      if (gainNeeded <= 0) return current >= target ? 100 : 0;
+      progress = ((current - start) / gainNeeded) * 100;
+    } else {
+      const lossNeeded = start - target;
+      if (lossNeeded <= 0) return current <= target ? 100 : 0;
+      progress = ((start - current) / lossNeeded) * 100;
+    }
+
+    return Math.max(0, Math.min(100, Math.round(progress)));
+  });
+
+  goalTrendPath = computed(() => {
+    const prog = [...this.progress()].reverse();
+    const goal = this.currentGoal();
+    if (prog.length < 2 || !goal) return '';
+    
+    const values = prog.map(p => {
+      if (goal === 'bajar_peso') return Number(p.weight || 0);
+      if (goal === 'bajar_grasa') return Number(p.body_fat || 0);
+      if (goal === 'subir_musculo') return Number(p.muscle_mass || 0);
+      return 0;
+    });
+
+    const minValue = Math.min(...values) - 1;
+    const maxValue = Math.max(...values) + 1;
+    const range = maxValue - minValue || 1;
     
     const width = 400;
     const height = 100;
     const stepX = width / (prog.length - 1);
     
-    return prog.map((p, i) => {
+    return values.map((val, i) => {
       const x = i * stepX;
-      const y = height - ((p.weight - minWeight) / range * height);
+      const y = height - ((val - minValue) / range * height);
       return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
     }).join(' ');
   });
 
   chartPoints = computed(() => {
     const prog = [...this.progress()].reverse();
-    if (prog.length < 1) return [];
+    const goal = this.currentGoal();
+    if (prog.length < 1 || !goal) return [];
     
-    const weights = prog.map(p => p.weight);
-    const minWeight = Math.min(...weights) - 2;
-    const maxWeight = Math.max(...weights) + 2;
-    const range = maxWeight - minWeight;
+    const values = prog.map(p => {
+      if (goal === 'bajar_peso') return Number(p.weight || 0);
+      if (goal === 'bajar_grasa') return Number(p.body_fat || 0);
+      if (goal === 'subir_musculo') return Number(p.muscle_mass || 0);
+      return 0;
+    });
+
+    const minValue = Math.min(...values) - 1;
+    const maxValue = Math.max(...values) + 1;
+    const range = maxValue - minValue || 1;
     
     const width = 400;
     const height = 100;
     const stepX = prog.length > 1 ? width / (prog.length - 1) : width / 2;
     
-    return prog.map((p, i) => ({
+    return values.map((val, i) => ({
       x: i * stepX,
-      y: height - ((p.weight - minWeight) / range * height),
-      weight: p.weight,
-      date: p.date
+      y: height - ((val - minValue) / range * height),
+      value: val,
+      date: prog[i].date,
+      unit: goal === 'bajar_grasa' ? '%' : 'kg'
     }));
-  });
-
-  goalPercentage = computed(() => {
-    const p = this.patient();
-    const prog = this.progress();
-    if (!p || !p.peso_meta || !p.peso_habitual) return 0;
-    
-    const start = parseFloat(p.peso_habitual);
-    const target = parseFloat(p.peso_meta);
-    const current = prog.length > 0 ? prog[0].weight : start;
-    
-    if (start === target) return 100;
-    
-    const totalDist = Math.abs(start - target);
-    const currentDist = Math.abs(start - current);
-    const pct = (currentDist / totalDist) * 100;
-    return Math.min(Math.max(pct, 0), 100);
   });
 
   milestones = computed(() => {
     const p = this.patient();
-    const prog = this.progress();
-    if (!p || !p.peso_habitual) return [];
-
-    const startWeight = parseFloat(p.peso_habitual);
-    const currentWeight = prog.length > 0 ? prog[0].weight : startWeight;
-    const targetWeight = parseFloat(p.peso_meta || '0');
-    const lostWeight = startWeight - currentWeight;
     const goalPct = this.goalPercentage();
+    if (!p || !this.currentGoal()) return [];
 
     return [
       {
-        id: 'first-2kg',
+        id: '25-percent',
         image: 'images/milestones/star_bronze.png',
         title: 'Primer Paso',
-        description: 'Pierde tus primeros 2kg.',
-        unlocked: lostWeight >= 2
+        description: 'Logra el 25% de tu objetivo.',
+        unlocked: goalPct >= 25
       },
       {
         id: 'halfway',
         image: 'images/milestones/star_gold.png',
         title: 'A Medio Camino',
-        description: 'Logra el 50% de tu meta.',
+        description: 'Logra el 50% de tu objetivo.',
         unlocked: goalPct >= 50
       },
       {
         id: 'goal-reached',
         image: 'images/milestones/star_diamond.png',
         title: 'Meta Lograda',
-        description: 'Alcanza tu peso objetivo.',
-        unlocked: targetWeight > 0 && currentWeight <= targetWeight
+        description: 'Alcanza el 100% de tu objetivo.',
+        unlocked: goalPct >= 100
       }
     ];
   });

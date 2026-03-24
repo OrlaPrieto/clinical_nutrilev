@@ -39,8 +39,11 @@ export interface Patient {
   suplementos_cuales?: string | null;
   dieta_especial?: string | null;
   salud_femenina_ciclo?: string | null;
-  peso_habitual?: string | null;
-  peso_meta?: string | null;
+  peso_habitual?: string | number | null;
+  peso_meta?: string | number | null;
+  grasa_meta?: string | number | null;
+  musculo_meta?: string | number | null;
+  meta_objetivo?: 'bajar_peso' | 'bajar_grasa' | 'subir_musculo' | null;
   cambios_peso_detalle?: string | null;
   notas?: string | null;
   menu_url?: string | null;

@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
@@ -10,7 +10,7 @@ import { InputComponent } from '../../atoms/input/input';
 @Component({
   selector: 'app-o-login-card',
   standalone: true,
-  imports: [CommonModule, GoogleSigninButtonModule, FormsModule, MatIconModule, NgOptimizedImage, ButtonComponent, InputComponent],
+  imports: [CommonModule, GoogleSigninButtonModule, FormsModule, MatIconModule, ButtonComponent, InputComponent],
   templateUrl: './login-card.html',
   styleUrl: './login-card.css'
 })

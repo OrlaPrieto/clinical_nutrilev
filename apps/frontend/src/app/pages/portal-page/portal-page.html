@@ -54,8 +54,22 @@
                     <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative transition-colors">
                         <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
                         <div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">Tu Objetivo</span>
-                            <h2 class="text-4xl font-bold serif">{{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span></h2>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">
+                                {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
+                                   currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
+                                   currentGoal() === 'subir_musculo' ? 'Meta de Músculo' : 'Tu Objetivo' }}
+                            </span>
+                            <h2 class="text-4xl font-bold serif">
+                                @if (currentGoal() === 'bajar_peso') {
+                                    {{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
+                                } @else if (currentGoal() === 'bajar_grasa') {
+                                    {{ patient()?.grasa_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">%</span>
+                                } @else if (currentGoal() === 'subir_musculo') {
+                                    {{ patient()?.musculo_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
+                                } @else {
+                                    <span class="text-xl">Sin objetivo</span>
+                                }
+                            </h2>
                         </div>
                         <p class="text-xs text-nutri-text/50 dark:text-slate-600 mt-4 leading-relaxed italic">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
                     </div>
@@ -64,7 +78,23 @@
                         <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose opacity-60 mb-2 block">Último Registro</span>
-                            <h2 class="text-4xl font-bold serif text-nutri-rose dark:text-nutri-rose-soft">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }} <span class="text-lg font-normal opacity-40">kg</span></h2>
+                            <div class="flex flex-wrap items-baseline gap-4 text-nutri-rose dark:text-nutri-rose-soft">
+                                <!-- Peso -->
+                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
+                                    <h2 class="text-4xl font-bold serif">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                    <span class="text-lg font-normal opacity-60">kg</span>
+                                </div>
+                                <!-- Grasa -->
+                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
+                                    <h2 class="text-2xl font-bold serif">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                    <span class="text-sm font-normal opacity-60">% grasa</span>
+                                </div>
+                                <!-- Musculo -->
+                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
+                                    <h2 class="text-2xl font-bold serif">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                    <span class="text-sm font-normal opacity-60">kg musc.</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex items-center gap-2 mt-4 text-nutri-rose/60">
                             <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/10 flex items-center justify-center text-xs">
@@ -161,12 +191,16 @@
                     <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">Tendencia de Peso</h3>
+                                <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
+                                    Tendencia de {{ currentGoal() === 'bajar_peso' ? 'Peso' : 
+                                                    currentGoal() === 'bajar_grasa' ? 'Grasa' : 
+                                                    currentGoal() === 'subir_musculo' ? 'Músculo' : 'Evidencia' }}
+                                </h3>
                                 <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
                             </div>
                             <div class="flex items-center gap-2 px-3 py-1 bg-nutri-rose/5 dark:bg-nutri-rose/10 rounded-full border border-nutri-rose/10 dark:border-nutri-rose/20 text-nutri-rose">
                                 <span class="text-[9px] font-black uppercase tracking-widest">Progreso</span>
-                                <app-a-icon name="trending_down" size="14px"></app-a-icon>
+                                <app-a-icon [name]="currentGoal() === 'subir_musculo' ? 'trending_up' : 'trending_down'" size="14px"></app-a-icon>
                             </div>
                         </div>
                         
@@ -180,15 +214,12 @@
                                 </defs>
                                 
                                 <!-- Area under path -->
-                                <path [attr.d]="weightTrendPath() + ' L 400 100 L 0 100 Z'" 
+                                <path [attr.d]="goalTrendPath() + ' L 400 100 L 0 100 Z'" 
                                       fill="url(#chartGradient)" 
                                       class="animate-fade-in" />
-
-                                <!-- Baseline -->
-                                <line x1="0" y1="100" x2="400" y2="100" stroke="currentColor" stroke-opacity="0.1" stroke-width="1" />
-
+...
                                 <!-- Main Path -->
-                                <path [attr.d]="weightTrendPath()" 
+                                <path [attr.d]="goalTrendPath()" 
                                       fill="none" 
                                       stroke="currentColor" 
                                       stroke-width="3" 
@@ -203,7 +234,7 @@
                                         <text [attr.x]="point.x" [attr.y]="point.y - 12" 
                                               text-anchor="middle" 
                                               class="text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                            {{ point.weight }}<tspan class="text-[7px] opacity-30">KG</tspan>
+                                            {{ point.value }}<tspan class="text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
                                         </text>
                                         
                                         <!-- Point Marker -->
@@ -270,18 +301,31 @@
                                         <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ entry.date | date:'MMM' }}</span>
                                     </div>
                                     <div class="flex-1">
-                                        <div class="flex items-center gap-4">
-                                            <div class="flex items-baseline gap-1">
-                                                <span class="text-xl font-bold serif dark:text-slate-200">{{ entry.weight }}</span>
+                                        <div class="flex flex-wrap items-center gap-4">
+                                            <!-- Peso -->
+                                            <div class="flex items-baseline gap-1 transition-all" 
+                                                 [ngClass]="(currentGoal() === 'bajar_peso' || !currentGoal()) ? '' : 'opacity-30 scale-90 origin-left'">
+                                                <span class="text-xl font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'bajar_peso'">{{ entry.weight }}</span>
                                                 <span class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase">kg</span>
                                             </div>
-                                            @if (entry.body_fat) {
-                                                <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
-                                                <div class="flex items-baseline gap-1">
-                                                    <span class="text-md font-bold text-nutri-rose/60 dark:text-nutri-rose-soft/60">{{ entry.body_fat }}%</span>
-                                                    <span class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase">grasa</span>
-                                                </div>
-                                            }
+                                            
+                                            <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
+                                            
+                                            <!-- Grasa -->
+                                            <div class="flex items-baseline gap-1 transition-all"
+                                                 [ngClass]="currentGoal() === 'bajar_grasa' ? '' : 'opacity-30 scale-90 origin-left'">
+                                                <span class="text-lg font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'bajar_grasa'">{{ entry.body_fat || '--' }}%</span>
+                                                <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase">grasa</span>
+                                            </div>
+
+                                            <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
+
+                                            <!-- Musculo -->
+                                            <div class="flex items-baseline gap-1 transition-all"
+                                                 [ngClass]="currentGoal() === 'subir_musculo' ? '' : 'opacity-30 scale-90 origin-left'">
+                                                <span class="text-lg font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'subir_musculo'">{{ entry.muscle_mass || '--' }}</span>
+                                                <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase">kg musc.</span>
+                                            </div>
                                         </div>
                                         <p class="text-[10px] text-nutri-text/60 dark:text-slate-500 mt-1 italic">{{ entry.notes || 'Consulta de seguimiento rutinaria' }}</p>
                                     </div>

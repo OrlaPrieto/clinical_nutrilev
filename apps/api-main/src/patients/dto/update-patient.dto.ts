@@ -177,13 +177,21 @@ export class UpdatePatientDto {
   @IsOptional()
   salud_femenina_ciclo?: string;
 
-  @IsString()
   @IsOptional()
-  peso_habitual?: string;
+  peso_habitual?: string | number;
+
+  @IsOptional()
+  peso_meta?: string | number;
+
+  @IsOptional()
+  grasa_meta?: string | number;
+
+  @IsOptional()
+  musculo_meta?: string | number;
 
   @IsString()
   @IsOptional()
-  peso_meta?: string;
+  meta_objetivo?: string;
 
   @IsString()
   @IsOptional()
