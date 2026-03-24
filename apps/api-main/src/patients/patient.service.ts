@@ -121,6 +121,10 @@ export class PatientService {
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
     const geminiKey = this.configService.get<string>('GEMINI_API_KEY');
 
+    if (!flaskApiUrl) {
+      throw new Error('FLASK_API_URL is not defined in environment variables');
+    }
+
     const response = await firstValueFrom(
       this.httpService.post(`${flaskApiUrl.replace(/\/$/, '')}/api/shopping-list`, {
         menu_url: menuUrl,
