@@ -7,8 +7,8 @@ export const httpResilienceInterceptor: HttpInterceptorFn = (req, next) => {
     retry({
       count: 2,
       delay: (error: HttpErrorResponse, count: number) => {
-        // Only retry on typical transient server errors
-        const transientErrors = [500, 502, 503, 504];
+        // Only retry on typical transient server errors or connection resets (0)
+        const transientErrors = [0, 500, 502, 503, 504];
         if (!transientErrors.includes(error.status)) {
           return throwError(() => error);
         }

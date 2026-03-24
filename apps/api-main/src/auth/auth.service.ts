@@ -80,11 +80,23 @@ export class AuthService {
     return data as AuthResponse;
   }
 
+  private roleCache = new Map<string, { role: string; expiry: number }>();
+  private readonly CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
   async getRole(email: string): Promise<{ role: string }> {
     const cleanEmail = email.toLowerCase();
+    const now = Date.now();
+
+    // Check cache
+    const cached = this.roleCache.get(cleanEmail);
+    if (cached && cached.expiry > now) {
+      return { role: cached.role };
+    }
 
     if (this.adminEmails.includes(cleanEmail)) {
-      return { role: 'admin' };
+      const result = { role: 'admin' };
+      this.roleCache.set(cleanEmail, { ...result, expiry: now + this.CACHE_TTL });
+      return result;
     }
 
     // Use select() to avoid .single() errors if multiple records exist
@@ -94,21 +106,31 @@ export class AuthService {
       .select('acceso_portal, dado_de_baja')
       .ilike('email', cleanEmail);
 
-    if (error || !patients || patients.length === 0) return { role: 'none' };
+    let role: string = 'none';
 
-    const results = patients as {
-      acceso_portal: boolean;
-      dado_de_baja: boolean;
-    }[];
+    if (error || !patients || patients.length === 0) {
+      role = 'none';
+    } else {
+      const results = patients as {
+        acceso_portal: boolean;
+        dado_de_baja: boolean;
+      }[];
 
-    // Logic: If any record is an active patient, they are a patient
-    const isPatient = results.some((p) => p.acceso_portal && !p.dado_de_baja);
-    if (isPatient) return { role: 'patient' };
+      const isPatient = results.some((p) => p.acceso_portal && !p.dado_de_baja);
+      if (isPatient) {
+        role = 'patient';
+      } else {
+        const isPending = results.some((p) => !p.acceso_portal && !p.dado_de_baja);
+        if (isPending) {
+          role = 'pending';
+        } else {
+          role = 'denied';
+        }
+      }
+    }
 
-    // If any record is pending (not banned)
-    const isPending = results.some((p) => !p.acceso_portal && !p.dado_de_baja);
-    if (isPending) return { role: 'pending' };
-    
-    return { role: 'denied' };
+    const result = { role };
+    this.roleCache.set(cleanEmail, { ...result, expiry: now + this.CACHE_TTL });
+    return result;
   }
 }

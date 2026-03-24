@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResponse } from '@shared/index';
 
@@ -19,6 +19,7 @@ export class AuthController {
   }
 
   @Post('get-role')
+  @HttpCode(200)
   async getRole(@Body('email') email: string): Promise<{ role: string }> {
     return this.authService.getRole(email);
   }
