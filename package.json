@@ -11,7 +11,7 @@
     "start": "concurrently \"npm run start:frontend\" \"npm run start:api-main\" \"npm run start:api-python\"",
     "start:frontend": "npm run start --workspace=apps/frontend",
     "start:api-main": "npm run start:dev --workspace=apps/api-main",
-    "start:api-python": "python apps/api-python/app.py",
+    "start:api-python": "python3 apps/api-python/app.py",
     "install:all": "npm install && npm install --workspace=apps/frontend && npm install --workspace=apps/api-main",
     "test": "npm test --workspaces"
   },

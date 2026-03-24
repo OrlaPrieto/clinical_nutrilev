@@ -26,6 +26,10 @@ export class PortalPage implements OnInit {
   patient = signal<Patient | null>(null);
   progress = signal<any[]>([]);
   loading = signal<boolean>(true);
+  
+  shoppingList = signal<any[]>([]);
+  loadingShoppingList = signal<boolean>(false);
+  showShoppingModal = signal<boolean>(false);
 
   firstName = computed(() => {
     const p = this.patient();
@@ -214,6 +218,9 @@ export class PortalPage implements OnInit {
           // Cargar historial
           const history = await this.patientService.getPatientProgress(user.email);
           this.progress.set(history);
+
+          // Cargar lista de súper desde caché si existe
+          this.loadShoppingListFromCache(currentPatient);
         }
       } catch (err) {
         console.error('Error loading portal data', err);
@@ -229,5 +236,95 @@ export class PortalPage implements OnInit {
 
   toggleTheme() {
     this.themeService.toggleTheme();
+  }
+
+  async openShoppingList() {
+    this.showShoppingModal.set(true);
+    if (this.shoppingList().length === 0) {
+      const p = this.patient();
+      if (p) this.loadShoppingListFromCache(p);
+      
+      // Si después de intentar cargar del caché sigue vacía, pedimos a la IA
+      if (this.shoppingList().length === 0) {
+        await this.fetchShoppingList();
+      }
+    }
+  }
+
+  loadShoppingListFromCache(p: any) {
+    const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        this.shoppingList.set(JSON.parse(cached));
+        console.log('Shopping list loaded from cache');
+      } catch (e) {
+        console.error('Error parsing cached shopping list', e);
+      }
+    }
+  }
+
+  async fetchShoppingList() {
+    const p = this.patient();
+    if (!p || !p.menu_url) return;
+    
+    this.loadingShoppingList.set(true);
+    try {
+      const list = await this.patientService.getShoppingList(p.menu_url);
+      
+      // Persistencia: Guardar marcados vinculados al email y fecha del menú
+      const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
+      const savedChecked = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      
+      const enrichedList = list.map((cat: any) => ({
+        ...cat,
+        items: cat.items.map((item: any) => ({
+          ...item,
+          checked: savedChecked.includes(`${cat.category}-${item.name}`)
+        }))
+      }));
+      
+      this.shoppingList.set(enrichedList);
+      
+      // Guardar lista completa en caché
+      const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+      localStorage.setItem(cacheKey, JSON.stringify(enrichedList));
+    } catch (err) {
+      console.error('Error fetching shopping list', err);
+    } finally {
+      this.loadingShoppingList.set(false);
+    }
+  }
+
+  toggleShoppingItem(category: string, item: any) {
+    const p = this.patient();
+    if (!p) return;
+
+    const current = this.shoppingList();
+    const updated = current.map(cat => {
+      if (cat.category === category) {
+        return {
+          ...cat,
+          items: cat.items.map((i: any) => i === item ? { ...i, checked: !i.checked } : i)
+        };
+      }
+      return cat;
+    });
+    this.shoppingList.set(updated);
+    
+    // Save checked state (for back compatibility or secondary check)
+    const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
+    const allChecked = updated.flatMap(cat => 
+      cat.items.filter((i: any) => i.checked).map((i: any) => `${cat.category}-${i.name}`)
+    );
+    localStorage.setItem(storageKey, JSON.stringify(allChecked));
+
+    // Update full list cache
+    const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+    localStorage.setItem(cacheKey, JSON.stringify(updated));
+  }
+
+  closeShoppingModal() {
+    this.showShoppingModal.set(false);
   }
 }

@@ -96,7 +96,49 @@ REGLAS IMPORTANTES:
 6. Responde ÚNICAMENTE con las tablas, sin texto antes ni después
 """
 
+def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
+    """
+    Genera la lista de compras en formato JSON estructurado.
+    """
+    prompt = build_shopping_prompt(menu_data)
+    prompt += """
+    IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido (array de objetos) con la siguiente estructura:
+    [
+      {
+        "category": "🥦 VERDURAS Y HORTALIZAS",
+        "items": [
+          { "icon": "🥬", "name": "Lechuga", "amount": "1 pieza", "tip": "Fresca", "brand": "Local" }
+        ]
+      }
+    ]
+    No incluyas markdown, solo el JSON puro.
+    """
+    try:
+        client = genai.Client(api_key=gemini_key)
+        response = client.models.generate_content(
+            model="gemini-flash-latest",
+            contents=prompt,
+        )
+        text = response.text.strip()
+        # Limpiar posibles bloques de código markdown
+        text = re.sub(r'^```json\s*', '', text)
+        text = re.sub(r'\s*```$', '', text)
+        import json
+        return json.loads(text)
+    except Exception as e:
+        print(f"[Gemini JSON] Error: {e}")
+        # Retorno de emergencia simple si falla
+        return [
+            {
+                "category": "⚠️ ERROR AL GENERAR",
+                "items": [{"icon": "❌", "name": str(e), "amount": "-", "tip": "Reintente más tarde", "brand": "-"}]
+            }
+        ]
+
 def generate_shopping_list(menu_data: dict, gemini_key: str) -> str:
+    """
+    Genera la lista de compras en formato Markdown (para documentos).
+    """
     try:
         client = genai.Client(api_key=gemini_key)
         response = client.models.generate_content(

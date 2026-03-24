@@ -69,7 +69,7 @@ Este comando iniciará simultáneamente:
 Si prefieres ver los logs por separado, puedes abrir 3 terminales:
 1. **Frontend**: `npm start --workspace=apps/frontend`
 2. **NestJS**: `npm run start:dev --workspace=apps/api-main`
-3. **Python**: `cd apps/api-python && source venv/bin/activate && python index.py`
+3. **Python**: `cd apps/api-python && source venv/bin/activate && python3 app.py`
 
 ---
 

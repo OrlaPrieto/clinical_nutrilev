@@ -14,6 +14,8 @@ from services.document_service import (
     insert_image_in_cell,
     replace_shopping_tables
 )
+import requests
+from pypdf import PdfReader
 
 menu_bp = Blueprint('menu_routes', __name__)
 
@@ -88,4 +90,53 @@ def process_menu():
 
     except Exception as e:
         print(f"Error processing menu: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@menu_bp.route('/shopping-list', methods=['POST', 'OPTIONS'])
+def get_shopping_list():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    data = request.json
+    menu_url = data.get('menu_url')
+    gemini_key = data.get('api_key') or GEMINI_API_KEY
+
+    if not menu_url:
+        return jsonify({"error": "No menu_url provided"}), 400
+    if not gemini_key:
+        return jsonify({"error": "Gemini API key is missing"}), 400
+
+    try:
+        # 1. Download the file
+        response = requests.get(menu_url)
+        response.raise_for_status()
+        file_bytes = response.content
+        
+        # 2. Identify and extract
+        # Simple detection by extension or magic bytes
+        content_type = response.headers.get('Content-Type', '')
+        
+        menu_data = {"menus": {}, "todos_ingredientes": []}
+        
+        if 'officedocument.wordprocessingml.document' in content_type or menu_url.endswith('.docx'):
+            doc = Document(io.BytesIO(file_bytes))
+            menu_data = extract_menu_data(doc)
+        elif 'pdf' in content_type or menu_url.endswith('.pdf'):
+            reader = PdfReader(io.BytesIO(file_bytes))
+            full_text = ""
+            for page in reader.pages:
+                full_text += page.extract_text() + "\n"
+            menu_data["todos_ingredientes"] = [full_text]
+        else:
+            return jsonify({"error": "Unsupported file format. Please use .docx or .pdf"}), 400
+
+        # 3. Generate JSON
+        from services.ai_service import generate_shopping_list_json
+        shopping_json = generate_shopping_list_json(menu_data, gemini_key)
+
+        return jsonify(shopping_json)
+
+    except Exception as e:
+        print(f"Error generating shopping list: {e}")
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500

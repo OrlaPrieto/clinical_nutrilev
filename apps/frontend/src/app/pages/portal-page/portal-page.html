@@ -117,9 +117,18 @@
                             <h3 class="text-2xl font-bold serif">Tu Plan Nutricional Actual</h3>
                             <p class="text-sm text-white/80 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. (Disponible por 7 días)</p>
                         </div>
-                        <app-a-button (onClick)="openMenu()" label="Descargar PDF" variant="primary" size="lg"
-                                    customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
-                        </app-a-button>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <app-a-button (onClick)="openMenu()" label="Ver Menú" variant="primary" size="lg"
+                                        icon="description"
+                                        customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
+                            </app-a-button>
+                            
+                            <app-a-button (onClick)="openShoppingList()" label="Lista de Súper" variant="outline" size="lg"
+                                        icon="shopping_cart"
+                                        [loading]="loadingShoppingList()"
+                                        customClass="!bg-white/10 !text-white !border-white/30 !px-8 !py-3 !rounded-2xl hover:bg-white/20 transition-all !text-[10px] !uppercase !tracking-widest">
+                            </app-a-button>
+                        </div>
                     </div>
                 } @else {
                     <div class="bg-white/50 dark:bg-[#111111]/50 p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-12 animate-fade-up">
@@ -362,3 +371,93 @@
         </app-a-button>
     </div>
 }
+
+<!-- Modal: Lista de Súper Virtual -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" *ngIf="showShoppingModal()">
+    <div class="bg-white dark:bg-[#151515] w-full max-w-lg max-h-[85vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
+      <!-- Header -->
+      <div class="p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
+            <app-a-icon name="shopping_cart"></app-a-icon>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold serif text-nutri-text dark:text-white">Lista de Súper</h3>
+            <p class="text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-0.5">Nutrilev AI Intelligence</p>
+          </div>
+        </div>
+        <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose">
+          <app-a-icon name="close"></app-a-icon>
+        </button>
+      </div>
+  
+      <!-- Content -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+        <div *ngIf="loadingShoppingList()" class="flex flex-col items-center justify-center py-16">
+          <div class="w-14 h-14 rounded-full border-4 border-nutri-rose/10 border-t-nutri-rose animate-spin mb-6"></div>
+          <p class="text-nutri-text/60 dark:text-slate-400 text-sm font-bold serif">Analizando ingredientes...</p>
+          <p class="text-[10px] text-nutri-rose/50 font-black uppercase tracking-widest mt-2">Expert Chef AI working</p>
+        </div>
+  
+        <ng-container *ngIf="!loadingShoppingList()">
+          <div *ngFor="let cat of shoppingList()" class="space-y-5">
+            <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-2">
+              <h4 class="text-[11px] font-black text-nutri-rose uppercase tracking-[0.2em] flex items-center gap-2 serif">
+                {{ cat.category }}
+              </h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-nutri-rose/5 text-nutri-rose opacity-50">
+                {{ cat.items.length }}
+              </span>
+            </div>
+  
+            <div class="grid gap-3">
+              <div *ngFor="let item of cat.items" 
+                   (click)="toggleShoppingItem(cat.category, item)"
+                   class="group flex items-center gap-4 p-5 rounded-[1.5rem] border transition-all cursor-pointer relative overflow-hidden"
+                   [ngClass]="item.checked ? 'bg-nutri-green/5 border-nutri-green/20' : 'bg-white dark:bg-white/5 border-nutri-rose/5 dark:border-white/10 hover:border-nutri-rose/30 shadow-sm'">
+                
+                <!-- Check Indicator -->
+                <div class="w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all shrink-0"
+                     [ngClass]="item.checked ? 'bg-nutri-green border-nutri-green text-white shadow-lg shadow-nutri-green/20' : 'border-nutri-rose/10 dark:border-white/10 group-hover:border-nutri-rose/40'">
+                  <app-a-icon *ngIf="item.checked" name="check" size="tiny"></app-a-icon>
+                </div>
+  
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-3 mb-1">
+                    <span class="font-bold text-sm text-nutri-text dark:text-white transition-all truncate serif" [ngClass]="{'opacity-30 line-through': item.checked}">
+                      {{ item.icon }} {{ item.name }}
+                    </span>
+                    <!-- Meta Column: Amount & Brand -->
+                    <div class="flex flex-col items-end shrink-0 gap-1 mt-[-2px]">
+                      <span class="text-[9px] font-black px-2 py-0.5 rounded-lg bg-nutri-rose/10 text-nutri-rose uppercase tracking-tighter" *ngIf="item.amount">
+                        {{ item.amount }}
+                      </span>
+                      <span *ngIf="item.brand" class="text-[7px] font-bold text-nutri-rose/40 bg-nutri-rose/5 dark:bg-white/5 border border-nutri-rose/10 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                        {{ item.brand }}
+                      </span>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-nutri-text/40 dark:text-slate-500 italic leading-snug" *ngIf="item.tip">
+                    <span class="text-nutri-rose/40 not-italic font-bold">💡</span> {{ item.tip }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngIf="shoppingList().length === 0" class="flex flex-col items-center justify-center py-16 text-center opacity-40">
+              <app-a-icon name="inventory_2" class="mb-4" size="large"></app-a-icon>
+              <h4 class="font-bold serif">Sin ingredientes detectados</h4>
+              <p class="text-[10px] uppercase font-black tracking-widest mt-2">Revisa el formato de tu menú</p>
+          </div>
+        </ng-container>
+      </div>
+  
+      <!-- Footer -->
+      <div class="p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5">
+        <app-a-button (onClick)="closeShoppingModal()" label="¡Listo, a comprar!" variant="primary" size="lg"
+                    customClass="!rounded-2xl !shadow-2xl !shadow-nutri-rose/20 dark:!shadow-rose-900/20 active:scale-95 transition-all">
+        </app-a-button>
+      </div>
+    </div>
+</div>

@@ -80,4 +80,14 @@ export class PatientService {
     if (!response.ok) throw new Error('Error adding progress entry');
     return response.json();
   }
+
+  async getShoppingList(menuUrl: string): Promise<any> {
+    const response = await fetch(`${this.apiUrl}/shopping-list`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({ menu_url: menuUrl })
+    });
+    if (!response.ok) throw new Error('Error fetching shopping list');
+    return response.json();
+  }
 }

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../common/supabase.service';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { firstValueFrom } from 'rxjs';
 import {
   Patient,
   PatientProgress,
@@ -9,7 +12,11 @@ import {
 
 @Injectable()
 export class PatientService {
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(
+    private supabaseService: SupabaseService,
+    private httpService: HttpService,
+    private configService: ConfigService,
+  ) {}
 
   async findAll(): Promise<Patient[]> {
     const { data, error } = await this.supabaseService
@@ -108,5 +115,19 @@ export class PatientService {
 
     if (error) throw error;
     return { success: true };
+  }
+
+  async getShoppingList(menuUrl: string): Promise<any> {
+    const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
+    const geminiKey = this.configService.get<string>('GEMINI_API_KEY');
+
+    const response = await firstValueFrom(
+      this.httpService.post(`${flaskApiUrl}/api/shopping-list`, {
+        menu_url: menuUrl,
+        api_key: geminiKey,
+      }),
+    );
+
+    return response.data;
   }
 }

@@ -57,4 +57,9 @@ export class PatientController {
   ): Promise<{ success: boolean }> {
     return this.patientService.remove(identifier);
   }
+
+  @Post('shopping-list')
+  async getShoppingList(@Body('menu_url') menuUrl: string): Promise<any> {
+    return this.patientService.getShoppingList(menuUrl);
+  }
 }
