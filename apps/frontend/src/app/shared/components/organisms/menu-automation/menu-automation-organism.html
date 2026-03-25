@@ -1,6 +1,6 @@
 <div class="h-screen flex flex-col overflow-hidden bg-nutri-bg dark:bg-[#080808] selection:bg-nutri-rose/20 transition-colors duration-700">
     <app-o-dashboard-header 
-        [loading]="processing" 
+        [loading]="processing()" 
         [showSearch]="false"
         (toggleTheme)="themeService.toggleTheme()"
         (logout)="authService.logout()">
@@ -46,8 +46,12 @@
                         </div>
                         
                         <div class="space-y-2">
-                            <p class="text-xl font-bold text-nutri-text dark:text-slate-200 serif" *ngIf="!selectedFile">Arrastra tu archivo de Word</p>
-                            <p class="text-xl font-bold text-nutri-rose serif" *ngIf="selectedFile">{{ selectedFile.name }}</p>
+                            @if (!selectedFile()) {
+                                <p class="text-xl font-bold text-nutri-text dark:text-slate-200 serif">Arrastra tu archivo de Word</p>
+                            }
+                            @if (selectedFile()) {
+                                <p class="text-xl font-bold text-nutri-rose serif">{{ selectedFile()?.name }}</p>
+                            }
                             <p class="text-sm text-nutri-text/60 dark:text-slate-500 font-medium">Formato soportado: .docx</p>
                         </div>
                     </div>
@@ -56,25 +60,29 @@
 
             <!-- Action Button -->
             <div class="pt-4">
-                <app-a-button (onClick)="processMenu()" [disabled]="!selectedFile || processing" [loading]="processing"
+                <app-a-button (onClick)="processMenu()" [disabled]="!selectedFile() || processing()" [loading]="processing()"
                             variant="primary" size="lg" icon="auto_awesome" label="GENERAR IMÁGENES Y LISTA"
                             customClass="!w-full !py-8 !rounded-3xl !text-sm !tracking-[0.2em] !shadow-lg !shadow-nutri-rose/30">
                 </app-a-button>
             </div>
 
             <!-- Feedback States -->
-            <div *ngIf="error" class="p-6 bg-rose-50 dark:bg-rose-950/20 rounded-2xl border border-rose-100 dark:border-rose-900/30 flex items-center gap-4 animate-fade-in">
-                <app-a-icon name="error" customClass="text-rose-500"></app-a-icon>
-                <p class="text-sm font-bold text-rose-900 dark:text-rose-300">{{ error }}</p>
-            </div>
-
-            <div *ngIf="success" class="p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4 animate-fade-in text-emerald-900 dark:text-emerald-300">
-                <app-a-icon name="check_circle" customClass="text-emerald-500"></app-a-icon>
-                <div class="space-y-0.5">
-                    <p class="text-sm font-bold">¡Menú Procesado con Éxito!</p>
-                    <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest dark:opacity-50">El archivo ha sido descargado automáticamente.</p>
+            @if (error()) {
+                <div class="p-6 bg-rose-50 dark:bg-rose-950/20 rounded-2xl border border-rose-100 dark:border-rose-900/30 flex items-center gap-4 animate-fade-in">
+                    <app-a-icon name="error" customClass="text-rose-500"></app-a-icon>
+                    <p class="text-sm font-bold text-rose-900 dark:text-rose-300">{{ error() }}</p>
                 </div>
-            </div>
+            }
+
+            @if (success()) {
+                <div class="p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4 animate-fade-in text-emerald-900 dark:text-emerald-300">
+                    <app-a-icon name="check_circle" customClass="text-emerald-500"></app-a-icon>
+                    <div class="space-y-0.5">
+                        <p class="text-sm font-bold">¡Menú Procesado con Éxito!</p>
+                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest dark:opacity-50">El archivo ha sido descargado automáticamente.</p>
+                    </div>
+                </div>
+            }
 
             <!-- Instructions -->
             <div class="pt-10 border-t border-nutri-rose/5 dark:border-white/5">

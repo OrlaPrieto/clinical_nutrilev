@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { PatientService } from '../../services/patient';
-import { Patient } from '../../models/patient.model';
+import { Patient, PatientProgress, ShoppingCategory, ShoppingItem } from '@shared/models/interfaces';
 import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { ThemeService } from '../../shared/services/theme.service';
+import { StorageService } from '../../shared/services/storage.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -13,21 +14,21 @@ import { MilestoneBadgeComponent } from '../../shared/components/molecules/miles
 @Component({
   selector: 'app-portal-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage],
+  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage, DatePipe],
   templateUrl: './portal-page.html',
-  styleUrl: './portal-page.css',
-  providers: [DatePipe]
+  styleUrl: './portal-page.css'
 })
 export class PortalPage implements OnInit {
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
+  private storageService = inject(StorageService);
 
   patient = signal<Patient | null>(null);
-  progress = signal<any[]>([]);
+  progress = signal<PatientProgress[]>([]);
   loading = signal<boolean>(true);
   
-  shoppingList = signal<any[]>([]);
+  shoppingList = signal<ShoppingCategory[]>([]);
   loadingShoppingList = signal<boolean>(false);
   showShoppingModal = signal<boolean>(false);
 
@@ -208,15 +209,15 @@ export class PortalPage implements OnInit {
   async ngOnInit() {
     const user = this.authService.user;
     if (user && user.email) {
+      const userEmail = user.email.toLowerCase();
       try {
         // Cargar datos del paciente
         const patients = await this.patientService.getPatients();
-        const currentPatient = patients.find(p => p.email.toLowerCase() === user.email.toLowerCase());
-        
-          if (currentPatient) {
+        const currentPatient = patients.find(p => p.email.toLowerCase() === userEmail);
+        if (currentPatient) {
           this.patient.set(currentPatient);
           // Cargar historial
-          const history = await this.patientService.getPatientProgress(user.email);
+          const history = await this.patientService.getPatientProgress(userEmail);
           this.progress.set(history);
 
           // Cargar lista de súper desde caché si existe
@@ -251,16 +252,12 @@ export class PortalPage implements OnInit {
     }
   }
 
-  loadShoppingListFromCache(p: any) {
+  loadShoppingListFromCache(p: Patient) {
     const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
-    const cached = localStorage.getItem(cacheKey);
+    const cached = this.storageService.getItem<ShoppingCategory[]>(cacheKey);
     if (cached) {
-      try {
-        this.shoppingList.set(JSON.parse(cached));
-        console.log('Shopping list loaded from cache');
-      } catch (e) {
-        console.error('Error parsing cached shopping list', e);
-      }
+      this.shoppingList.set(cached);
+      console.log('Shopping list loaded from cache');
     }
   }
 
@@ -274,9 +271,9 @@ export class PortalPage implements OnInit {
       
       // Persistencia: Guardar marcados vinculados al email y fecha del menú
       const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
-      const savedChecked = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const savedChecked = this.storageService.getItem<string[]>(storageKey) || [];
       
-      const enrichedList = list.map((cat: any) => ({
+      const enrichedList: ShoppingCategory[] = list.map((cat: any) => ({
         ...cat,
         items: cat.items.map((item: any) => ({
           ...item,
@@ -288,7 +285,7 @@ export class PortalPage implements OnInit {
       
       // Guardar lista completa en caché
       const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
-      localStorage.setItem(cacheKey, JSON.stringify(enrichedList));
+      this.storageService.setItem(cacheKey, enrichedList);
     } catch (err) {
       console.error('Error fetching shopping list', err);
     } finally {
@@ -296,7 +293,7 @@ export class PortalPage implements OnInit {
     }
   }
 
-  toggleShoppingItem(category: string, item: any) {
+  toggleShoppingItem(category: string, item: ShoppingItem) {
     const p = this.patient();
     if (!p) return;
 
@@ -305,23 +302,23 @@ export class PortalPage implements OnInit {
       if (cat.category === category) {
         return {
           ...cat,
-          items: cat.items.map((i: any) => i === item ? { ...i, checked: !i.checked } : i)
+          items: cat.items.map((i: ShoppingItem) => i === item ? { ...i, checked: !i.checked } : i)
         };
       }
       return cat;
     });
     this.shoppingList.set(updated);
     
-    // Save checked state (for back compatibility or secondary check)
+    // Save checked state
     const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
     const allChecked = updated.flatMap(cat => 
-      cat.items.filter((i: any) => i.checked).map((i: any) => `${cat.category}-${i.name}`)
+      cat.items.filter((i: ShoppingItem) => i.checked).map((i: ShoppingItem) => `${cat.category}-${i.name}`)
     );
-    localStorage.setItem(storageKey, JSON.stringify(allChecked));
+    this.storageService.setItem(storageKey, allChecked);
 
     // Update full list cache
     const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
-    localStorage.setItem(cacheKey, JSON.stringify(updated));
+    this.storageService.setItem(cacheKey, updated);
   }
 
   closeShoppingModal() {

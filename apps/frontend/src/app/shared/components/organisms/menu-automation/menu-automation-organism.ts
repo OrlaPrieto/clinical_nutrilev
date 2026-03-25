@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -27,38 +27,37 @@ import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header';
   styleUrl: './menu-automation-organism.css'
 })
 export class MenuAutomationOrganism {
-  selectedFile: File | null = null;
-  processing: boolean = false;
-  error: string | null = null;
-  success: boolean = false;
+  private http = inject(HttpClient);
+  public authService = inject(AuthService);
+  public themeService = inject(ThemeService);
 
-  constructor(
-    private http: HttpClient, 
-    public authService: AuthService,
-    public themeService: ThemeService
-  ) {}
+  selectedFile = signal<File | null>(null);
+  processing = signal<boolean>(false);
+  error = signal<string | null>(null);
+  success = signal<boolean>(false);
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file && (file.name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
-      this.selectedFile = file;
-      this.error = null;
-      this.success = false;
+      this.selectedFile.set(file);
+      this.error.set(null);
+      this.success.set(false);
     } else {
-      this.error = 'Por favor selecciona un archivo .docx válido.';
-      this.selectedFile = null;
+      this.error.set('Por favor selecciona un archivo .docx válido.');
+      this.selectedFile.set(null);
     }
   }
 
   processMenu() {
-    if (!this.selectedFile) return;
+    const file = this.selectedFile();
+    if (!file) return;
 
-    this.processing = true;
-    this.error = null;
-    this.success = false;
+    this.processing.set(true);
+    this.error.set(null);
+    this.success.set(false);
 
     const formData = new FormData();
-    formData.append('file', this.selectedFile);
+    formData.append('file', file);
 
     const token = this.authService.accessToken;
     let headers = {};
@@ -74,17 +73,17 @@ export class MenuAutomationOrganism {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `menu_procesado_${this.selectedFile?.name}`;
+        link.download = `menu_procesado_${file.name}`;
         link.click();
         window.URL.revokeObjectURL(url);
         
-        this.processing = false;
-        this.success = true;
+        this.processing.set(false);
+        this.success.set(true);
       },
       error: (err) => {
         console.error('Error processing menu', err);
-        this.error = 'Error al procesar el menú. Verifica tu API Key y el formato del archivo.';
-        this.processing = false;
+        this.error.set('Error al procesar el menú. Verifica tu API Key y el formato del archivo.');
+        this.processing.set(false);
       }
     });
   }

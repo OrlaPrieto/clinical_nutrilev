@@ -5,7 +5,9 @@ import { firstValueFrom, of } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { supabase } from '../supabase';
+import { User } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
+import { StorageService } from '../shared/services/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +16,7 @@ export class AuthService {
   private router = inject(Router);
   private http = inject(HttpClient);
   private socialAuthService = inject(SocialAuthService);
+  private storage = inject(StorageService);
   
   // Lista blanca de correos autorizados
   private readonly AUTHORIZED_EMAILS = [
@@ -21,7 +24,7 @@ export class AuthService {
     'velvetdelacruzvillegas@gmail.com'
   ];
 
-  public currentUser = signal<any>(null);
+  public currentUser = signal<User | null>(null);
   public userRole = signal<'admin' | 'patient' | 'pending' | 'denied' | null>(null);
   public isInitialLoading = signal<boolean>(true);
   
@@ -77,7 +80,7 @@ export class AuthService {
           this.currentUser.set(session.user);
           const role = await this.determineRole(session.user.email!);
           this.userRole.set(role);
-          if (role) localStorage.setItem('nutrilev_role', role);
+          if (role) this.storage.setItem('nutrilev_role', role);
           this.roleReady.set(true);
         }
       }
@@ -93,7 +96,7 @@ export class AuthService {
         this.currentUser.set(session.user);
         
         // Optimistic restore to avoid Render cold-start blocking PWA load
-        const cachedRole = localStorage.getItem('nutrilev_role') as any;
+        const cachedRole = this.storage.getItem<'admin' | 'patient' | 'pending' | 'denied' | null>('nutrilev_role');
         if (cachedRole) {
           console.log('Auth: Using cached role', cachedRole);
           this.userRole.set(cachedRole);
@@ -105,14 +108,14 @@ export class AuthService {
             if (role && role !== cachedRole) {
               console.log('Auth: Role updated from server', role);
               this.userRole.set(role);
-              localStorage.setItem('nutrilev_role', role);
+              this.storage.setItem('nutrilev_role', role);
             }
           });
         } else {
           // No cache, must fetch initial role but we allow guards to wait
           const role = await this.determineRole(session.user.email!);
           this.userRole.set(role);
-          if (role) localStorage.setItem('nutrilev_role', role);
+          if (role) this.storage.setItem('nutrilev_role', role);
           this.roleReady.set(true);
           this.isInitialLoading.set(false);
         }
@@ -156,7 +159,7 @@ export class AuthService {
           timeout(40000), // Wait up to 40s for cold starts (interceptor will retry within this)
           catchError((err) => {
              console.error('Auth: Error fetching role from server', err);
-             const cached = localStorage.getItem('nutrilev_role');
+             const cached = this.storage.getItem<'admin' | 'patient' | 'pending' | 'denied' | null>('nutrilev_role');
              return of({ role: (cached as any) || 'none' });
           })
         );
@@ -192,7 +195,7 @@ export class AuthService {
       // 2. Una vez autenticados, validamos el rol con permisos de usuario logueado
       const role = await this.determineRole(data.user.email!);
       this.userRole.set(role);
-      if (role) localStorage.setItem('nutrilev_role', role);
+      if (role) this.storage.setItem('nutrilev_role', role);
       this.roleReady.set(true);
 
       if (role === 'admin' || role === 'patient') {
@@ -243,7 +246,7 @@ export class AuthService {
   }
 
   private clearLocalSession() {
-    localStorage.removeItem('nutrilev_role');
+    this.storage.removeItem('nutrilev_role');
     this.currentUser.set(null);
     this.userRole.set(null);
   }

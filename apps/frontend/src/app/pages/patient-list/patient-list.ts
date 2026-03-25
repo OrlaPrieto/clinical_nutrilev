@@ -111,7 +111,7 @@ export class PatientListPage implements OnInit {
   }
 
   private processPatients(data: Patient[]) {
-    const grouped = data.reduce((acc: any, curr) => {
+    const grouped = data.reduce<Record<string, Patient>>((acc, curr) => {
       const key = curr.email || curr.nombre;
       
       const currFechaHoy = curr.fecha_hoy ? new Date(curr.fecha_hoy).getTime() : 0;
@@ -130,7 +130,7 @@ export class PatientListPage implements OnInit {
       return acc;
     }, {});
     
-    const sorted = (Object.values(grouped) as Patient[]).sort((a: any, b: any) => {
+    const sorted = Object.values(grouped).sort((a, b) => {
       const dateA = a.ultima_actualizacion ? new Date(a.ultima_actualizacion).getTime() : 0;
       const dateB = b.ultima_actualizacion ? new Date(b.ultima_actualizacion).getTime() : 0;
       return dateB - dateA;

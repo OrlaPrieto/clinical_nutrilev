@@ -102,3 +102,17 @@ export interface PatientProgress {
 export interface PatientProgressInsert extends Omit<PatientProgress, 'id'> {
   id?: string;
 }
+
+export interface ShoppingItem {
+  icon: string;
+  name: string;
+  amount?: string;
+  tip?: string;
+  brand?: string;
+  checked?: boolean;
+}
+
+export interface ShoppingCategory {
+  category: string;
+  items: ShoppingItem[];
+}

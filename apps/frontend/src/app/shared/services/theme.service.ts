@@ -1,9 +1,11 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, inject } from '@angular/core';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
+  private storage = inject(StorageService);
   private readonly THEME_KEY = 'nutrilev-theme';
   isDarkMode = signal<boolean>(this.getInitialTheme());
 
@@ -19,7 +21,7 @@ export class ThemeService {
   }
 
   private getInitialTheme(): boolean {
-    const saved = localStorage.getItem(this.THEME_KEY);
+    const saved = this.storage.getItem<'dark' | 'light'>(this.THEME_KEY);
     if (saved) return saved === 'dark';
     
     // Forzar Light Mode por defecto
@@ -29,10 +31,10 @@ export class ThemeService {
   private updateTheme(isDark: boolean) {
     if (isDark) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem(this.THEME_KEY, 'dark');
+      this.storage.setItem(this.THEME_KEY, 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem(this.THEME_KEY, 'light');
+      this.storage.setItem(this.THEME_KEY, 'light');
     }
   }
 }

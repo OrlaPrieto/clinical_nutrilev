@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Patient } from '../models/patient.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
+import { PatientProgress, ShoppingCategory } from '@shared/models/interfaces';
+import { User } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,8 @@ export class PatientService {
       'Content-Type': 'application/json'
     };
     
-    const userEmail = this.authService.currentUser()?.email;
+    const user = this.authService.currentUser() as User | null;
+    const userEmail = user?.email;
     if (userEmail) {
       headers['x-user-email'] = userEmail;
     }
@@ -65,7 +68,7 @@ export class PatientService {
   }
 
   // Progress Tracking Methods
-  async getPatientProgress(email: string): Promise<any[]> {
+  async getPatientProgress(email: string): Promise<PatientProgress[]> {
     const response = await fetch(`${this.apiUrl}/${email}/progress`);
     if (!response.ok) throw new Error('Error fetching patient progress');
     return response.json();
@@ -81,7 +84,7 @@ export class PatientService {
     return response.json();
   }
 
-  async getShoppingList(menuUrl: string): Promise<any> {
+  async getShoppingList(menuUrl: string): Promise<ShoppingCategory[]> {
     const response = await fetch(`${this.apiUrl}/shopping-list`, {
       method: 'POST',
       headers: this.headers,
