@@ -1,0 +1,64 @@
+@use '@angular/material' as mat;
+
+// --- Design Tokens (CSS Variables) ---
+// We use RGB format to allow Tailwind opacity modifiers (/90, etc.)
+:root {
+  --nutri-rose-rgb: 216 27 96;
+  --nutri-rose-light-rgb: 255 107 155;
+  --nutri-rose-soft-rgb: 255 209 220;
+  --nutri-rose-extra-rgb: 255 240 245;
+  --nutri-bg-rgb: 250 249 246;
+  --nutri-text-rgb: 26 26 26;
+
+  // Resolved colors for standard usage
+  --nutri-rose: rgb(var(--nutri-rose-rgb));
+  --nutri-rose-light: rgb(var(--nutri-rose-light-rgb));
+  --nutri-rose-soft: rgb(var(--nutri-rose-soft-rgb));
+  --nutri-rose-extra: rgb(var(--nutri-rose-extra-rgb));
+  --nutri-bg: rgb(var(--nutri-bg-rgb));
+  --nutri-text: rgb(var(--nutri-text-rgb));
+  
+  // Material 3 Color System Overrides
+  --mat-sys-primary: var(--nutri-rose);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--nutri-rose-soft);
+  --mat-sys-on-primary-container: var(--nutri-rose);
+  --mat-sys-surface: var(--nutri-bg);
+  --mat-sys-on-surface: var(--nutri-text);
+}
+
+.dark {
+  --nutri-bg-rgb: 8 8 8;
+  --nutri-text-rgb: 226 232 240;
+  --nutri-rose-extra-rgb: 26 26 26;
+  
+  // Material 3 Palette Overrides for Dark Mode
+  --mat-sys-surface: #111111;
+  --mat-sys-on-surface: #e2e8f0;
+}
+
+// --- Angular Material Theme Configuration ---
+@include mat.core();
+
+$nutri-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+  ),
+));
+
+@include mat.all-component-themes($nutri-theme);
+
+// --- global mdc overrides ---
+.mat-mdc-form-field {
+  --mdc-filled-form-field-container-color: transparent !important;
+  --mdc-filled-form-field-focus-active-indicator-color: var(--nutri-rose) !important;
+}
+
+.dark {
+  --mat-datepicker-calendar-container-background-color: #111111;
+  --mat-datepicker-calendar-body-label-text-color: var(--nutri-text);
+  
+  .mat-calendar-body-cell-content {
+      color: var(--nutri-text) !important;
+  }
+}

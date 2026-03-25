@@ -12,7 +12,7 @@ import { InputComponent } from '../../atoms/input/input';
   standalone: true,
   imports: [CommonModule, GoogleSigninButtonModule, FormsModule, MatIconModule, ButtonComponent, InputComponent],
   templateUrl: './login-card.html',
-  styleUrl: './login-card.css'
+  styleUrl: './login-card.scss'
 })
 export class LoginCardOrganism {
   errorMessage = input<string | null>(null);

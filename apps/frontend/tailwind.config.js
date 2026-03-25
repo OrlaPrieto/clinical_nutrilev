@@ -8,13 +8,13 @@ module.exports = {
     extend: {
       colors: {
         'nutri-rose': {
-          DEFAULT: '#d81b60',
-          light: '#ff6b9b',
-          soft: '#ffd1dc',
-          extra: '#fff0f5',
+          DEFAULT: 'rgb(var(--nutri-rose-rgb) / <alpha-value>)',
+          light: 'rgb(var(--nutri-rose-light-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--nutri-rose-soft-rgb) / <alpha-value>)',
+          extra: 'rgb(var(--nutri-rose-extra-rgb) / <alpha-value>)',
         },
-        'nutri-bg': '#faf9f6',
-        'nutri-text': '#1a1a1a',
+        'nutri-bg': 'rgb(var(--nutri-bg-rgb) / <alpha-value>)',
+        'nutri-text': 'rgb(var(--nutri-text-rgb) / <alpha-value>)',
       },
       fontFamily: {
         'serif': ['"Playfair Display"', 'serif'],

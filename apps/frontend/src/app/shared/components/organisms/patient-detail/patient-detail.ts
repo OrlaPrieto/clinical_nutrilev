@@ -18,7 +18,7 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, NutriImagePipe],
   templateUrl: './patient-detail.html',
-  styleUrl: './patient-detail.css'
+  styleUrl: './patient-detail.scss'
 })
 export class PatientDetailComponent implements OnInit {
   patient = input<any | null>(null);
