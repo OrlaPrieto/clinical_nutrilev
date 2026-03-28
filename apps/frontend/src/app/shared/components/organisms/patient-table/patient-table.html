@@ -21,9 +21,10 @@
             
             <td class="pl-6 pr-8 py-5">
               <div class="flex items-center gap-3">
-                <!-- Menu Status Icon (Always present for alignment) -->
-                <div class="flex items-center gap-0.5 transition-all duration-300"
-                     [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-help' : 'opacity-20 grayscale'">
+                <!-- Menu Status Icon (Clickable for Admin) -->
+                <div class="flex items-center gap-0.5 transition-all duration-300 pointer-events-auto"
+                     [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-pointer hover:scale-125 active:scale-95' : 'opacity-20 grayscale pointer-events-none'"
+                     (click)="patient.menu_url && openMenu(patient.menu_url, $event)">
                   <div class="w-1 h-1 rounded-full" 
                     [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
                   </div>
@@ -32,9 +33,13 @@
                   </app-a-icon>
                   
                   @if (getMenuStatus(patient) !== 'none') {
-                    <!-- Tooltip -->
-                    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-nutri-text dark:bg-black text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-50">
-                      Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
+                    <!-- Tooltip (Shifted left-0 to avoid screen cut-off) -->
+                    <div class="absolute top-full left-0 mt-2 px-3 py-2 bg-nutri-text/95 dark:bg-black/95 backdrop-blur-sm text-white text-[8px] font-bold rounded-xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-[100] shadow-2xl border border-white/10 pointer-events-none">
+                      <div class="flex flex-col items-center gap-1">
+                        <span class="text-[9px] uppercase tracking-widest">{{ getMenuStatus(patient) === 'active' ? 'Menú Vigente' : 'Menú Expirado' }}</span>
+                        <div class="h-px w-full bg-white/10"></div>
+                        <span class="text-rose-400 text-[7px] font-black uppercase tracking-tighter">Click para abrir PDF</span>
+                      </div>
                     </div>
                   }
                 </div>
@@ -184,9 +189,10 @@
       
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <!-- Menu Status Mobile (Always present for alignment) -->
+          <!-- Menu Status Mobile -->
           <div class="flex items-center gap-0.5 transition-all duration-300"
-               [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-help' : 'opacity-20 grayscale'">
+               [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-pointer active:scale-90' : 'opacity-20 grayscale pointer-events-none'"
+               (click)="patient.menu_url && openMenu(patient.menu_url, $event)">
             <div class="w-1 h-1 rounded-full" 
               [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
             </div>
@@ -196,8 +202,8 @@
             
             @if (getMenuStatus(patient) !== 'none') {
               <!-- Tooltip Mobile -->
-              <div class="absolute top-full left-0 mt-2 px-3 py-1.5 bg-nutri-text dark:bg-black text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-50">
-                Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
+              <div class="absolute top-full left-0 mt-2 px-3 py-1.5 bg-nutri-text/95 dark:bg-black/95 backdrop-blur-sm text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-[100] pointer-events-none shadow-xl border border-white/10">
+                Ver Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
               </div>
             }
           </div>

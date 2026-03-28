@@ -4,6 +4,7 @@ import { Patient } from '../../../../models/patient.model';
 import { ButtonComponent } from '../../atoms/button/button';
 import { BadgeComponent } from '../../atoms/badge/badge';
 import { IconComponent } from '../../atoms/icon/icon';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-o-patient-table',
@@ -39,6 +40,13 @@ export class PatientTableOrganism {
     const createdAt = new Date(patient.menu_created_at).getTime();
     const now = Date.now();
     const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
-    return diffDays <= 7 ? 'active' : 'expired';
+    return diffDays <= environment.menuDurationDays ? 'active' : 'expired';
+  }
+
+  openMenu(url: string, event: Event) {
+    event.stopPropagation();
+    if (url) {
+      window.open(url, '_blank', 'noopener');
+    }
   }
 }

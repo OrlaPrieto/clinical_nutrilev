@@ -48,6 +48,32 @@ export class PortalPage implements OnInit {
     return diffDays <= environment.menuDurationDays;
   });
 
+  expirationMessage = computed(() => {
+    const p = this.patient();
+    if (!p || !p.menu_url || !p.menu_created_at) return '';
+    
+    const createdAt = new Date(p.menu_created_at).getTime();
+    const durationMs = environment.menuDurationDays * 24 * 60 * 60 * 1000;
+    const expiresAt = createdAt + durationMs;
+    const now = Date.now();
+    const remainingMs = expiresAt - now;
+
+    if (remainingMs <= 0) return 'Expirado';
+
+    const remainingDays = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+    const remainingHours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    if (remainingDays >= 1) {
+      return `Quedan ${remainingDays} día${remainingDays > 1 ? 's' : ''}${remainingHours > 0 ? ' y ' + remainingHours + ' hora' + (remainingHours > 1 ? 's' : '') : ''}`;
+    } else {
+      const remainingMinutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      if (remainingHours > 0) {
+        return `Quedan ${remainingHours} hora${remainingHours > 1 ? 's' : ''}${remainingMinutes > 0 ? ' y ' + remainingMinutes + ' min' : ''}`;
+      }
+      return `Quedan ${remainingMinutes} minuto${remainingMinutes > 1 ? 's' : ''}`;
+    }
+  });
+
   menuDurationDays = environment.menuDurationDays;
 
   openMenu() {

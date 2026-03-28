@@ -122,7 +122,7 @@
                         </div>
                         <div class="flex-1 text-center md:text-left text-white">
                             <h3 class="text-2xl font-bold serif">Tu Plan Nutricional Actual</h3>
-                            <p class="text-sm text-white/80 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. (Disponible por {{ menuDurationDays }} días)</p>
+                            <p class="text-sm text-white/80 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. <span class="font-bold">({{ expirationMessage() }})</span></p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3">
                             <app-a-button (onClick)="openMenu()" label="Ver Menú" variant="primary" size="lg"
