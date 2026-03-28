@@ -21,8 +21,8 @@ module.exports = {
         'sans': ['Inter', 'sans-serif'],
       },
       boxShadow: {
-        'nutri': '0 10px 30px -5px rgba(216, 27, 96, 0.1), 0 4px 6px -2px rgba(216, 27, 96, 0.05)',
-        'pink-soft': '0 4px 14px 0 rgba(216, 27, 96, 0.12)',
+        'nutri': '0 10px 30px -5px rgb(var(--nutri-rose-rgb) / 0.1), 0 4px 6px -2px rgb(var(--nutri-rose-rgb) / 0.05)',
+        'pink-soft': '0 4px 14px 0 rgb(var(--nutri-rose-rgb) / 0.12)',
       },
       borderRadius: {
         '4xl': '2rem',

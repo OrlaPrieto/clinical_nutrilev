@@ -194,7 +194,4 @@ export class PatientListPage implements OnInit {
     }
   }
 
-  toggleTheme() {
-    this.themeService.toggleTheme();
-  }
 }

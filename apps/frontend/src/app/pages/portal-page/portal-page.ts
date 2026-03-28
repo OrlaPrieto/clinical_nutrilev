@@ -10,6 +10,7 @@ import { StorageService } from '../../shared/services/storage.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-portal-page',
@@ -44,8 +45,10 @@ export class PortalPage implements OnInit {
     const createdAt = new Date(p.menu_created_at).getTime();
     const now = Date.now();
     const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
-    return diffDays <= 7;
+    return diffDays <= environment.menuDurationDays;
   });
+
+  menuDurationDays = environment.menuDurationDays;
 
   openMenu() {
     const p = this.patient();
@@ -232,10 +235,6 @@ export class PortalPage implements OnInit {
 
   logout() {
     this.authService.logout();
-  }
-
-  toggleTheme() {
-    this.themeService.toggleTheme();
   }
 
   async openShoppingList() {
