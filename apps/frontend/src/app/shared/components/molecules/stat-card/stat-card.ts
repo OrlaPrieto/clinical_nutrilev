@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../atoms/input/input';
@@ -19,6 +19,11 @@ export class StatCardComponent {
   placeholder = input<string>('');
   icon = input<string | undefined>();
   showSpinner = input<boolean>(true);
+  customClass = input<string>('');
+  
+  @HostBinding('class') get hostClasses() {
+    return this.customClass();
+  }
 
   valueChange = output<any>();
 
