@@ -211,9 +211,8 @@ export class PortalPage implements OnInit {
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        // Cargar datos del paciente
-        const patients = await this.patientService.getPatients();
-        const currentPatient = patients.find(p => p.email.toLowerCase() === userEmail);
+        // Cargar datos del paciente de forma directa y segura
+        const currentPatient = await this.patientService.getPatientByEmail(userEmail);
         if (currentPatient) {
           this.patient.set(currentPatient);
           // Cargar historial

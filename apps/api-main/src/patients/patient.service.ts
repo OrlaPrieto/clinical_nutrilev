@@ -119,7 +119,6 @@ export class PatientService {
 
   async getShoppingList(menuUrl: string): Promise<any> {
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
-    const geminiKey = this.configService.get<string>('GEMINI_API_KEY');
 
     if (!flaskApiUrl) {
       throw new Error('FLASK_API_URL is not defined in environment variables');
@@ -131,9 +130,14 @@ export class PatientService {
           `${flaskApiUrl.replace(/\/$/, '')}/api/shopping-list`,
           {
             menu_url: menuUrl,
-            api_key: geminiKey,
           },
-          { timeout: 30000 }, // 30 second timeout
+          {
+            headers: {
+              'x-internal-key':
+                this.configService.get<string>('INTERNAL_API_KEY'),
+            },
+            timeout: 30000,
+          }, // 30 second timeout
         ),
       );
       return response.data;

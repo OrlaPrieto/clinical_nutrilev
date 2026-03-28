@@ -27,6 +27,7 @@ export class AuthService {
   public currentUser = signal<User | null>(null);
   public userRole = signal<'admin' | 'patient' | 'pending' | 'denied' | null>(null);
   public isInitialLoading = signal<boolean>(true);
+  private _accessToken = signal<string | null>(null);
   
   public ready: Promise<void>;
   private resolveReady!: () => void;
@@ -60,6 +61,7 @@ export class AuthService {
     // Set up listener for ALL events
     supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`Auth: Event [${event}]`, session?.user?.email);
+      this._accessToken.set(session?.access_token || null);
       
       if (event === 'SIGNED_OUT') {
         // Only clear if we were previously logged in or if this is an explicit sign out
@@ -281,8 +283,6 @@ export class AuthService {
   }
 
   get accessToken(): string | null {
-    // Supabase recovers session from cookies/storage automatically
-    // But we can also get it from the client
-    return (supabase.auth as any).session?.access_token || null;
+    return this._accessToken();
   }
 }

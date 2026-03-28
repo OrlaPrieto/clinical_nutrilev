@@ -27,13 +27,14 @@ def create_app() -> Flask:
     @app.errorhandler(Exception)
     def handle_exception(e):
         import traceback
-        # Real error log for Vercel
-        print(f"DEBUG - Global Error: {str(e)}")
-        print(traceback.format_exc())
+        import sys
+        # Log the error with full traceback on the server
+        print(f"ERROR: {str(e)}", file=sys.stderr)
+        traceback.print_exc()
+        
         return jsonify({
             "error": "Internal Server Error",
-            "details": str(e),
-            "traceback": traceback.format_exc()
+            "message": str(e)
         }), 500
 
     return app

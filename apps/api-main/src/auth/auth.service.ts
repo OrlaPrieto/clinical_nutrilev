@@ -18,6 +18,10 @@ export class AuthService {
       .filter((e) => e.length > 0);
   }
 
+  async verifyToken(token: string) {
+    return await this.supabaseService.getClient().auth.getUser(token);
+  }
+
   async signInWithMagicLink(email: string): Promise<AuthResponse> {
     const cleanEmail = email.toLowerCase();
 
@@ -95,7 +99,10 @@ export class AuthService {
 
     if (this.adminEmails.includes(cleanEmail)) {
       const result = { role: 'admin' };
-      this.roleCache.set(cleanEmail, { ...result, expiry: now + this.CACHE_TTL });
+      this.roleCache.set(cleanEmail, {
+        ...result,
+        expiry: now + this.CACHE_TTL,
+      });
       return result;
     }
 
@@ -120,7 +127,9 @@ export class AuthService {
       if (isPatient) {
         role = 'patient';
       } else {
-        const isPending = results.some((p) => !p.acceso_portal && !p.dado_de_baja);
+        const isPending = results.some(
+          (p) => !p.acceso_portal && !p.dado_de_baja,
+        );
         if (isPending) {
           role = 'pending';
         } else {

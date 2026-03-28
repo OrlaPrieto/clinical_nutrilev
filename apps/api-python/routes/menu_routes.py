@@ -1,8 +1,9 @@
 import io
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, request, send_file, jsonify
 from docx import Document
-from config import GEMINI_API_KEY
+from config import GEMINI_API_KEY, INTERNAL_API_KEY
 
 from services.extraction_service import detect_format, extract_menu_data
 from services.ai_service import generate_image_gemini, generate_shopping_list
@@ -19,6 +20,14 @@ import requests
 
 menu_bp = Blueprint('menu_routes', __name__)
 
+@menu_bp.before_request
+def check_internal_key():
+    if request.method == 'OPTIONS':
+        return
+    key = request.headers.get('x-internal-key')
+    if INTERNAL_API_KEY and key != INTERNAL_API_KEY:
+        return jsonify({"error": "Unauthorized inter-service request"}), 401
+
 @menu_bp.route('/process-menu', methods=['POST', 'OPTIONS'])
 def process_menu():
     if request.method == 'OPTIONS':
@@ -27,10 +36,7 @@ def process_menu():
         return jsonify({"error": "No file received"}), 400
 
     file = request.files['file']
-    gemini_key = request.form.get('api_key') or GEMINI_API_KEY
-
-    if not gemini_key:
-        return jsonify({"error": "Gemini API key is missing"}), 400
+    gemini_key = GEMINI_API_KEY # Strictly from environment
 
     try:
         doc = Document(io.BytesIO(file.read()))
@@ -43,9 +49,16 @@ def process_menu():
                 slots = find_image_slots_equivalencias(doc)
                 empty = [(ti, name, sec) for ti, name, has, sec in slots if not has]
                 print(f"[Images] {len(slots)} slots, {len(empty)} without image")
-                for ti, meal_name, sec in empty:
+                
+                def process_slot(ti, meal_name, sec):
                     print(f"  [{sec}] Generating: {meal_name}")
                     img_bytes = generate_image_gemini(meal_name, gemini_key)
+                    return ti, meal_name, img_bytes
+
+                with ThreadPoolExecutor(max_workers=5) as executor:
+                    results = list(executor.map(lambda p: process_slot(*p), empty))
+                
+                for ti, meal_name, img_bytes in results:
                     if img_bytes:
                         insert_image_in_cell_equivalencias(doc, ti, img_bytes)
                         print(f"  ✓ {meal_name}")
@@ -59,9 +72,16 @@ def process_menu():
                 
                 empty = [(ti, ri, ci, name, sec) for ti, ri, ci, name, has, sec in slots if not has]
                 print(f"[Images] {len(slots)} slots, {len(empty)} without image")
-                for ti, ri, ci, meal_name, sec in empty:
+                
+                def process_slot_full(ti, ri, ci, meal_name, sec):
                     print(f"  [{sec}] Generating: {meal_name}")
                     img_bytes = generate_image_gemini(meal_name, gemini_key)
+                    return ti, ri, ci, meal_name, img_bytes
+
+                with ThreadPoolExecutor(max_workers=5) as executor:
+                    results = list(executor.map(lambda p: process_slot_full(*p), empty))
+                
+                for ti, ri, ci, meal_name, img_bytes in results:
                     if img_bytes:
                         insert_image_in_cell(doc, ti, ri, ci, img_bytes, fmt)
                         print(f"  ✓ {meal_name}")
@@ -99,12 +119,7 @@ def get_shopping_list():
     
     data = request.json
     menu_url = data.get('menu_url')
-    gemini_key = data.get('api_key') or GEMINI_API_KEY
-
-    if not menu_url:
-        return jsonify({"error": "No menu_url provided"}), 400
-    if not gemini_key:
-        return jsonify({"error": "Gemini API key is missing"}), 400
+    gemini_key = GEMINI_API_KEY # Strictly from environment
 
     try:
         # 1. Download the file

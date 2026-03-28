@@ -13,17 +13,20 @@ import { Patient, PatientProgress } from '@shared/index';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { CreateProgressDto } from './dto/create-progress.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
+import { PatientAuthGuard } from '../common/guards/patient-auth.guard';
 
 @Controller('api/patients')
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
   @Get()
+  @UseGuards(AdminGuard)
   async findAll(): Promise<Patient[]> {
     return this.patientService.findAll();
   }
 
   @Get(':email')
+  @UseGuards(PatientAuthGuard)
   async findOne(@Param('email') email: string): Promise<Patient> {
     return this.patientService.findByEmail(email);
   }
@@ -38,6 +41,7 @@ export class PatientController {
   }
 
   @Get(':email/progress')
+  @UseGuards(PatientAuthGuard)
   async getProgress(@Param('email') email: string): Promise<PatientProgress[]> {
     return this.patientService.getProgress(email);
   }
@@ -59,6 +63,7 @@ export class PatientController {
   }
 
   @Post('shopping-list')
+  @UseGuards(PatientAuthGuard)
   async getShoppingList(@Body('menu_url') menuUrl: string): Promise<any> {
     return this.patientService.getShoppingList(menuUrl);
   }

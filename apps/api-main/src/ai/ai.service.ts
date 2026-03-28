@@ -35,6 +35,8 @@ export class AiService {
           headers: {
             Authorization: authHeader,
             'Content-Type': 'application/json',
+            'x-internal-key':
+              this.configService.get<string>('INTERNAL_API_KEY'),
           },
         },
       ),

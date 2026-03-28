@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PatientService } from './patient.service';
 import { SupabaseService } from '../common/supabase.service';
-import type {
-  PatientUpdate,
-  PatientProgressInsert,
-} from '../common/interfaces';
+import { PatientUpdate, PatientProgressInsert } from '@shared/index';
 
 describe('PatientService', () => {
   let service: PatientService;
@@ -117,7 +114,7 @@ describe('PatientService', () => {
     it('should add progress entry', async () => {
       const progressData: PatientProgressInsert = {
         patient_email: 'test@test.com',
-        peso: 70,
+        weight: 70,
       };
       mockSupabaseClient.single.mockResolvedValue({
         data: progressData,

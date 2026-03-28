@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Patient } from '../models/patient.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
-import { PatientProgress, ShoppingCategory } from '@shared/models/interfaces';
+import { PatientProgress, ShoppingCategory, PatientUpdate, PatientProgressInsert } from '@shared/models/interfaces';
 import { User } from '@supabase/supabase-js';
 
 @Injectable({
@@ -15,26 +15,43 @@ export class PatientService {
   constructor() { }
 
   private get headers(): Record<string, string> {
-    const headers: Record<string, string> = {
+    const reqHeaders: Record<string, string> = {
       'Content-Type': 'application/json'
     };
     
-    const user = this.authService.currentUser() as User | null;
-    const userEmail = user?.email;
-    if (userEmail) {
-      headers['x-user-email'] = userEmail;
+    const token = this.authService.accessToken;
+    if (token) {
+      reqHeaders['Authorization'] = `Bearer ${token}`;
     }
     
-    return headers;
+    // Legacy support for x-user-email if still needed by some old guards
+    const user = this.authService.currentUser();
+    if (user?.email) {
+      reqHeaders['x-user-email'] = user.email;
+    }
+    
+    return reqHeaders;
   }
 
   async getPatients(): Promise<Patient[]> {
-    const response = await fetch(this.apiUrl);
+    const response = await fetch(this.apiUrl, {
+      headers: this.headers
+    });
     if (!response.ok) throw new Error('Error fetching patients');
     return response.json();
   }
 
-  async addPatientEntry(payload: any): Promise<any> {
+  async getPatientByEmail(email: string): Promise<Patient> {
+    const response = await fetch(`${this.apiUrl}/${email}`, {
+      headers: this.headers
+    });
+    if (!response.ok) throw new Error('Error fetching patient');
+    return response.json();
+  }
+
+  async addPatientEntry(
+    payload: PatientUpdate & { action?: string; originalEmail?: string },
+  ): Promise<any> {
     const { action, email, originalEmail } = payload;
     
     if (action === 'update') {
@@ -69,12 +86,14 @@ export class PatientService {
 
   // Progress Tracking Methods
   async getPatientProgress(email: string): Promise<PatientProgress[]> {
-    const response = await fetch(`${this.apiUrl}/${email}/progress`);
+    const response = await fetch(`${this.apiUrl}/${email}/progress`, {
+      headers: this.headers
+    });
     if (!response.ok) throw new Error('Error fetching patient progress');
     return response.json();
   }
 
-  async addProgressEntry(entry: any): Promise<any> {
+  async addProgressEntry(entry: PatientProgressInsert): Promise<any> {
     const response = await fetch(`${this.apiUrl}/progress`, {
       method: 'POST',
       headers: this.headers,
