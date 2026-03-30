@@ -1,0 +1,67 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.login-glass {
+  @apply backdrop-blur-[40px] bg-white/70 dark:bg-white/[0.04] shadow-2xl relative overflow-hidden;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08), 
+              0 0 40px rgba(216, 27, 96, 0.03);
+}
+
+.dark .login-glass {
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6), 
+              0 0 60px rgba(216, 27, 96, 0.05);
+}
+
+.login-glass::before {
+  content: "";
+  @apply absolute inset-0 opacity-10 pointer-events-none;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  transform: translateX(-100%) rotate(45deg);
+  animation: shine 12s infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-200%) translateY(-200%) rotate(45deg); }
+  25%, 100% { transform: translateX(200%) translateY(200%) rotate(45deg); }
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #FF3B5C 0%, #FF8A5C 100%) !important;
+  @apply text-white border-none transition-all duration-500 relative overflow-hidden !important;
+  box-shadow: 0 10px 20px -5px rgba(255, 59, 92, 0.3) !important;
+}
+
+.premium-gradient::after {
+  content: "";
+  @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
+  background: linear-gradient(135deg, #FF8A5C 0%, #FF3B5C 100%);
+}
+
+.premium-gradient:hover::after {
+  @apply opacity-100;
+}
+
+.premium-gradient:hover {
+  // Using standard CSS shadow instead of @apply with problematic variable-based utilities
+  box-shadow: 0 20px 25px -5px rgba(216, 27, 96, 0.4) !important;
+}
+
+.premium-gradient:active {
+  @apply scale-[0.98] brightness-95;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}

@@ -1,0 +1,500 @@
+@if (patient()) {
+    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 pb-20">
+        <!-- Header -->
+        <header class="bg-white dark:bg-[#080808]/80 dark:backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-6 py-6 sticky top-0 z-50 transition-colors duration-300">
+            <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <!-- Brand Logo -->
+                    <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="100" height="38" 
+                         class="h-8 sm:h-10 w-auto object-contain dark:brightness-110 dark:contrast-125 transition-all duration-300" priority>
+                    
+                    <div class="w-px h-8 bg-nutri-rose/10 dark:bg-white/10 hidden sm:block"></div>
+
+                    <div class="flex items-center gap-4">
+                        <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-nutri-rose text-white items-center justify-center text-xl font-bold shadow-lg overflow-hidden shrink-0">
+                            @if (patient()?.foto_url) {
+                                <img [src]="patient()?.foto_url! | nutriImage:48:48" alt="Profile" class="w-full h-full object-cover">
+                            } @else {
+                                {{ patient()?.nombre ? patient()?.nombre!.charAt(0) : 'P' }}
+                            }
+                        </div>
+                        <div>
+                            <h1 class="text-lg sm:text-xl font-bold serif leading-tight">Hola, {{ firstName() }}</h1>
+                            <p class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-nutri-text/60 dark:text-slate-500">Tu Portal de Bienestar</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <!-- Discrete Theme Selector -->
+                    <div class="group relative flex items-center h-10 px-2 rounded-xl transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5">
+                        <div class="flex items-center justify-center w-8 h-8 text-nutri-text/40 dark:text-white/40 group-hover:text-nutri-rose transition-colors">
+                            <app-a-icon name="palette" size="18px"></app-a-icon>
+                        </div>
+                        <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5">
+                            <button (click)="themeService.setTheme('light')" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
+                            <button (click)="themeService.setTheme('dark')" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
+                            <button (click)="themeService.setTheme('vibrant')" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
+                            <button (click)="themeService.setTheme('purple')" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
+                        </div>
+                    </div>
+
+                    <app-a-button variant="outline" label="Salir" size="sm" icon="logout"
+                        customClass="!rounded-xl border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-[10px] font-bold uppercase tracking-widest transition-all dark:text-slate-400"
+                        (onClick)="logout()">
+                    </app-a-button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-5xl mx-auto px-6 mt-8 space-y-8 animate-fade-up">
+            
+            @if (loading()) {
+                <div class="flex flex-col items-center justify-center py-40 gap-4 opacity-50">
+                    <div class="w-8 h-8 border-4 border-nutri-rose border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs font-bold uppercase tracking-widest dark:text-slate-400">Cargando tus avances...</p>
+                </div>
+            } @else {
+                
+                <!-- Resumen de Meta -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative transition-colors">
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">
+                                {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
+                                   currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
+                                   currentGoal() === 'subir_musculo' ? 'Meta de Músculo' : 'Tu Objetivo' }}
+                            </span>
+                            <h2 class="text-4xl font-bold serif">
+                                @if (currentGoal() === 'bajar_peso') {
+                                    {{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
+                                } @else if (currentGoal() === 'bajar_grasa') {
+                                    {{ patient()?.grasa_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">%</span>
+                                } @else if (currentGoal() === 'subir_musculo') {
+                                    {{ patient()?.musculo_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
+                                } @else {
+                                    <span class="text-xl">Sin objetivo</span>
+                                }
+                            </h2>
+                        </div>
+                        <p class="text-xs text-nutri-text/50 dark:text-slate-600 mt-4 leading-relaxed italic">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
+                    </div>
+
+                    <div class="bg-nutri-rose-soft/30 dark:bg-nutri-rose-soft/10 p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm text-nutri-rose flex flex-col justify-between overflow-hidden relative transition-all hover:bg-nutri-rose-soft/40 dark:hover:bg-nutri-rose-soft/20">
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose opacity-60 mb-2 block">Último Registro</span>
+                            <div class="flex flex-wrap items-baseline gap-4 text-nutri-rose dark:text-nutri-rose-soft">
+                                <!-- Peso -->
+                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
+                                    <h2 class="text-4xl font-bold serif">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                    <span class="text-lg font-normal opacity-60">kg</span>
+                                </div>
+                                <!-- Grasa -->
+                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
+                                    <h2 class="text-2xl font-bold serif">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                    <span class="text-sm font-normal opacity-60">% grasa</span>
+                                </div>
+                                <!-- Musculo -->
+                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
+                                    <h2 class="text-2xl font-bold serif">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                    <span class="text-sm font-normal opacity-60">kg musc.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-4 text-nutri-rose/60">
+                            <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/10 flex items-center justify-center text-xs">
+                                <app-a-icon name="calendar_today"></app-a-icon>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-widest">
+                                {{ progress().length > 0 ? (progress()[0].date | date:'dd MMM, yyyy') : 'Sin registros aún' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección Nutrición Priorizada -->
+                @if (isMenuValid()) {
+                    <div class="bg-nutri-rose dark:bg-nutri-rose/80 shadow-xl shadow-nutri-rose/20 dark:shadow-rose-900/10 p-8 rounded-[3rem] border border-nutri-rose/10 flex flex-col md:flex-row items-center gap-8 animate-fade-up">
+                        <div class="w-20 h-20 rounded-3xl bg-white/20 dark:bg-black/20 backdrop-blur-md text-white flex items-center justify-center text-3xl shadow-lg shadow-black/5">
+                            <app-a-icon name="picture_as_pdf" customClass="text-2xl text-white"></app-a-icon>
+                        </div>
+                        <div class="flex-1 text-center md:text-left text-white">
+                            <h3 class="text-2xl font-bold serif">Tu Plan Nutricional Actual</h3>
+                            <p class="text-sm text-white/80 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. <span class="font-bold">({{ expirationMessage() }})</span></p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <app-a-button (onClick)="openMenu()" label="Ver Menú" variant="primary" size="lg"
+                                        icon="description"
+                                        customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
+                            </app-a-button>
+                            
+                            <app-a-button (onClick)="openShoppingList()" label="Lista de Súper" variant="outline" size="lg"
+                                        icon="shopping_cart"
+                                        [loading]="loadingShoppingList()"
+                                        customClass="!bg-white/10 !text-white !border-white/30 !px-8 !py-3 !rounded-2xl hover:bg-white/20 transition-all !text-[10px] !uppercase !tracking-widest">
+                            </app-a-button>
+                        </div>
+                    </div>
+                } @else {
+                    <div class="bg-white/50 dark:bg-[#111111]/50 p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-12 animate-fade-up">
+                        <div class="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
+                            <app-a-icon name="folder_off" customClass="text-2xl"></app-a-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold serif text-nutri-text/60 dark:text-slate-500">No hay plan activo</h3>
+                            <p class="text-xs text-nutri-text/60 dark:text-slate-600 mt-1 max-w-sm mx-auto">Tu menú nutricional aparecerá aquí cuando sea asignado, y estará disponible por {{ menuDurationDays }} días para su descarga.</p>
+                        </div>
+                    </div>
+                }
+
+                <!-- Grid de Métricas de Composición -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up" style="animation-delay: 100ms">
+                    <!-- Peso Card -->
+                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                        <div class="flex items-center gap-2 text-nutri-rose/40">
+                            <app-a-icon name="monitor_weight" size="16px"></app-a-icon>
+                            <span class="text-[9px] font-black uppercase tracking-widest">Peso Actual</span>
+                        </div>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</span>
+                            <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">kg</span>
+                        </div>
+                    </div>
+
+                    <!-- BMI Card -->
+                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                        <div class="flex items-center gap-2 text-nutri-rose/40">
+                            <app-a-icon name="speed" size="16px"></app-a-icon>
+                            <span class="text-[9px] font-black uppercase tracking-widest">IMC</span>
+                        </div>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ bmi() || '--' }}</span>
+                            <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
+                        </div>
+                    </div>
+
+                    <!-- Fat Card -->
+                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                        <div class="flex items-center gap-2 text-nutri-rose/40">
+                            <app-a-icon name="percent" size="16px"></app-a-icon>
+                            <span class="text-[9px] font-black uppercase tracking-widest">% Grasa</span>
+                        </div>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-2xl font-bold serif text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
+                            <span class="text-[10px] font-bold text-nutri-rose/30 uppercase">% corporal</span>
+                        </div>
+                    </div>
+
+                    <!-- Goal Card -->
+                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-2 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2 text-nutri-rose/40">
+                                <app-a-icon name="flag" size="16px"></app-a-icon>
+                                <span class="text-[9px] font-black uppercase tracking-widest">Meta</span>
+                            </div>
+                            <span class="text-[9px] font-black text-nutri-rose">{{ goalPercentage() | number:'1.0-0' }}%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-nutri-rose/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
+                            <div class="h-full bg-nutri-rose rounded-full transition-all duration-1000" [style.width.%]="goalPercentage()"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfica de Tendencia -->
+                @if (progress().length >= 2) {
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">
+                        <div class="flex items-center justify-between mb-8">
+                            <div>
+                                <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
+                                    Tendencia de {{ currentGoal() === 'bajar_peso' ? 'Peso' : 
+                                                    currentGoal() === 'bajar_grasa' ? 'Grasa' : 
+                                                    currentGoal() === 'subir_musculo' ? 'Músculo' : 'Evidencia' }}
+                                </h3>
+                                <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-1 bg-nutri-rose/5 dark:bg-nutri-rose/10 rounded-full border border-nutri-rose/10 dark:border-nutri-rose/20 text-nutri-rose">
+                                <span class="text-[9px] font-black uppercase tracking-widest">Progreso</span>
+                                <app-a-icon [name]="currentGoal() === 'subir_musculo' ? 'trending_up' : 'trending_down'" size="14px"></app-a-icon>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full overflow-hidden mt-4">
+                            <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
+                                <defs>
+                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="currentColor" stop-opacity="0.1" />
+                                        <stop offset="100%" stop-color="currentColor" stop-opacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                
+                                <!-- Area under path -->
+                                <path [attr.d]="goalTrendPath() + ' L 400 100 L 0 100 Z'" 
+                                      fill="url(#chartGradient)" 
+                                      class="animate-fade-in" />
+...
+                                <!-- Main Path -->
+                                <path [attr.d]="goalTrendPath()" 
+                                      fill="none" 
+                                      stroke="currentColor" 
+                                      stroke-width="3" 
+                                      stroke-linecap="round" 
+                                      stroke-linejoin="round"
+                                      class="animate-draw-path" />
+
+                                <!-- Data Points & Labels -->
+                                @for (point of chartPoints(); track $index) {
+                                    <g class="animate-fade-up" [style.animation-delay]="$index * 100 + 'ms'">
+                                        <!-- Weight Label -->
+                                        <text [attr.x]="point.x" [attr.y]="point.y - 12" 
+                                              text-anchor="middle" 
+                                              class="text-[10px] font-black fill-nutri-text dark:fill-slate-300">
+                                            {{ point.value }}<tspan class="text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
+                                        </text>
+                                        
+                                        <!-- Point Marker -->
+                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5" 
+                                                class="fill-white dark:fill-[#1a1a1a] stroke-nutri-rose stroke-[3px]" />
+                                        
+                                        <!-- Date Label -->
+                                        <text [attr.x]="point.x" [attr.y]="115" 
+                                              text-anchor="middle" 
+                                              class="text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
+                                            {{ point.date | date:'dd MMM' }}
+                                        </text>
+                                    </g>
+                                }
+                            </svg>
+                        </div>
+                    </div>
+                }
+                
+                <!-- Sección de Logros (Enhanced Star Milestones) -->
+                <div class="py-16 border-y border-nutri-rose/5 dark:border-white/5 animate-fade-up" style="animation-delay: 250ms">
+                    <div class="flex flex-col items-center gap-12">
+                        <div class="text-center space-y-2">
+                            <h3 class="text-xl font-bold serif dark:text-slate-200">Estrellas Nutrilev</h3>
+                            <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 dark:text-nutri-rose-soft/40 uppercase">Celebrando tus grandes victorias</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-start justify-center gap-12 md:gap-32 relative w-full max-w-5xl">
+                            <!-- Progress Path Line -->
+                            <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-slate-50 dark:bg-white/5 -z-10 hidden md:block"></div>
+                            
+                            @for (ms of milestones(); track ms.id) {
+                                <app-m-milestone-badge 
+                                    [image]="ms.image" 
+                                    [title]="ms.title" 
+                                    [description]="ms.description" 
+                                    [unlocked]="ms.unlocked">
+                                </app-m-milestone-badge>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evolución Lista -->
+                <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm space-y-8 animate-fade-up transition-colors" style="animation-delay: 300ms">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">Tu Historial Completo</h3>
+                            <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest mt-1">Registros de peso y mediciones</p>
+                        </div>
+                    </div>
+
+                    @if (progress().length === 0) {
+                        <div class="py-20 flex flex-col items-center justify-center border-2 border-dashed border-nutri-rose/5 dark:border-white/5 rounded-3xl opacity-40">
+                            <app-a-icon name="analytics" size="32px" customClass="mb-4"></app-a-icon>
+                            <p class="text-xs font-bold uppercase tracking-widest">Pronto verás aquí tu evolución</p>
+                        </div>
+                    } @else {
+                        <div class="space-y-4">
+                            @for (entry of progress(); track entry.date) {
+                                <div class="flex items-center gap-6 p-6 rounded-2xl hover:bg-nutri-bg/50 dark:hover:bg-white/[0.02] transition-all border border-transparent hover:border-nutri-rose/10 dark:hover:border-white/10 group">
+                                    <div class="w-12 h-12 rounded-2xl bg-nutri-bg dark:bg-white/5 flex flex-col items-center justify-center group-hover:bg-white dark:group-hover:bg-white/10 transition-all shadow-sm">
+                                        <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ entry.date | date:'dd' }}</span>
+                                        <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ entry.date | date:'MMM' }}</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex flex-wrap items-center gap-4">
+                                            <!-- Peso -->
+                                            <div class="flex items-baseline gap-1 transition-all" 
+                                                 [ngClass]="(currentGoal() === 'bajar_peso' || !currentGoal()) ? '' : 'opacity-30 scale-90 origin-left'">
+                                                <span class="text-xl font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'bajar_peso'">{{ entry.weight }}</span>
+                                                <span class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase">kg</span>
+                                            </div>
+                                            
+                                            <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
+                                            
+                                            <!-- Grasa -->
+                                            <div class="flex items-baseline gap-1 transition-all"
+                                                 [ngClass]="currentGoal() === 'bajar_grasa' ? '' : 'opacity-30 scale-90 origin-left'">
+                                                <span class="text-lg font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'bajar_grasa'">{{ entry.body_fat || '--' }}%</span>
+                                                <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase">grasa</span>
+                                            </div>
+
+                                            <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
+
+                                            <!-- Musculo -->
+                                            <div class="flex items-baseline gap-1 transition-all"
+                                                 [ngClass]="currentGoal() === 'subir_musculo' ? '' : 'opacity-30 scale-90 origin-left'">
+                                                <span class="text-lg font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'subir_musculo'">{{ entry.muscle_mass || '--' }}</span>
+                                                <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase">kg musc.</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-[10px] text-nutri-text/60 dark:text-slate-500 mt-1 italic">{{ entry.notes || 'Consulta de seguimiento rutinaria' }}</p>
+                                    </div>
+                                    <div class="hidden md:block">
+                                        <app-a-icon name="chevron_right" size="18px" class="text-nutri-rose/20 dark:text-white/10 group-hover:translate-x-1 transition-all"></app-a-icon>
+                                    </div>
+                                </div>
+                                @if (!$last) {
+                                    <div class="h-px bg-nutri-rose/5 dark:bg-white/5 mx-6"></div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+
+            }
+        </main>
+    </div>
+} @else if (loading()) {
+    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] flex flex-col items-center justify-center gap-4 text-nutri-rose transition-colors">
+        <div class="w-12 h-12 border-4 border-current border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-[10px] font-black uppercase tracking-widest">Sincronizando portal...</p>
+    </div>
+} @else {
+    <!-- Error State -->
+    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] flex flex-col items-center justify-center p-10 text-center space-y-6 transition-colors">
+        <app-a-icon name="person_off" customClass="text-5xl text-nutri-rose/20 dark:text-white/10"></app-a-icon>
+        <div class="space-y-2">
+            <h2 class="text-2xl font-bold serif dark:text-white">Expediente no encontrado</h2>
+            <p class="text-xs font-bold text-nutri-text/60 dark:text-slate-500 uppercase tracking-widest max-w-xs mx-auto">No hemos podido localizar un expediente asociado a tu correo electrónico.</p>
+        </div>
+        <app-a-button (onClick)="logout()" label="Regresar al Login" variant="primary" size="lg"
+                    customClass="!px-8 !py-3 !rounded-2xl !font-bold !text-[10px] !uppercase !tracking-widest !shadow-xl !shadow-nutri-rose/20 dark:!shadow-rose-900/10">
+        </app-a-button>
+    </div>
+}
+
+@if (showShoppingModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#151515] w-full max-w-lg max-h-[85vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
+            <!-- Header -->
+            <div class="p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
+                        <app-a-icon name="shopping_cart"></app-a-icon>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold serif text-nutri-text dark:text-white">Lista de Súper</h3>
+                        <p class="text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-0.5">Nutrilev AI Intelligence</p>
+                    </div>
+                </div>
+                <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose">
+                    <app-a-icon name="close"></app-a-icon>
+                </button>
+            </div>
+      
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+                @if (loadingShoppingList()) {
+                    <div class="flex flex-col items-center justify-center py-16">
+                        <div class="w-14 h-14 rounded-full border-4 border-nutri-rose/10 border-t-nutri-rose animate-spin mb-6"></div>
+                        <p class="text-nutri-text/60 dark:text-slate-400 text-sm font-bold serif">Analizando ingredientes...</p>
+                        <p class="text-[10px] text-nutri-rose/50 font-black uppercase tracking-widest mt-2">Expert Chef AI working</p>
+                    </div>
+                }
+        
+                @if (!loadingShoppingList()) {
+                    @for (cat of shoppingList(); track cat.category) {
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-2">
+                                <h4 class="text-[11px] font-black text-nutri-rose uppercase tracking-[0.2em] flex items-center gap-2 serif">
+                                    {{ cat.category }}
+                                </h4>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-nutri-rose/5 text-nutri-rose opacity-50">
+                                    {{ cat.items.length }}
+                                </span>
+                            </div>
+          
+                            <div class="grid gap-3">
+                                @for (item of cat.items; track item.name) {
+                                    <div (click)="toggleShoppingItem(cat.category, item)"
+                                         class="group flex items-center gap-4 p-5 rounded-[1.5rem] border transition-all cursor-pointer relative overflow-hidden"
+                                         [class.bg-nutri-green/5]="item.checked"
+                                         [class.border-nutri-green/20]="item.checked"
+                                         [class.bg-white]="!item.checked"
+                                         [class.dark:bg-white/5]="!item.checked"
+                                         [class.border-nutri-rose/5]="!item.checked"
+                                         [class.dark:border-white/10]="!item.checked"
+                                         [class.hover:border-nutri-rose/30]="!item.checked"
+                                         [class.shadow-sm]="!item.checked">
+                                      
+                                        <!-- Check Indicator -->
+                                        <div class="w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all shrink-0"
+                                             [class.bg-nutri-green]="item.checked"
+                                             [class.border-nutri-green]="item.checked"
+                                             [class.text-white]="item.checked"
+                                             [class.shadow-lg]="item.checked"
+                                             [class.shadow-nutri-green/20]="item.checked"
+                                             [class.border-nutri-rose/10]="!item.checked"
+                                             [class.dark:border-white/10]="!item.checked"
+                                             [class.group-hover:border-nutri-rose/40]="!item.checked">
+                                            @if (item.checked) {
+                                                <app-a-icon name="check" size="tiny"></app-a-icon>
+                                            }
+                                        </div>
+            
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between gap-3 mb-1">
+                                                <span class="font-bold text-sm text-nutri-text dark:text-white transition-all truncate serif" [class.opacity-30]="item.checked" [class.line-through]="item.checked">
+                                                    {{ item.icon }} {{ item.name }}
+                                                </span>
+                                                <!-- Meta Column: Amount & Brand -->
+                                                <div class="flex flex-col items-end shrink-0 gap-1 mt-[-2px]">
+                                                    @if (item.amount) {
+                                                        <span class="text-[9px] font-black px-2 py-0.5 rounded-lg bg-nutri-rose/10 text-nutri-rose uppercase tracking-tighter">
+                                                            {{ item.amount }}
+                                                        </span>
+                                                    }
+                                                    @if (item.brand) {
+                                                        <span class="text-[7px] font-bold text-nutri-rose/40 bg-nutri-rose/5 dark:bg-white/5 border border-nutri-rose/10 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                                                            {{ item.brand }}
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            @if (item.tip) {
+                                                <p class="text-[11px] text-nutri-text/40 dark:text-slate-500 italic leading-snug">
+                                                    <span class="text-nutri-rose/40 not-italic font-bold">💡</span> {{ item.tip }}
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+          
+                    @if (shoppingList().length === 0) {
+                        <div class="flex flex-col items-center justify-center py-16 text-center opacity-40">
+                            <app-a-icon name="inventory_2" class="mb-4" size="large"></app-a-icon>
+                            <h4 class="font-bold serif">Sin ingredientes detectados</h4>
+                            <p class="text-[10px] uppercase font-black tracking-widest mt-2">Revisa el formato de tu menú</p>
+                        </div>
+                    }
+                }
+            </div>
+        
+            <!-- Footer -->
+            <div class="p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5">
+                <app-a-button (onClick)="closeShoppingModal()" label="¡Listo, a comprar!" variant="primary" size="lg"
+                            customClass="!rounded-2xl !shadow-2xl !shadow-nutri-rose/20 dark:!shadow-rose-900/20 active:scale-95 transition-all">
+                </app-a-button>
+            </div>
+        </div>
+    </div>
+}

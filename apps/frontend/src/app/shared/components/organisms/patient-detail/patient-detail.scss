@@ -1,0 +1,8 @@
+/* Custom Tab Styling and Card Hover Effects */
+.field-card {
+    @apply transition-all duration-300;
+}
+
+// Removing the @apply that caused build errors.
+// These styles will be applied via inline classes in the HTML for better stability.
+// The .field-card:hover { @apply ... } is moved to inline classes or global if needed.

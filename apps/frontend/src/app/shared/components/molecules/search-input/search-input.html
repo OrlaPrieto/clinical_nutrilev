@@ -1,0 +1,17 @@
+<div class="relative flex-1 md:w-96 group">
+  <app-a-input
+    [value]="value()"
+    [placeholder]="placeholder()"
+    [icon]="loading() ? 'sync' : 'search'"
+    [customClass]="'!bg-nutri-bg dark:!bg-[#1a1a1a] !rounded-3xl !border-transparent dark:!border-white/10 focus:!border-nutri-rose/20 dark:focus:!bg-[#222222] focus:!bg-white focus:!ring-4 focus:!ring-nutri-rose/5'"
+    [inputClass]="'dark:!bg-transparent'"
+    (valueChange)="onInput($event)">
+  </app-a-input>
+  
+    @if (value()) {
+    <button (click)="onClear()" 
+            class="absolute right-6 top-1/2 -translate-y-1/2 text-nutri-text/20 hover:text-nutri-rose transition-colors flex items-center justify-center">
+      <app-a-icon name="cancel" customClass="text-lg"></app-a-icon>
+    </button>
+  }
+</div>

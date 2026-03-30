@@ -1,0 +1,847 @@
+@if (patient()) {
+    <div class="flex flex-col h-full bg-white dark:bg-[#080808] selection:bg-nutri-rose/20 text-nutri-text dark:text-slate-200 transition-colors duration-500">
+    
+    <!-- Sticky Header & Tabs Group -->
+    <div class="flex-none sticky top-0 z-[100] bg-white dark:bg-[#0b0b0b] shadow-sm transition-colors duration-300">
+        <!-- Profile Banner Compacto -->
+        <div class="pt-6 pb-6 px-6 border-b border-nutri-rose/5 dark:border-white/5">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-center gap-6 relative">
+                <!-- Avatar -->
+                <div class="w-16 h-16 rounded-3xl bg-nutri-rose text-white flex items-center justify-center text-2xl font-bold shadow-lg ring-2 ring-nutri-rose/10 overflow-hidden">
+                    @if (patient()?.foto_url) {
+                        <img [src]="patient()?.foto_url! | nutriImage:64:64" alt="Profile" class="w-full h-full object-cover">
+                    } @else {
+                        {{patient()?.nombre?.charAt(0)}}
+                    }
+                </div>
+
+                <!-- Global Action Buttons -->
+                <div class="relative md:absolute md:top-2 md:right-24 flex flex-wrap justify-center gap-2 z-50 mb-4 md:mb-0 w-full md:w-auto">
+                    <input type="file" #menuUpload (change)="uploadMenu($event)" accept=".pdf" class="hidden">
+                    <app-a-button (onClick)="menuUpload.click()" [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
+                                label="Subir Menú" icon="upload_file" variant="primary" size="md">
+                    </app-a-button>
+                    <div class="flex gap-2">
+                        <app-a-button (onClick)="toggleEdit()" [variant]="isEditing() ? 'secondary' : 'outline'" 
+                                    [icon]="isEditing() ? 'close' : 'edit'"
+                                    [label]="isEditing() ? 'Cancelar' : 'Editar'" size="md"
+                                    [customClass]="isEditing() ? '' : 'dark:!text-slate-400 dark:!border-white/10'">
+                        </app-a-button>
+                        @if (isEditing()) {
+                            <app-a-button (onClick)="saveChanges()" [disabled]="saving()" [loading]="saving()"
+                                        label="Guardar Cambios" icon="check" variant="primary" size="md"
+                                        customClass="!shadow-lg !shadow-nutri-rose/20">
+                            </app-a-button>
+                        }
+                    </div>
+                </div>
+
+                <div class="flex-1 text-center md:text-left space-y-1">
+                    <div class="flex items-center justify-between md:justify-start gap-4">
+                        <span class="text-nutri-rose font-bold tracking-widest uppercase text-[9px] block">Expediente Clínico</span>
+                    </div>
+                    @if (!isEditing()) {
+                        <h2 class="text-3xl font-bold serif">{{patient()?.nombre}}</h2>
+                    } @else {
+                        <app-a-input [value]="patient().nombre" (valueChange)="patient().nombre = $event" 
+                                    customClass="w-full max-w-lg"
+                                    inputClass="!text-3xl !font-bold !serif !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto">
+                        </app-a-input>
+                    }
+                    
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                        <div class="flex items-center gap-2 px-3 py-1 bg-white dark:bg-white/5 rounded-full border border-nutri-rose/10 dark:border-white/10 text-[11px] text-nutri-text/60 dark:text-slate-400 shadow-sm">
+                        <app-a-icon name="mail" customClass="text-[10px] text-nutri-rose"></app-a-icon>
+                            @if (!isEditing()) {
+                                <span>{{patient()?.email}}</span>
+                            }
+                            @if (isEditing()) {
+                                <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
+                                            customClass="!flex-1 min-w-[200px]"
+                                            inputClass="!bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto !font-bold">
+                                </app-a-input>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs Compactas -->
+        <div class="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto scrollbar-hide border-b border-nutri-rose/5 dark:border-white/5">
+            <div class="flex items-center space-x-4 md:space-x-6 py-3 min-w-max">
+                @for (tab of ['Personal', 'Antecedentes', 'Estilo de Vida', 'Nutrición', 'Seguimiento', 'Notas']; track tab; let i = $index) {
+                    <button (click)="activeTab.set(i)"
+                            class="relative py-1 text-[10px] md:text-[11px] font-bold tracking-widest uppercase transition-all duration-300"
+                            [ngClass]="activeTab() === i ? 'text-nutri-rose' : 'text-nutri-text/50 dark:text-slate-500 hover:text-nutri-text/60 dark:hover:text-slate-400'">
+                        {{tab}}
+                        @if (activeTab() === i) {
+                             <div class="absolute -bottom-3 left-0 right-0 h-0.5 bg-nutri-rose rounded-full animate-fade-in"></div>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Link de Descarga Reciente -->
+        @if (lastGeneratedUrl()) {
+            <div class="px-6 py-4 bg-nutri-rose/5 border-b border-nutri-rose/10 animate-fade-down flex flex-col md:flex-row items-center justify-center gap-4">
+                <div class="flex items-center gap-2">
+                    <app-a-icon name="link" customClass="text-nutri-rose text-lg"></app-a-icon>
+                    <span class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Link de descarga listo:</span>
+                </div>
+                
+                <div class="flex items-center gap-3 bg-white dark:bg-white/10 px-4 py-2 rounded-2xl border border-nutri-rose/20 dark:border-white/10 shadow-sm w-full md:w-auto overflow-hidden transition-colors">
+                    <code class="text-[10px] font-mono text-nutri-text/60 dark:text-slate-200 truncate flex-1 md:max-w-md">{{ lastGeneratedUrl() }}</code>
+                    <app-a-button (onClick)="copyToClipboard()" 
+                                [label]="copied() ? 'Copiado' : 'Copiar'" [icon]="copied() ? 'check' : 'content_copy'"
+                                variant="primary" size="sm" customClass="!shadow-sm !shadow-nutri-rose/20">
+                    </app-a-button>
+                </div>
+                
+                <button (click)="lastGeneratedUrl.set(null)" 
+                        class="p-2 rounded-full hover:bg-nutri-rose/5 text-nutri-rose/30 hover:text-nutri-rose/60 transition-colors">
+                    <app-a-icon name="close" customClass="text-md"></app-a-icon>
+                </button>
+            </div>
+        }
+    </div>
+
+    <!-- Content Area (Scrollable Area) -->
+    <div class="flex-1 w-full px-4 md:px-10 pb-10 overflow-y-auto scroll-premium">
+        
+        <!-- Tab 0: Personal Compacto -->
+        @if (activeTab() === 0) {
+            <div class="space-y-6 animate-fade-up pb-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <app-m-stat-card label="Nacimiento" [value]="patient()?.fecha_nacimiento" type="calendar" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().fecha_nacimiento = $event" placeholder="DD/MM/AAAA">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Edad" [value]="patient()?.edad" type="number" [isEditing]="isEditing()" 
+                                  [showSpinner]="false" (valueChange)="patient().edad = $event" suffix="años">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Género" [value]="patient()?.genero" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().genero = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Estatura" [value]="patient()?.estatura" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().estatura = $event" suffix="cm">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Civil" [value]="patient()?.estado_civil" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().estado_civil = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Profesión" [value]="patient()?.profesion" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().profesion = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Registro" [value]="patient()?.fecha_hoy | date:'dd/MM/yyyy'" [isEditing]="false" 
+                                  placeholder="---">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Teléfono" [value]="patient()?.telefono" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().telefono = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Dirección" [value]="patient()?.direccion" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().direccion = $event" customClass="col-span-full">
+                    </app-m-stat-card>
+                </div>
+
+                <div class="bg-nutri-rose/[0.03] dark:bg-white/5 p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-nutri-rose font-black text-[10px] uppercase tracking-widest">Motivo de Consulta</h4>
+                        @if (isEditing()) {
+                            <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
+                        }
+                    </div>
+                    <textarea [(ngModel)]="patient().motivos_consulta" 
+                              [disabled]="!isEditing()"
+                              class="w-full bg-white/50 dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 p-4 text-sm font-medium serif italic leading-tight outline-none focus:ring-2 focus:ring-nutri-rose/10 dark:focus:ring-white/10 resize-none min-h-[80px] dark:text-slate-300 transition-colors"
+                              [ngClass]="!isEditing() ? 'cursor-default border-transparent' : ''"
+                              placeholder="Escribe el motivo de consulta..."></textarea>
+                    <div class="pt-4 border-t border-nutri-rose/[0.03]">
+                        <app-m-detail-field
+                            label="Fuente de recomendación"
+                            [value]="patient()?.recomendacion_fuente"
+                            icon="campaign"
+                            [isEditing]="isEditing()"
+                            placeholder="¿Quién recomendó?..."
+                            (valueChange)="patient().recomendacion_fuente = $event">
+                        </app-m-detail-field>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 1: Clínica / Antecedentes Compacto -->
+        @if (activeTab() === 1) {
+            <div class="space-y-6 animate-fade-up">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
+                        <app-m-detail-field
+                            label="Patologías"
+                            [value]="patient()?.antecedentes_patologicos"
+                            icon="medical_services"
+                            [isEditing]="isEditing()"
+                            type="textarea"
+                            placeholder="Describir patologías..."
+                            (valueChange)="patient().antecedentes_patologicos = $event">
+                        </app-m-detail-field>
+                        <div class="border-t border-nutri-rose/[0.03] pt-4">
+                            <app-m-detail-field
+                                label="Enfermedades"
+                                [value]="patient()?.enfermedades"
+                                icon="favorite"
+                                [isEditing]="isEditing()"
+                                type="textarea"
+                                placeholder="Describir enfermedades..."
+                                (valueChange)="patient().enfermedades = $event">
+                            </app-m-detail-field>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
+                        <app-m-detail-field
+                            label="Medicamentos"
+                            [value]="patient()?.medicamentos"
+                            icon="medication"
+                            [isEditing]="isEditing()"
+                            placeholder="Medicamentos..."
+                            (valueChange)="patient().medicamentos = $event">
+                        </app-m-detail-field>
+                        @if (patient()?.toma_medicamentos || isEditing()) {
+                            <div class="ml-8 -mt-2 mb-2">
+                                <app-m-detail-field
+                                    label="Toma actualmente"
+                                    [value]="patient()?.toma_medicamentos"
+                                    [isEditing]="isEditing()"
+                                    placeholder="¿Qué toma actualmente?..."
+                                    (valueChange)="patient().toma_medicamentos = $event">
+                                </app-m-detail-field>
+                            </div>
+                        }
+                        <div class="border-t border-nutri-rose/[0.03] pt-4">
+                            <app-m-detail-field
+                                label="Cirugías"
+                                [value]="patient()?.cirugias"
+                                icon="content_cut"
+                                [isEditing]="isEditing()"
+                                placeholder="Cirugías..."
+                                (valueChange)="patient().cirugias = $event">
+                            </app-m-detail-field>
+                        </div>
+                        <app-m-detail-field
+                            label="Familiar"
+                            [value]="patient()?.antecedentes_familiares"
+                            icon="groups"
+                            [isEditing]="isEditing()"
+                            type="textarea"
+                            placeholder="Antecedentes familiares..."
+                            (valueChange)="patient().antecedentes_familiares = $event">
+                        </app-m-detail-field>
+                    </div>
+                </div>
+    
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm transition-colors">
+                    <app-m-detail-field
+                        label="Laboratorios"
+                        [value]="patient()?.laboratorios"
+                        icon="science"
+                        [isEditing]="isEditing()"
+                        type="textarea"
+                        placeholder="Registrar laboratorios..."
+                        (valueChange)="patient().laboratorios = $event">
+                    </app-m-detail-field>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 2: Estilo de Vida Compacto -->
+        @if (activeTab() === 2) {
+            <div class="space-y-6 animate-fade-up">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <app-m-stat-card label="Alcohol" [value]="patient()?.alcohol" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().alcohol = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Tabaco" [value]="patient()?.tabaco" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().tabaco = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Sueño" [value]="patient()?.sueno" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().sueno = $event">
+                    </app-m-stat-card>
+                    <app-m-stat-card label="Ejercicio" [value]="patient()?.hace_ejercicio" [isEditing]="isEditing()" 
+                                  (valueChange)="patient().hace_ejercicio = $event">
+                    </app-m-stat-card>
+                </div>
+
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 relative overflow-hidden transition-colors">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-nutri-rose font-black text-[10px] uppercase tracking-widest">Actividad Física y Horarios</h4>
+                        @if (isEditing()) {
+                            <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
+                        }
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <app-m-detail-field
+                                label="Actividad Física"
+                                [value]="patient()?.hace_ejercicio"
+                                icon="bolt"
+                                [isEditing]="isEditing()"
+                                placeholder="¿Hace ejercicio?..."
+                                (valueChange)="patient().hace_ejercicio = $event">
+                            </app-m-detail-field>
+                            <app-m-detail-field
+                                label="Detalles"
+                                [value]="patient()?.ejercicio_detalles"
+                                [isEditing]="isEditing()"
+                                type="textarea"
+                                placeholder="Detalles del ejercicio..."
+                                (valueChange)="patient().ejercicio_detalles = $event">
+                            </app-m-detail-field>
+                        </div>
+
+                        <app-m-detail-field
+                            label="Horarios y Actividad"
+                            [value]="patient()?.tipo_actividad_horario"
+                            icon="schedule"
+                            [isEditing]="isEditing()"
+                            type="textarea"
+                            placeholder="Describe horarios y actividad..."
+                            (valueChange)="patient().tipo_actividad_horario = $event">
+                        </app-m-detail-field>
+            </div>
+        </div>
+    </div>
+}
+
+    <!-- Tab 3: Nutrición Compacto -->
+    @if (activeTab() === 3) {
+            <div class="space-y-6 animate-fade-up">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Column 1: Preferencias (More Important) -->
+                    <div class="lg:col-span-2 bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 space-y-4 relative overflow-hidden transition-colors">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-20"></div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest">Preferencias Alimentarias</h4>
+                                @if (isEditing()) {
+                                    <span class="text-[8px] text-nutri-rose/60 font-bold uppercase italic">Modo edición activo</span>
+                                }
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-4">
+                                    <div class="space-y-1.5">
+                                        <span class="font-black text-emerald-900 text-[10px] uppercase tracking-wider ml-2">Gusta:</span>
+                                        @if (!isEditing()) {
+                                            <p class="p-2.5 rounded-xl bg-emerald-100/20 dark:bg-emerald-900/10 text-xs font-bold text-emerald-900/60 dark:text-emerald-100/60 leading-tight transition-colors">{{patient()?.alimentos_preferidos || '---'}}</p>
+                                        }
+                                        @if (isEditing()) {
+                                            <input type="text" [(ngModel)]="patient().alimentos_preferidos" 
+                                                   class="w-full p-2.5 rounded-xl bg-emerald-100/40 dark:bg-emerald-900/10 border border-emerald-200/50 dark:border-emerald-900/20 text-xs font-bold text-emerald-900 dark:text-emerald-300 outline-none focus:ring-2 focus:ring-emerald-500/20 dark:focus:ring-emerald-500/10 transition-colors"
+                                                   placeholder="¿Qué le gusta?">
+                                        }
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <span class="font-black text-rose-900 text-[10px] uppercase tracking-wider ml-2">Evita:</span>
+                                        @if (!isEditing()) {
+                                            <p class="p-2.5 rounded-xl bg-rose-100/20 dark:bg-rose-900/10 text-xs font-bold text-rose-900/60 dark:text-rose-100/60 leading-tight transition-colors">{{patient()?.alimentos_no_agradan || '---'}}</p>
+                                        }
+                                        @if (isEditing()) {
+                                            <input type="text" [(ngModel)]="patient().alimentos_no_agradan" 
+                                                   class="w-full p-2.5 rounded-xl bg-rose-100/40 dark:bg-rose-900/10 border border-rose-200/50 dark:border-rose-900/20 text-xs font-bold text-rose-900 dark:text-rose-300 outline-none focus:ring-2 focus:ring-rose-500/20 dark:focus:ring-rose-500/10 transition-colors"
+                                                   placeholder="¿Qué evita?">
+                                        }
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="flex items-center gap-2 ml-2">
+                                        <app-a-icon name="warning" customClass="text-[10px] text-yellow-700"></app-a-icon>
+                                        <span class="font-black text-yellow-900 text-[10px] uppercase tracking-wider">Alergias:</span>
+                                    </div>
+                                    @if (!isEditing()) {
+                                        <p class="p-2.5 rounded-xl bg-yellow-100/20 dark:bg-yellow-900/10 text-xs font-bold text-yellow-900/60 dark:text-yellow-100/60 leading-tight min-h-[100px] transition-colors">{{patient()?.alergias_alimentarias || '---'}}</p>
+                                    }
+                                    @if (isEditing()) {
+                                        <textarea [(ngModel)]="patient().alergias_alimentarias" 
+                                               class="w-full p-2.5 rounded-xl bg-yellow-100/60 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-900/20 text-xs font-bold text-yellow-900 dark:text-yellow-300 outline-none focus:ring-2 focus:ring-yellow-500/20 dark:focus:ring-yellow-500/10 min-h-[100px] resize-none transition-colors"
+                                               placeholder="¿Tiene alergias?"></textarea>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Logística / Compra (Less Important) -->
+                    <div class="lg:col-span-1 bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 flex flex-col justify-center transition-colors">
+                        <div class="space-y-4">
+                                <app-m-detail-field
+                                    label="Comidas al día"
+                                    [value]="patient()?.comidas_dia"
+                                    icon="reorder"
+                                    [isEditing]="isEditing()"
+                                    placeholder="¿Cuántas comidas?..."
+                                    (valueChange)="patient().comidas_dia = $event">
+                                </app-m-detail-field>
+                                @if (patient()?.comidas_dia_otro || isEditing()) {
+                                    <app-m-detail-field
+                                        label="Detalle comidas"
+                                        [value]="patient()?.comidas_dia_otro"
+                                        [isEditing]="isEditing()"
+                                        placeholder="Especificar..."
+                                        (valueChange)="patient().comidas_dia_otro = $event">
+                                    </app-m-detail-field>
+                                }
+
+                                <div class="pt-4 border-t border-nutri-rose/[0.03]">
+                                    <app-m-detail-field
+                                        label="Logística de Compra"
+                                        [value]="patient()?.comida_comprada"
+                                        icon="shopping_cart"
+                                        [isEditing]="isEditing()"
+                                        placeholder="¿Dónde compra?..."
+                                        (valueChange)="patient().comida_comprada = $event">
+                                    </app-m-detail-field>
+                                    @if (patient()?.comida_comprada_otro || isEditing()) {
+                                        <app-m-detail-field
+                                            label="Detalle compra"
+                                            [value]="patient()?.comida_comprada_otro"
+                                            [isEditing]="isEditing()"
+                                            placeholder="Especificar..."
+                                            (valueChange)="patient().comida_comprada_otro = $event">
+                                        </app-m-detail-field>
+                                    }
+                                </div>
+                            
+                                <div class="pt-4 border-t border-nutri-rose/[0.03]">
+                                    <app-m-detail-field
+                                        label="¿Quién prepara?"
+                                        [value]="patient()?.quien_cocina"
+                                        icon="restaurant"
+                                        [isEditing]="isEditing()"
+                                        placeholder="¿Quién cocina?..."
+                                        (valueChange)="patient().quien_cocina = $event">
+                                    </app-m-detail-field>
+                                    @if (patient()?.quien_cocina_otro || isEditing()) {
+                                        <app-m-detail-field
+                                            label="Detalle prep"
+                                            [value]="patient()?.quien_cocina_otro"
+                                            [isEditing]="isEditing()"
+                                            placeholder="Especificar..."
+                                            (valueChange)="patient().quien_cocina_otro = $event">
+                                        </app-m-detail-field>
+                                    }
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm relative overflow-hidden transition-colors">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-nutri-rose opacity-20"></div>
+                        <h4 class="text-nutri-rose font-bold text-[10px] uppercase tracking-widest mb-4">Diario 24h (Resumen)</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Desayuno</span>
+                                @if (!isEditing()) {
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_desayuno || '---'}}</p>
+                                }
+                                @if (isEditing()) {
+                                    <textarea [(ngModel)]="patient().diario_desayuno" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
+                                }
+                            </div>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Colación (Mat)</span>
+                                @if (!isEditing()) {
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_colacion_mat || '---'}}</p>
+                                }
+                                @if (isEditing()) {
+                                    <textarea [(ngModel)]="patient().diario_colacion_mat" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
+                                }
+                            </div>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Comida</span>
+                                @if (!isEditing()) {
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_comida || '---'}}</p>
+                                }
+                                @if (isEditing()) {
+                                    <textarea [(ngModel)]="patient().diario_comida" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
+                                }
+                            </div>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Colación (Vesp)</span>
+                                @if (!isEditing()) {
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_colacion_vesp || '---'}}</p>
+                                }
+                                @if (isEditing()) {
+                                    <textarea [(ngModel)]="patient().diario_colacion_vesp" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
+                                }
+                            </div>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[10px] font-bold text-nutri-rose/70 dark:text-nutri-rose/80 uppercase tracking-widest block mb-1">Cena</span>
+                                @if (!isEditing()) {
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_cena || '---'}}</p>
+                                }
+                                @if (isEditing()) {
+                                    <textarea [(ngModel)]="patient().diario_cena" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
+                                }
+                            </div>
+                            <div class="bg-nutri-bg/20 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                                <span class="text-[8px] font-bold text-nutri-rose/40 dark:text-nutri-rose/50 uppercase tracking-widest block mb-1">Extras / Otros</span>
+                                @if (!isEditing()) {
+                                    <p class="text-xs font-medium dark:text-slate-300">{{patient()?.diario_extras || '---'}}</p>
+                                }
+                                @if (isEditing()) {
+                                    <textarea [(ngModel)]="patient().diario_extras" class="w-full bg-transparent p-0 text-xs font-medium outline-none border-none resize-none min-h-[40px] dark:text-slate-200"></textarea>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                            <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Suplementos</h4>
+                            <div class="flex flex-col gap-2">
+                                @if (!isEditing()) {
+                                    <div class="text-sm font-bold">{{patient()?.suplementos_si_no === 'Si' ? '✅ Sí' : '❌ No'}} <span class="font-normal text-xs text-nutri-text/60 ml-2">{{patient()?.suplementos_cuales}}</span></div>
+                                }
+                                @if (isEditing()) {
+                                    <div class="flex items-center gap-3">
+                                        <select [(ngModel)]="patient().suplementos_si_no" class="bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs font-bold outline-none border-none">
+                                            <option value="Si">Sí</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                        <input [(ngModel)]="patient().suplementos_cuales" class="flex-1 bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-xs outline-none" placeholder="¿Cuáles?">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                            <h4 class="text-nutri-rose font-bold text-[9px] uppercase tracking-widest mb-1">Dieta Especial</h4>
+                            @if (!isEditing()) {
+                                <p class="text-sm font-bold leading-tight">{{patient()?.dieta_especial || 'Ninguna'}}</p>
+                            }
+                            @if (isEditing()) {
+                                <input [(ngModel)]="patient().dieta_especial" class="w-full bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded px-2 py-1 text-sm font-bold outline-none border-none" placeholder="Especifique dieta...">
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 4: Seguimiento / Antropometría -->
+        @if (activeTab() === 4) {
+            <div class="space-y-6 animate-fade-up">
+                <!-- Goal Selection Header -->
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
+                                <app-a-icon name="ads_click"></app-a-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold serif dark:text-slate-200">Objetivo Principal</h3>
+                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Define la meta del paciente</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            @if (!isEditing()) {
+                                <app-a-badge [label]="patient()?.meta_objetivo === 'bajar_peso' ? 'Bajar Peso' : 
+                                                   patient()?.meta_objetivo === 'bajar_grasa' ? 'Bajar Grasa' : 
+                                                   patient()?.meta_objetivo === 'subir_musculo' ? 'Subir Músculo' : 'Sin Objetivo'"
+                                            [variant]="patient()?.meta_objetivo ? 'primary' : 'ghost'"
+                                            size="md">
+                                </app-a-badge>
+                            } @else {
+                                <select [(ngModel)]="patient().meta_objetivo" 
+                                        class="bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-xl px-4 py-2 text-sm font-bold outline-none border border-nutri-rose/10 focus:ring-2 focus:ring-nutri-rose/20 transition-all cursor-pointer">
+                                    <option [value]="null">Seleccionar Objetivo...</option>
+                                    <option value="bajar_peso">Bajar Peso</option>
+                                    <option value="bajar_grasa">Bajar Grasa</option>
+                                    <option value="subir_musculo">Subir Músculo</option>
+                                </select>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Achievement Milestones -->
+                    @if (currentGoal()) {
+                        <div class="pt-6 border-t border-nutri-rose/5">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-[0.2em]">Progreso del Objetivo</span>
+                                <span class="text-xs font-black text-nutri-rose">{{ progressPercentage() }}%</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                @for (m of milestones(); track m.label) {
+                                    <div class="relative group">
+                                        <div class="h-2 rounded-full transition-all duration-700 overflow-hidden"
+                                             [ngClass]="m.achieved ? 'bg-nutri-rose shadow-[0_0_10px_rgba(235,126,122,0.3)]' : 'bg-nutri-rose/10 dark:bg-white/5'">
+                                        </div>
+                                        <div class="mt-2 flex flex-col items-center">
+                                            <span class="text-[9px] font-black transition-colors duration-300"
+                                                  [ngClass]="m.achieved ? 'text-nutri-rose' : 'text-nutri-text/30 dark:text-slate-600'">
+                                                {{ m.label }}
+                                            </span>
+                                            @if (m.achieved) {
+                                                <app-a-icon name="star" customClass="text-[8px] text-nutri-rose mt-0.5 animate-bounce"></app-a-icon>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Habitual</span>
+                        @if (!isEditing()) {
+                            <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/50">kg</span></p>
+                        }
+                        @if (isEditing()) {
+                            <div class="flex items-center gap-2">
+                                <input [(ngModel)]="patient().peso_habitual" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center">
+                                <span class="text-xs font-normal text-nutri-text/50">kg</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center transition-colors">
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">
+                            {{ patient()?.meta_objetivo === 'bajar_grasa' ? 'Grasa Meta (%)' : 
+                               patient()?.meta_objetivo === 'subir_musculo' ? 'Músculo Meta (kg)' : 'Peso Meta (kg)' }}
+                        </span>
+                        @if (!isEditing()) {
+                            <p class="text-2xl font-bold serif text-nutri-rose">
+                                {{ (patient()?.meta_objetivo === 'bajar_grasa' ? patient()?.grasa_meta : 
+                                    patient()?.meta_objetivo === 'subir_musculo' ? patient()?.musculo_meta : 
+                                    patient()?.peso_meta) || '---' }}
+                                <span class="text-xs font-normal text-nutri-rose/40">
+                                    {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
+                                </span>
+                            </p>
+                        }
+                        @if (isEditing()) {
+                            <div class="flex items-center gap-2">
+                                @if (patient()?.meta_objetivo === 'bajar_grasa') {
+                                    <input [(ngModel)]="patient().grasa_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
+                                } @else if (patient()?.meta_objetivo === 'subir_musculo') {
+                                    <input [(ngModel)]="patient().musculo_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
+                                } @else {
+                                    <input [(ngModel)]="patient().peso_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
+                                }
+                                <span class="text-xs font-normal text-nutri-rose/40">
+                                    {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
+                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Cambios Recientes</span>
+                        @if (!isEditing()) {
+                            <p class="text-sm font-medium">{{patient()?.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
+                        }
+                        @if (isEditing()) {
+                            <textarea [(ngModel)]="patient().cambios_peso_detalle" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs font-medium outline-none border-none resize-none min-h-[40px] text-center" placeholder="Detalles de cambios..."></textarea>
+                        }
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                             <app-a-icon name="calendar_month"></app-a-icon>
+                        </div>
+                        <h4 class="font-bold text-[10px] uppercase tracking-widest text-nutri-text/60">Salud Femenina / Ciclo</h4>
+                    </div>
+                    <div class="p-4 bg-nutri-bg/30 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 transition-colors">
+                        @if (!isEditing()) {
+                            <p class="text-sm font-medium leading-relaxed">{{patient()?.salud_femenina_ciclo || 'Información no registrada o no aplica.'}}</p>
+                        }
+                        @if (isEditing()) {
+                            <textarea [(ngModel)]="patient().salud_femenina_ciclo" class="w-full bg-transparent p-0 text-sm font-medium outline-none border-none resize-none min-h-[60px] dark:text-slate-200" placeholder="Información del ciclo o salud femenina..."></textarea>
+                        }
+                    </div>
+                </div>
+
+                <!-- HISTORIAL DE AVANCES -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Formulario Nuevo Registro -->
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
+                                <app-a-icon name="add"></app-a-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold serif dark:text-slate-200">Nuevo Avance</h3>
+                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Registrar medidas de hoy</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Peso (kg)</label>
+                                <app-a-input type="number" [value]="newProgress().weight" (valueChange)="newProgress().weight = $event" 
+                                            placeholder="00.0" [showSpinner]="false"
+                                            inputClass="!h-12 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-sm !font-bold">
+                                </app-a-input>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Grasa (%)</label>
+                                <app-a-input type="number" [value]="newProgress().body_fat" (valueChange)="newProgress().body_fat = $event" 
+                                            placeholder="00.0" [showSpinner]="false"
+                                            inputClass="!h-12 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-sm !font-bold">
+                                </app-a-input>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Músculo (kg)</label>
+                                <app-a-input type="number" [value]="newProgress().muscle_mass" (valueChange)="newProgress().muscle_mass = $event" 
+                                            placeholder="00.0" [showSpinner]="false"
+                                            inputClass="!h-12 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-sm !font-bold">
+                                </app-a-input>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Notas del avance</label>
+                            <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg dark:bg-white/5 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Comentarios sobre la evolución..."></textarea>
+                        </div>
+
+                        <!-- Registrar Button -->
+                        <div class="flex justify-center pt-2">
+                            <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
+                                        label="Registrar Avance" variant="primary" size="lg"
+                                        customClass="!px-12 !py-6 !rounded-2xl !text-[10px] !uppercase !tracking-[0.2em] !shadow-xl !shadow-nutri-rose/20 active:scale-[0.98] transition-all">
+                            </app-a-button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Historial -->
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[2.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-6 flex flex-col transition-colors">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold serif">Evolución</h3>
+                            <span class="px-3 py-1 bg-nutri-bg dark:bg-white/5 rounded-full text-[9px] font-bold text-nutri-text/60 dark:text-slate-500 uppercase tracking-widest transition-colors">{{ progressHistory().length }} Registros</span>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto max-h-[400px] pr-2 space-y-4 scroll-premium">
+                            @if (progressHistory().length === 0) {
+                                <div class="h-full flex flex-col items-center justify-center opacity-20 py-20">
+                                    <app-a-icon name="history" customClass="!text-4xl"></app-a-icon>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest mt-2">Sin historial</p>
+                                </div>
+                            } @else {
+                                @for (record of progressHistory(); track record.id) {
+                                    <div class="p-5 rounded-2xl bg-nutri-bg/40 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/10 group hover:bg-white dark:hover:bg-white/10 transition-all">
+                                        <div class="flex items-start justify-between mb-4">
+                                            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-black shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5 dark:border-white/10 transition-colors">
+                                                <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ record.date | date:'dd' }}</span>
+                                                <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
+                                            </div>
+                                            <div class="flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
+                                                <div class="flex flex-col items-end px-3 py-1 rounded-xl transition-all"
+                                                     [ngClass]="patient()?.meta_objetivo === 'bajar_peso' ? 'bg-nutri-rose/10 ring-1 ring-nutri-rose/20' : ''">
+                                                    <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-tighter">Peso</span>
+                                                    <span class="text-sm font-black dark:text-slate-200 transition-colors">{{ record.weight }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
+                                                </div>
+                                                @if (record.body_fat) {
+                                                    <div class="flex flex-col items-end px-3 py-1 rounded-xl transition-all"
+                                                         [ngClass]="patient()?.meta_objetivo === 'bajar_grasa' ? 'bg-nutri-rose/10 ring-1 ring-nutri-rose/20' : ''">
+                                                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-tighter">Grasa</span>
+                                                    <span class="text-sm font-black text-nutri-rose/80 dark:text-nutri-rose/90 transition-colors">{{ record.body_fat }}<span class="text-[8px] ml-0.5 opacity-30">%</span></span>
+                                                    </div>
+                                                }
+                                                @if (record.muscle_mass) {
+                                                    <div class="flex flex-col items-end px-3 py-1 rounded-xl transition-all"
+                                                         [ngClass]="patient()?.meta_objetivo === 'subir_musculo' ? 'bg-nutri-rose/10 ring-1 ring-nutri-rose/20' : ''">
+                                                        <span class="text-[9px] font-bold text-nutri-rose/40 uppercase tracking-tighter">Músculo</span>
+                                                    <span class="text-sm font-black text-nutri-rose/80 dark:text-nutri-rose/90 transition-colors">{{ record.muscle_mass }}<span class="text-[8px] ml-0.5 opacity-30">kg</span></span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        @if (record.notes) {
+                                            <div class="pt-3 border-t border-nutri-rose/5">
+                                                <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 italic leading-relaxed transition-colors">{{ record.notes }}</p>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Tab 5: Notas Persistentes Optimizadas -->
+        @if (activeTab() === 5) {
+            <div class="space-y-4 animate-fade-up h-full flex flex-col">
+                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                    <div class="space-y-0.5">
+                        <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
+                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Sincronización automática activa</p>
+                    </div>
+                    <button class="btn-primary" [disabled]="saving()" (click)="saveChanges()">
+                        <app-a-icon [name]="saving() ? 'sync' : 'save'" customClass="mr-2" [ngClass]="{'animate-spin': saving()}"></app-a-icon>
+                        <span class="text-[10px]">{{ saving() ? 'GUARDANDO...' : 'GUARDAR' }}</span>
+                    </button>
+                </div>
+                
+                <div class="relative flex-1">
+                    <textarea [(ngModel)]="patient().notas" 
+                              placeholder="Escribe aquí las notas, seguimiento o evolución..."
+                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"></textarea>
+                    
+                    <div class="absolute bottom-4 right-6 text-[8px] text-nutri-rose/20 font-bold uppercase tracking-[0.4em]">
+                        Nutrilev Management System
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Floating Success Toast -->
+    @if (showSuccess()) {
+        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 animate-fade-up transition-colors">
+            <div class="w-10 h-10 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 shadow-inner">
+                <app-a-icon name="check"></app-a-icon>
+            </div>
+            <div class="space-y-0.5">
+                <p class="font-bold text-nutri-text dark:text-slate-200 text-sm">Cambios Guardados</p>
+                <p class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest">Sincronizado con Supabase</p>
+            </div>
+        </div>
+    }
+
+    <!-- Deactivation Footer (Fixed Footer) -->
+    <div class="flex-none bg-white/90 dark:bg-black/80 backdrop-blur-md border-t border-nutri-rose/10 dark:border-white/10 px-8 py-4 flex items-center justify-between shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] transition-colors">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 transition-all" [ngClass]="patient()?.acceso_portal ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-900/20' : 'bg-amber-50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/20'">
+                <input type="checkbox" [(ngModel)]="patient().acceso_portal" (change)="togglePortalAccess()" id="portalToggle" class="accent-emerald-500 w-4 h-4 cursor-pointer">
+                <label for="portalToggle" class="flex gap-2 cursor-pointer">
+                    <app-a-badge [label]="patient()?.acceso_portal ? 'Portal: Acceso Concedido' : 'Portal: Acceso Restringido'" 
+                               [variant]="patient()?.acceso_portal ? 'success' : 'warning'" 
+                               [icon]="patient()?.acceso_portal ? 'vpn_key' : 'lock'"
+                               size="sm">
+                    </app-a-badge>
+                </label>
+            </div>
+            <div class="h-8 w-px bg-nutri-rose/10 mx-2"></div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-nutri-bg dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 transition-all" [ngClass]="patient()?.dado_de_baja ? 'bg-rose-50 border-rose-200 dark:bg-rose-900/10 dark:border-rose-900/20' : ''">
+                <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" id="activeToggle" class="accent-nutri-rose w-4 h-4 cursor-pointer">
+                <label for="activeToggle" class="cursor-pointer">
+                    <app-a-badge [label]="patient()?.dado_de_baja ? 'Expediente: INACTIVO (Baja)' : 'Expediente: ACTIVO'" 
+                               [variant]="patient()?.dado_de_baja ? 'danger' : 'info'" 
+                               [icon]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'"
+                               size="sm">
+                    </app-a-badge>
+                </label>
+            </div>
+            @if (patient()?.dado_de_baja) {
+                <span class="text-[9px] font-bold text-rose-500 uppercase italic animate-pulse">Este registro aparecerá desactivado en la lista</span>
+            }
+        </div>
+        <p class="text-[8px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.2em]">Nutrilev Admin Panel</p>
+    </div>
+</div>
+}

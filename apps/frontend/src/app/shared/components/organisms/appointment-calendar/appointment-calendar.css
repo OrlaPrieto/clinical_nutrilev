@@ -1,0 +1,104 @@
+.appointment-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 95vh;
+  background: var(--nutri-bg);
+  border-radius: 4rem;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+.appointment-body {
+  overflow-y: auto;
+}
+
+/* Custom Calendar Styling */
+.calendar-card {
+  padding: 0.5rem !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Compact Material Calendar Overrides */
+::ng-deep .nutri-calendar {
+  width: 100% !important;
+  
+  .mat-calendar-header {
+    padding: 0.5rem 1rem !important;
+  }
+
+  .mat-calendar-content {
+    padding: 0 0.5rem 0.5rem 0.5rem !important;
+  }
+
+  .mat-calendar-table-header-divider::after {
+    display: none !important;
+  }
+
+  .mat-calendar-body-cell-content {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 11px !important;
+  }
+
+  .mat-calendar-period-button {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+}
+
+/* Premium Form Fields Integration */
+.nutri-field {
+  width: 100%;
+}
+
+::ng-deep .nutri-field .mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 1.5rem;
+  --mdc-outlined-text-field-focus-outline-color: var(--nutri-rose);
+  --mdc-outlined-text-field-outline-color: rgba(216, 27, 96, 0.1);
+  background-color: var(--nutri-bg) !important;
+  transition: background-color 0.3s ease;
+}
+
+::ng-deep .nutri-field .mat-mdc-select-arrow svg {
+  color: var(--nutri-rose) !important;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 1023px) {
+  .appointment-container {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .appointment-body {
+    padding: 1.5rem !important;
+  }
+  ::ng-deep .nutri-calendar .mat-calendar-body-cell-content {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 10px !important;
+  }
+}
+
+.animate-shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.scroll-premium::-webkit-scrollbar {
+  width: 5px;
+}
+.scroll-premium::-webkit-scrollbar-thumb {
+  background: rgba(216, 27, 96, 0.1);
+  border-radius: 10px;
+}
+.scroll-premium::-webkit-scrollbar-thumb:hover {
+  background: rgba(216, 27, 96, 0.2);
+}

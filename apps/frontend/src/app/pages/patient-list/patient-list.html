@@ -1,0 +1,158 @@
+<div class="h-screen flex flex-col overflow-hidden bg-nutri-bg dark:bg-[#080808] selection:bg-nutri-rose/20 transition-colors duration-700">
+    <app-o-dashboard-header 
+        [loading]="loading()" 
+        [searchTerm]="searchTerm()"
+        (search)="searchTerm.set($event); onSearch()"
+        (sync)="loadPatients()"
+        (logout)="authService.logout()"
+        (openAi)="navigateToAutomation()">
+    </app-o-dashboard-header>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-h-0 relative z-20 max-w-7xl mx-auto w-full px-6 md:px-12 pt-48 md:pt-32 pb-16">
+        <div class="flex-initial flex flex-wrap items-center gap-3 mb-6 animate-fade-up">
+            <app-a-badge [label]="'Total: ' + totalCount()" variant="primary" icon="groups"></app-a-badge>
+            <app-a-badge [label]="'Activos: ' + activeCount()" variant="success" icon="check_circle"></app-a-badge>
+            <app-a-badge [label]="'Pendientes: ' + pendingCount()" variant="warning" icon="schedule"></app-a-badge>
+            <app-a-badge [label]="'Baja: ' + bajaCount()" variant="ghost" icon="person_off"></app-a-badge>
+        </div>
+
+        <!-- Unified Table + Footer Container -->
+        <div class="flex-1 min-h-0 flex flex-col bg-white/70 dark:bg-[#111111]/70 backdrop-blur-md rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-xl shadow-nutri-rose/5">
+            
+            <!-- Table Section (Internal Scroll) -->
+            <div class="flex-1 min-h-0 flex flex-col">
+                @if (loading()) {
+                <div class="flex flex-col items-center justify-center py-40 space-y-6">
+                    <div class="w-16 h-16 border-4 border-nutri-rose/10 border-t-nutri-rose rounded-full animate-spin"></div>
+                    <p class="text-nutri-rose font-bold tracking-widest text-[10px] uppercase animate-pulse">Cargando base de
+                        datos...</p>
+                </div>
+                }
+
+                @if (!loading() && filteredPatients().length === 0) {
+                <div class="flex flex-col items-center justify-center py-40 space-y-6 animate-fade-up">
+                    <div class="w-20 h-20 rounded-4xl bg-nutri-rose/5 dark:bg-white/5 flex items-center justify-center text-nutri-rose/20 dark:text-white/10">
+                        <app-a-icon name="groups" customClass="text-4xl"></app-a-icon>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <h3 class="text-xl font-bold text-nutri-text dark:text-slate-200 serif">No se encontraron pacientes</h3>
+                        <p class="text-sm text-nutri-text/50 dark:text-slate-500 font-medium">Actualiza o intenta otra búsqueda</p>
+                    </div>
+                </div>
+                }
+
+                @if (!loading() && filteredPatients().length > 0) {
+                <app-o-patient-table [patients]="paginatedPatients()" (view)="showDetail($event)"
+                    (schedule)="openAppointment($event)" (delete)="openDeleteConfirm($event)">
+                </app-o-patient-table>
+                }
+            </div>
+
+            <!-- Table Footer (Pagination) -->
+            @if (!loading() && filteredPatients().length > 0) {
+            <div class="flex-initial flex flex-col md:flex-row items-center justify-between gap-6 p-6 bg-nutri-rose/[0.02] dark:bg-white/[0.02] border-t border-nutri-rose/10 dark:border-white/10 transition-colors">
+                <div class="hidden md:flex items-center gap-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[9px] font-black text-nutri-text/30 dark:text-slate-600 uppercase tracking-[0.2em]">Filas por página</span>
+                        <div class="relative group">
+                            <select [ngModel]="pageSize()" (ngModelChange)="onPageSizeChange($event)"
+                                class="bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/5 rounded-xl pl-4 pr-10 py-2 text-[11px] font-bold text-nutri-rose outline-none focus:ring-2 focus:ring-nutri-rose/20 transition-all cursor-pointer appearance-none">
+                                <option [value]="5">5</option>
+                                <option [value]="10">10</option>
+                                <option [value]="20">20</option>
+                                <option [value]="50">50</option>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-nutri-rose/40 group-hover:text-nutri-rose transition-colors">
+                                <app-a-icon name="expand_more" customClass="text-base"></app-a-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                    <app-a-button variant="ghost" size="sm" icon="chevron_left" [disabled]="currentPage() === 1"
+                        (onClick)="goToPage(currentPage() - 1)"
+                        customClass="!rounded-xl !bg-nutri-bg/50 dark:!bg-white/5">
+                    </app-a-button>
+
+                    <div class="flex items-center gap-1 px-1">
+                        @for (p of pageNumbers(); track p) {
+                        <button (click)="goToPage(p)" class="w-9 h-9 rounded-xl text-[11px] font-black transition-all"
+                            [ngClass]="currentPage() === p 
+                                            ? 'bg-nutri-rose text-white shadow-lg shadow-nutri-rose/30 scale-105' 
+                                            : 'text-nutri-text/30 dark:text-slate-500 hover:bg-nutri-rose/5 dark:hover:bg-white/5 hover:text-nutri-rose'">
+                            {{ p }}
+                        </button>
+                        }
+                    </div>
+
+                    <app-a-button variant="ghost" size="sm" icon="chevron_right" [disabled]="currentPage() === totalPages()"
+                        (onClick)="goToPage(currentPage() + 1)"
+                        customClass="!rounded-xl !bg-nutri-bg/50 dark:!bg-white/5">
+                    </app-a-button>
+                </div>
+            </div>
+            }
+        </div>
+</div>
+
+<!-- Modals -->
+@if (showAppointmentModal()) {
+<app-o-appointment-modal [patientName]="patientForAppointment()?.nombre || ''"
+    [patientEmail]="patientForAppointment()?.email || ''" (onScheduled)="handleScheduled($event)"
+    (onClosed)="showAppointmentModal.set(false)">
+</app-o-appointment-modal>
+}
+
+@if (displayDetail() && selectedPatient()) {
+<div class="fixed inset-0 z-[100] flex flex-col justify-end md:items-center md:justify-center p-0 pt-12 md:p-10 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
+    (click)="displayDetail.set(false)">
+<div class="bg-white dark:bg-[#080808] w-full h-[calc(100%-48px)] md:h-[90%] max-w-7xl rounded-t-[2.5rem] md:rounded-[3.5rem] shadow-2xl overflow-hidden border border-nutri-rose/10 dark:border-white/5 pointer-events-auto animate-scale-up relative flex flex-col"
+    (click)="$event.stopPropagation()">
+    <app-o-patient-detail [patient]="selectedPatient()" class="flex-1 min-h-0"></app-o-patient-detail>
+        <app-a-button (onClick)="displayDetail.set(false)" variant="ghost" size="md" icon="close"
+                    customClass="!absolute !top-4 !right-4 md:!top-8 md:!right-8 !w-10 !h-10 md:!w-12 md:!h-12 !rounded-2xl !bg-white/80 dark:!bg-black/40 !backdrop-blur-md !shadow-xl !z-[110] !border !border-nutri-rose/10 dark:!border-white/10 dark:!text-slate-400">
+        </app-a-button>
+    </div>
+</div>
+}
+
+@if (showDeleteConfirm()) {
+<div class="fixed inset-0 z-[150] flex flex-col justify-end md:items-center md:justify-center p-0 md:p-4 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
+    (click)="cancelDelete()">
+    <div class="bg-white dark:bg-[#111111] w-full max-w-sm rounded-t-[3rem] md:rounded-[3rem] p-8 md:p-10 pb-12 shadow-2xl border border-nutri-rose/10 dark:border-white/5 pointer-events-auto animate-scale-up text-center space-y-8"
+        (click)="$event.stopPropagation()">
+
+        <div class="w-20 h-20 rounded-[2.5rem] bg-rose-50 dark:bg-rose-900/10 flex items-center justify-center text-rose-500 mx-auto shadow-sm">
+            <app-a-icon name="warning" customClass="text-3xl text-rose-500"></app-a-icon>
+        </div>
+
+        <div class="space-y-3">
+            <h3 class="text-2xl font-bold text-nutri-text dark:text-slate-200 serif">¿Eliminar paciente?</h3>
+            <p class="text-sm text-nutri-text/60 dark:text-slate-500 font-medium leading-relaxed">
+                Esta acción elminará permanentemente el expediente de <span class="text-nutri-rose font-bold">{{
+                    patientToDelete()?.nombre }}</span>.
+            </p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <app-a-button variant="danger" label="ELIMINAR AHORA" size="lg" (onClick)="confirmDelete()"></app-a-button>
+            <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="cancelDelete()"></app-a-button>
+        </div>
+    </div>
+</div>
+}
+
+@if (appointmentSuccess()) {
+<div
+    class="fixed bottom-10 right-10 z-[200] bg-emerald-500 text-white px-8 py-5 rounded-[2rem] shadow-2xl shadow-emerald-500/30 flex items-center gap-4 animate-fade-up">
+    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+        <app-a-icon name="check" customClass="text-white"></app-a-icon>
+    </div>
+    <div class="flex flex-col">
+        <span class="text-[9px] font-black uppercase tracking-widest opacity-60">Éxito</span>
+        <span class="text-xs font-bold uppercase tracking-widest">Cita agendada correctamente</span>
+    </div>
+</div>
+}

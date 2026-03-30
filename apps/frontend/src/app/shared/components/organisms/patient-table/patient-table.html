@@ -1,0 +1,269 @@
+<!-- Desktop Table View -->
+<div class="hidden lg:flex flex-1 flex-col min-h-0 bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-nutri border border-nutri-rose/5 dark:border-white/5 animate-fade-up relative transition-colors overflow-hidden">
+  <div class="flex-1 overflow-y-auto scroll-premium">
+    <table class="w-full text-left border-collapse min-w-[800px]">
+      <thead class="sticky top-0 z-[60] bg-white dark:bg-[#111111]">
+        <tr class="bg-nutri-rose/[0.04] dark:bg-white/5 border-b border-nutri-rose/10 dark:border-white/10">
+          <th class="w-[50%] pl-6 pr-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Nacimiento</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Prefs</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Notas</th>
+          <th class="w-[20%] px-12 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-nutri-rose/[0.03] dark:divide-white/5">
+        @for (patient of patients(); track patient.email || $index; let i = $index) {
+          <tr class="group relative hover:bg-nutri-rose/[0.01] dark:hover:bg-white/[0.02] transition-all duration-300 hover:z-50"
+              [ngClass]="{
+                  'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40 border-gray-300/50 dark:border-gray-700/50': patient.dado_de_baja,
+                  '!bg-amber-50/40 dark:!bg-amber-500/5 border-amber-100/50 dark:border-amber-500/10': !patient.acceso_portal && !patient.dado_de_baja
+              }">
+            
+            <td class="pl-6 pr-8 py-5">
+              <div class="flex items-center gap-3">
+                <!-- Menu Status Icon (Clickable for Admin) -->
+                <div class="flex items-center gap-0.5 transition-all duration-300 pointer-events-auto"
+                     [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-pointer hover:scale-125 active:scale-95' : 'opacity-20 grayscale pointer-events-none'"
+                     (click)="patient.menu_url && openMenu(patient.menu_url, $event)">
+                  <div class="w-1 h-1 rounded-full" 
+                    [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
+                  </div>
+                  <app-a-icon name="restaurant_menu" 
+                    [customClass]="(getMenuStatus(patient) === 'active' ? 'text-emerald-500' : 'text-amber-400') + ' text-[12px]'">
+                  </app-a-icon>
+                  
+                  @if (getMenuStatus(patient) !== 'none') {
+                    <!-- Tooltip (Shifted left-0 to avoid screen cut-off) -->
+                    <div class="absolute top-full left-0 mt-2 px-3 py-2 bg-nutri-text/95 dark:bg-black/95 backdrop-blur-sm text-white text-[8px] font-bold rounded-xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-[100] shadow-2xl border border-white/10 pointer-events-none">
+                      <div class="flex flex-col items-center gap-1">
+                        <span class="text-[9px] uppercase tracking-widest">{{ getMenuStatus(patient) === 'active' ? 'Menú Vigente' : 'Menú Expirado' }}</span>
+                        <div class="h-px w-full bg-white/10"></div>
+                        <span class="text-rose-400 text-[7px] font-black uppercase tracking-tighter">Click para abrir PDF</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 dark:bg-nutri-rose/20 flex items-center justify-center text-nutri-rose font-bold text-sm ring-1 ring-nutri-rose/10 group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
+                  {{ patient.nombre.charAt(0) }}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-nutri-text dark:text-slate-200 serif text-lg group-hover:text-nutri-rose transition-colors leading-tight">{{ patient.nombre }}</p>
+                    
+                    @if (patient.dado_de_baja) {
+                      <app-a-badge label="BAJA" variant="danger" size="sm" icon="person_off"></app-a-badge>
+                    } @else if (!patient.acceso_portal) {
+                      <app-a-badge label="PENDIENTE" variant="warning" size="sm" customClass="animate-pulse" icon="schedule"></app-a-badge>
+                    }
+                  </div>
+                  <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-8 py-5">
+              <div class="flex flex-col">
+                <span class="text-xs font-bold text-nutri-text/60 dark:text-slate-500 italic">{{ patient.fecha_nacimiento }}</span>
+                <span class="text-[9px] font-black text-nutri-rose/30 dark:text-nutri-rose/50 uppercase tracking-widest">{{ patient.edad }} años</span>
+              </div>
+            </td>
+
+            <td class="px-8 py-5 text-center">
+              <div class="relative group/tooltip inline-block">
+                <app-a-button (onClick)="toggleTooltip(i + '-prefs', $event)" [disabled]="!patient.alimentos_preferidos && !patient.alimentos_no_agradan"
+                        variant="ghost" icon="favorite" size="sm"
+                        customClass="!w-9 !h-9 !rounded-xl !bg-nutri-bg/50 dark:!bg-white/5 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white disabled:!opacity-20 active:scale-95 transition-all">
+                </app-a-button>
+                
+                <div (click)="$event.stopPropagation()"
+                     [class.opacity-100]="activeTooltipId() === i + '-prefs'"
+                     [class.visible]="activeTooltipId() === i + '-prefs'"
+                     [class.translate-x-0]="activeTooltipId() === i + '-prefs'"
+                     [ngClass]="{
+                        'top-[-1rem] translate-y-0': i < 2,
+                        'bottom-[-1rem] translate-y-0 shadow-[-10px_-10px_30px_rgba(0,0,0,0.1)]': i >= patients().length - 3,
+                        'top-1/2 -translate-y-1/2 translate-x-2': i >= 2 && i < patients().length - 3
+                     }"
+                     class="absolute right-full mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-colors duration-500">
+                    <div class="space-y-4 max-h-64 overflow-y-auto pr-2 scroll-premium">
+                      <h4 class="text-[9px] font-black text-nutri-rose uppercase tracking-[0.2em] mb-3">Preferencias Alimentarias</h4>
+                      <div class="space-y-3">
+                        <div class="bg-emerald-50/50 dark:bg-emerald-900/10 p-3 rounded-2xl border border-emerald-100/50 dark:border-emerald-900/20">
+                          <p class="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">Favoritos</p>
+                          <p class="text-[11px] text-emerald-900/70 dark:text-emerald-100/60 font-medium leading-relaxed italic">{{ patient.alimentos_preferidos || 'No especificado' }}</p>
+                        </div>
+                        <div class="bg-rose-50/50 dark:bg-rose-900/10 p-3 rounded-2xl border border-rose-100/50 dark:border-rose-900/20">
+                          <p class="text-[8px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest mb-1">Evita</p>
+                          <p class="text-[11px] text-rose-900/70 dark:text-rose-100/60 font-medium leading-relaxed italic">{{ patient.alimentos_no_agradan || 'No especificado' }}</p>
+                        </div>
+                        <div class="bg-yellow-50/50 dark:bg-yellow-900/10 p-3 rounded-2xl border border-yellow-100/50 dark:border-yellow-900/20">
+                          <p class="text-[8px] font-black text-yellow-700 dark:text-yellow-500 uppercase tracking-widest mb-1">Alergias</p>
+                          <p class="text-[11px] text-yellow-900/70 dark:text-yellow-100/60 font-medium leading-relaxed italic">{{ patient.alergias_alimentarias || 'Ninguna' }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div [ngClass]="{
+                            'top-4 !translate-y-0 rotate-[135deg]': i < 2,
+                            'bottom-4 !translate-y-0 rotate-[225deg] top-auto': i >= patients().length - 3,
+                            'top-1/2 -translate-y-1/2 rotate-45': i >= 2 && i < patients().length - 3
+                         }"
+                         class="absolute -right-2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 transition-all"></div>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-8 py-5 text-center">
+              <div class="relative group/tooltip inline-block">
+                <app-a-button (onClick)="toggleTooltip(i + '-notes', $event)" [disabled]="!patient.notas"
+                        variant="ghost" icon="edit_note" size="sm"
+                        class="block"
+                        customClass="!w-9 !h-9 !rounded-xl !bg-nutri-bg/50 dark:!bg-white/5 !text-emerald-500 hover:!bg-emerald-500 hover:!text-white disabled:!opacity-20 active:scale-95 transition-all">
+                </app-a-button>
+
+                <div (click)="$event.stopPropagation()"
+                     [class.opacity-100]="activeTooltipId() === i + '-notes'"
+                     [class.visible]="activeTooltipId() === i + '-notes'"
+                     [class.translate-x-0]="activeTooltipId() === i + '-notes'"
+                     [ngClass]="{
+                        'top-[-1rem] translate-y-0': i < 2,
+                        'bottom-[-1rem] translate-y-0 shadow-[-10px_-10px_30px_rgba(0,0,0,0.1)]': i >= patients().length - 3,
+                        'top-1/2 -translate-y-1/2 translate-x-2': i >= 2 && i < patients().length - 3
+                     }"
+                     class="absolute right-full mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-colors duration-500">
+                    <div class="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-premium">
+                      <div class="flex items-center gap-2 mb-2">
+                        <app-a-icon name="description" customClass="text-emerald-500 text-sm"></app-a-icon>
+                        <h4 class="text-[9px] font-black text-nutri-text dark:text-slate-200 uppercase tracking-[0.2em]">Notas Clínicas</h4>
+                      </div>
+                      <p class="text-[11px] text-nutri-text/60 dark:text-slate-400 font-medium leading-relaxed italic bg-nutri-bg/30 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5">{{ patient.notas || 'Sin notas registradas.' }}</p>
+                    </div>
+                    <div [ngClass]="{
+                            'top-4 !translate-y-0 rotate-[135deg]': i < 2,
+                            'bottom-4 !translate-y-0 rotate-[225deg] top-auto': i >= patients().length - 3,
+                            'top-1/2 -translate-y-1/2 rotate-45': i >= 2 && i < patients().length - 3
+                         }"
+                         class="absolute -right-2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 transition-all"></div>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-12 py-5 text-right">
+              <div class="flex items-center justify-end gap-2 px-2">
+                <app-a-button 
+                  variant="outline" 
+                  size="sm" 
+                  icon="calendar_add_on" 
+                  (onClick)="schedule.emit(patient)">
+                </app-a-button>
+                <app-a-button 
+                  variant="primary" 
+                  size="sm" 
+                  icon="visibility" 
+                  (onClick)="view.emit(patient)">
+                </app-a-button>
+                <app-a-button 
+                  variant="ghost" 
+                  size="sm" 
+                  icon="delete" 
+                  customClass="hover:!text-rose-500 dark:text-slate-500 dark:hover:!text-rose-500"
+                  (onClick)="delete.emit(patient)">
+                </app-a-button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Mobile Card View -->
+<div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-4 space-y-4 animate-fade-up scroll-premium lg:hidden text-left">
+  @for (patient of patients(); track patient.email || $index; let i = $index) {
+    <div class="bg-white dark:bg-[#111111] rounded-3xl p-6 shadow-nutri border border-nutri-rose/5 dark:border-white/5 space-y-4 transition-all duration-300"
+         [ngClass]="{
+            'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40 border-gray-300/50 dark:border-gray-700/50': patient.dado_de_baja,
+            '!bg-amber-50/40 dark:!bg-amber-500/5 border-amber-200/50 dark:border-amber-500/10': !patient.acceso_portal && !patient.dado_de_baja
+         }">
+      
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <!-- Menu Status Mobile -->
+          <div class="flex items-center gap-0.5 transition-all duration-300"
+               [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-pointer active:scale-90' : 'opacity-20 grayscale pointer-events-none'"
+               (click)="patient.menu_url && openMenu(patient.menu_url, $event)">
+            <div class="w-1 h-1 rounded-full" 
+              [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
+            </div>
+            <app-a-icon name="restaurant_menu" 
+              [customClass]="(getMenuStatus(patient) === 'active' ? 'text-emerald-500' : 'text-amber-400') + ' text-[12px]'">
+            </app-a-icon>
+            
+            @if (getMenuStatus(patient) !== 'none') {
+              <!-- Tooltip Mobile -->
+              <div class="absolute top-full left-0 mt-2 px-3 py-1.5 bg-nutri-text/95 dark:bg-black/95 backdrop-blur-sm text-white text-[8px] font-bold rounded-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all whitespace-nowrap z-[100] pointer-events-none shadow-xl border border-white/10">
+                Ver Menú {{ getMenuStatus(patient) === 'active' ? 'Vigente' : 'Expirado' }}
+              </div>
+            }
+          </div>
+
+          <div class="w-12 h-12 rounded-2xl bg-nutri-rose/5 dark:bg-nutri-rose/20 flex items-center justify-center text-nutri-rose font-bold text-lg ring-1 ring-nutri-rose/10">
+            {{ patient.nombre.charAt(0) }}
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <p class="font-bold text-nutri-text dark:text-slate-200 serif text-lg leading-tight">{{ patient.nombre }}</p>
+              @if (patient.dado_de_baja) {
+                <app-a-badge label="BAJA" variant="danger" size="sm" icon="person_off"></app-a-badge>
+              } @else if (!patient.acceso_portal) {
+                <app-a-badge label="PENDIENTE" variant="warning" size="sm" icon="schedule"></app-a-badge>
+              }
+            </div>
+            <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-nutri-bg dark:bg-white/5 rounded-2xl space-y-2">
+        <div>
+          <p class="text-[9px] font-black text-nutri-rose/40 dark:text-nutri-rose/60 uppercase tracking-widest">Motivo de Consulta</p>
+          <p class="text-xs text-nutri-text/60 dark:text-slate-400 font-medium line-clamp-2 leading-relaxed">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
+        </div>
+        
+        @if (patient.alimentos_preferidos || patient.alimentos_no_agradan) {
+          <div class="pt-2 border-t border-nutri-rose/5 dark:border-white/5">
+            <p class="text-[9px] font-black text-emerald-600/40 dark:text-emerald-400/60 uppercase tracking-widest mb-1">Preferencias</p>
+            <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 italic line-clamp-1">{{ patient.alimentos_preferidos || 'No especificado' }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="flex items-center gap-3">
+        <app-a-button 
+          variant="outline" 
+          size="md" 
+          icon="calendar_add_on" 
+          label="CITA"
+          customClass="flex-1 !font-bold !text-[9px] !tracking-widest dark:text-slate-400"
+          (onClick)="schedule.emit(patient)">
+        </app-a-button>
+        <app-a-button 
+          variant="primary" 
+          size="md" 
+          icon="visibility" 
+          label="ABRIR"
+          customClass="flex-1 !font-bold !text-[9px] !tracking-widest"
+          (onClick)="view.emit(patient)">
+        </app-a-button>
+        <app-a-button 
+          variant="ghost" 
+          size="md" 
+          icon="delete" 
+          customClass="bg-rose-50 dark:bg-rose-900/10 hover:!bg-rose-500 hover:!text-white !text-rose-500 !px-4"
+          (onClick)="delete.emit(patient)">
+        </app-a-button>
+      </div>
+    </div>
+  }
+</div>

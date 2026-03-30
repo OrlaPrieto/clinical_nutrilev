@@ -1,15 +1,10 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
-
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
+**/node_modules/
+**/dist/
+npm-debug.log*
+yarn-error.log*
 
 # IDEs and editors
 .idea/
@@ -19,8 +14,6 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
-
-# Visual Studio Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -30,13 +23,13 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+**/.angular/cache/
 .sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
+**/*.lock
+coverage
+libpeerconnection.log
 testem.log
-/typings
+typings
 __screenshots__/
 
 # System files
@@ -47,9 +40,14 @@ Thumbs.db
 .env
 
 # Python
-venv/
-env/
-__pycache__/
-*.py[cod]
-*$py.class
+**/venv/
+**/env/
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
 .ipynb_checkpoints/
+
+# Sensitive Data & Migrations
+patients_migration.json
+*.csv
+migration_*.json
