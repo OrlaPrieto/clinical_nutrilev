@@ -60,29 +60,38 @@ export class AuthService {
     
     // Set up listener for ALL events
     supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`Auth: Event [${event}]`, session?.user?.email);
+      const email = session?.user?.email;
+      console.log(`Auth: Event [${event}] for ${email || 'unknown user'}`);
       this._accessToken.set(session?.access_token || null);
       
       if (event === 'SIGNED_OUT') {
-        // Only clear if we were previously logged in or if this is an explicit sign out
+        // Log the reason if possible (though Supabase doesn't always provide it)
+        console.warn('Auth: SIGNED_OUT event detected. Current state:', {
+          hasUser: !!this.currentUser(),
+          hasLocalRole: !!this.storage.getItem('nutrilev_role')
+        });
+
         if (this.currentUser()) {
-          console.warn('Auth: Session signed out, clearing local state');
+          console.warn('Auth: Session was active but event is SIGNED_OUT. Clearing local state.');
           this.clearLocalSession();
         }
         return;
       }
 
       if (event === 'TOKEN_REFRESHED') {
-        console.log('Auth: Token refreshed successfully');
+        console.log('Auth: Token refreshed successfully at', new Date().toLocaleTimeString());
       }
 
       if (session?.user) {
         if (this.currentUser()?.id !== session.user.id || !this.userRole()) {
-          console.log('Auth: User state updated from event', session.user.email);
+          console.log('Auth: User session valid. Email:', session.user.email);
           this.currentUser.set(session.user);
           const role = await this.determineRole(session.user.email!);
           this.userRole.set(role);
-          if (role) this.storage.setItem('nutrilev_role', role);
+          if (role) {
+            console.log('Auth: Role confirmed:', role);
+            this.storage.setItem('nutrilev_role', role);
+          }
           this.roleReady.set(true);
         }
       }
@@ -158,24 +167,40 @@ export class AuthService {
         
         // We use HttpClient here to benefit from the httpResilienceInterceptor (retries)
         const obs = this.http.post<{role: string}>(apiUrl, { email: cleanEmail }).pipe(
-          timeout(40000), // Wait up to 40s for cold starts (interceptor will retry within this)
+          timeout(50000), // Increased to 50s for extreme cold starts
           catchError((err) => {
              console.error('Auth: Error fetching role from server', err);
              const cached = this.storage.getItem<'admin' | 'patient' | 'pending' | 'denied' | null>('nutrilev_role');
-             return of({ role: (cached as any) || 'none' });
+             
+             if (cached) {
+               console.log('Auth: Server failed, falling back to cached role:', cached);
+               return of({ role: cached });
+             }
+             
+             // If everything fails and no cache, we still return 'none' to avoid breaking types
+             return of({ role: 'none' });
           })
         );
 
         const response = await firstValueFrom(obs);
         const role = response?.role;
+        
+        // Cache the result if we got a valid role
+        if (role && role !== 'none') {
+          this.storage.setItem('nutrilev_role', role);
+        }
+
         return role === 'none' ? null : (role as any);
+      } catch (finalErr) {
+        console.error('Auth: Final role determination failure', finalErr);
+        return null;
       } finally {
         setTimeout(() => {
           if (this.lastCheckedEmail === cleanEmail) {
             this.roleCheckPromise = null;
             this.lastCheckedEmail = null;
           }
-        }, 2000);
+        }, 5000); // 5s debouncing
       }
     })();
 

@@ -98,6 +98,8 @@ export class PortalPage implements OnInit {
     return (weight / (height * height)).toFixed(1);
   });
 
+  latestProgress = computed(() => this.progress().length > 0 ? this.progress()[0] : null);
+
   currentGoal = computed(() => this.patient()?.meta_objetivo || null);
 
   goalPercentage = computed(() => {

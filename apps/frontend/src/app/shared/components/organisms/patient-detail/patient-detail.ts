@@ -29,7 +29,19 @@ export class PatientDetailComponent implements OnInit {
   
   // Progress signals
   progressHistory = signal<any[]>([]);
-  newProgress = signal<any>({ weight: null, body_fat: null, muscle_mass: null, notes: '' });
+  newProgress = signal<any>({ 
+    weight: null, body_fat: null, muscle_mass: null, 
+    agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
+    musculo_esqueletico: null, masa_magra: null, imc: null, pgc: null,
+    brazo_der_grasa: null, brazo_der_musculo: null, brazo_der_cm: null,
+    brazo_izq_grasa: null, brazo_izq_musculo: null, brazo_izq_cm: null,
+    tronco_grasa: null, tronco_musculo: null,
+    pierna_der_grasa: null, pierna_der_musculo: null, pierna_der_cm: null,
+    pierna_izq_grasa: null, pierna_izq_musculo: null, pierna_izq_cm: null,
+    icc: null, gv: null, abdomen: null, cintura: null, cadera: null,
+    edad_metabolica: null, presion_arterial: '', pulso: null, pliegue_cutaneo: null,
+    notes: '' 
+  });
   addingProgress = signal<boolean>(false);
   isUploadingMenu = signal<boolean>(false);
   lastGeneratedUrl = signal<string | null>(null);
@@ -132,7 +144,19 @@ export class PatientDetailComponent implements OnInit {
         ...progressData
       });
       // Reset form and reload
-      this.newProgress.set({ weight: null, body_fat: null, muscle_mass: null, notes: '' });
+      this.newProgress.set({ 
+        weight: null, body_fat: null, muscle_mass: null,
+        agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
+        musculo_esqueletico: null, masa_magra: null, imc: null, pgc: null,
+        brazo_der_grasa: null, brazo_der_musculo: null, brazo_der_cm: null,
+        brazo_izq_grasa: null, brazo_izq_musculo: null, brazo_izq_cm: null,
+        tronco_grasa: null, tronco_musculo: null,
+        pierna_der_grasa: null, pierna_der_musculo: null, pierna_der_cm: null,
+        pierna_izq_grasa: null, pierna_izq_musculo: null, pierna_izq_cm: null,
+        icc: null, gv: null, abdomen: null, cintura: null, cadera: null,
+        edad_metabolica: null, presion_arterial: '', pulso: null, pliegue_cutaneo: null,
+        notes: '' 
+      });
       await this.loadProgress();
       this.showSuccess.set(true);
       setTimeout(() => this.showSuccess.set(false), 3000);

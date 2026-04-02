@@ -202,6 +202,199 @@
                     </div>
                 </div>
 
+                <!-- Composición Física Analítica -->
+                @if (latestProgress()) {
+                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors overflow-hidden" style="animation-delay: 150ms">
+                        <div class="flex items-center justify-between mb-8">
+                            <div>
+                                <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">Composición Física Analítica</h3>
+                                <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest mt-1">Detalle biomecánico de tu última medición</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[8px] font-black uppercase text-nutri-rose/60 dark:text-nutri-rose-soft/40 block">Fecha Medición</span>
+                                <span class="text-xs font-bold text-nutri-text dark:text-slate-300">{{ latestProgress()?.date | date:'dd / MM / yyyy' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative">
+                            <!-- Tabla Izquierda: Métricas Generales -->
+                            <div class="space-y-0.5 bg-nutri-bg/20 dark:bg-white/5 rounded-2xl overflow-hidden border border-nutri-rose/5 dark:border-white/5">
+                                <div class="grid grid-cols-2 p-3 border-b border-nutri-rose/5 dark:border-white/5 bg-nutri-rose/5 dark:bg-white/5">
+                                    <span class="text-[9px] font-black uppercase text-nutri-rose/60 dark:text-nutri-rose-soft/40">Métrica</span>
+                                    <span class="text-[9px] font-black uppercase text-nutri-rose/60 dark:text-nutri-rose-soft/40 text-right">Resultado</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">PESO (KG)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.weight }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5 bg-white/50 dark:bg-white/[0.02]">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">MASA GRASA (KG)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.masa_grasa || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">MINERALES (KG)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.minerales || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5 bg-white/50 dark:bg-white/[0.02]">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">PROTEÍNAS (KG)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.proteinas || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">AGUA (L)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.agua_corporal || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5 bg-white/50 dark:bg-white/[0.02]">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">MUSCULO ESQUELETICO (KG)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.musculo_esqueletico || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">MASA MAGRA (KG)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.masa_magra || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5 bg-white/50 dark:bg-white/[0.02]">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">PGC (% GRASA)</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.pgc || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">GRASA VISCERAL</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.gv || '--' }}</span>
+                                </div>
+                                <div class="grid grid-cols-2 px-4 py-2.5 bg-white/50 dark:bg-white/[0.02]">
+                                    <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">EDAD METABÓLICA</span>
+                                    <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ latestProgress()?.edad_metabolica || '--' }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Centro: Diagrama de Cuerpo -->
+                            <div class="relative py-10 lg:py-0 flex justify-center items-center h-[400px] lg:h-full">
+                                <!-- Background Silhouette (SVG) -->
+                                <svg viewBox="0 0 100 200" class="h-full w-auto opacity-10 dark:opacity-5 text-nutri-rose fill-current pointer-events-none">
+                                    <path d="M50 0 C55 0 60 5 60 12 C60 19 55 24 50 24 C45 24 40 19 40 12 C40 5 45 0 50 0 Z M38 28 C25 28 20 35 20 50 C20 70 25 80 25 110 L28 110 L28 190 C28 195 35 200 42 200 L45 200 L45 120 L55 120 L55 200 L58 200 C65 200 72 195 72 190 L72 110 L75 110 C75 80 80 70 80 50 C80 35 75 28 62 28 L38 28 Z"></path>
+                                </svg>
+
+                                <!-- Etiquetas Flotantes: Brazos -->
+                                <div class="absolute top-[10%] left-[5%] flex flex-col items-center bg-white dark:bg-white/5 p-2 rounded-xl shadow-sm border border-nutri-rose/10 pointer-events-none">
+                                    <span class="text-[7px] font-black uppercase text-nutri-rose/60">Brazo Izquierdo</span>
+                                    <span class="text-[10px] font-black dark:text-slate-200">{{ latestProgress()?.brazo_izq_cm || '--' }}<span class="text-[7px] font-bold text-slate-400 ml-0.5">cm</span></span>
+                                    <div class="flex gap-2 mt-1">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">G</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.brazo_izq_grasa || '--' }}</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">M</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.brazo_izq_musculo || '--' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="absolute top-[10%] right-[5%] flex flex-col items-center bg-white dark:bg-white/5 p-2 rounded-xl shadow-sm border border-nutri-rose/10 pointer-events-none">
+                                    <span class="text-[7px] font-black uppercase text-nutri-rose/60">Brazo Derecho</span>
+                                    <span class="text-[10px] font-black dark:text-slate-200">{{ latestProgress()?.brazo_der_cm || '--' }}<span class="text-[7px] font-bold text-slate-400 ml-0.5">cm</span></span>
+                                    <div class="flex gap-2 mt-1">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">G</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.brazo_der_grasa || '--' }}</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">M</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.brazo_der_musculo || '--' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Etiquetas Flotantes: Tronco -->
+                                <div class="absolute top-[40%] flex flex-col items-center gap-2 pointer-events-none">
+                                    <div class="flex flex-col items-center bg-white/80 dark:bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full border border-nutri-rose/5">
+                                        <span class="text-[7px] font-bold uppercase opacity-40">Cintura</span>
+                                        <span class="text-[10px] font-black">{{ latestProgress()?.cintura || '--' }} cm</span>
+                                    </div>
+                                    <div class="flex flex-col items-center bg-white/80 dark:bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full border border-nutri-rose/5">
+                                        <span class="text-[7px] font-bold uppercase opacity-40">Abdomen</span>
+                                        <span class="text-[10px] font-black">{{ latestProgress()?.abdomen || '--' }} cm</span>
+                                    </div>
+                                    <div class="flex flex-col items-center bg-white/80 dark:bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full border border-nutri-rose/5">
+                                        <span class="text-[7px] font-bold uppercase opacity-40">Cadera</span>
+                                        <span class="text-[10px] font-black">{{ latestProgress()?.cadera || '--' }} cm</span>
+                                    </div>
+                                </div>
+
+                                <!-- Etiquetas Flotantes: Piernas -->
+                                <div class="absolute bottom-[10%] left-[5%] flex flex-col items-center bg-white dark:bg-white/5 p-2 rounded-xl shadow-sm border border-nutri-rose/10 pointer-events-none">
+                                    <span class="text-[7px] font-black uppercase text-nutri-rose/60">Pierna Izquierda</span>
+                                    <span class="text-[10px] font-black dark:text-slate-200">{{ latestProgress()?.pierna_izq_cm || '--' }}<span class="text-[7px] font-bold text-slate-400 ml-0.5">cm</span></span>
+                                    <div class="flex gap-2 mt-1">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">G</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.pierna_izq_grasa || '--' }}</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">M</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.pierna_izq_musculo || '--' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="absolute bottom-[10%] right-[5%] flex flex-col items-center bg-white dark:bg-white/5 p-2 rounded-xl shadow-sm border border-nutri-rose/10 pointer-events-none">
+                                    <span class="text-[7px] font-black uppercase text-nutri-rose/60">Pierna Derecha</span>
+                                    <span class="text-[10px] font-black dark:text-slate-200">{{ latestProgress()?.pierna_der_cm || '--' }}<span class="text-[7px] font-bold text-slate-400 ml-0.5">cm</span></span>
+                                    <div class="flex gap-2 mt-1">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">G</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.pierna_der_grasa || '--' }}</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-[6px] uppercase opacity-40">M</span>
+                                            <span class="text-[8px] font-bold">{{ latestProgress()?.pierna_der_musculo || '--' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabla Derecha: Información y Otros Índices -->
+                            <div class="space-y-6">
+                                <div class="bg-nutri-rose/5 dark:bg-white/5 p-5 rounded-3xl border border-nutri-rose/10 dark:border-white/5">
+                                    <span class="text-[8px] font-black uppercase tracking-widest text-nutri-rose/60 block mb-3">Tu Nutriólogo</span>
+                                    <h4 class="text-sm font-bold serif flex items-center gap-2">
+                                        <app-a-icon name="medical_services" size="18px" class="text-nutri-rose"></app-a-icon>
+                                        L.N. Velvet De la Cruz
+                                    </h4>
+                                    <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest mt-1">Ced. Prof 10622381</p>
+                                </div>
+
+                                <div class="bg-white/50 dark:bg-white/[0.02] rounded-3xl border border-nutri-rose/5 dark:border-white/5 overflow-hidden">
+                                    <div class="p-3 border-b border-nutri-rose/5 bg-white/80 dark:bg-white/5">
+                                        <span class="text-[9px] font-black uppercase text-nutri-rose/60">Índices Complementarios</span>
+                                    </div>
+                                    <div class="divide-y divide-nutri-rose/5 dark:divide-white/5">
+                                        <div class="flex items-center justify-between px-5 py-3">
+                                            <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">ICC</span>
+                                            <span class="text-xs font-black text-nutri-text dark:text-slate-200">{{ latestProgress()?.icc || '--' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between px-5 py-3">
+                                            <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">PLIEGUE CUTÁNEO</span>
+                                            <span class="text-xs font-black text-nutri-text dark:text-slate-200">{{ latestProgress()?.pliegue_cutaneo || '--' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between px-5 py-3">
+                                            <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">PRESIÓN ARTERIAL</span>
+                                            <span class="text-xs font-black text-nutri-text dark:text-slate-200">{{ latestProgress()?.presion_arterial || '--' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between px-5 py-3">
+                                            <span class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400">PULSO</span>
+                                            <span class="text-xs font-black text-nutri-text dark:text-slate-200">{{ latestProgress()?.pulso || '--' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center p-6 border-2 border-dashed border-nutri-rose/10 rounded-3xl flex flex-col items-center gap-2">
+                                    <div class="flex text-lg gap-1">🍉🍉🍉🍉</div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-nutri-rose">¡Excelente trabajo!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <!-- Gráfica de Tendencia -->
                 @if (progress().length >= 2) {
                     <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">

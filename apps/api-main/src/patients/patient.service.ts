@@ -85,14 +85,15 @@ export class PatientService {
   async addProgress(
     progressData: PatientProgressInsert,
   ): Promise<PatientProgress> {
-    const { weight, body_fat, muscle_mass, ...rest } = progressData;
+    const formattedData = { ...progressData } as Record<string, unknown>;
 
-    const formattedData = {
-      ...rest,
-      weight: weight.toString(),
-      body_fat: body_fat?.toString() || null,
-      muscle_mass: muscle_mass?.toString() || null,
-    };
+    // Convert all numeric values to strings for Supabase storage consistency
+    Object.keys(formattedData).forEach((key) => {
+      const value = formattedData[key];
+      if (typeof value === 'number') {
+        formattedData[key] = value.toString();
+      }
+    });
 
     const { data, error } = await this.supabaseService
       .getClient()
