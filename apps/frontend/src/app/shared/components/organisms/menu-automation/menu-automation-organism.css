@@ -41,3 +41,111 @@ select {
     background-position: right 1rem center;
     background-size: 1em;
 }
+
+.automation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.ai-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 105, 180, 0.05);
+    border-radius: 1rem;
+    width: fit-content;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: var(--nutri-rose, #ff69b4); }
+input:checked + .slider:before { transform: translateX(18px); }
+
+.ai-options-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 105, 180, 0.1);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.form-group { margin-bottom: 1.5rem; }
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--nutri-rose);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.patient-select, textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    font-family: inherit;
+}
+
+.result-card .menu-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+    max-height: 500px;
+    overflow-y: auto;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+}
+
+pre { white-space: pre-wrap; word-wrap: break-word; }
+
+.copy-btn {
+    background: var(--nutri-rose);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

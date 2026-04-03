@@ -5,65 +5,187 @@
         (logout)="authService.logout()">
     </app-o-dashboard-header>
 
-    <!-- Main Content Area / Scrollable Wrapper -->
-    <div class="flex-1 flex flex-col min-h-0 relative z-20 max-w-7xl mx-auto w-full px-6 md:px-12 pt-48 md:pt-32 pb-16 overflow-y-auto">
-        
-        <div class="space-y-4 mb-8">
-            <div class="flex items-center gap-4 mb-2">
-                <span class="text-nutri-rose font-bold tracking-[0.3em] uppercase text-[10px] block">Módulo Especial</span>
-                <span class="w-1 h-1 rounded-full bg-nutri-rose/20"></span>
-                <a routerLink="/dashboard" class="text-[10px] font-bold text-nutri-text/60 dark:text-slate-400 hover:text-nutri-rose dark:hover:text-nutri-rose transition-colors uppercase tracking-widest flex items-center gap-2">
-                    <app-a-icon name="arrow_back" customClass="!text-[10px]"></app-a-icon>
-                    Regresar al Panel
+    <!-- Module Sticky Header -->
+    <div class="fixed top-24 left-0 right-0 z-[40] bg-white/40 dark:bg-black/40 backdrop-blur-md border-b border-nutri-rose/5 animate-fade-in">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a routerLink="/dashboard" class="group flex items-center gap-2 px-4 py-2 rounded-xl bg-white/50 dark:bg-white/5 border border-nutri-rose/10 hover:bg-nutri-rose hover:text-white transition-all duration-300">
+                    <app-a-icon name="arrow_back" customClass="!text-sm group-hover:-translate-x-1 transition-transform"></app-a-icon>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Panel</span>
                 </a>
+                <div class="h-6 w-px bg-nutri-rose/10"></div>
+                <h1 class="text-xl font-bold text-nutri-text dark:text-slate-200 serif flex items-center gap-3">
+                    <app-a-icon name="auto_awesome" customClass="text-nutri-rose !text-lg"></app-a-icon>
+                    Automatizador de Menús
+                </h1>
             </div>
-            <h1 class="text-4xl font-bold text-nutri-text dark:text-slate-200 serif">Automatizador de Menús</h1>
-            <p class="text-nutri-text/60 dark:text-slate-500 font-medium max-w-lg">Transforma tus menús de Word con imágenes generadas por IA y listas de compras de Gemini 2.0 Instant.</p>
+            <div class="hidden md:flex items-center gap-3">
+                <span class="text-[10px] font-bold text-nutri-text/30 uppercase tracking-[0.2em]">Inteligencia Artificial Nutrilev</span>
+                <div class="w-1.5 h-1.5 rounded-full bg-nutri-rose animate-pulse"></div>
+            </div>
         </div>
+    </div>
+
+    <!-- Main Content Area / Scrollable Wrapper -->
+    <div class="flex-1 flex flex-col min-h-0 relative z-20 max-w-7xl mx-auto w-full px-6 md:px-12 pt-44 pb-16 overflow-y-auto">
+        
+        <!-- Header logic moved to sticky subheader -->
 
         <!-- Glassmorphism Main Card -->
         <div class="bg-white/70 dark:bg-[#111111]/70 backdrop-blur-md rounded-[2.5rem] shadow-nutri dark:shadow-2xl border border-nutri-rose/10 dark:border-white/5 p-8 md:p-12 space-y-10 animate-fade-up">
             
+            <!-- Generation Status / Result -->
+            <div *ngIf="success()" class="mt-8 p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-4 animate-in fade-in zoom-in duration-500">
+                <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <app-a-icon name="check_circle" customClass="!text-2xl text-emerald-500"></app-a-icon>
+                </div>
+                <h3 class="text-xl font-bold text-emerald-500">¡Menú Generado con Éxito!</h3>
+                <p class="text-sm text-nutri-text/60 max-w-xs mx-auto">
+                    El archivo .docx se ha descargado automáticamente. Puedes abrirlo para revisar y realizar ajustes finales.
+                </p>
+                <div class="pt-4">
+                    <button (click)="success.set(false)" class="text-xs font-bold text-nutri-text/40 hover:text-nutri-rose transition-colors uppercase tracking-widest">
+                        Generar otro menú
+                    </button>
+                </div>
+            </div>
 
-
-            <!-- Upload Area -->
-            <div class="space-y-6">
-                <div class="flex items-center gap-3 mb-2">
+            <div class="space-y-8 animate-fade-up">
+            <!-- Patient Search & Selection -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
-                        <app-a-icon name="description" customClass="!text-sm"></app-a-icon>
+                        <app-a-icon name="person_search" customClass="!text-sm"></app-a-icon>
                     </div>
-                    <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Documento del Menú</label>
+                    <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Buscar Paciente</label>
+                </div>
+                
+                <div class="relative group">
+                    <input type="text" 
+                           [ngModel]="searchQuery()" 
+                           (ngModelChange)="searchQuery.set($event)"
+                           placeholder="Escribe nombre o correo..."
+                           class="w-full bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 rounded-3xl px-8 py-6 text-lg font-medium text-nutri-text dark:text-white focus:ring-4 focus:ring-nutri-rose/10 outline-none transition-all placeholder:text-nutri-text/30">
+                    
+                    <!-- Search Results Dropdown -->
+                    <div class="absolute z-50 left-0 right-0 mt-2 bg-white dark:bg-[#1a1a1a] rounded-[2rem] shadow-2xl border border-nutri-rose/10 overflow-hidden animate-fade-in"
+                         *ngIf="searchQuery().length > 1 && !selectedPatientEmail()">
+                        <div *ngFor="let p of filteredPatients()" 
+                             (click)="onPatientSelected(p.email); searchQuery.set(p.nombre)"
+                             class="px-8 py-4 hover:bg-nutri-rose/5 cursor-pointer flex items-center justify-between group">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-nutri-text dark:text-slate-200">{{ p.nombre }}</span>
+                                <span class="text-xs text-nutri-text/40 lowercase">{{ p.email }}</span>
+                            </div>
+                            <app-a-icon name="chevron_right" customClass="text-nutri-rose opacity-0 group-hover:opacity-100 transition-all"></app-a-icon>
+                        </div>
+                        <div *ngIf="filteredPatients().length === 0" class="px-8 py-6 text-center text-nutri-text/40 text-sm">
+                            No se encontraron pacientes
+                        </div>
+                    </div>
+
+                    <!-- Reset Selection -->
+                    <button *ngIf="selectedPatientEmail()" 
+                            (click)="selectedPatientEmail.set(''); searchQuery.set(''); latestProgress.set(null)"
+                            class="absolute right-6 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors">
+                        <app-a-icon name="close" customClass="!text-sm"></app-a-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Patient Info Display (Active when selected) -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 py-8 border-y border-nutri-rose/5" *ngIf="selectedPatientEmail() && latestProgress()">
+                <div class="space-y-1 text-center md:text-left">
+                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Último Peso</p>
+                    <p class="text-2xl font-bold text-nutri-text dark:text-slate-200 serif">{{ latestProgress()?.weight }} <span class="text-xs font-sans opacity-40">kg</span></p>
+                </div>
+                <div class="space-y-1 text-center">
+                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">% Grasa</p>
+                    <p class="text-2xl font-bold text-nutri-rose serif">{{ latestProgress()?.body_fat }} <span class="text-xs font-sans opacity-40">%</span></p>
+                </div>
+                <div class="space-y-1 text-center">
+                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Músculo</p>
+                    <p class="text-2xl font-bold text-blue-500 serif">{{ latestProgress()?.muscle_mass }} <span class="text-xs font-sans opacity-40">kg</span></p>
+                </div>
+                <div class="space-y-1 text-center">
+                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">IMC</p>
+                    <p class="text-2xl font-bold text-orange-500 serif">{{ latestProgress()?.imc }}</p>
+                </div>
+                <div class="space-y-1 text-center md:text-right">
+                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">G. Visceral</p>
+                    <p class="text-2xl font-bold text-emerald-500 serif">{{ latestProgress()?.gv }}</p>
+                </div>
+            </div>
+
+            <!-- AI Configuration Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10" *ngIf="selectedPatientEmail()">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <app-a-icon name="bolt" customClass="text-nutri-rose !text-sm"></app-a-icon>
+                        <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Calorías Objetivo</label>
+                    </div>
+                    <div class="relative">
+                        <input type="number" 
+                               [(ngModel)]="totalCalories"
+                               class="w-full bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-bold text-nutri-text dark:text-white focus:ring-2 focus:ring-nutri-rose/20 outline-none transition-all">
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 font-bold text-nutri-text/20 lowercase">kcal</span>
+                    </div>
+                    <p class="text-[10px] text-nutri-text/40 font-medium italic">La IA ajustará las porciones para cumplir este total.</p>
                 </div>
 
-                <div class="relative group">
-                    <input type="file" (change)="onFileSelected($event)" accept=".docx"
-                           class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    
-                    <div class="border-2 border-dashed border-nutri-rose/10 dark:border-white/10 rounded-[2.5rem] p-12 text-center transition-all bg-nutri-bg dark:bg-white/[0.02] group-hover:bg-white dark:group-hover:bg-white/5 group-hover:border-nutri-rose/30 group-hover:ring-8 group-hover:ring-nutri-rose/5">
-                        <div class="w-20 h-20 bg-white dark:bg-[#111111] rounded-3xl flex items-center justify-center text-nutri-rose mx-auto mb-6 shadow-sm border border-nutri-rose/5 dark:border-white/5 group-hover:scale-110 transition-transform duration-500">
-                            <app-a-icon name="cloud_upload" customClass="!text-3xl"></app-a-icon>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            @if (!selectedFile()) {
-                                <p class="text-xl font-bold text-nutri-text dark:text-slate-200 serif">Arrastra tu archivo de Word</p>
-                            }
-                            @if (selectedFile()) {
-                                <p class="text-xl font-bold text-nutri-rose serif">{{ selectedFile()?.name }}</p>
-                            }
-                            <p class="text-sm text-nutri-text/60 dark:text-slate-500 font-medium">Formato soportado: .docx</p>
-                        </div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <app-a-icon name="auto_awesome" customClass="text-nutri-rose !text-sm"></app-a-icon>
+                        <label class="text-[10px] font-bold text-nutri-rose uppercase tracking-widest">Notas Personalizadas</label>
                     </div>
+                    <textarea [(ngModel)]="extraNotes" 
+                              placeholder="Ej: Menú alto en proteína, sin lácteos, incluir chilaquiles..."
+                              class="w-full bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 rounded-2xl px-6 py-4 text-sm font-medium text-nutri-text dark:text-white focus:ring-2 focus:ring-nutri-rose/20 outline-none transition-all resize-none"
+                              rows="3"></textarea>
                 </div>
             </div>
 
             <!-- Action Button -->
-            <div class="pt-4">
-                <app-a-button (onClick)="processMenu()" [disabled]="!selectedFile() || processing()" [loading]="processing()"
-                            variant="primary" size="lg" icon="auto_awesome" label="GENERAR IMÁGENES Y LISTA"
-                            customClass="!w-full !py-8 !rounded-3xl !text-sm !tracking-[0.2em] !shadow-lg !shadow-nutri-rose/30">
+            <div class="pt-6">
+                <app-a-button 
+                    (onClick)="processMenu()" 
+                    [disabled]="!selectedPatientEmail() || processing()" 
+                    [loading]="processing()"
+                    variant="primary" 
+                    size="lg" 
+                    icon="magic_button" 
+                    label="GENERAR MENÚ INTELIGENTE"
+                    customClass="!w-full !py-10 !rounded-[2.5rem] !text-sm !tracking-[0.3em] !shadow-2xl !shadow-nutri-rose/20">
                 </app-a-button>
             </div>
+        </div>
+
+        <!-- AI Result Section -->
+        <div class="mt-12 p-8 bg-white dark:bg-white/5 rounded-[3rem] border-2 border-nutri-rose/10 dark:border-white/10 space-y-8 animate-fade-up shadow-nutri" 
+             *ngIf="generatedMenu()">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
+                        <app-a-icon name="description" customClass="!text-xl"></app-a-icon>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h3 class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">Menú Sugerido</h3>
+                        <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Generado con Gemini 1.5 Flash</p>
+                    </div>
+                </div>
+                <app-a-button 
+                    (onClick)="copyToClipboard()"
+                    variant="secondary" 
+                    size="sm" 
+                    icon="content_copy" 
+                    label="COPIAR TEXTO"
+                    customClass="!rounded-2xl !px-8">
+                </app-a-button>
+            </div>
+            <div class="p-8 bg-nutri-bg dark:bg-black/20 rounded-[2rem] max-h-[30rem] overflow-y-auto border border-nutri-rose/5">
+                <pre class="text-sm text-nutri-text/80 dark:text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">{{ generatedMenu() }}</pre>
+            </div>
+        </div>
 
             <!-- Feedback States -->
             @if (error()) {
@@ -73,12 +195,12 @@
                 </div>
             }
 
-            @if (success()) {
+            @if (success() && !generatedMenu()) {
                 <div class="p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4 animate-fade-in text-emerald-900 dark:text-emerald-300">
                     <app-a-icon name="check_circle" customClass="text-emerald-500"></app-a-icon>
                     <div class="space-y-0.5">
-                        <p class="text-sm font-bold">¡Menú Procesado con Éxito!</p>
-                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest dark:opacity-50">El archivo ha sido descargado automáticamente.</p>
+                        <p class="text-sm font-bold">¡Menú Generado con Éxito!</p>
+                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest dark:opacity-50">Revisa el resultado debajo.</p>
                     </div>
                 </div>
             }
