@@ -11,11 +11,12 @@ import { StorageService } from '../../shared/services/storage.service';
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
 import { environment } from '../../../environments/environment';
+import { ProgressAnalyticCardComponent } from '../../shared/components/organisms/progress-analytic-card/progress-analytic-card';
 
 @Component({
   selector: 'app-portal-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage, DatePipe],
+  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage, DatePipe, ProgressAnalyticCardComponent],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css'
 })

@@ -12,11 +12,13 @@ import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
 import { NutriImagePipe } from '../../../pipes/nutri-image.pipe';
 import { environment } from '../../../../../environments/environment';
+import { toBlob } from 'html-to-image';
+import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, NutriImagePipe],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, NutriImagePipe, ProgressAnalyticCardComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -26,6 +28,7 @@ export class PatientDetailComponent implements OnInit {
   saving = signal<boolean>(false);
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
+  copyingRecordId = signal<string | null>(null);
   
   // Progress signals
   progressHistory = signal<any[]>([]);
@@ -310,6 +313,49 @@ export class PatientDetailComponent implements OnInit {
         this.copied.set(true);
         setTimeout(() => this.copied.set(false), 2000);
       });
+    }
+  }
+
+  async copyProgressAsImage(entry: any, elementContainer: HTMLElement) {
+    if (!elementContainer) return;
+    
+    const originalDisplay = elementContainer.style.display;
+    elementContainer.style.display = 'block'; // Hacerlo visible temporalmente para html-to-image
+    this.copyingRecordId.set(entry.id || entry.date);
+
+    try {
+      // Find the inner container
+      const targetElement = elementContainer.querySelector('.progress-analytic-card-container') as HTMLElement;
+      if (!targetElement) throw new Error('Target element not found');
+
+      // Add a slight delay to ensure the DOM is fully rendered (especially SVG and web fonts)
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const blob = await toBlob(targetElement, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff', // Asegurar fondo blanco sólido para contraste
+        style: {
+          transform: 'none',
+          borderRadius: '0',
+          boxShadow: 'none'
+        }
+      });
+      
+      if (!blob) throw new Error('Failed to generate image blob');
+      
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'image/png': blob
+        })
+      ]);
+      
+      console.log('Image copied to clipboard successfully!');
+    } catch (err) {
+      console.error('Error copying image:', err);
+    } finally {
+      elementContainer.style.display = originalDisplay;
+      this.copyingRecordId.set(null);
     }
   }
 }
