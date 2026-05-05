@@ -29,6 +29,9 @@ export class PatientDetailComponent implements OnInit {
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
   copyingRecordId = signal<string | null>(null);
+  viewMode = signal<'cards' | 'table'>('cards');
+  selectedRecordForDetail = signal<any | null>(null);
+
   
   // Progress signals
   progressHistory = signal<any[]>([]);
@@ -111,6 +114,20 @@ export class PatientDetailComponent implements OnInit {
     }
 
     return Math.max(0, Math.min(100, Math.round(progress)));
+  });
+
+  totalProgressSummary = computed(() => {
+    const history = this.progressHistory();
+    if (history.length < 2) return null;
+
+    const current = history[0];
+    const initial = history[history.length - 1];
+
+    return {
+      weight: (Number(current.weight) || 0) - (Number(initial.weight) || 0),
+      fat: (Number(current.body_fat) || 0) - (Number(initial.body_fat) || 0),
+      muscle: (Number(current.muscle_mass) || 0) - (Number(initial.muscle_mass) || 0)
+    };
   });
 
   milestones = computed(() => {
@@ -358,4 +375,47 @@ export class PatientDetailComponent implements OnInit {
       this.copyingRecordId.set(null);
     }
   }
+
+  calculateDelta(current: any, previous: any, field: string): number | null {
+    if (current === null || current === undefined || previous === null || previous === undefined) return null;
+    
+    const currVal = Number(current[field]);
+    const prevVal = Number(previous[field]);
+
+    if (isNaN(currVal) || isNaN(prevVal)) return null;
+    
+    return currVal - prevVal;
+  }
+
+  getDeltaColor(delta: number, field: string): string {
+    if (delta === 0) return 'text-slate-400';
+    
+    // Logic for "good" or "bad" changes
+    const positiveIsGoodFields = [
+      'muscle_mass', 'musculo_esqueletico', 'masa_magra', 'proteinas',
+      'brazo_der_musculo', 'brazo_izq_musculo', 'tronco_musculo', 'pierna_der_musculo', 'pierna_izq_musculo'
+    ];
+    const negativeIsGoodFields = [
+      'weight', 'body_fat', 'pgc', 'gv', 'masa_grasa', 'imc', 'cintura', 'abdomen', 'cadera',
+      'brazo_der_grasa', 'brazo_izq_grasa', 'tronco_grasa', 'pierna_der_grasa', 'pierna_izq_grasa',
+      'icc', 'edad_metabolica', 'pliegue_cutaneo'
+    ];
+
+    if (positiveIsGoodFields.includes(field)) {
+      return delta > 0 ? 'text-green-500' : 'text-rose-500';
+    }
+    
+    if (negativeIsGoodFields.includes(field)) {
+      return delta < 0 ? 'text-green-500' : 'text-rose-500';
+    }
+
+    return 'text-nutri-rose';
+  }
+
+  getPreviousRecord(record: any): any | null {
+    const history = this.progressHistory();
+    const index = history.findIndex(r => r.id === record.id || (r.date === record.date && r.weight === record.weight));
+    return index !== -1 && index < history.length - 1 ? history[index + 1] : null;
+  }
+
 }

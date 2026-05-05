@@ -3,6 +3,32 @@
     @apply transition-all duration-300;
 }
 
-// Removing the @apply that caused build errors.
-// These styles will be applied via inline classes in the HTML for better stability.
-// The .field-card:hover { @apply ... } is moved to inline classes or global if needed.
+@keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.animate-slide-in-right {
+    animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+}
+
+.scroll-premium {
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        @apply bg-nutri-rose/10 rounded-full hover:bg-nutri-rose/20 transition-colors;
+    }
+}
