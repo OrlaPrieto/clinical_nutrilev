@@ -1,12 +1,14 @@
 import io
+import json
 import traceback
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, request, send_file, jsonify
 from docx import Document
 from config import GEMINI_API_KEY, INTERNAL_API_KEY
 
 from services.extraction_service import detect_format, extract_menu_data
-from services.ai_service import generate_image_gemini, generate_shopping_list
+from services.ai_service import generate_full_menu_docx, get_base_menu_text
 from services.document_service import (
     find_image_slots_equivalencias,
     insert_image_in_cell_equivalencias,
@@ -28,6 +30,45 @@ def check_internal_key():
     if INTERNAL_API_KEY and key != INTERNAL_API_KEY:
         return jsonify({"error": "Unauthorized inter-service request"}), 401
 
+@menu_bp.route('/generate-ai-menu', methods=['POST', 'OPTIONS'])
+def generate_ai_menu():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        import importlib
+        import services.ai_service
+        importlib.reload(services.ai_service)
+        from services.ai_service import generate_full_menu_docx, get_base_menu_text
+        print("[v3.6 - ROUTES RELOAD] Engine v2.0 loaded.")
+        
+        patient_context = json.loads(request.form.get('patient_context', '{}'))
+        calories = int(request.form.get('calories', 2000))
+        extra_notes = request.form.get('extra_notes', '')
+        
+        # Obtenemos el texto base para referencia estructural
+        base_text = get_base_menu_text()
+
+        docx_bytes = generate_full_menu_docx(
+            historial_paciente=patient_context,
+            calorias_objetivo=calories,
+            notas_personalizadas=extra_notes,
+            menu_base_texto=base_text,
+            gemini_key=GEMINI_API_KEY
+        )
+
+        return send_file(
+            io.BytesIO(docx_bytes),
+            as_attachment=True,
+            download_name=f"Menu_Nutrilev_{datetime.now().strftime('%Y%m%d')}.docx",
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+
+    except Exception as e:
+        print(f"Error in generate-ai-menu: {e}")
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
 @menu_bp.route('/process-menu', methods=['POST', 'OPTIONS'])
 def process_menu():
     if request.method == 'OPTIONS':
@@ -43,58 +84,11 @@ def process_menu():
         fmt = detect_format(doc)
         print(f"[Format Detected] {fmt}")
 
-        # 1. IMAGES
-        try:
-            if fmt == "equivalencias":
-                slots = find_image_slots_equivalencias(doc)
-                empty = [(ti, name, sec) for ti, name, has, sec in slots if not has]
-                print(f"[Images] {len(slots)} slots, {len(empty)} without image")
-                
-                def process_slot(ti, meal_name, sec):
-                    print(f"  [{sec}] Generating: {meal_name}")
-                    img_bytes = generate_image_gemini(meal_name, gemini_key)
-                    return ti, meal_name, img_bytes
+        # 1. IMAGES (Disabled in v2.0 for stability)
+        print("[v2.7] Image generation skipped (Disabled in favor of Clinical Menu accuracy)")
 
-                with ThreadPoolExecutor(max_workers=5) as executor:
-                    results = list(executor.map(lambda p: process_slot(*p), empty))
-                
-                for ti, meal_name, img_bytes in results:
-                    if img_bytes:
-                        insert_image_in_cell_equivalencias(doc, ti, img_bytes)
-                        print(f"  ✓ {meal_name}")
-                    else:
-                        print(f"  ✗ {meal_name} — no image generated")
-            else:
-                if fmt == "semanal":
-                    slots = find_image_slots_semanal(doc)
-                else:
-                    slots = find_image_slots_menu123(doc)
-                
-                empty = [(ti, ri, ci, name, sec) for ti, ri, ci, name, has, sec in slots if not has]
-                print(f"[Images] {len(slots)} slots, {len(empty)} without image")
-                
-                def process_slot_full(ti, ri, ci, meal_name, sec):
-                    print(f"  [{sec}] Generating: {meal_name}")
-                    img_bytes = generate_image_gemini(meal_name, gemini_key)
-                    return ti, ri, ci, meal_name, img_bytes
-
-                with ThreadPoolExecutor(max_workers=5) as executor:
-                    results = list(executor.map(lambda p: process_slot_full(*p), empty))
-                
-                for ti, ri, ci, meal_name, img_bytes in results:
-                    if img_bytes:
-                        insert_image_in_cell(doc, ti, ri, ci, img_bytes, fmt)
-                        print(f"  ✓ {meal_name}")
-                    else:
-                        print(f"  ✗ {meal_name} — no image generated")
-        except Exception as e:
-            print(f"[Images Error] {e}")
-            print(traceback.format_exc())
-
-        # 2. SHOPPING LIST
-        menu_data = extract_menu_data(doc)
-        shopping_text = generate_shopping_list(menu_data, gemini_key)
-        replace_shopping_tables(doc, shopping_text)
+        # 2. SHOPPING LIST (Disabled in v2.0 for stability)
+        print("[v2.7] Shopping list skipped (Disabled in favor of Clinical Menu accuracy)")
 
         # 3. SAVE AND RETURN
         out = io.BytesIO()
@@ -158,13 +152,8 @@ def get_shopping_list():
             print(f"[ShoppingList] Unsupported format: {content_type}")
             return jsonify({"error": "Unsupported file format. Please use .docx or .pdf"}), 400
 
-        # 3. Generate JSON
-        print("[ShoppingList] Calling AI service...")
-        from services.ai_service import generate_shopping_list_json
-        shopping_json = generate_shopping_list_json(menu_data, gemini_key)
-        
-        print("[ShoppingList] Success!")
-        return jsonify(shopping_json)
+        # 3. Generate JSON (Placeholder/Disabled)
+        return jsonify({"message": "Shopping list service is being refactored for v2.0 API compatibility."})
 
     except Exception as e:
         print(f"Error generating shopping list: {e}")

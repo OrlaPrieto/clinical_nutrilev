@@ -44,6 +44,7 @@ export class PatientListPage implements OnInit {
   // Signals
   uniquePatients = signal<Patient[]>([]);
   searchTerm = signal<string>('');
+  currentFilter = signal<'total' | 'activos' | 'pendientes' | 'baja'>('total');
   loading = signal<boolean>(true);
   displayDetail = signal<boolean>(false);
   selectedPatient = signal<Patient | null>(null);
@@ -61,12 +62,25 @@ export class PatientListPage implements OnInit {
   // Computed
   filteredPatients = computed(() => {
     const term = this.searchTerm().toLowerCase();
+    const filter = this.currentFilter();
     const patients = this.uniquePatients();
-    if (!term) return patients;
-    return patients.filter(p => 
+    
+    let filtered = patients;
+    
+    if (filter === 'activos') {
+      filtered = filtered.filter(p => !p.dado_de_baja && p.acceso_portal);
+    } else if (filter === 'pendientes') {
+      filtered = filtered.filter(p => !p.dado_de_baja && !p.acceso_portal);
+    } else if (filter === 'baja') {
+      filtered = filtered.filter(p => p.dado_de_baja);
+    }
+
+    if (!term) return filtered;
+    
+    return filtered.filter(p => 
       p.nombre.toLowerCase().includes(term) || 
       p.email.toLowerCase().includes(term) ||
-      p.telefono?.includes(term)
+      (p.telefono && p.telefono.includes(term))
     );
   });
 
@@ -140,6 +154,11 @@ export class PatientListPage implements OnInit {
   }
 
   onSearch() {
+    this.currentPage.set(1);
+  }
+
+  setFilter(filter: 'total' | 'activos' | 'pendientes' | 'baja') {
+    this.currentFilter.set(filter);
     this.currentPage.set(1);
   }
 

@@ -35,7 +35,8 @@
         <div class="bg-white/70 dark:bg-[#111111]/70 backdrop-blur-md rounded-[2.5rem] shadow-nutri dark:shadow-2xl border border-nutri-rose/10 dark:border-white/5 p-8 md:p-12 space-y-10 animate-fade-up">
             
             <!-- Generation Status / Result -->
-            <div *ngIf="success()" class="mt-8 p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-4 animate-in fade-in zoom-in duration-500">
+
+            <div *ngIf="success() && !processing()" class="mt-8 p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-4 animate-in fade-in zoom-in duration-500">
                 <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
                     <app-a-icon name="check_circle" customClass="!text-2xl text-emerald-500"></app-a-icon>
                 </div>
@@ -93,27 +94,74 @@
                 </div>
             </div>
 
-            <!-- Patient Info Display (Active when selected) -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 py-8 border-y border-nutri-rose/5" *ngIf="selectedPatientEmail() && latestProgress()">
-                <div class="space-y-1 text-center md:text-left">
-                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Último Peso</p>
-                    <p class="text-2xl font-bold text-nutri-text dark:text-slate-200 serif">{{ latestProgress()?.weight }} <span class="text-xs font-sans opacity-40">kg</span></p>
+            <!-- NEW Mini Clinical Dashboard (v3.0) -->
+            <div class="space-y-6 py-8 border-y border-nutri-rose/5 animate-fade-in" *ngIf="selectedPatientEmail() && latestProgress()">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <app-a-icon name="analytics" customClass="text-nutri-rose !text-xs opacity-40"></app-a-icon>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-nutri-text/30">Resumen Clínico</span>
+                    </div>
                 </div>
-                <div class="space-y-1 text-center">
-                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">% Grasa</p>
-                    <p class="text-2xl font-bold text-nutri-rose serif">{{ latestProgress()?.body_fat }} <span class="text-xs font-sans opacity-40">%</span></p>
+
+                <!-- Tier 1: Primary Metrics (Large) -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="metric-card primary">
+                        <span class="label">Peso Actual</span>
+                        <div class="value-group">
+                            <span class="value">{{ latestProgress()?.weight }}</span>
+                            <span class="unit">kg</span>
+                        </div>
+                    </div>
+                    <div class="metric-card primary rose">
+                        <span class="label">% Grasa Total</span>
+                        <div class="value-group">
+                            <span class="value">{{ latestProgress()?.body_fat }}</span>
+                            <span class="unit">%</span>
+                        </div>
+                    </div>
+                    <div class="metric-card primary blue">
+                        <span class="label">Masa Músculo</span>
+                        <div class="value-group">
+                            <span class="value">{{ latestProgress()?.muscle_mass }}</span>
+                            <span class="unit">kg</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="space-y-1 text-center">
-                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Músculo</p>
-                    <p class="text-2xl font-bold text-blue-500 serif">{{ latestProgress()?.muscle_mass }} <span class="text-xs font-sans opacity-40">kg</span></p>
-                </div>
-                <div class="space-y-1 text-center">
-                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">IMC</p>
-                    <p class="text-2xl font-bold text-orange-500 serif">{{ latestProgress()?.imc }}</p>
-                </div>
-                <div class="space-y-1 text-center md:text-right">
-                    <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">G. Visceral</p>
-                    <p class="text-2xl font-bold text-emerald-500 serif">{{ latestProgress()?.gv }}</p>
+
+                <!-- Tier 2: Secondary Indicators (Dense Grid) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="metric-pill">
+                        <span class="pill-label">Grasa Visceral</span>
+                        <span class="pill-value text-emerald-500">{{ latestProgress()?.gv || '—' }}</span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">IMC</span>
+                        <span class="pill-value text-orange-500">{{ latestProgress()?.imc || '—' }}</span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">Edad Metab.</span>
+                        <span class="pill-value">{{ latestProgress()?.edad_metabolica || '—' }} <small>años</small></span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">Agua Corp.</span>
+                        <span class="pill-value text-blue-400">{{ latestProgress()?.agua_corporal || '—' }} <small>L</small></span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">Abdomen</span>
+                        <span class="pill-value">{{ latestProgress()?.abdomen || '—' }} <small>cm</small></span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">Cintura</span>
+                        <span class="pill-value">{{ latestProgress()?.cintura || '—' }} <small>cm</small></span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">Presión Art.</span>
+                        <span class="pill-value text-rose-400">{{ latestProgress()?.presion_arterial || '—' }}</span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="pill-label">Pulso</span>
+                        <span class="pill-value text-slate-400">{{ latestProgress()?.pulso || '—' }} <small>lpm</small></span>
+                    </div>
                 </div>
             </div>
 
@@ -158,67 +206,54 @@
                     customClass="!w-full !py-10 !rounded-[2.5rem] !text-sm !tracking-[0.3em] !shadow-2xl !shadow-nutri-rose/20">
                 </app-a-button>
             </div>
-        </div>
-
-        <!-- AI Result Section -->
-        <div class="mt-12 p-8 bg-white dark:bg-white/5 rounded-[3rem] border-2 border-nutri-rose/10 dark:border-white/10 space-y-8 animate-fade-up shadow-nutri" 
-             *ngIf="generatedMenu()">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
-                        <app-a-icon name="description" customClass="!text-xl"></app-a-icon>
+            <!-- Process Progress Visualizer (Moved to bottom) -->
+            <div *ngIf="processing()" class="mt-8 p-10 rounded-[2.5rem] bg-nutri-rose/5 border border-nutri-rose/10 animate-fade-in space-y-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-white dark:bg-white/10 flex items-center justify-center text-nutri-rose shadow-sm">
+                            <app-a-icon name="sync" customClass="animate-spin !text-xl"></app-a-icon>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="text-xl font-bold text-nutri-text dark:text-slate-200">Generando tu Menú</h3>
+                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-nutri-rose animate-pulse">Procesando con v3.2</p>
+                        </div>
                     </div>
-                    <div class="space-y-0.5">
-                        <h3 class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">Menú Sugerido</h3>
-                        <p class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-widest">Generado con Gemini 1.5 Flash</p>
-                    </div>
-                </div>
-                <app-a-button 
-                    (onClick)="copyToClipboard()"
-                    variant="secondary" 
-                    size="sm" 
-                    icon="content_copy" 
-                    label="COPIAR TEXTO"
-                    customClass="!rounded-2xl !px-8">
-                </app-a-button>
-            </div>
-            <div class="p-8 bg-nutri-bg dark:bg-black/20 rounded-[2rem] max-h-[30rem] overflow-y-auto border border-nutri-rose/5">
-                <pre class="text-sm text-nutri-text/80 dark:text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">{{ generatedMenu() }}</pre>
-            </div>
-        </div>
-
-            <!-- Feedback States -->
-            @if (error()) {
-                <div class="p-6 bg-rose-50 dark:bg-rose-950/20 rounded-2xl border border-rose-100 dark:border-rose-900/30 flex items-center gap-4 animate-fade-in">
-                    <app-a-icon name="error" customClass="text-rose-500"></app-a-icon>
-                    <p class="text-sm font-bold text-rose-900 dark:text-rose-300">{{ error() }}</p>
-                </div>
-            }
-
-            @if (success() && !generatedMenu()) {
-                <div class="p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-4 animate-fade-in text-emerald-900 dark:text-emerald-300">
-                    <app-a-icon name="check_circle" customClass="text-emerald-500"></app-a-icon>
-                    <div class="space-y-0.5">
-                        <p class="text-sm font-bold">¡Menú Generado con Éxito!</p>
-                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest dark:opacity-50">Revisa el resultado debajo.</p>
+                    <div class="text-right">
+                        <span class="text-2xl font-black text-nutri-rose/40">{{ (currentStep() + 1) }}</span>
+                        <span class="text-xs font-bold text-nutri-text/20 mx-1">/</span>
+                        <span class="text-xs font-bold text-nutri-text/20">{{ generationSteps().length }}</span>
                     </div>
                 </div>
-            }
 
-            <!-- Instructions -->
-            <div class="pt-10 border-t border-nutri-rose/5 dark:border-white/5">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text dark:text-slate-300 text-sm font-bold border border-nutri-rose/5 dark:border-white/5">1</div>
-                        <p class="text-xs font-bold text-nutri-text dark:text-slate-400">Sube tu archivo de Word con el formato de menú estándar.</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text dark:text-slate-300 text-sm font-bold border border-nutri-rose/5 dark:border-white/5">2</div>
-                        <p class="text-xs font-bold text-nutri-text dark:text-slate-400">La IA detectará automáticamente los platillos e insertará imágenes realistas.</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="w-10 h-10 rounded-2xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text dark:text-slate-300 text-sm font-bold border border-nutri-rose/5 dark:border-white/5">3</div>
-                        <p class="text-xs font-bold text-nutri-text dark:text-slate-400">Se generará una lista de compras organizada al final del documento.</p>
+                <!-- Progress Steps Visualizer -->
+                <div class="space-y-4">
+                    <div *ngFor="let step of generationSteps(); let i = index" 
+                         class="flex items-center gap-4 transition-all duration-500"
+                         [style.opacity]="i <= currentStep() ? '1' : '0.2'"
+                         [style.transform]="i === currentStep() ? 'translateX(10px)' : 'none'">
+                        
+                        <div class="relative flex items-center justify-center">
+                            <div class="w-6 h-6 rounded-full border-2 transition-all duration-500 flex items-center justify-center"
+                                 [class.border-nutri-rose]="i <= currentStep()"
+                                 [class.bg-nutri-rose]="i < currentStep()"
+                                 [class.border-nutri-text/10]="i > currentStep()">
+                                <app-a-icon *ngIf="i < currentStep()" name="check" customClass="!text-[10px] text-white"></app-a-icon>
+                                <div *ngIf="i === currentStep()" class="w-1.5 h-1.5 rounded-full bg-nutri-rose animate-ping"></div>
+                            </div>
+                            <!-- Connector Line -->
+                            <div *ngIf="i < generationSteps().length - 1" 
+                                 class="absolute top-6 bottom-[-20px] w-0.5 bg-nutri-rose/10 left-1/2 -translate-x-1/2">
+                                <div class="w-full bg-nutri-rose transition-all duration-[2000ms]"
+                                     [style.height]="i < currentStep() ? '100%' : '0%'"></div>
+                            </div>
+                        </div>
+
+                        <span class="text-xs font-bold transition-all duration-500"
+                              [class.text-nutri-text]="i === currentStep()"
+                              [class.text-nutri-text/40]="i !== currentStep()"
+                              [class.italic]="i === currentStep()">
+                            {{ step }}
+                        </span>
                     </div>
                 </div>
             </div>

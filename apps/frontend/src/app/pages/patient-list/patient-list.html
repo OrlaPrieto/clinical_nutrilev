@@ -11,10 +11,34 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-h-0 relative z-20 max-w-7xl mx-auto w-full px-6 md:px-12 pt-48 md:pt-32 pb-16">
         <div class="flex-initial flex flex-wrap items-center gap-3 mb-6 animate-fade-up">
-            <app-a-badge [label]="'Total: ' + totalCount()" variant="primary" icon="groups"></app-a-badge>
-            <app-a-badge [label]="'Activos: ' + activeCount()" variant="success" icon="check_circle"></app-a-badge>
-            <app-a-badge [label]="'Pendientes: ' + pendingCount()" variant="warning" icon="schedule"></app-a-badge>
-            <app-a-badge [label]="'Baja: ' + bajaCount()" variant="ghost" icon="person_off"></app-a-badge>
+            <app-a-badge 
+                [label]="'Total: ' + totalCount()" 
+                variant="primary" 
+                icon="groups"
+                [customClass]="'cursor-pointer transition-all hover:scale-105 active:scale-95 ' + (currentFilter() === 'total' ? 'opacity-100 ring-2 ring-nutri-rose/30 ring-offset-2 dark:ring-offset-[#080808]' : 'opacity-50 hover:opacity-80 saturate-50')"
+                (click)="setFilter('total')">
+            </app-a-badge>
+            <app-a-badge 
+                [label]="'Activos: ' + activeCount()" 
+                variant="success" 
+                icon="check_circle"
+                [customClass]="'cursor-pointer transition-all hover:scale-105 active:scale-95 ' + (currentFilter() === 'activos' ? 'opacity-100 ring-2 ring-emerald-500/30 ring-offset-2 dark:ring-offset-[#080808]' : 'opacity-50 hover:opacity-80 saturate-50')"
+                (click)="setFilter('activos')">
+            </app-a-badge>
+            <app-a-badge 
+                [label]="'Pendientes: ' + pendingCount()" 
+                variant="warning" 
+                icon="schedule"
+                [customClass]="'cursor-pointer transition-all hover:scale-105 active:scale-95 ' + (currentFilter() === 'pendientes' ? 'opacity-100 ring-2 ring-amber-500/30 ring-offset-2 dark:ring-offset-[#080808]' : 'opacity-50 hover:opacity-80 saturate-50')"
+                (click)="setFilter('pendientes')">
+            </app-a-badge>
+            <app-a-badge 
+                [label]="'Baja: ' + bajaCount()" 
+                variant="ghost" 
+                icon="person_off"
+                [customClass]="'cursor-pointer transition-all hover:scale-105 active:scale-95 ' + (currentFilter() === 'baja' ? 'opacity-100 ring-2 ring-slate-500/30 ring-offset-2 dark:ring-offset-[#080808]' : 'opacity-50 hover:opacity-80')"
+                (click)="setFilter('baja')">
+            </app-a-badge>
         </div>
 
         <!-- Unified Table + Footer Container -->

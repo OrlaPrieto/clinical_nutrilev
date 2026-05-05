@@ -51,4 +51,59 @@ export class AiService {
       message: success ? 'Email sent successfully' : 'Failed to send email',
     };
   }
+
+  async generateAiMenu(
+    patientContext: any,
+    calories: number,
+    extraNotes: string,
+    file?: any,
+  ): Promise<any> {
+    const formData = new FormData();
+    formData.append('patient_context', JSON.stringify(patientContext));
+    formData.append('calories', calories.toString());
+    formData.append('extra_notes', extraNotes || '');
+
+    if (file) {
+      const blob = new Blob([file.buffer], { type: file.mimetype });
+      formData.append('file', blob, file.originalname);
+    }
+
+    try {
+      const { data: responseData } = await firstValueFrom(
+        this.httpService.post(
+          `${this.flaskBaseUrl}/api/generate-ai-menu`,
+          formData,
+          {
+            headers: {
+              'x-internal-key':
+                this.configService.get<string>('INTERNAL_API_KEY'),
+            },
+            responseType: 'arraybuffer',
+            timeout: 120000,
+          },
+        ),
+      );
+      return responseData;
+    } catch (error) {
+      console.error('--- [NESTJS AI SERVICE ERROR] ---');
+      if (error.response) {
+        let errorMessage = 'Unknown error from Python service';
+        try {
+          if (error.response.data instanceof ArrayBuffer) {
+            const decoder = new TextDecoder('utf-8');
+            errorMessage = decoder.decode(error.response.data);
+          } else {
+            errorMessage = JSON.stringify(error.response.data);
+          }
+        } catch (e) {
+          errorMessage = error.message;
+        }
+        console.error('Status:', error.response.status);
+        console.error('Data:', errorMessage);
+        throw new Error(`Python AI Error (${error.response.status}): ${errorMessage}`);
+      }
+      console.error('Message:', error.message);
+      throw error;
+    }
+  }
 }

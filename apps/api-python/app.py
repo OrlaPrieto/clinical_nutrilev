@@ -24,6 +24,19 @@ def create_app() -> Flask:
     # Health routes without /api
     app.register_blueprint(health_bp, url_prefix='/', name='health_routes_root')
 
+    @app.route('/api/debug-models', methods=['GET'])
+    def debug_models():
+        import os
+        from google import genai
+        from config import GEMINI_API_KEY
+        key = GEMINI_API_KEY
+        client = genai.Client(api_key=key)
+        try:
+            models = [m.name for m in client.models.list()]
+            return jsonify({"key_prefix": key[:6] if key else "MISSING", "models": models})
+        except Exception as e:
+            return jsonify({"error": str(e), "key_prefix": key[:6] if key else "MISSING"}), 500
+
     @app.errorhandler(Exception)
     def handle_exception(e):
         import traceback
@@ -44,3 +57,7 @@ app = create_app()
 if __name__ == '__main__':
     # When running locally
     app.run(debug=True, port=8000)
+
+# Triggering reload v2.5
+
+# Server restart required for NutriArchitect v2.5

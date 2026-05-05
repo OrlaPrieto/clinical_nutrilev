@@ -47,6 +47,7 @@ export interface Patient {
   cambios_peso_detalle?: string | null;
   notas?: string | null;
   menu_url?: string | null;
+  menu_notes?: string | null;
   menu_created_at?: string | null;
   dado_de_baja: boolean;
   acceso_portal: boolean;

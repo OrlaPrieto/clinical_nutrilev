@@ -145,7 +145,129 @@ pre { white-space: pre-wrap; word-wrap: break-word; }
     gap: 0.5rem;
 }
 
+/* Dashboard Metrics v3.0 */
+.metric-card.primary {
+    background: #fdf2f8; /* nutri-rose light */
+    border: 1px solid rgba(255, 65, 155, 0.05);
+    border-radius: 1.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.dark .metric-card.primary {
+    background: rgba(255, 65, 155, 0.05);
+    border-color: rgba(255, 65, 155, 0.1);
+}
+
+.metric-card.primary.rose { background: #fff1f2; }
+.metric-card.primary.blue { background: #f0f9ff; }
+.dark .metric-card.primary.rose { background: rgba(225, 29, 72, 0.05); }
+.dark .metric-card.primary.blue { background: rgba(14, 165, 233, 0.05); }
+
+.metric-card.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgba(0,0,0,0.05);
+}
+
+.metric-card.primary .label {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(0,0,0,0.3);
+}
+.dark .metric-card.primary .label { color: rgba(255,255,255,0.3); }
+
+.metric-card.primary .value-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.metric-card.primary .value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-family: 'Inter Tight', serif;
+    color: var(--nutri-text);
+}
+.dark .metric-card.primary .value { color: #f1f5f9; }
+.metric-card.primary.rose .value { color: #e11d48; }
+.metric-card.primary.blue .value { color: #0284c7; }
+
+.metric-card.primary .unit {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.4;
+}
+
+/* Metric Pills (Secondary) */
+.metric-pill {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 1rem;
+    padding: 0.6rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+}
+
+.dark .metric-pill {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.05);
+}
+
+.pill-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(0,0,0,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.dark .pill-label { color: rgba(255,255,255,0.3); }
+
+.pill-value {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.pill-value small {
+    font-size: 8px;
+    font-weight: 400;
+    opacity: 0.5;
+    margin-left: 1px;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Progress Visualizer v3.2 */
+.animate-ping {
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+    75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+.animate-spin {
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.bg-nutri-rose {
+    background-color: var(--nutri-rose, #ff69b4);
+}
+
+.border-nutri-rose {
+    border-color: var(--nutri-rose, #ff69b4);
 }

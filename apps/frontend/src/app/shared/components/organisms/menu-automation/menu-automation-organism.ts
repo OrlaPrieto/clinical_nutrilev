@@ -9,7 +9,6 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import { ButtonComponent } from '../../atoms/button/button';
 import { IconComponent } from '../../atoms/icon/icon';
 import { DashboardHeaderComponent } from '../dashboard-header/dashboard-header';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-o-menu-automation',
@@ -27,7 +26,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './menu-automation-organism.html',
   styleUrl: './menu-automation-organism.css'
 })
-export class MenuAutomationOrganism {
+export class MenuAutomationOrganism implements OnInit {
   private http = inject(HttpClient);
   public authService = inject(AuthService);
   public themeService = inject(ThemeService);
@@ -38,7 +37,7 @@ export class MenuAutomationOrganism {
   success = signal<boolean>(false);
 
   // AI Menu Generation
-  isAiMode = signal<boolean>(true); // Default to true now
+  isAiMode = signal<boolean>(true);
   patients = signal<any[]>([]);
   searchQuery = signal<string>('');
   selectedPatientEmail = signal<string>('');
@@ -46,13 +45,36 @@ export class MenuAutomationOrganism {
   totalCalories = signal<number>(2000);
   generatedMenu = signal<string>('');
   latestProgress = signal<any>(null);
+  
+  // Progress Steps v3.2
+  currentStep = signal<number>(0);
+  generationSteps = signal<string[]>([
+    'Analizando historial y progreso clínico...',
+    'Consultando a NutriArchitect AI (Gemini 2.5)...',
+    'Validando equivalencias y raciones clínicas...',
+    'Normalizando estructura de menús (v3.2)...',
+    'Generando reporte DOCX final...'
+  ]);
+  private stepInterval: any;
+
+  patientData = computed(() => {
+    const email = this.selectedPatientEmail();
+    const patient = this.patients().find(p => p.email === email);
+    if (!patient) return {};
+    return {
+      ...patient,
+      latest_progress: this.latestProgress()
+    };
+  });
 
   filteredPatients = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    return this.patients().filter(p => 
-      p.nombre.toLowerCase().includes(query) || 
-      p.email.toLowerCase().includes(query)
-    );
+    return this.patients()
+      .filter(p => 
+        p.nombre.toLowerCase().includes(query) || 
+        p.email.toLowerCase().includes(query)
+      )
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
   });
 
   ngOnInit() {
@@ -89,7 +111,10 @@ export class MenuAutomationOrganism {
     }
 
     const file = this.selectedFile();
-    if (!file) return;
+    if (!file) {
+      this.error.set('Por favor selecciona una plantilla base.');
+      return;
+    }
 
     this.processing.set(true);
     this.error.set(null);
@@ -118,7 +143,7 @@ export class MenuAutomationOrganism {
       },
       error: (err) => {
         console.error('Error processing menu', err);
-        this.error.set('Error al procesar el menú. Verifica tu API Key y el formato del archivo.');
+        this.error.set('Error al procesar el menú. Verifica la conexión con el servidor.');
         this.processing.set(false);
       }
     });
@@ -151,40 +176,59 @@ export class MenuAutomationOrganism {
     this.processing.set(true);
     this.error.set(null);
     this.success.set(false);
+    this.currentStep.set(0);
+
+    // Simular progreso de pasos
+    this.stepInterval = setInterval(() => {
+      if (this.currentStep() < this.generationSteps().length - 1) {
+        this.currentStep.update(s => s + 1);
+      }
+    }, 4000); // 4 segundos por paso aprox. para 20s totales
 
     const token = this.authService.accessToken;
     const headers: { [header: string]: string } = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-    const body = {
-      patient_email: this.selectedPatientEmail(),
-      extra_notes: this.extraNotes(),
-      calories: this.totalCalories()
-    };
+    const formData = new FormData();
+    formData.append('patient_context', JSON.stringify(this.patientData()));
+    formData.append('calories', this.totalCalories().toString());
+    formData.append('extra_notes', this.extraNotes());
+    
+    const file = this.selectedFile();
+    if (file) {
+      formData.append('file', file);
+    }
 
-    this.http.post('/api/patients/generate-ai-menu', body, { 
+    this.http.post('/api/generate-ai-menu', formData, { 
       headers,
       responseType: 'blob' 
     }).subscribe({
         next: (blob: any) => {
+          clearInterval(this.stepInterval);
+          this.currentStep.set(this.generationSteps().length); // All done
+          
           const url = window.URL.createObjectURL(blob as Blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = `Menu_IA_${this.selectedPatientEmail()}.docx`;
+          const patientName = this.patientData()?.nombre?.replace(/\s+/g, '_') || this.selectedPatientEmail();
+          link.download = `Menu_NutriArchitect_${patientName}_${new Date().toISOString().split('T')[0]}.docx`;
           link.click();
           window.URL.revokeObjectURL(url);
           
-          this.processing.set(false);
-          this.success.set(true);
+          setTimeout(() => {
+            this.processing.set(false);
+            this.success.set(true);
+          }, 1000);
         },
         error: (err) => {
+          clearInterval(this.stepInterval);
           console.error('Error generating AI menu', err);
-          this.error.set('Error al generar el menú con IA. Inténtalo de nuevo.');
+          this.error.set('Error al generar el menú. Verifica la conexión con el servidor.');
           this.processing.set(false);
         }
       });
   }
 
   copyToClipboard() {
-    // No longer needed for docx, but keeping empty to avoid template errors if not removed yet
+    // No longer needed for docx
   }
 }
