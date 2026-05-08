@@ -37,14 +37,11 @@ export class EmailService {
             
             <h2 style="font-size: 20px; color: #222; margin-bottom: 15px; font-weight: 600;">¡Hola, ${nombre}!</h2>
             <p style="font-size: 15px; line-height: 1.6; margin-bottom: 25px; color: #555;">
-                Tu especialista en nutrición acaba de subir tu nuevo plan alimenticio estructurado a tu portal.
+                El plan alimenticio ya se encuentra listo. 🥗🍎 Adjunto a este mensaje se envía el menú correspondiente. 🥑🍗 Si surge alguna duda o se necesita algo adicional, favor de escribir por este medio para darle seguimiento. 🥦🥛 ¡Excelente día!
             </p>
             
             <div style="text-align: center; margin: 35px 0;">
                 ${menu_url ? `<a href="${menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px;">Descargar Plan PDF</a><br>` : ''}
-                <a href="${this.configService.get('FRONTEND_URL') || 'http://localhost:4200'}/portal" style="color: #ff41f8; text-decoration: none; font-size: 14px; font-weight: 500;">
-                    O ingresa a tu Portal »
-                </a>
             </div>
             
             <div style="background-color: #fdf5ff; border: 1px solid #ffd9fd; border-radius: 12px; padding: 18px; margin-bottom: 20px;">

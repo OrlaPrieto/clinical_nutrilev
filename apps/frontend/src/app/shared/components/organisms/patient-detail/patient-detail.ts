@@ -325,8 +325,12 @@ export class PatientDetailComponent implements OnInit {
 
   copyToClipboard() {
     const url = this.lastGeneratedUrl();
+    const patientName = this.patient()?.nombre || 'Paciente';
     if (url) {
-      navigator.clipboard.writeText(url).then(() => {
+      const message = `¡Hola ${patientName}!
+El plan alimenticio ya se encuentra listo. 🥗🍎 Adjunto a este mensaje se envía el menú correspondiente. 🥑🍗 Si surge alguna duda o se necesita algo adicional, favor de escribir por este medio para darle seguimiento. 🥦🥛 ¡Excelente día!
+${url}`;
+      navigator.clipboard.writeText(message).then(() => {
         this.copied.set(true);
         setTimeout(() => this.copied.set(false), 2000);
       });
