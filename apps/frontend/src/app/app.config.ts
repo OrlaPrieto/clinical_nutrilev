@@ -22,7 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor, httpResilienceInterceptor])),
     provideAnimations(),
     provideNativeDateAdapter(),
-    SocialAuthService,
     {
       provide: SOCIAL_AUTH_CONFIG,
       useValue: {

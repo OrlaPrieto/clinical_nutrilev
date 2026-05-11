@@ -36,11 +36,7 @@ def generate_ai_menu():
         return '', 200
     
     try:
-        import importlib
-        import services.ai_service
-        importlib.reload(services.ai_service)
         from services.ai_service import generate_full_menu_docx, get_base_menu_text
-        print("[v3.6 - ROUTES RELOAD] Engine v2.0 loaded.")
         
         patient_context = json.loads(request.form.get('patient_context', '{}'))
         calories = int(request.form.get('calories', 2000))
@@ -65,9 +61,12 @@ def generate_ai_menu():
         )
 
     except Exception as e:
-        print(f"Error in generate-ai-menu: {e}")
+        print(f"ERROR [generate-ai-menu]: {str(e)}")
         traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": "Error al generar el menú clínico",
+            "details": str(e)
+        }), 500
 
 @menu_bp.route('/process-menu', methods=['POST', 'OPTIONS'])
 def process_menu():

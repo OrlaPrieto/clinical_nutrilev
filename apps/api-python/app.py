@@ -1,7 +1,10 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-
-from config import ALLOWED_ORIGINS, MAX_CONTENT_LENGTH
+import os
+import traceback
+import sys
+from google import genai
+from config import GEMINI_API_KEY, ALLOWED_ORIGINS, MAX_CONTENT_LENGTH
 from routes.menu_routes import menu_bp
 from routes.health_routes import health_bp
 
@@ -26,28 +29,31 @@ def create_app() -> Flask:
 
     @app.route('/api/debug-models', methods=['GET'])
     def debug_models():
-        import os
-        from google import genai
-        from config import GEMINI_API_KEY
+        # Basic security: only allow if in debug mode or specific flag
+        if not app.debug:
+            return jsonify({"error": "Unauthorized"}), 401
+            
         key = GEMINI_API_KEY
         client = genai.Client(api_key=key)
         try:
             models = [m.name for m in client.models.list()]
-            return jsonify({"key_prefix": key[:6] if key else "MISSING", "models": models})
+            return jsonify({
+                "status": "ready",
+                "key_prefix": key[:6] if key else "MISSING", 
+                "models": models
+            })
         except Exception as e:
             return jsonify({"error": str(e), "key_prefix": key[:6] if key else "MISSING"}), 500
 
     @app.errorhandler(Exception)
     def handle_exception(e):
-        import traceback
-        import sys
         # Log the error with full traceback on the server
-        print(f"ERROR: {str(e)}", file=sys.stderr)
+        print(f"CRITICAL ERROR: {str(e)}", file=sys.stderr)
         traceback.print_exc()
         
         return jsonify({
             "error": "Internal Server Error",
-            "message": str(e)
+            "message": "Ocurrió un error inesperado en el servidor de IA"
         }), 500
 
     return app
