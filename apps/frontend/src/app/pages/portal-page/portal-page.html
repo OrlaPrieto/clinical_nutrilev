@@ -124,11 +124,20 @@
                             <h3 class="text-2xl font-bold serif">Tu Plan Nutricional Actual</h3>
                             <p class="text-sm text-white/80 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. <span class="font-bold">({{ expirationMessage() }})</span></p>
                         </div>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <app-a-button (onClick)="openMenu()" label="Ver Menú" variant="primary" size="lg"
-                                        icon="description"
-                                        customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
-                            </app-a-button>
+                        <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+                            @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
+                                @for (m of patient()?.current_menus; track $index) {
+                                    <app-a-button (onClick)="openMenu(m.url)" [label]="m.name" variant="primary" size="lg"
+                                                icon="description"
+                                                customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
+                                    </app-a-button>
+                                }
+                            } @else {
+                                <app-a-button (onClick)="openMenu()" label="Ver Menú" variant="primary" size="lg"
+                                            icon="description"
+                                            customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
+                                </app-a-button>
+                            }
                             
                             <app-a-button (onClick)="openShoppingList()" label="Lista de Súper" variant="outline" size="lg"
                                         icon="shopping_cart"

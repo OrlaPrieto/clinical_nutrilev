@@ -21,7 +21,7 @@ export class EmailService {
       return false;
     }
 
-    const { email, nombre, menu_url } = data;
+    const { email, nombre, menu_url, menus } = data;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -41,7 +41,14 @@ export class EmailService {
             </p>
             
             <div style="text-align: center; margin: 35px 0;">
-                ${menu_url ? `<a href="${menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px;">Descargar Plan PDF</a><br>` : ''}
+                ${menus && menus.length > 0 
+                    ? menus.map(m => `
+                        <a href="${m.url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px; min-width: 200px;">
+                            Descargar ${m.name}
+                        </a><br>
+                    `).join('')
+                    : (menu_url ? `<a href="${menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px;">Descargar Plan PDF</a><br>` : '')
+                }
             </div>
             
             <div style="background-color: #fdf5ff; border: 1px solid #ffd9fd; border-radius: 12px; padding: 18px; margin-bottom: 20px;">

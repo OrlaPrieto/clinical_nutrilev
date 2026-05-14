@@ -31,6 +31,9 @@ export class PatientDetailComponent implements OnInit {
   copyingRecordId = signal<string | null>(null);
   viewMode = signal<'cards' | 'table'>('cards');
   selectedRecordForDetail = signal<any | null>(null);
+  showMenuModal = signal<boolean>(false);
+  toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
+  highlightCopy = signal<boolean>(false);
 
   
   // Progress signals
@@ -51,6 +54,9 @@ export class PatientDetailComponent implements OnInit {
   addingProgress = signal<boolean>(false);
   isUploadingMenu = signal<boolean>(false);
   lastGeneratedUrl = signal<string | null>(null);
+  menuFilesToUpload = signal<Array<{ file: File | null; name: string }>>([
+    { file: null, name: 'Menú Principal' }
+  ]);
   copied = signal<boolean>(false);
   originalEmail = '';
 
@@ -247,52 +253,87 @@ export class PatientDetailComponent implements OnInit {
     try {
       await this.patientService.addPatientEntry(payload);
       this.saving.set(false);
-      if (exitEditMode) this.isEditing.set(false);
-      this.showSuccess.set(true);
-      setTimeout(() => this.showSuccess.set(false), 3000);
-    } catch (err) {
-      console.error('Error al guardar cambios', err);
-      this.saving.set(false);
-      alert('Error al guardar los cambios');
+      if (exitEditMode)      this.isUploadingMenu.set(false);
+      this.toast.set({ message: 'Archivos subidos y paciente notificado correctamente', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
+      
+    } catch (error) {
+      console.error('Error uploading menus:', error);
+      this.isUploadingMenu.set(false);
+      this.toast.set({ message: 'Error al subir los archivos. Por favor intenta de nuevo.', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
     }
   }
 
-  async uploadMenu(event: Event) {
+  addMenuSlot() {
+    if (this.menuFilesToUpload().length < 4) {
+      this.menuFilesToUpload.update(files => [...files, { file: null, name: `Archivo ${files.length + 1}` }]);
+    }
+  }
+
+  removeMenuSlot(index: number) {
+    this.menuFilesToUpload.update(files => files.filter((_, i) => i !== index));
+  }
+
+  onFileSelected(event: Event, index: number) {
     const fileInput = event.target as HTMLInputElement;
-    if (!fileInput.files || fileInput.files.length === 0) return;
-    const file = fileInput.files[0];
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      this.menuFilesToUpload.update(files => {
+        const newFiles = [...files];
+        newFiles[index].file = file;
+        return newFiles;
+      });
+    }
+  }
+
+  async uploadMenus() {
+    const filesToUpload = this.menuFilesToUpload().filter(m => m.file !== null);
+    if (filesToUpload.length === 0) return;
+
     const p = this.patient();
     if (!p || !p.email) return;
 
     this.isUploadingMenu.set(true);
     try {
-      const fileName = `menu_${p.email}.pdf`;
+      const uploadedMenus = [];
 
-      const { data, error } = await supabase.storage
-        .from('patient_menus')
-        .upload(fileName, file, { upsert: true });
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const item = filesToUpload[i];
+        const fileName = `menu_${p.email}_${Date.now()}_${i}.pdf`;
+        
+        const { error } = await supabase.storage
+          .from('patient_menus')
+          .upload(fileName, item.file!, { upsert: true });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      const { data: publicUrlData } = supabase.storage
-        .from('patient_menus')
-        .getPublicUrl(fileName);
+        const { data: publicUrlData } = supabase.storage
+          .from('patient_menus')
+          .getPublicUrl(fileName);
 
-      p.menu_url = publicUrlData.publicUrl;
-      p.menu_created_at = new Date().toISOString();
-      
+        uploadedMenus.push({
+          name: item.name,
+          url: publicUrlData.publicUrl,
+          uploaded_at: new Date().toISOString()
+        });
+      }
+
       const updatePayload = {
         email: p.email,
-        menu_url: p.menu_url,
-        menu_created_at: p.menu_created_at,
+        current_menus: uploadedMenus,
+        // Legacy support (optional)
+        menu_url: uploadedMenus[0].url,
+        menu_created_at: uploadedMenus[0].uploaded_at,
         action: "update"
       };
 
       await this.patientService.addPatientEntry(updatePayload);
       
+      // Update local state
+      p.current_menus = uploadedMenus;
+      
       try {
-        this.lastGeneratedUrl.set(p.menu_url);
-        
         const apiUrl = `${environment.apiUrl}/notify-menu`;
         const token = this.authService.accessToken;
         
@@ -305,36 +346,56 @@ export class PatientDetailComponent implements OnInit {
           body: JSON.stringify({ 
             email: p.email, 
             nombre: p.nombre || 'Paciente',
-            menu_url: p.menu_url
+            menus: uploadedMenus.map(m => ({ name: m.name, url: m.url }))
           })
         });
       } catch (e) {
-        console.error('Error enviando notificación de correo', e);
+        console.error('Error sending email notification', e);
       }
       
-      this.showSuccess.set(true);
-      setTimeout(() => this.showSuccess.set(false), 3000);
+      this.toast.set({ message: 'Archivos subidos y paciente notificado correctamente', type: 'success' });
+      this.highlightCopy.set(true);
+      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
+      
+      // Reset upload slots
+      this.menuFilesToUpload.set([{ file: null, name: 'Menú Principal' }]);
     } catch (err) {
-      console.error('Error uploading menu', err);
-      alert('Error al subir el menú. Verifica que el archivo no sea muy grande y que el bucket "patient_menus" exista.');
+      console.error('Error uploading menus', err);
+      this.toast.set({ message: 'Error al subir los archivos. Por favor intenta de nuevo.', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
     } finally {
       this.isUploadingMenu.set(false);
-      fileInput.value = ''; // Reset input
     }
   }
 
   copyToClipboard() {
-    const url = this.lastGeneratedUrl();
-    const patientName = this.patient()?.nombre || 'Paciente';
-    if (url) {
-      const message = `¡Hola ${patientName}!
-El plan alimenticio ya se encuentra listo. 🥗🍎 Adjunto a este mensaje se envía el menú correspondiente. 🥑🍗 Si surge alguna duda o se necesita algo adicional, favor de escribir por este medio para darle seguimiento. 🥦🥛 ¡Excelente día!
-${url}`;
-      navigator.clipboard.writeText(message).then(() => {
-        this.copied.set(true);
-        setTimeout(() => this.copied.set(false), 2000);
-      });
+    const p = this.patient();
+    const patientName = p?.nombre || 'Paciente';
+    const menus = p?.current_menus || [];
+    
+    let message = `¡Hola ${patientName}!\n`;
+    message += `El plan alimenticio ya se encuentra listo. 🥗🍎 Adjunto a este mensaje se envía el menú correspondiente. 🥑🍗 Si surge alguna duda o se necesita algo adicional, favor de escribir por este medio para darle seguimiento. 🥦🥛 ¡Excelente día!\n\n`;
+
+    if (menus.length > 0) {
+      if (menus.length === 1) {
+        message += menus[0].url;
+      } else {
+        message += `Archivos disponibles:\n`;
+        menus.forEach((m: any) => {
+          message += `- ${m.name}: ${m.url}\n`;
+        });
+      }
+    } else if (p?.menu_url) {
+      message += p.menu_url;
+    } else {
+      return;
     }
+
+    navigator.clipboard.writeText(message).then(() => {
+      this.copied.set(true);
+      this.highlightCopy.set(false); // Reset highlight when copied
+      setTimeout(() => this.copied.set(false), 2000);
+    });
   }
 
   async copyProgressAsImage(entry: any, elementContainer: HTMLElement) {

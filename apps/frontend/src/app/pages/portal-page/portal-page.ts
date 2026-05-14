@@ -77,10 +77,10 @@ export class PortalPage implements OnInit {
 
   menuDurationDays = environment.menuDurationDays;
 
-  openMenu() {
-    const p = this.patient();
-    if (p && p.menu_url) {
-      window.open(p.menu_url, '_blank', 'noopener');
+  openMenu(url?: string) {
+    const targetUrl = url || this.patient()?.menu_url;
+    if (targetUrl) {
+      window.open(targetUrl, '_blank', 'noopener');
     }
   }
 

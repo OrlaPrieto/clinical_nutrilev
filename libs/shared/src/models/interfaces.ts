@@ -49,6 +49,7 @@ export interface Patient {
   menu_url?: string | null;
   menu_notes?: string | null;
   menu_created_at?: string | null;
+  current_menus?: Array<{ name: string; url: string; uploaded_at: string }> | null;
   dado_de_baja: boolean;
   acceso_portal: boolean;
   created_at: string;
@@ -72,7 +73,8 @@ export interface ProcessMenuRequest {
 export interface NotifyMenuRequest {
   email: string;
   nombre: string;
-  menu_url: string;
+  menu_url?: string;
+  menus?: Array<{ name: string; url: string }>;
 }
 
 export interface AuthResponse {

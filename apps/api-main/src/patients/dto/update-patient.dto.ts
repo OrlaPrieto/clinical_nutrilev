@@ -254,6 +254,9 @@ export class UpdatePatientDto {
   @IsOptional()
   menu_created_at?: string;
 
+  @IsOptional()
+  current_menus?: any[];
+
   // Control fields
   @IsString()
   @IsOptional()
