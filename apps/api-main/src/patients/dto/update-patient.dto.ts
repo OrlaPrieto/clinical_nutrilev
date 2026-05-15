@@ -4,6 +4,7 @@ import {
   IsString,
   IsBoolean,
   IsNumber,
+  IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -254,6 +255,7 @@ export class UpdatePatientDto {
   @IsOptional()
   menu_created_at?: string;
 
+  @IsArray()
   @IsOptional()
   current_menus?: any[];
 
