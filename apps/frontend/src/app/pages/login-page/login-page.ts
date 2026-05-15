@@ -1,24 +1,28 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AuthService } from '../../services/auth.service';
 import { LoginCardOrganism } from '../../shared/components/organisms/login-card/login-card';
 import { ThemeService } from '../../shared/services/theme.service';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
+import { Router } from '@angular/router';
+import { LegalModalComponent } from '../../shared/components/organisms/legal-modal/legal-modal';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, LoginCardOrganism, IconComponent, NgOptimizedImage],
+  imports: [CommonModule, LoginCardOrganism, IconComponent, NgOptimizedImage, LegalModalComponent],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css'
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   private socialAuthService = inject(SocialAuthService);
   private authService = inject(AuthService);
+  private router = inject(Router);
   public themeService = inject(ThemeService);
   errorMessage: string | null = null;
   isLoggingIn = false;
+  showLegalModal = signal<'privacy' | 'support' | null>(null);
 
   constructor() {
     this.socialAuthService.authState.subscribe(async (user) => {
@@ -38,5 +42,17 @@ export class LoginPage {
         }
       }
     });
+  }
+
+  async ngOnInit() {
+    await this.authService.ready;
+    if (this.authService.isLoggedIn()) {
+      const role = this.authService.userRole();
+      if (role === 'admin') {
+        this.router.navigate(['/dashboard']);
+      } else if (role === 'patient') {
+        this.router.navigate(['/portal']);
+      }
+    }
   }
 }

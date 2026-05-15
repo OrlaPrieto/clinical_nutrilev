@@ -1,11 +1,10 @@
-<div class="min-h-screen bg-nutri-bg dark:bg-[#050505] flex items-center justify-center p-6 selection:bg-nutri-rose/20 transition-colors duration-700 relative overflow-hidden">
+<div class="min-h-screen bg-nutri-bg dark:bg-[#050505] flex flex-col items-center justify-between py-8 px-6 selection:bg-nutri-rose/20 transition-colors duration-700 relative overflow-x-hidden overflow-y-auto">
     <!-- Animated Branding Background -->
     <div class="login-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="blob blob-3"></div>
         <div class="blob blob-4"></div>
-        
     </div>
 
     <!-- Discrete Theme Selector -->
@@ -13,27 +12,29 @@
         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md transition-all duration-300 hover:bg-white/20 text-nutri-text/30 dark:text-white/40 group-hover:text-nutri-rose cursor-pointer">
             <app-a-icon name="palette" size="20px"></app-a-icon>
         </div>
-        <!-- Expandable Dots (Vertical) -->
         <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5">
-            <button (click)="themeService.setTheme('light')" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
-            <button (click)="themeService.setTheme('dark')" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
-            <button (click)="themeService.setTheme('vibrant')" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
-            <button (click)="themeService.setTheme('purple')" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
+            <button (click)="themeService.setTheme('light')" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'"></button>
+            <button (click)="themeService.setTheme('dark')" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'"></button>
+            <button (click)="themeService.setTheme('vibrant')" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'"></button>
+            <button (click)="themeService.setTheme('purple')" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'"></button>
         </div>
     </div>
 
-    <div class="relative z-10 w-full flex flex-col items-center">
-        <!-- Logo Entrance -->
-        <div class="text-center mb-8 stagger-1 px-4">
+    <!-- Top Section: Logo -->
+    <div class="w-full relative z-10 pt-4 flex-shrink-0">
+        <div class="text-center stagger-1 px-4">
             <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="160" height="61" 
-                 class="h-24 sm:h-32 md:h-40 w-auto mx-auto object-contain dark:brightness-110 drop-shadow-2xl" priority>
+                 class="h-20 sm:h-24 w-auto mx-auto object-contain dark:brightness-110 drop-shadow-2xl" priority>
         </div>
+    </div>
 
+    <!-- Middle Section: Card -->
+    <div class="w-full relative z-10 flex flex-col items-center justify-center py-12 flex-1 min-h-0">
         @if (isLoggingIn) {
             <div class="flex flex-col items-center justify-center bg-white/5 backdrop-blur-xl rounded-3xl p-10 ring-1 ring-black/5 dark:ring-white/10 shadow-2xl animate-fade-in text-center max-w-[320px] w-full stagger-2">
                 <div class="w-12 h-12 rounded-full border-[3px] border-nutri-rose/20 border-t-nutri-rose animate-spin mb-5"></div>
                 <h3 class="text-nutri-text dark:text-white font-semibold text-lg">Iniciando sesión...</h3>
-                <p class="text-sm text-nutri-text/60 dark:text-white/50 mt-2">Conectando de forma segura con el servidor, esto puede tomar unos segundos.</p>
+                <p class="text-sm text-nutri-text/60 dark:text-white/50 mt-2">Seguridad verificada...</p>
             </div>
         } @else {
             <div class="w-full max-w-md stagger-2">
@@ -42,13 +43,25 @@
         }
     </div>
 
-    <!-- Trust Footer -->
-    <footer class="fixed bottom-8 left-0 right-0 z-10 flex flex-col items-center gap-2 animate-fade-up" style="animation-delay: 800ms;">
-        <div class="flex items-center gap-6">
-            <a href="#" class="text-[10px] font-black uppercase tracking-widest text-nutri-text/30 dark:text-white/20 hover:text-nutri-rose transition-colors">Aviso de Privacidad</a>
-            <div class="w-1 h-1 rounded-full bg-nutri-rose/20"></div>
-            <a href="#" class="text-[10px] font-black uppercase tracking-widest text-nutri-text/30 dark:text-white/20 hover:text-nutri-rose transition-colors">Soporte Técnico</a>
+    <!-- Bottom Section: Trust Footer -->
+    <footer class="w-full relative z-10 animate-fade-up flex-shrink-0 pb-4" style="animation-delay: 800ms;">
+        <div class="max-w-4xl mx-auto px-8 flex flex-col items-center gap-6">
+            <!-- Glassy Footer Card -->
+            <div class="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 shadow-xl">
+                <button (click)="showLegalModal.set('privacy')" class="px-4 py-2 text-[9px] font-black uppercase tracking-widest text-nutri-text/40 dark:text-white/30 hover:text-nutri-rose hover:bg-white/10 dark:hover:bg-white/5 rounded-xl transition-all">Aviso de Privacidad</button>
+                <div class="w-1 h-1 rounded-full bg-nutri-rose/20"></div>
+                <button (click)="showLegalModal.set('support')" class="px-4 py-2 text-[9px] font-black uppercase tracking-widest text-nutri-text/40 dark:text-white/30 hover:text-nutri-rose hover:bg-white/10 dark:hover:bg-white/5 rounded-xl transition-all">Soporte Técnico</button>
+            </div>
+            
+            <div class="flex flex-col items-center gap-1 opacity-40 text-center">
+                <p class="text-[8px] font-black text-nutri-text dark:text-white uppercase tracking-[0.4em]">Clinical Nutrilev Intelligence</p>
+                <p class="text-[7px] font-bold text-nutri-text/50 dark:text-white/40 uppercase tracking-[0.2em]">Protección de datos clínicos v21.0.0</p>
+            </div>
         </div>
-        <p class="text-[9px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.2em]">Clinical Nutrilev Intelligence &bull; v21.0.0</p>
     </footer>
+
+    <!-- Legal Modals -->
+    @if (showLegalModal()) {
+        <app-o-legal-modal [type]="showLegalModal()!" (close)="showLegalModal.set(null)"></app-o-legal-modal>
+    }
 </div>

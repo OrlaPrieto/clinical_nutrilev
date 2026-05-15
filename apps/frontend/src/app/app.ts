@@ -24,7 +24,9 @@ import { APP_VERSION } from './version';
       </div>
     }
     
-    <app-o-dashboard-footer [version]="version"></app-o-dashboard-footer>
+    @if (authService.isLoggedIn()) {
+      <app-o-dashboard-footer [version]="version"></app-o-dashboard-footer>
+    }
     <app-pwa-banner></app-pwa-banner>
   `,
 })

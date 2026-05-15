@@ -122,12 +122,6 @@
 </div>
 
 <!-- Modals -->
-@if (showAppointmentModal()) {
-<app-o-appointment-modal [patientName]="patientForAppointment()?.nombre || ''"
-    [patientEmail]="patientForAppointment()?.email || ''" (onScheduled)="handleScheduled($event)"
-    (onClosed)="showAppointmentModal.set(false)">
-</app-o-appointment-modal>
-}
 
 @if (displayDetail() && selectedPatient()) {
 <div class="fixed inset-0 z-[100] flex flex-col justify-end md:items-center md:justify-center p-0 pt-12 md:p-10 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
@@ -164,19 +158,6 @@
             <app-a-button variant="danger" label="ELIMINAR AHORA" size="lg" (onClick)="confirmDelete()"></app-a-button>
             <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="cancelDelete()"></app-a-button>
         </div>
-    </div>
-</div>
-}
-
-@if (appointmentSuccess()) {
-<div
-    class="fixed bottom-10 right-10 z-[200] bg-emerald-500 text-white px-8 py-5 rounded-[2rem] shadow-2xl shadow-emerald-500/30 flex items-center gap-4 animate-fade-up">
-    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-        <app-a-icon name="check" customClass="text-white"></app-a-icon>
-    </div>
-    <div class="flex flex-col">
-        <span class="text-[9px] font-black uppercase tracking-widest opacity-60">Éxito</span>
-        <span class="text-xs font-bold uppercase tracking-widest">Cita agendada correctamente</span>
     </div>
 </div>
 }

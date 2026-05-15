@@ -9,12 +9,12 @@ import { SearchInputComponent } from '../../shared/components/molecules/search-i
 import { BadgeComponent } from '../../shared/components/atoms/badge/badge';
 import { ThemeService } from '../../shared/services/theme.service';
 import { PatientTableOrganism } from '../../shared/components/organisms/patient-table/patient-table';
-import { AppointmentModalComponent } from '../../shared/components/organisms/appointment-modal/appointment-modal';
 import { PatientDetailComponent } from '../../shared/components/organisms/patient-detail/patient-detail';
 import { DashboardHeaderComponent } from '../../shared/components/organisms/dashboard-header/dashboard-header';
 import { MatIconModule } from '@angular/material/icon';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { APP_VERSION } from '../../version';
 
 @Component({
@@ -25,7 +25,6 @@ import { APP_VERSION } from '../../version';
     FormsModule, 
     ButtonComponent, 
     PatientTableOrganism,
-    AppointmentModalComponent,
     PatientDetailComponent,
     DashboardHeaderComponent,
     BadgeComponent,
@@ -50,10 +49,6 @@ export class PatientListPage implements OnInit {
   selectedPatient = signal<Patient | null>(null);
   showDeleteConfirm = signal<boolean>(false);
   patientToDelete = signal<Patient | null>(null);
-  
-  showAppointmentModal = signal<boolean>(false);
-  patientForAppointment = signal<Patient | null>(null);
-  appointmentSuccess = signal<boolean>(false);
 
   // Pagination Signals
   currentPage = signal<number>(1);
@@ -179,14 +174,15 @@ export class PatientListPage implements OnInit {
   }
 
   openAppointment(patient: Patient) {
-    this.patientForAppointment.set(patient);
-    this.showAppointmentModal.set(true);
-  }
-
-  handleScheduled(event: any) {
-    this.showAppointmentModal.set(false);
-    this.appointmentSuccess.set(true);
-    setTimeout(() => this.appointmentSuccess.set(false), 5000);
+    const baseUrl = environment.calendlyUrl;
+    const name = encodeURIComponent(patient.nombre);
+    const email = encodeURIComponent(patient.email);
+    
+    // Construct Calendly URL with pre-filled name and email
+    const calendlyUrl = `${baseUrl}?name=${name}&email=${email}`;
+    
+    // Open in a new tab
+    window.open(calendlyUrl, '_blank', 'noopener');
   }
 
   openDeleteConfirm(patient: Patient) {

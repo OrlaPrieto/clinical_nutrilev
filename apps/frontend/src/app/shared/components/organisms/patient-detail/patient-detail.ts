@@ -10,7 +10,6 @@ import { DetailFieldComponent } from '../../molecules/detail-field/detail-field'
 import { PatientService } from '../../../../services/patient';
 import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
-import { NutriImagePipe } from '../../../pipes/nutri-image.pipe';
 import { environment } from '../../../../../environments/environment';
 import { toBlob } from 'html-to-image';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
@@ -18,7 +17,7 @@ import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progres
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, NutriImagePipe, ProgressAnalyticCardComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, ProgressAnalyticCardComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
