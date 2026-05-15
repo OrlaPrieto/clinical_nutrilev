@@ -20,13 +20,18 @@ async function bootstrap() {
 
   // Security: Restricted CORS
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+  const frontendUrl = process.env.FRONTEND_URL;
   const isDev = process.env.NODE_ENV !== 'production';
+  
+  if (frontendUrl) allowedOrigins.push(frontendUrl);
 
   app.enableCors({
     origin: (origin, callback) => {
+      // Allow if no origin (like mobile apps or curl) or if in allowed list
       if (!origin || allowedOrigins.includes(origin) || (isDev && origin.includes('localhost'))) {
         callback(null, true);
       } else {
+        console.warn(`CORS blocked for origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
