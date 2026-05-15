@@ -32,13 +32,42 @@ export class AuthService {
   public ready: Promise<void>;
   private resolveReady!: () => void;
   public roleReady = signal<boolean>(false);
+  public isDevMode = signal<boolean>(false);
 
   constructor() {
     this.ready = new Promise((resolve) => {
       this.resolveReady = resolve;
     });
     this.initializeAuth();
-    this.pingServer(); // Wake up backend ASAP
+    this.pingServer();
+    this.checkDevMode();
+  }
+
+  private checkDevMode() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('dev') === 'true' || this.storage.getItem('nutrilev_dev_mode') === 'true') {
+      this.enableDevMode();
+    }
+  }
+
+  public enableDevMode() {
+    console.log('Auth: ENABLING DEV MODE');
+    this.isDevMode.set(true);
+    this.storage.setItem('nutrilev_dev_mode', 'true');
+    this.currentUser.set({
+      id: 'dev-user-id',
+      email: 'dev@nutrilev.com',
+      user_metadata: { full_name: 'Developer Mode' }
+    } as any);
+    this.userRole.set('admin');
+    this.roleReady.set(true);
+    this.isInitialLoading.set(false);
+  }
+
+  public disableDevMode() {
+    this.isDevMode.set(false);
+    this.storage.removeItem('nutrilev_dev_mode');
+    window.location.href = '/';
   }
 
   private pingServer() {

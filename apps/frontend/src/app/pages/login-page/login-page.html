@@ -24,9 +24,9 @@
 
     <div class="relative z-10 w-full flex flex-col items-center">
         <!-- Logo Entrance -->
-        <div class="text-center mb-8 stagger-1">
+        <div class="text-center mb-8 stagger-1 px-4">
             <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="160" height="61" 
-                 class="h-40 w-auto mx-auto object-contain dark:brightness-110 drop-shadow-2xl" priority>
+                 class="h-24 sm:h-32 md:h-40 w-auto mx-auto object-contain dark:brightness-110 drop-shadow-2xl" priority>
         </div>
 
         @if (isLoggingIn) {
@@ -41,4 +41,14 @@
             </div>
         }
     </div>
+
+    <!-- Trust Footer -->
+    <footer class="fixed bottom-8 left-0 right-0 z-10 flex flex-col items-center gap-2 animate-fade-up" style="animation-delay: 800ms;">
+        <div class="flex items-center gap-6">
+            <a href="#" class="text-[10px] font-black uppercase tracking-widest text-nutri-text/30 dark:text-white/20 hover:text-nutri-rose transition-colors">Aviso de Privacidad</a>
+            <div class="w-1 h-1 rounded-full bg-nutri-rose/20"></div>
+            <a href="#" class="text-[10px] font-black uppercase tracking-widest text-nutri-text/30 dark:text-white/20 hover:text-nutri-rose transition-colors">Soporte Técnico</a>
+        </div>
+        <p class="text-[9px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.2em]">Clinical Nutrilev Intelligence &bull; v21.0.0</p>
+    </footer>
 </div>

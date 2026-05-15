@@ -43,11 +43,19 @@ export class EmailService {
             <div style="text-align: center; margin: 35px 0;">
                 ${menus && menus.length > 0 
                     ? menus.map(m => `
-                        <a href="${m.url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px; min-width: 200px;">
-                            Descargar ${m.name}
-                        </a><br>
+                        <div style="margin-bottom: 15px;">
+                            <a href="${m.url}" style="background-color: #ff41f8; color: white; padding: 14px 20px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; width: 100%; max-width: 280px; box-sizing: border-box; text-align: center; shadow: 0 4px 10px rgba(255, 65, 248, 0.2);">
+                                🍏 Ver ${m.name}
+                            </a>
+                        </div>
                     `).join('')
-                    : (menu_url ? `<a href="${menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 32px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; margin-bottom: 15px;">Descargar Plan PDF</a><br>` : '')
+                    : (menu_url ? `
+                        <div style="margin-bottom: 15px;">
+                            <a href="${menu_url}" style="background-color: #ff41f8; color: white; padding: 14px 20px; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 15px; display: inline-block; width: 100%; max-width: 280px; box-sizing: border-box; text-align: center; shadow: 0 4px 10px rgba(255, 65, 248, 0.2);">
+                                🍏 Ver Plan PDF
+                            </a>
+                        </div>
+                    ` : '')
                 }
             </div>
             

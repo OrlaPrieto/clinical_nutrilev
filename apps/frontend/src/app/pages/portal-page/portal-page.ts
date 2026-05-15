@@ -12,11 +12,12 @@ import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
 import { environment } from '../../../environments/environment';
 import { ProgressAnalyticCardComponent } from '../../shared/components/organisms/progress-analytic-card/progress-analytic-card';
+import { LineChartComponent } from '../../shared/components/molecules/line-chart/line-chart';
 
 @Component({
   selector: 'app-portal-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage, DatePipe, ProgressAnalyticCardComponent],
+  imports: [CommonModule, ButtonComponent, IconComponent, NutriImagePipe, MilestoneBadgeComponent, NgOptimizedImage, DatePipe, ProgressAnalyticCardComponent, LineChartComponent],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css'
 })
@@ -38,6 +39,15 @@ export class PortalPage implements OnInit {
     const p = this.patient();
     if (!p || !p.nombre) return 'Usuario';
     return p.nombre.split(' ')[0];
+  });
+
+  weightChartData = computed(() => {
+    const p = this.progress();
+    if (p.length === 0) return [];
+    return [...p].reverse().map(entry => ({
+      value: Number(entry.weight),
+      label: entry.date ? new Date(entry.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }) : ''
+    }));
   });
 
   isMenuValid = computed(() => {

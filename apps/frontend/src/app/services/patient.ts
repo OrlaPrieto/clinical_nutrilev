@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { PatientProgress, ShoppingCategory, PatientUpdate, PatientProgressInsert } from '@shared/models/interfaces';
 import { User } from '@supabase/supabase-js';
+import { MOCK_PATIENTS, MOCK_PROGRESS } from '../shared/mocks/mock-data';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,9 @@ export class PatientService {
   }
 
   async getPatients(): Promise<Patient[]> {
+    if (this.authService.isDevMode()) {
+      return new Promise(resolve => setTimeout(() => resolve(MOCK_PATIENTS), 500));
+    }
     const response = await fetch(this.apiUrl, {
       headers: this.headers
     });
@@ -42,6 +46,10 @@ export class PatientService {
   }
 
   async getPatientByEmail(email: string): Promise<Patient> {
+    if (this.authService.isDevMode()) {
+      const p = MOCK_PATIENTS.find(p => p.email === email) || MOCK_PATIENTS[0];
+      return new Promise(resolve => setTimeout(() => resolve(p), 500));
+    }
     const response = await fetch(`${this.apiUrl}/${email}`, {
       headers: this.headers
     });
@@ -86,6 +94,10 @@ export class PatientService {
 
   // Progress Tracking Methods
   async getPatientProgress(email: string): Promise<PatientProgress[]> {
+    if (this.authService.isDevMode()) {
+      const prog = MOCK_PROGRESS.filter(p => p.patient_email === email);
+      return new Promise(resolve => setTimeout(() => resolve(prog), 500));
+    }
     const response = await fetch(`${this.apiUrl}/${email}/progress`, {
       headers: this.headers
     });

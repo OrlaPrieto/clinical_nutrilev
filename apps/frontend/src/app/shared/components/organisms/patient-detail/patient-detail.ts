@@ -28,6 +28,60 @@ export class PatientDetailComponent implements OnInit {
   saving = signal<boolean>(false);
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
+  
+  fruitImages = [
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34d/512.png', // Pineapple
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34e/512.png', // Red Apple
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34f/512.png', // Green Apple
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f349/512.png', // Watermelon
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f955/512.png', // Carrot
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f345/512.png', // Tomato
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f951/512.png', // Avocado
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34a/512.png', // Orange
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f966/512.png', // Broccoli
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34c/512.png', // Banana
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f353/512.png', // Strawberry
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f347/512.png', // Grapes
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f350/512.png', // Pear
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f352/512.png', // Cherry
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34b/512.png', // Lemon
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f96d/512.png', // Mango
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f351/512.png', // Peach
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f346/512.png', // Eggplant
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f33d/512.png', // Corn
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f95d/512.png', // Kiwi
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f954/512.png', // Potato
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f952/512.png', // Cucumber
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f96c/512.png', // Leafy Green
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f9c4/512.png', // Garlic
+    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f9c5/512.png', // Onion
+  ];
+  
+  randomFruit = signal(this.fruitImages[0]);
+  tabs = signal([
+    { label: 'Personal', icon: 'person' },
+    { label: 'Antecedentes', icon: 'history_edu' },
+    { label: 'Estilo de Vida', icon: 'self_improvement' },
+    { label: 'Nutrición', icon: 'restaurant' },
+    { label: 'Seguimiento', icon: 'analytics' },
+    { label: 'Notas', icon: 'description' }
+  ]);
+
+  ngOnInit() {
+    this.assignPersistentFruit();
+    this.loadProgress();
+  }
+
+  assignPersistentFruit() {
+    const p = this.patient();
+    const seed = p?.id || p?.nombre || 'default';
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % this.fruitImages.length;
+    this.randomFruit.set(this.fruitImages[index]);
+  }
   copyingRecordId = signal<string | null>(null);
   viewMode = signal<'cards' | 'table'>('cards');
   selectedRecordForDetail = signal<any | null>(null);
@@ -62,9 +116,6 @@ export class PatientDetailComponent implements OnInit {
 
   constructor(private patientService: PatientService, private authService: AuthService) {}
 
-  ngOnInit() {
-    this.loadProgress();
-  }
 
   currentGoal = computed(() => this.patient()?.meta_objetivo || null);
 
@@ -206,7 +257,9 @@ export class PatientDetailComponent implements OnInit {
     if (!currentPatient) return;
     this.saving.set(true);
     
-    // Global update: Send everything
+    // Update last update date
+    currentPatient.ultima_actualizacion = new Date().toISOString();
+
     const updatePayload = {
       ...currentPatient,
       originalEmail: this.originalEmail,
@@ -220,11 +273,14 @@ export class PatientDetailComponent implements OnInit {
     const currentPatient = this.patient();
     if (!currentPatient) return;
     
+    currentPatient.ultima_actualizacion = new Date().toISOString();
+    
     const updatePayload = {
       email: currentPatient.email,
       nombre: currentPatient.nombre,
       dado_de_baja: currentPatient.dado_de_baja,
       acceso_portal: currentPatient.dado_de_baja ? false : currentPatient.acceso_portal,
+      ultima_actualizacion: currentPatient.ultima_actualizacion,
       action: "update"
     };
 
@@ -239,10 +295,13 @@ export class PatientDetailComponent implements OnInit {
     const currentPatient = this.patient();
     if (!currentPatient) return;
     
+    currentPatient.ultima_actualizacion = new Date().toISOString();
+    
     const updatePayload = {
       email: currentPatient.email,
       nombre: currentPatient.nombre,
       acceso_portal: currentPatient.acceso_portal,
+      ultima_actualizacion: currentPatient.ultima_actualizacion,
       action: "update"
     };
 
@@ -253,14 +312,20 @@ export class PatientDetailComponent implements OnInit {
     try {
       await this.patientService.addPatientEntry(payload);
       this.saving.set(false);
-      if (exitEditMode)      this.isUploadingMenu.set(false);
-      this.toast.set({ message: 'Archivos subidos y paciente notificado correctamente', type: 'success' });
+      if (exitEditMode) this.isEditing.set(false);
+      
+      const isFileUpdate = payload.action === "update" && payload.current_menus;
+      this.toast.set({ 
+        message: isFileUpdate ? 'Archivos subidos y paciente notificado' : 'Cambios guardados correctamente', 
+        type: 'success' 
+      });
       setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
       
     } catch (error) {
-      console.error('Error uploading menus:', error);
+      console.error('Error in sendUpdate:', error);
+      this.saving.set(false);
       this.isUploadingMenu.set(false);
-      this.toast.set({ message: 'Error al subir los archivos. Por favor intenta de nuevo.', type: 'error' });
+      this.toast.set({ message: 'Error al procesar la solicitud', type: 'error' });
       setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
     }
   }
@@ -304,7 +369,11 @@ export class PatientDetailComponent implements OnInit {
         
         const { error } = await supabase.storage
           .from('patient_menus')
-          .upload(fileName, item.file!, { upsert: true });
+          .upload(fileName, item.file!, { 
+            upsert: true,
+            contentType: 'application/pdf',
+            cacheControl: '3600'
+          });
 
         if (error) throw error;
 

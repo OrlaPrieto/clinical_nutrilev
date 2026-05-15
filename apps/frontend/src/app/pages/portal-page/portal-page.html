@@ -113,37 +113,59 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Sección Nutrición Priorizada -->
                 @if (isMenuValid()) {
-                    <div class="bg-nutri-rose dark:bg-nutri-rose/80 shadow-xl shadow-nutri-rose/20 dark:shadow-rose-900/10 p-8 rounded-[3rem] border border-nutri-rose/10 flex flex-col md:flex-row items-center gap-8 animate-fade-up">
-                        <div class="w-20 h-20 rounded-3xl bg-white/20 dark:bg-black/20 backdrop-blur-md text-white flex items-center justify-center text-3xl shadow-lg shadow-black/5">
-                            <app-a-icon name="picture_as_pdf" customClass="text-2xl text-white"></app-a-icon>
+                    <div class="space-y-4 animate-fade-up">
+                        <div class="flex items-center justify-between px-2">
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60">Tu Plan Nutricional</h3>
+                            <span class="text-[10px] font-bold text-nutri-text/30 italic">{{ expirationMessage() }}</span>
                         </div>
-                        <div class="flex-1 text-center md:text-left text-white">
-                            <h3 class="text-2xl font-bold serif">Tu Plan Nutricional Actual</h3>
-                            <p class="text-sm text-white/80 mt-1 leading-relaxed">Consulta las porciones y platos que acordamos en nuestra última sesión. <span class="font-bold">({{ expirationMessage() }})</span></p>
-                        </div>
-                        <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Principal / Multiple Menus -->
                             @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                 @for (m of patient()?.current_menus; track $index) {
-                                    <app-a-button (onClick)="openMenu(m.url)" [label]="m.name" variant="primary" size="lg"
-                                                icon="description"
-                                                customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
-                                    </app-a-button>
+                                    <div (click)="openMenu(m.url)" 
+                                         class="group bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                        <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
+                                            <app-a-icon name="description"></app-a-icon>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Archivo PDF</p>
+                                            <p class="text-sm font-bold serif truncate">{{ m.name }}</p>
+                                        </div>
+                                        <div class="w-8 h-8 rounded-full bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text/20 group-hover:text-nutri-rose transition-colors">
+                                            <app-a-icon name="download" size="18px"></app-a-icon>
+                                        </div>
+                                    </div>
                                 }
-                            } @else {
-                                <app-a-button (onClick)="openMenu()" label="Ver Menú" variant="primary" size="lg"
-                                            icon="description"
-                                            customClass="!bg-white !text-nutri-rose dark:!text-rose-900 !px-8 !py-3 !rounded-2xl !shadow-xl !shadow-black/10 hover:scale-105 transition-all !text-[10px] !uppercase !tracking-widest">
-                                </app-a-button>
+                            } @else if (patient()?.menu_url) {
+                                <div (click)="openMenu()" 
+                                     class="group bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
+                                        <app-a-icon name="description"></app-a-icon>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Plan Principal</p>
+                                        <p class="text-sm font-bold serif truncate">Ver Menú Digital</p>
+                                    </div>
+                                </div>
                             }
-                            
-                            <app-a-button (onClick)="openShoppingList()" label="Lista de Súper" variant="outline" size="lg"
-                                        icon="shopping_cart"
-                                        [loading]="loadingShoppingList()"
-                                        customClass="!bg-white/10 !text-white !border-white/30 !px-8 !py-3 !rounded-2xl hover:bg-white/20 transition-all !text-[10px] !uppercase !tracking-widest">
-                            </app-a-button>
+
+                            <!-- Shopping List Card -->
+                            <div (click)="openShoppingList()" 
+                                 class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-6 rounded-[2.5rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
+                                    <app-a-icon name="shopping_cart"></app-a-icon>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600/40 mb-0.5">Asistente</p>
+                                    <p class="text-sm font-bold serif truncate">Lista de Súper</p>
+                                </div>
+                                @if (loadingShoppingList()) {
+                                    <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                                }
+                            </div>
                         </div>
                     </div>
                 } @else {
@@ -160,15 +182,21 @@
 
                 <!-- Grid de Métricas de Composición -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up" style="animation-delay: 100ms">
-                    <!-- Peso Card -->
-                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
-                        <div class="flex items-center gap-2 text-nutri-rose/40">
-                            <app-a-icon name="monitor_weight" size="16px"></app-a-icon>
-                            <span class="text-[9px] font-black uppercase tracking-widest">Peso Actual</span>
+                    <!-- Peso Card + Chart -->
+                    <div class="bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-4 transition-colors col-span-2 lg:col-span-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2 text-nutri-rose/40">
+                                <app-a-icon name="monitor_weight" size="16px"></app-a-icon>
+                                <span class="text-[9px] font-black uppercase tracking-widest">Evolución de Peso</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</span>
+                                <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">kg</span>
+                            </div>
                         </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</span>
-                            <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">kg</span>
+                        
+                        <div class="h-32 w-full">
+                            <app-m-line-chart [data]="weightChartData()" unit="kg"></app-m-line-chart>
                         </div>
                     </div>
 
