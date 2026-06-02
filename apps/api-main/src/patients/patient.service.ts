@@ -48,26 +48,112 @@ export class PatientService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { action, originalEmail, id: _id, ...cleanData } = updateData;
 
-    let query = this.supabaseService
-      .getClient()
-      .from('patients')
-      // @ts-expect-error Supabase inference issue with 'patients' table
-      .update({
-        ...cleanData,
-        ultima_actualizacion: new Date().toISOString(),
-      });
+    const emailChanged =
+      originalEmail &&
+      cleanData.email &&
+      originalEmail.toLowerCase() !== cleanData.email.toLowerCase();
 
-    // Check if id is an email or a UUID
-    if (id.includes('@')) {
-      query = query.eq('email', id);
+    if (emailChanged) {
+      const oldEmailClean = originalEmail.toLowerCase();
+      const newEmailClean = cleanData.email!.toLowerCase();
+      const tempEmail = `temp_cascade_${Date.now()}_${Math.random().toString(36).substring(2, 7)}@clinical-nutrilev.com`;
+      const client = this.supabaseService.getClient() as any;
+
+      // 1. Create a temporary patient
+      const { data: tempPatient, error: createTempErr } = await client
+        .from('patients')
+        .insert({
+          nombre: 'Temp Update Cascade',
+          email: tempEmail,
+        })
+        .select()
+        .single();
+
+      if (createTempErr) throw createTempErr;
+
+      try {
+        // 2. Point all progress records from oldEmail to tempEmail
+        const { error: updateProgressToTempErr } = await client
+          .from('patient_progress')
+          .update({ patient_email: tempEmail })
+          .eq('patient_email', oldEmailClean);
+
+        if (updateProgressToTempErr) throw updateProgressToTempErr;
+
+        // 3. Update the original patient's email to the new email
+        let query = client
+          .from('patients')
+          .update({
+            ...cleanData,
+            email: newEmailClean,
+            ultima_actualizacion: new Date().toISOString(),
+          });
+
+        if (id.includes('@')) {
+          query = query.eq('email', id);
+        } else {
+          query = query.eq('id', id);
+        }
+
+        const { data: updatedPatient, error: updatePatientErr } = await query.select().single();
+
+        if (updatePatientErr) throw updatePatientErr;
+
+        // 4. Point all progress records from tempEmail to newEmail
+        const { error: updateProgressToNewErr } = await client
+          .from('patient_progress')
+          .update({ patient_email: newEmailClean })
+          .eq('patient_email', tempEmail);
+
+        if (updateProgressToNewErr) throw updateProgressToNewErr;
+
+        // 5. Clean up: Delete the temporary patient
+        await client
+          .from('patients')
+          .delete()
+          .eq('id', tempPatient.id);
+
+        return updatedPatient as Patient;
+
+      } catch (err) {
+        // Rollback progress records to oldEmail if anything failed, and delete temp patient
+        try {
+          await client
+            .from('patient_progress')
+            .update({ patient_email: oldEmailClean })
+            .eq('patient_email', tempEmail);
+          
+          await client
+            .from('patients')
+            .delete()
+            .eq('id', tempPatient.id);
+        } catch (cleanupErr) {
+          console.error('Failed to clean up temp cascade update state:', cleanupErr);
+        }
+        throw err;
+      }
     } else {
-      query = query.eq('id', id);
+      // Normal update when email doesn't change
+      let query = this.supabaseService
+        .getClient()
+        .from('patients')
+        // @ts-expect-error Supabase inference issue with 'patients' table
+        .update({
+          ...cleanData,
+          ultima_actualizacion: new Date().toISOString(),
+        });
+
+      if (id.includes('@')) {
+        query = query.eq('email', id);
+      } else {
+        query = query.eq('id', id);
+      }
+
+      const { data, error } = await query.select().single();
+
+      if (error) throw error;
+      return data as Patient;
     }
-
-    const { data, error } = await query.select().single();
-
-    if (error) throw error;
-    return data as Patient;
   }
 
   async getProgress(patientEmail: string): Promise<PatientProgress[]> {

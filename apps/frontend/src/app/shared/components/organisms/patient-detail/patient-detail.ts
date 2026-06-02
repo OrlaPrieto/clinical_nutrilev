@@ -1,4 +1,4 @@
-import { Component, OnInit, input, signal, computed } from '@angular/core';
+import { Component, OnInit, input, signal, computed, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -27,6 +27,7 @@ export class PatientDetailComponent implements OnInit {
   saving = signal<boolean>(false);
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
+  saved = output<void>();
   
   fruitImages = [
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34d/512.png', // Pineapple
@@ -295,6 +296,8 @@ export class PatientDetailComponent implements OnInit {
       await this.patientService.addPatientEntry(payload);
       this.saving.set(false);
       if (exitEditMode) this.isEditing.set(false);
+      
+      this.saved.emit();
       
       const isFileUpdate = payload.action === "update" && payload.current_menus;
       this.toast.set({ 

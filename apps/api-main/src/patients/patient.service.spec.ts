@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PatientService } from './patient.service';
 import { SupabaseService } from '../common/supabase.service';
 import { PatientUpdate, PatientProgressInsert } from '@shared/index';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 describe('PatientService', () => {
   let service: PatientService;
@@ -22,12 +24,22 @@ describe('PatientService', () => {
     getClient: jest.fn().mockReturnValue(mockSupabaseClient),
   };
 
+  const mockHttpService = {
+    post: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('http://localhost'),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PatientService,
         { provide: SupabaseService, useValue: mockSupabaseService },
+        { provide: HttpService, useValue: mockHttpService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -108,6 +120,27 @@ describe('PatientService', () => {
       await service.update(email, updateData);
       expect(mockSupabaseClient.eq).toHaveBeenCalledWith('email', email);
     });
+
+    it('should update patient progress references when patient email changes', async () => {
+      const id = 'uuid-123';
+      const originalEmail = 'old@test.com';
+      const newEmail = 'new@test.com';
+      const updateData = {
+        email: newEmail,
+        originalEmail,
+      };
+
+      mockSupabaseClient.single.mockResolvedValue({
+        data: { id, email: newEmail },
+        error: null,
+      });
+
+      await service.update(id, updateData);
+      
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('patient_progress');
+      expect(mockSupabaseClient.update).toHaveBeenCalledWith({ patient_email: newEmail });
+      expect(mockSupabaseClient.eq).toHaveBeenCalledWith('patient_email', originalEmail);
+    });
   });
 
   describe('addProgress', () => {
@@ -123,7 +156,10 @@ describe('PatientService', () => {
 
       const result = await service.addProgress(progressData);
       expect(result).toEqual(progressData);
-      expect(mockSupabaseClient.insert).toHaveBeenCalledWith(progressData);
+      expect(mockSupabaseClient.insert).toHaveBeenCalledWith({
+        patient_email: 'test@test.com',
+        weight: '70',
+      });
     });
   });
 

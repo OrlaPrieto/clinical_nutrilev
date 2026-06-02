@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PatientController } from './patient.controller';
 import { PatientService } from './patient.service';
 import type { PatientUpdate } from '../common/interfaces';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { PatientAuthGuard } from '../common/guards/patient-auth.guard';
 
 describe('PatientController', () => {
   let controller: PatientController;
@@ -19,7 +21,12 @@ describe('PatientController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PatientController],
       providers: [{ provide: PatientService, useValue: mockPatientService }],
-    }).compile();
+    })
+      .overrideGuard(AdminGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PatientAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<PatientController>(PatientController);
   });

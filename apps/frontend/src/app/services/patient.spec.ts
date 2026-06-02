@@ -1,12 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { PatientService } from './patient';
+import { AuthService } from './auth.service';
 
 describe('PatientService', () => {
   let service: PatientService;
 
   beforeEach(() => {
+    const mockAuthService = {
+      accessToken: 'dummy-token',
+      currentUser: jest.fn().mockReturnValue({ email: 'test@test.com' }),
+      isDevMode: jest.fn().mockReturnValue(false),
+    };
+
     TestBed.configureTestingModule({
-      providers: [PatientService],
+      providers: [
+        PatientService,
+        { provide: AuthService, useValue: mockAuthService }
+      ],
     });
     service = TestBed.inject(PatientService);
   });

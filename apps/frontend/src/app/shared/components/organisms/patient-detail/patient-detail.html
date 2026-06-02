@@ -45,9 +45,16 @@
                                 }
                             </div>
                             
-                            <div class="flex items-center gap-2 text-[10px] text-nutri-text/50 dark:text-slate-400 font-medium">
-                                <app-a-icon name="mail" customClass="text-xs opacity-40"></app-a-icon>
-                                <span>{{patient()?.email}}</span>
+                            <div class="flex items-center gap-2 text-[10px] text-nutri-text/50 dark:text-slate-400 font-medium w-full">
+                                <app-a-icon name="mail" customClass="text-xs opacity-40 flex-shrink-0"></app-a-icon>
+                                @if (!isEditing()) {
+                                    <span>{{patient()?.email}}</span>
+                                } @else {
+                                    <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
+                                                customClass="w-full max-w-[200px]"
+                                                inputClass="!text-[10px] !font-medium !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto">
+                                    </app-a-input>
+                                }
                             </div>
                         </div>
                     </div>
