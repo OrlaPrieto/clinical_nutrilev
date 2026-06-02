@@ -1,0 +1,444 @@
+<div class="space-y-6">
+    <!-- Header with Toggler -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+        <div class="space-y-1">
+            <h3 class="text-xl font-bold serif italic text-nutri-rose">Evolución e Historial</h3>
+            <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase tracking-[0.2em]">Registro detallado de progresos</p>
+        </div>
+        <div class="flex items-center gap-2">
+        @if (showActions()) {
+            <div class="flex bg-nutri-bg dark:bg-white/5 p-1 rounded-xl">
+                <button (click)="viewMode.set('cards')" 
+                        [class.bg-white]="viewMode() === 'cards'"
+                        [class.dark:bg-white/10]="viewMode() === 'cards'"
+                        [class.shadow-sm]="viewMode() === 'cards'"
+                        class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">
+                    Tarjetas
+                </button>
+                <button (click)="viewMode.set('table')" 
+                        [class.bg-white]="viewMode() === 'table'"
+                        [class.dark:bg-white/10]="viewMode() === 'table'"
+                        [class.shadow-sm]="viewMode() === 'table'"
+                        class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">
+                    Tabla
+                </button>
+            </div>
+        }
+            <span class="px-3 py-1 bg-nutri-bg dark:bg-white/5 rounded-full text-[9px] font-bold text-nutri-text/60 dark:text-slate-500 uppercase tracking-widest transition-colors">{{ history().length }} Registros</span>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="overflow-y-auto max-h-[700px] pr-2 space-y-4 scroll-premium">
+        @if (viewMode() === 'cards') {
+            @if (history().length === 0) {
+                <div class="h-full flex flex-col items-center justify-center opacity-20 py-20">
+                    <app-a-icon name="history" customClass="!text-4xl"></app-a-icon>
+                    <p class="text-[10px] font-bold uppercase tracking-widest mt-2">Sin historial</p>
+                </div>
+            } @else {
+                @for (record of history(); track record.id; let i = $index) {
+                    <div class="p-5 rounded-2xl bg-nutri-bg/40 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/10 group hover:bg-white dark:hover:bg-white/10 transition-all">
+                        <div class="flex flex-col md:flex-row items-start justify-between gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-black shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5 dark:border-white/10 transition-colors shrink-0">
+                                <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ record.date | date:'dd' }}</span>
+                                <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
+                            </div>
+                            
+                            <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 w-full">
+                                <!-- Peso -->
+                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Peso</span>
+                                    <div class="flex items-center gap-1.5">
+                                        @if (calculateDelta(record, history()[i + 1], 'weight'); as delta) {
+                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'weight')">
+                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                            </span>
+                                        }
+                                        <span class="text-xs font-black dark:text-slate-200">{{ record.weight }}<span class="text-[7px] ml-0.5 opacity-40">kg</span></span>
+                                    </div>
+                                </div>
+                                <!-- Grasa -->
+                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Grasa</span>
+                                    <div class="flex items-center gap-1.5">
+                                        @if (calculateDelta(record, history()[i + 1], 'body_fat'); as delta) {
+                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'body_fat')">
+                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                            </span>
+                                        }
+                                        <span class="text-xs font-black dark:text-slate-200">{{ record.body_fat }}<span class="text-[7px] ml-0.5 opacity-40">%</span></span>
+                                    </div>
+                                </div>
+                                <!-- Musculo -->
+                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Músculo</span>
+                                    <div class="flex items-center gap-1.5">
+                                        @if (calculateDelta(record, history()[i + 1], 'muscle_mass'); as delta) {
+                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'muscle_mass')">
+                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                            </span>
+                                        }
+                                        <span class="text-xs font-black dark:text-slate-200">{{ record.muscle_mass }}<span class="text-[7px] ml-0.5 opacity-40">kg</span></span>
+                                    </div>
+                                </div>
+                                <!-- Cintura -->
+                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Cintura</span>
+                                    <div class="flex items-center gap-1.5">
+                                        @if (calculateDelta(record, history()[i + 1], 'cintura'); as delta) {
+                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'cintura')">
+                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                            </span>
+                                        }
+                                        <span class="text-xs font-black dark:text-slate-200">{{ record.cintura || '--' }}<span class="text-[7px] ml-0.5 opacity-40">cm</span></span>
+                                    </div>
+                                </div>
+                                <!-- Abdomen -->
+                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Abdomen</span>
+                                    <div class="flex items-center gap-1.5">
+                                        @if (calculateDelta(record, history()[i + 1], 'abdomen'); as delta) {
+                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'abdomen')">
+                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                            </span>
+                                        }
+                                        <span class="text-xs font-black dark:text-slate-200">{{ record.abdomen || '--' }}<span class="text-[7px] ml-0.5 opacity-40">cm</span></span>
+                                    </div>
+                                </div>
+                                <!-- Cadera -->
+                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Cadera</span>
+                                    <div class="flex items-center gap-1.5">
+                                        @if (calculateDelta(record, history()[i + 1], 'cadera'); as delta) {
+                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'cadera')">
+                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                            </span>
+                                        }
+                                        <span class="text-xs font-black dark:text-slate-200">{{ record.cadera || '--' }}<span class="text-[7px] ml-0.5 opacity-40">cm</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 self-center">
+                                <button (click)="selectedRecordForDetail.set(record)"
+                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/10 hover:border-nutri-rose text-nutri-rose/40 hover:text-nutri-rose transition-all flex items-center justify-center shadow-sm">
+                                    <app-a-icon name="visibility" size="18px"></app-a-icon>
+                                </button>
+                                @if (showActions()) {
+                                    <button class="w-10 h-10 rounded-xl bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center">
+                                        <app-a-icon name="edit" size="18px"></app-a-icon>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        } @else {
+            <div class="bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm overflow-hidden transition-colors">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-nutri-rose/5 dark:border-white/5 bg-nutri-bg/20 dark:bg-white/5">
+                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Fecha</th>
+                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Peso</th>
+                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Grasa</th>
+                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Músculo</th>
+                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-nutri-rose/5 dark:divide-white/5">
+                            @for (record of history(); track record.id; let i = $index) {
+                                <tr class="hover:bg-nutri-bg/10 dark:hover:bg-white/[0.02] transition-colors group">
+                                    <td class="p-4">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-black dark:text-slate-200">{{ record.date | date:'dd MMM' }}</span>
+                                            <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ record.date | date:'yyyy' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm font-black dark:text-slate-200">{{ record.weight }}kg</span>
+                                            @if (calculateDelta(record, history()[i + 1], 'weight'); as delta) {
+                                                <div class="flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm" [ngClass]="getDeltaColor(delta, 'weight', 'bg')">
+                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" size="10px" [customClass]="getDeltaColor(delta, 'weight', 'text')"></app-a-icon>
+                                                    <span class="text-[9px] font-black" [ngClass]="getDeltaColor(delta, 'weight', 'text')">
+                                                        {{ delta | number:'1.1-1' }}
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm font-black dark:text-slate-200">{{ record.body_fat }}%</span>
+                                            @if (calculateDelta(record, history()[i + 1], 'body_fat'); as delta) {
+                                                <div class="flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm" [ngClass]="getDeltaColor(delta, 'body_fat', 'bg')">
+                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" size="10px" [customClass]="getDeltaColor(delta, 'body_fat', 'text')"></app-a-icon>
+                                                    <span class="text-[9px] font-black" [ngClass]="getDeltaColor(delta, 'body_fat', 'text')">
+                                                        {{ delta | number:'1.1-1' }}
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm font-black dark:text-slate-200">{{ record.muscle_mass }}kg</span>
+                                            @if (calculateDelta(record, history()[i + 1], 'muscle_mass'); as delta) {
+                                                <div class="flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm" [ngClass]="getDeltaColor(delta, 'muscle_mass', 'bg')">
+                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" size="10px" [customClass]="getDeltaColor(delta, 'muscle_mass', 'text')"></app-a-icon>
+                                                    <span class="text-[9px] font-black" [ngClass]="getDeltaColor(delta, 'muscle_mass', 'text')">
+                                                        {{ delta | number:'1.1-1' }}
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button (click)="selectedRecordForDetail.set(record)"
+                                                    class="p-2 rounded-xl bg-nutri-bg dark:bg-white/5 text-nutri-rose/40 hover:text-nutri-rose transition-colors">
+                                                <app-a-icon name="visibility" size="18px"></app-a-icon>
+                                            </button>
+                                            @if (showActions()) {
+                                                <button class="p-2 rounded-xl bg-nutri-rose/5 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all">
+                                                    <app-a-icon name="edit" size="18px"></app-a-icon>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div><!-- Modal: Detalle de Consulta Premium -->
+@if (selectedRecordForDetail(); as record) {
+    <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 overflow-hidden">
+        <!-- Glass Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md transition-opacity animate-fade-in" 
+             (click)="selectedRecordForDetail.set(null)"></div>
+        
+        <!-- Modal Container -->
+        <div class="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-[#0d0d0d] rounded-[3rem] shadow-2xl border border-nutri-rose/10 dark:border-white/10 flex flex-col overflow-hidden animate-scale-up">
+            
+            <!-- Premium Header Redesign -->
+            <div class="px-8 py-6 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent dark:from-nutri-rose/5 border-b border-nutri-rose/5 dark:border-white/5 relative overflow-hidden shrink-0">
+                <!-- Decoration -->
+                <div class="absolute -right-20 -top-20 w-48 h-48 bg-nutri-rose/5 rounded-full blur-3xl"></div>
+                
+                <div class="flex items-center justify-between gap-4 relative z-10">
+                    <!-- Left: Date & Patient Info -->
+                    <div class="flex items-center gap-5">
+                        <!-- Compact Date Badge -->
+                        <div class="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 border border-nutri-rose/10 shadow-xl flex flex-col items-center justify-center text-nutri-rose shrink-0">
+                            <span class="text-2xl font-black leading-none">{{ record.date | date:'dd' }}</span>
+                            <span class="text-[9px] font-black uppercase leading-none mt-1">{{ record.date | date:'MMM' }}</span>
+                            <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-500 mt-1">{{ record.date | date:'yyyy' }}</span>
+                        </div>
+                        
+                        <div>
+                            <div class="flex flex-wrap items-center gap-3 mb-1">
+                                <h3 class="text-2xl font-bold serif text-nutri-text dark:text-slate-100 tracking-tight leading-none">{{ patient()?.nombre || 'Expediente Clínico' }}</h3>
+                                <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose text-[8px] font-black uppercase tracking-widest rounded-lg">Análisis Detallado</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-[10px] font-medium text-nutri-text/40 dark:text-slate-500 italic">
+                                <div class="flex items-center gap-1.5">
+                                    <app-a-icon name="history" size="12px" class="opacity-40"></app-a-icon>
+                                    <span>Consulta de seguimiento nutricional</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Actions -->
+                    <div class="flex items-center gap-3">
+                        @if (showActions()) {
+                            <app-a-button variant="outline" size="md" icon="content_copy"
+                                         [loading]="copyingRecordId() === (record.id || record.date)"
+                                         (onClick)="copyProgressAsImage(record, hiddenCardContainerSlide)"
+                                         label="Copiar"
+                                         customClass="!rounded-xl !bg-white dark:!bg-white/5 !border-nutri-rose/20 !text-nutri-rose shadow-sm hidden sm:flex"></app-a-button>
+                            
+                            <!-- Mobile version of copy button -->
+                            <button (click)="copyProgressAsImage(record, hiddenCardContainerSlide)"
+                                    class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center text-nutri-rose sm:hidden">
+                                <app-a-icon name="content_copy" customClass="!text-xl"></app-a-icon>
+                            </button>
+                        }
+                        
+                        <button (click)="selectedRecordForDetail.set(null)" 
+                                class="w-10 h-10 rounded-xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm">
+                            <app-a-icon name="close" customClass="!text-xl"></app-a-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto p-8 md:p-12 space-y-12 scroll-premium slide-over-content">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Left Column: Primary Metrics -->
+                    <div class="space-y-10">
+                        @for (section of [
+                            { 
+                                title: 'Composición Corporal', 
+                                icon: 'analytics',
+                                color: 'text-nutri-rose',
+                                bg: 'bg-nutri-rose/5',
+                                fields: [
+                                    { key: 'weight', label: 'Peso Corporal', unit: 'kg' },
+                                    { key: 'body_fat', label: 'Grasa Corporal', unit: '%' },
+                                    { key: 'muscle_mass', label: 'Masa Muscular', unit: 'kg' },
+                                    { key: 'imc', label: 'IMC', unit: '' },
+                                    { key: 'gv', label: 'Grasa Visceral', unit: '' },
+                                    { key: 'pgc', label: 'PGC', unit: '' }
+                                ] 
+                            },
+                            {
+                                title: 'Signos Vitales y Metabólicos',
+                                icon: 'monitor_heart',
+                                color: 'text-blue-500',
+                                bg: 'bg-blue-500/5',
+                                fields: [
+                                    { key: 'presion_arterial', label: 'Presión Arterial', unit: 'mmHg' },
+                                    { key: 'pulso', label: 'Pulso Cardiaco', unit: 'bpm' },
+                                    { key: 'edad_metabolica', label: 'Edad Metabólica', unit: 'años' },
+                                    { key: 'proteinas', label: 'Proteínas', unit: 'kg' },
+                                    { key: 'minerales', label: 'Minerales', unit: 'kg' }
+                                ]
+                            }
+                        ]; track section.title) {
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center" [ngClass]="section.bg">
+                                        <app-a-icon [name]="section.icon" [customClass]="section.color + ' !text-lg'"></app-a-icon>
+                                    </div>
+                                    <h4 class="text-xs font-black uppercase tracking-[0.2em]" [ngClass]="section.color">{{ section.title }}</h4>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    @for (field of section.fields; track field.key) {
+                                        @if (record[field.key]) {
+                                            <div class="p-5 rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">{{ field.label }}</span>
+                                                    @if (getPreviousRecord(record); as prev) {
+                                                        @if (calculateDelta(record, prev, field.key); as delta) {
+                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm" [ngClass]="getDeltaColor(delta, field.key)">
+                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                                            </span>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="flex items-baseline gap-1.5">
+                                                    <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                    <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Right Column: Anthro and Segmented -->
+                    <div class="space-y-10">
+                        @for (section of [
+                            {
+                                title: 'Medidas Antropométricas',
+                                icon: 'straighten',
+                                color: 'text-emerald-500',
+                                bg: 'bg-emerald-500/5',
+                                fields: [
+                                    { key: 'abdomen', label: 'Abdomen', unit: 'cm' },
+                                    { key: 'cintura', label: 'Cintura', unit: 'cm' },
+                                    { key: 'cadera', label: 'Cadera', unit: 'cm' },
+                                    { key: 'pliegue_cutaneo', label: 'Pliegue Cutáneo', unit: 'mm' }
+                                ]
+                            },
+                            {
+                                title: 'Análisis Segmental',
+                                icon: 'accessibility_new',
+                                color: 'text-amber-500',
+                                bg: 'bg-amber-500/5',
+                                fields: [
+                                    { key: 'brazo_der_cm', label: 'Brazo Derecho', unit: 'cm' },
+                                    { key: 'brazo_izq_cm', label: 'Brazo Izquierdo', unit: 'cm' },
+                                    { key: 'pierna_der_cm', label: 'Pierna Derecha', unit: 'cm' },
+                                    { key: 'pierna_izq_cm', label: 'Pierna Izquierda', unit: 'cm' }
+                                ]
+                            }
+                        ]; track section.title) {
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center" [ngClass]="section.bg">
+                                        <app-a-icon [name]="section.icon" [customClass]="section.color + ' !text-lg'"></app-a-icon>
+                                    </div>
+                                    <h4 class="text-xs font-black uppercase tracking-[0.2em]" [ngClass]="section.color">{{ section.title }}</h4>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    @for (field of section.fields; track field.key) {
+                                        @if (record[field.key]) {
+                                            <div class="p-5 rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">{{ field.label }}</span>
+                                                    @if (getPreviousRecord(record); as prev) {
+                                                        @if (calculateDelta(record, prev, field.key); as delta) {
+                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm" [ngClass]="getDeltaColor(delta, field.key)">
+                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                                            </span>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="flex items-baseline gap-1.5">
+                                                    <span class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                    <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Notas Destacadas -->
+                        @if (record.notes) {
+                            <div class="bg-nutri-rose/[0.02] dark:bg-white/5 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 p-8 space-y-4">
+                                <div class="flex items-center gap-2">
+                                    <app-a-icon name="sticky_note_2" customClass="text-nutri-rose text-sm"></app-a-icon>
+                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">Observaciones Clínicas</span>
+                                </div>
+                                <p class="text-sm font-medium italic leading-relaxed text-nutri-text/70 dark:text-slate-300">
+                                    "{{ record.notes }}"
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-12 py-6 bg-white dark:bg-[#0d0d0d] border-t border-nutri-rose/5 dark:border-white/5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-4">
+                    <p class="text-[9px] font-black text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.4em]">Nutrilev Intelligence System</p>
+                </div>
+            </div>
+
+            <!-- Hidden Container Slide for copy -->
+            <div #hiddenCardContainerSlide class="fixed top-0 left-0 w-[1000px] pointer-events-none" style="display: none; z-index: -9999; opacity: 0;">
+                <div class="progress-analytic-card-container bg-white dark:bg-[#080808] p-8 w-full">
+                    <app-progress-analytic-card [progress]="record" [patient]="patient()"></app-progress-analytic-card>
+                </div>
+            </div>
+        </div>
+    </div>
+}

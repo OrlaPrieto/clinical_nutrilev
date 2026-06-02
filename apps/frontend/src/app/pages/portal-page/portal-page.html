@@ -181,24 +181,7 @@
                 }
 
                 <!-- Grid de Métricas de Composición -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up" style="animation-delay: 100ms">
-                    <!-- Peso Card + Chart -->
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-4 transition-colors col-span-2 lg:col-span-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2 text-nutri-rose/40">
-                                <app-a-icon name="monitor_weight" size="16px"></app-a-icon>
-                                <span class="text-[9px] font-black uppercase tracking-widest">Evolución de Peso</span>
-                            </div>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</span>
-                                <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">kg</span>
-                            </div>
-                        </div>
-                        
-                        <div class="h-32 w-full">
-                            <app-m-line-chart [data]="weightChartData()" unit="kg"></app-m-line-chart>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-up" style="animation-delay: 100ms">
 
                     <!-- BMI Card -->
                     <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
@@ -241,10 +224,12 @@
 
                 <!-- Composición Física Analítica -->
                 @if (latestProgress()) {
-                    <app-progress-analytic-card 
-                        [progress]="latestProgress()!" 
-                        [patient]="patient()">
-                    </app-progress-analytic-card>
+                    <div class="animate-fade-up" style="animation-delay: 150ms">
+                        <app-progress-analytic-card 
+                            [progress]="latestProgress()!" 
+                            [patient]="patient()">
+                        </app-progress-analytic-card>
+                    </div>
                 }
 
                 <!-- Gráfica de Tendencia -->
@@ -339,67 +324,9 @@
                     </div>
                 </div>
 
-                <!-- Evolución Lista -->
-                <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm space-y-8 animate-fade-up transition-colors" style="animation-delay: 300ms">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">Tu Historial Completo</h3>
-                            <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest mt-1">Registros de peso y mediciones</p>
-                        </div>
-                    </div>
-
-                    @if (progress().length === 0) {
-                        <div class="py-20 flex flex-col items-center justify-center border-2 border-dashed border-nutri-rose/5 dark:border-white/5 rounded-3xl opacity-40">
-                            <app-a-icon name="analytics" size="32px" customClass="mb-4"></app-a-icon>
-                            <p class="text-xs font-bold uppercase tracking-widest">Pronto verás aquí tu evolución</p>
-                        </div>
-                    } @else {
-                        <div class="space-y-4">
-                            @for (entry of progress(); track entry.date) {
-                                <div class="flex items-center gap-6 p-6 rounded-2xl hover:bg-nutri-bg/50 dark:hover:bg-white/[0.02] transition-all border border-transparent hover:border-nutri-rose/10 dark:hover:border-white/10 group">
-                                    <div class="w-12 h-12 rounded-2xl bg-nutri-bg dark:bg-white/5 flex flex-col items-center justify-center group-hover:bg-white dark:group-hover:bg-white/10 transition-all shadow-sm">
-                                        <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ entry.date | date:'dd' }}</span>
-                                        <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ entry.date | date:'MMM' }}</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex flex-wrap items-center gap-4">
-                                            <!-- Peso -->
-                                            <div class="flex items-baseline gap-1 transition-all" 
-                                                 [ngClass]="(currentGoal() === 'bajar_peso' || !currentGoal()) ? '' : 'opacity-30 scale-90 origin-left'">
-                                                <span class="text-xl font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'bajar_peso'">{{ entry.weight }}</span>
-                                                <span class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase">kg</span>
-                                            </div>
-                                            
-                                            <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
-                                            
-                                            <!-- Grasa -->
-                                            <div class="flex items-baseline gap-1 transition-all"
-                                                 [ngClass]="currentGoal() === 'bajar_grasa' ? '' : 'opacity-30 scale-90 origin-left'">
-                                                <span class="text-lg font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'bajar_grasa'">{{ entry.body_fat || '--' }}%</span>
-                                                <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase">grasa</span>
-                                            </div>
-
-                                            <div class="h-4 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
-
-                                            <!-- Musculo -->
-                                            <div class="flex items-baseline gap-1 transition-all"
-                                                 [ngClass]="currentGoal() === 'subir_musculo' ? '' : 'opacity-30 scale-90 origin-left'">
-                                                <span class="text-lg font-bold serif dark:text-slate-200" [class.text-nutri-rose]="currentGoal() === 'subir_musculo'">{{ entry.muscle_mass || '--' }}</span>
-                                                <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase">kg musc.</span>
-                                            </div>
-                                        </div>
-                                        <p class="text-[10px] text-nutri-text/60 dark:text-slate-500 mt-1 italic">{{ entry.notes || 'Consulta de seguimiento rutinaria' }}</p>
-                                    </div>
-                                    <div class="hidden md:block">
-                                        <app-a-icon name="chevron_right" size="18px" class="text-nutri-rose/20 dark:text-white/10 group-hover:translate-x-1 transition-all"></app-a-icon>
-                                    </div>
-                                </div>
-                                @if (!$last) {
-                                    <div class="h-px bg-nutri-rose/5 dark:bg-white/5 mx-6"></div>
-                                }
-                            }
-                        </div>
-                    }
+                <!-- Historial Completo Unificado -->
+                <div class="animate-fade-up" style="animation-delay: 300ms">
+                    <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
                 </div>
 
             }

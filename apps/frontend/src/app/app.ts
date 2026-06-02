@@ -7,6 +7,7 @@ import { AuthService } from './services/auth.service';
 import { DashboardFooterComponent } from './shared/components/organisms/dashboard-footer/dashboard-footer';
 import { PwaBannerComponent } from './shared/components/molecules/pwa-banner/pwa-banner';
 import { APP_VERSION } from './version';
+import { PortalModule } from '@angular/cdk/portal';
 
 @Component({
   selector: 'app-root',

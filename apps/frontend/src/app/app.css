@@ -1,0 +1,24 @@
+
+/* Global Modal Scroll Lock */
+body.modal-open {
+    overflow: hidden !important;
+    height: 100vh !important;
+}
+
+body.modal-open .scroll-premium:not(.slide-over-content) {
+    overflow: hidden !important;
+}
+
+/* Ensure the slide-over content can still scroll */
+.slide-over-content {
+    overflow-y: auto !important;
+}
+
+/* Neutralize transforms on parents when modal is open to avoid clipping fixed elements */
+body.modal-open .animate-fade-up,
+body.modal-open .animate-fade-down,
+body.modal-open .animate-slide-in-right {
+    transform: none !important;
+    perspective: none !important;
+    filter: none !important;
+}

@@ -11,13 +11,13 @@ import { PatientService } from '../../../../services/patient';
 import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
 import { environment } from '../../../../../environments/environment';
-import { toBlob } from 'html-to-image';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
+import { ProgressHistoryComponent } from '../progress-history/progress-history';
 
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, ProgressAnalyticCardComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, ProgressHistoryComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -81,9 +81,6 @@ export class PatientDetailComponent implements OnInit {
     const index = Math.abs(hash) % this.fruitImages.length;
     this.randomFruit.set(this.fruitImages[index]);
   }
-  copyingRecordId = signal<string | null>(null);
-  viewMode = signal<'cards' | 'table'>('cards');
-  selectedRecordForDetail = signal<any | null>(null);
   showMenuModal = signal<boolean>(false);
   toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
   highlightCopy = signal<boolean>(false);
@@ -170,20 +167,6 @@ export class PatientDetailComponent implements OnInit {
     }
 
     return Math.max(0, Math.min(100, Math.round(progress)));
-  });
-
-  totalProgressSummary = computed(() => {
-    const history = this.progressHistory();
-    if (history.length < 2) return null;
-
-    const current = history[0];
-    const initial = history[history.length - 1];
-
-    return {
-      weight: (Number(current.weight) || 0) - (Number(initial.weight) || 0),
-      fat: (Number(current.body_fat) || 0) - (Number(initial.body_fat) || 0),
-      muscle: (Number(current.muscle_mass) || 0) - (Number(initial.muscle_mass) || 0)
-    };
   });
 
   milestones = computed(() => {
@@ -465,90 +448,4 @@ export class PatientDetailComponent implements OnInit {
       setTimeout(() => this.copied.set(false), 2000);
     });
   }
-
-  async copyProgressAsImage(entry: any, elementContainer: HTMLElement) {
-    if (!elementContainer) return;
-    
-    const originalDisplay = elementContainer.style.display;
-    elementContainer.style.display = 'block'; // Hacerlo visible temporalmente para html-to-image
-    this.copyingRecordId.set(entry.id || entry.date);
-
-    try {
-      // Find the inner container
-      const targetElement = elementContainer.querySelector('.progress-analytic-card-container') as HTMLElement;
-      if (!targetElement) throw new Error('Target element not found');
-
-      // Add a slight delay to ensure the DOM is fully rendered (especially SVG and web fonts)
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      const blob = await toBlob(targetElement, {
-        quality: 1,
-        pixelRatio: 2,
-        backgroundColor: '#ffffff', // Asegurar fondo blanco sólido para contraste
-        style: {
-          transform: 'none',
-          borderRadius: '0',
-          boxShadow: 'none'
-        }
-      });
-      
-      if (!blob) throw new Error('Failed to generate image blob');
-      
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'image/png': blob
-        })
-      ]);
-      
-      console.log('Image copied to clipboard successfully!');
-    } catch (err) {
-      console.error('Error copying image:', err);
-    } finally {
-      elementContainer.style.display = originalDisplay;
-      this.copyingRecordId.set(null);
-    }
-  }
-
-  calculateDelta(current: any, previous: any, field: string): number | null {
-    if (current === null || current === undefined || previous === null || previous === undefined) return null;
-    
-    const currVal = Number(current[field]);
-    const prevVal = Number(previous[field]);
-
-    if (isNaN(currVal) || isNaN(prevVal)) return null;
-    
-    return currVal - prevVal;
-  }
-
-  getDeltaColor(delta: number, field: string): string {
-    if (delta === 0) return 'text-slate-400';
-    
-    // Logic for "good" or "bad" changes
-    const positiveIsGoodFields = [
-      'muscle_mass', 'musculo_esqueletico', 'masa_magra', 'proteinas',
-      'brazo_der_musculo', 'brazo_izq_musculo', 'tronco_musculo', 'pierna_der_musculo', 'pierna_izq_musculo'
-    ];
-    const negativeIsGoodFields = [
-      'weight', 'body_fat', 'pgc', 'gv', 'masa_grasa', 'imc', 'cintura', 'abdomen', 'cadera',
-      'brazo_der_grasa', 'brazo_izq_grasa', 'tronco_grasa', 'pierna_der_grasa', 'pierna_izq_grasa',
-      'icc', 'edad_metabolica', 'pliegue_cutaneo'
-    ];
-
-    if (positiveIsGoodFields.includes(field)) {
-      return delta > 0 ? 'text-green-500' : 'text-rose-500';
-    }
-    
-    if (negativeIsGoodFields.includes(field)) {
-      return delta < 0 ? 'text-green-500' : 'text-rose-500';
-    }
-
-    return 'text-nutri-rose';
-  }
-
-  getPreviousRecord(record: any): any | null {
-    const history = this.progressHistory();
-    const index = history.findIndex(r => r.id === record.id || (r.date === record.date && r.weight === record.weight));
-    return index !== -1 && index < history.length - 1 ? history[index + 1] : null;
-  }
-
 }
