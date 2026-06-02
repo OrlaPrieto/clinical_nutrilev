@@ -19,7 +19,6 @@ export class PatientTableOrganism {
 
   view = output<Patient>();
   delete = output<Patient>();
-  schedule = output<Patient>();
 
   toggleTooltip(id: string, event: Event) {
     event.stopPropagation();

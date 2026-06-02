@@ -173,17 +173,7 @@ export class PatientListPage implements OnInit {
     this.displayDetail.set(true);
   }
 
-  openAppointment(patient: Patient) {
-    const baseUrl = environment.calendlyUrl;
-    const name = encodeURIComponent(patient.nombre);
-    const email = encodeURIComponent(patient.email);
-    
-    // Construct Calendly URL with pre-filled name and email
-    const calendlyUrl = `${baseUrl}?name=${name}&email=${email}`;
-    
-    // Open in a new tab
-    window.open(calendlyUrl, '_blank', 'noopener');
-  }
+
 
   openDeleteConfirm(patient: Patient) {
     this.patientToDelete.set(patient);

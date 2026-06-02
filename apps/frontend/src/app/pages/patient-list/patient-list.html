@@ -68,7 +68,7 @@
 
                 @if (!loading() && filteredPatients().length > 0) {
                 <app-o-patient-table [patients]="paginatedPatients()" (view)="showDetail($event)"
-                    (schedule)="openAppointment($event)" (delete)="openDeleteConfirm($event)">
+                    (delete)="openDeleteConfirm($event)">
                 </app-o-patient-table>
                 }
             </div>

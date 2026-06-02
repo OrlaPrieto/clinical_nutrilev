@@ -154,12 +154,6 @@
             <td class="w-[20%] px-8 py-5 text-right">
               <div class="flex items-center justify-end gap-2 px-2">
                 <app-a-button 
-                  variant="outline" 
-                  size="sm" 
-                  icon="calendar_add_on" 
-                  (onClick)="schedule.emit(patient)">
-                </app-a-button>
-                <app-a-button 
                   variant="primary" 
                   size="sm" 
                   icon="visibility" 
@@ -240,14 +234,6 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <app-a-button 
-          variant="outline" 
-          size="md" 
-          icon="calendar_add_on" 
-          label="CITA"
-          customClass="flex-1 !font-bold !text-[9px] !tracking-widest dark:text-slate-400"
-          (onClick)="schedule.emit(patient)">
-        </app-a-button>
         <app-a-button 
           variant="primary" 
           size="md" 
