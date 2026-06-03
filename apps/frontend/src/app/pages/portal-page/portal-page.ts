@@ -40,20 +40,38 @@ export class PortalPage implements OnInit {
   patient = signal<Patient | null>(null);
   progress = signal<PatientProgress[]>([]);
   loading = signal<boolean>(true);
-  hoveredPoint = signal<number | null>(null);
+  hoveredPoint = signal<{ index: number; key: 'weight' | 'fat' | 'muscle' } | null>(null);
   showThemeMenu = signal<boolean>(false);
+  activeMetrics = signal<{ weight: boolean; fat: boolean; muscle: boolean }>({
+    weight: false,
+    fat: false,
+    muscle: false
+  });
 
   @HostListener('document:click')
   onDocumentClick() {
     this.showThemeMenu.set(false);
   }
 
-  togglePoint(index: number) {
-    if (this.hoveredPoint() === index) {
+  togglePoint(index: number, key: 'weight' | 'fat' | 'muscle') {
+    const cur = this.hoveredPoint();
+    if (cur && cur.index === index && cur.key === key) {
       this.hoveredPoint.set(null);
     } else {
-      this.hoveredPoint.set(index);
+      this.hoveredPoint.set({ index, key });
     }
+  }
+
+  toggleMetric(key: 'weight' | 'fat' | 'muscle') {
+    const current = this.activeMetrics();
+    const activeCount = (current.weight ? 1 : 0) + (current.fat ? 1 : 0) + (current.muscle ? 1 : 0);
+    if (current[key] && activeCount === 1) {
+      return;
+    }
+    this.activeMetrics.set({
+      ...current,
+      [key]: !current[key]
+    });
   }
   
   shoppingList = signal<ShoppingCategory[]>([]);
@@ -191,117 +209,130 @@ export class PortalPage implements OnInit {
     return Math.max(0, Math.min(100, Math.round(progress)));
   });
 
-  targetGoalValue = computed(() => {
-    const p = this.patient();
-    const goal = this.currentGoal();
-    if (!p || !goal) return 0;
-    if (goal === 'bajar_peso') return Number(p.peso_meta || 0);
-    if (goal === 'bajar_grasa') return Number(p.grasa_meta || 0);
-    if (goal === 'subir_musculo') return Number(p.musculo_meta || 0);
-    return 0;
-  });
-
-  goalTargetY = computed(() => {
+  activeLines = computed(() => {
     const prog = [...this.progress()].reverse();
-    const goal = this.currentGoal();
-    const target = this.targetGoalValue();
-    if (prog.length < 1 || !goal || target === 0) return null;
-    
-    const values = prog.map(p => {
-      if (goal === 'bajar_peso') return Number(p.weight || 0);
-      if (goal === 'bajar_grasa') return Number(p.body_fat || 0);
-      if (goal === 'subir_musculo') return Number(p.muscle_mass || 0);
-      return 0;
-    });
+    const patient = this.patient();
+    const active = this.activeMetrics();
+    if (prog.length < 1 || !patient) return [];
 
-    const allValues = [...values, target];
-    const minValue = Math.min(...allValues) - 1;
-    const maxValue = Math.max(...allValues) + 1;
-    const range = maxValue - minValue || 1;
-    
-    const height = 100;
-    return height - ((target - minValue) / range * height);
-  });
+    const lines: any[] = [];
 
-  goalTrendPath = computed(() => {
-    const prog = [...this.progress()].reverse();
-    const goal = this.currentGoal();
-    const target = this.targetGoalValue();
-    if (prog.length < 2 || !goal) return '';
-    
-    const values = prog.map(p => {
-      if (goal === 'bajar_peso') return Number(p.weight || 0);
-      if (goal === 'bajar_grasa') return Number(p.body_fat || 0);
-      if (goal === 'subir_musculo') return Number(p.muscle_mass || 0);
-      return 0;
-    });
+    // Helper to scale values relative to min/max of the specific metric
+    const getScale = (values: number[], target: number | null) => {
+      const allValues = target !== null && target > 0 ? [...values, target] : values;
+      const minValue = Math.min(...allValues) - 1;
+      const maxValue = Math.max(...allValues) + 1;
+      const range = maxValue - minValue || 1;
+      return { minValue, maxValue, range };
+    };
 
-    const allValues = target > 0 ? [...values, target] : values;
-    const minValue = Math.min(...allValues) - 1;
-    const maxValue = Math.max(...allValues) + 1;
-    const range = maxValue - minValue || 1;
-    
-    const width = 400;
-    const height = 100;
-    const stepX = width / (prog.length - 1);
-    
-    return values.map((val, i) => {
-      const x = i * stepX;
-      const y = height - ((val - minValue) / range * height);
-      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
-  });
-
-  chartPoints = computed(() => {
-    const prog = [...this.progress()].reverse();
-    const goal = this.currentGoal();
-    const target = this.targetGoalValue();
-    if (prog.length < 1 || !goal) return [];
-    
-    const values = prog.map(p => {
-      if (goal === 'bajar_peso') return Number(p.weight || 0);
-      if (goal === 'bajar_grasa') return Number(p.body_fat || 0);
-      if (goal === 'subir_musculo') return Number(p.muscle_mass || 0);
-      return 0;
-    });
-
-    const allValues = target > 0 ? [...values, target] : values;
-    const minValue = Math.min(...allValues) - 1;
-    const maxValue = Math.max(...allValues) + 1;
-    const range = maxValue - minValue || 1;
-    
     const width = 400;
     const height = 100;
     const stepX = prog.length > 1 ? width / (prog.length - 1) : width / 2;
-    
-    return values.map((val, i) => {
-      const diff = i > 0 ? val - values[i - 1] : 0;
-      let isGood = true;
-      if (i > 0) {
-        if (goal === 'subir_musculo') {
-          isGood = diff >= 0;
-        } else {
-          isGood = diff <= 0;
-        }
-      }
+
+    const createLineData = (
+      key: 'weight' | 'fat' | 'muscle',
+      label: string,
+      unit: string,
+      color: string,
+      targetColor: string,
+      values: number[],
+      target: number | null,
+      isGoodFn: (diff: number) => boolean
+    ) => {
+      const { minValue, range } = getScale(values, target);
       
-      const diffText = i > 0 
-        ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}${goal === 'bajar_grasa' ? '%' : 'kg'}`
-        : '';
-        
-      const tooltipShift = i === 0 ? 35 : (i === prog.length - 1 ? -35 : 0);
+      const points = values.map((val, i) => {
+        const diff = i > 0 ? val - values[i - 1] : 0;
+        const isGood = i > 0 ? isGoodFn(diff) : true;
+        const diffText = i > 0 
+          ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}${unit}`
+          : '';
+        const tooltipShift = i === 0 ? 35 : (i === prog.length - 1 ? -35 : 0);
+        const y = height - ((val - minValue) / range * height);
+        return {
+          x: i * stepX,
+          y,
+          value: val,
+          date: prog[i].date,
+          unit,
+          diff: diffText,
+          isGood,
+          tooltipShift
+        };
+      });
+
+      const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+      const targetY = target !== null && target > 0 ? height - ((target - minValue) / range * height) : null;
 
       return {
-        x: i * stepX,
-        y: height - ((val - minValue) / range * height),
-        value: val,
-        date: prog[i].date,
-        unit: goal === 'bajar_grasa' ? '%' : 'kg',
-        diff: diffText,
-        isGood,
-        tooltipShift
+        key,
+        label,
+        unit,
+        color,
+        targetColor,
+        points,
+        path,
+        targetY,
+        targetValue: target
       };
-    });
+    };
+
+    // 1. Weight Line
+    if (active.weight) {
+      const values = prog.map(p => Number(p.weight || 0));
+      const target = this.currentGoal() === 'bajar_peso' ? Number(patient.peso_meta || 0) : null;
+      lines.push(
+        createLineData(
+          'weight',
+          'Peso',
+          'kg',
+          '#6366F1', // Indigo
+          '#818CF8', // Indigo light
+          values,
+          target,
+          (diff) => diff <= 0 // Bajar peso is good
+        )
+      );
+    }
+
+    // 2. Fat Line
+    if (active.fat) {
+      const values = prog.map(p => Number(p.body_fat || 0));
+      const target = this.currentGoal() === 'bajar_grasa' ? Number(patient.grasa_meta || 0) : null;
+      lines.push(
+        createLineData(
+          'fat',
+          'Grasa',
+          '%',
+          '#F59E0B', // Amber
+          '#FBBF24', // Amber light
+          values,
+          target,
+          (diff) => diff <= 0 // Bajar grasa is good
+        )
+      );
+    }
+
+    // 3. Muscle Line
+    if (active.muscle) {
+      const values = prog.map(p => Number(p.muscle_mass || 0));
+      const target = this.currentGoal() === 'subir_musculo' ? Number(patient.musculo_meta || 0) : null;
+      lines.push(
+        createLineData(
+          'muscle',
+          'Músculo',
+          'kg',
+          '#D81B60', // Rose
+          '#E91E63', // Rose light
+          values,
+          target,
+          (diff) => diff >= 0 // Subir musculo is good
+        )
+      );
+    }
+
+    return lines;
   });
 
   milestones = computed(() => {
@@ -346,6 +377,14 @@ export class PortalPage implements OnInit {
           // Cargar historial
           const history = await this.patientService.getPatientProgress(userEmail);
           this.progress.set(history);
+
+          // Inicializar métricas activas según el objetivo principal
+          const goal = currentPatient.meta_objetivo;
+          this.activeMetrics.set({
+            weight: goal === 'bajar_peso' || !goal,
+            fat: goal === 'bajar_grasa',
+            muscle: goal === 'subir_musculo'
+          });
 
           // Cargar lista de súper desde caché si existe
           this.loadShoppingListFromCache(currentPatient);

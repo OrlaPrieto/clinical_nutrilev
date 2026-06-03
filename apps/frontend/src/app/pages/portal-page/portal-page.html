@@ -311,130 +311,224 @@
                 <!-- Gráfica de Tendencia -->
                 @if (progress().length >= 2) {
                     <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">
-                        <div class="flex items-center justify-between mb-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                             <div>
                                 <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
-                                    Tendencia de {{ currentGoal() === 'bajar_peso' ? 'Peso' : 
-                                                    currentGoal() === 'bajar_grasa' ? 'Grasa' : 
-                                                    currentGoal() === 'subir_musculo' ? 'Músculo' : 'Evidencia' }}
+                                    Tendencia de Progreso
                                 </h3>
                                 <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
                             </div>
-                            <div class="flex items-center gap-2 px-3 py-1 bg-nutri-rose/5 dark:bg-nutri-rose/10 rounded-full border border-nutri-rose/10 dark:border-nutri-rose/20 text-nutri-rose">
-                                <span class="text-[9px] font-black uppercase tracking-widest">Progreso</span>
-                                <app-a-icon [name]="currentGoal() === 'subir_musculo' ? 'trending_up' : 'trending_down'" size="14px"></app-a-icon>
+                            
+                            <!-- Selectores de Métricas -->
+                            <div class="flex flex-wrap gap-2">
+                                <!-- Peso Toggle -->
+                                <button (click)="toggleMetric('weight'); $event.stopPropagation()"
+                                        [class]="activeMetrics().weight 
+                                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25 shadow-sm'
+                                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" [class.animate-pulse]="activeMetrics().weight"></span>
+                                    Peso
+                                </button>
+                                
+                                <!-- Grasa Toggle -->
+                                <button (click)="toggleMetric('fat'); $event.stopPropagation()"
+                                        [class]="activeMetrics().fat 
+                                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 shadow-sm'
+                                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500" [class.animate-pulse]="activeMetrics().fat"></span>
+                                    Grasa
+                                </button>
+                                
+                                <!-- Músculo Toggle -->
+                                <button (click)="toggleMetric('muscle'); $event.stopPropagation()"
+                                        [class]="activeMetrics().muscle 
+                                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose dark:text-nutri-rose-soft border-nutri-rose/25 shadow-sm'
+                                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose" [class.animate-pulse]="activeMetrics().muscle"></span>
+                                    Músculo
+                                </button>
                             </div>
                         </div>
                         
                         <div class="w-full overflow-hidden mt-4">
                             <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
                                 <defs>
-                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="currentColor" stop-opacity="0.1" />
-                                        <stop offset="100%" stop-color="currentColor" stop-opacity="0" />
+                                    <!-- Gradiente Peso (Indigo) -->
+                                    <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#6366F1" stop-opacity="0.15" />
+                                        <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
+                                    </linearGradient>
+                                    <!-- Gradiente Grasa (Amber) -->
+                                    <linearGradient id="gradient-fat" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15" />
+                                        <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+                                    </linearGradient>
+                                    <!-- Gradiente Músculo (Rose) -->
+                                    <linearGradient id="gradient-muscle" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#D81B60" stop-opacity="0.15" />
+                                        <stop offset="100%" stop-color="#D81B60" stop-opacity="0" />
                                     </linearGradient>
                                 </defs>
                                 
-                                <!-- Area under path -->
-                                <path [attr.d]="goalTrendPath() + ' L 400 100 L 0 100 Z'" 
-                                      fill="url(#chartGradient)" 
-                                      class="animate-fade-in" />
+                                <!-- Area under path (Solo si hay exactamente 1 métrica seleccionada para evitar saturación) -->
+                                @if (activeLines().length === 1) {
+                                    <path [attr.d]="activeLines()[0].path + ' L 400 100 L 0 100 Z'" 
+                                          [attr.fill]="'url(#gradient-' + activeLines()[0].key + ')'" 
+                                          class="animate-fade-in" />
+                                }
                                 
-                                <!-- Goal Target Line -->
-                                @if (goalTargetY() !== null) {
-                                    <g class="opacity-70">
-                                        <line x1="0" [attr.y1]="goalTargetY()!" x2="400" [attr.y2]="goalTargetY()!"
-                                              stroke="#10B981" stroke-width="1.5" stroke-dasharray="4 4" />
-                                        <text x="402" [attr.y]="goalTargetY()! + 3"
-                                              class="text-[8px] sm:text-[7px] font-black fill-emerald-500 dark:fill-emerald-400">
-                                            META: {{ targetGoalValue() }}{{ currentGoal() === 'bajar_grasa' ? '%' : 'kg' }}
-                                        </text>
-                                    </g>
+                                <!-- Líneas Meta (Goal Target Lines) -->
+                                @for (line of activeLines(); track line.key) {
+                                    @if (line.targetY !== null) {
+                                        <g class="opacity-70 transition-all duration-300">
+                                            <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
+                                                  [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
+                                            <text x="402" [attr.y]="line.targetY + 3"
+                                                  [attr.fill]="line.color"
+                                                  class="text-[7.5px] font-black">
+                                                META: {{ line.targetValue }}{{ line.unit }}
+                                            </text>
+                                        </g>
+                                    }
                                 }
 
-                                <!-- Main Path -->
-                                <path [attr.d]="goalTrendPath()" 
-                                      fill="none" 
-                                      stroke="currentColor" 
-                                      stroke-width="3" 
-                                      stroke-linecap="round" 
-                                      stroke-linejoin="round"
-                                      class="animate-draw-path" />
+                                <!-- Caminos Principales (Main Paths) -->
+                                @for (line of activeLines(); track line.key) {
+                                    <path [attr.d]="line.path" 
+                                          fill="none" 
+                                          [attr.stroke]="line.color" 
+                                          stroke-width="3" 
+                                          stroke-linecap="round" 
+                                          stroke-linejoin="round"
+                                          class="animate-draw-path transition-all duration-500" />
+                                }
 
-                                <!-- Data Points & Labels -->
-                                @for (point of chartPoints(); track $index) {
-                                    <g class="animate-fade-up relative" [style.animation-delay]="$index * 100 + 'ms'">
-                                        <!-- Weight Label (only visible if not active) -->
-                                        @if (hoveredPoint() !== $index) {
-                                            <text [attr.x]="point.x" [attr.y]="point.y - 12" 
-                                                  text-anchor="middle" 
-                                                  class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                                {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
-                                            </text>
-                                        }
-                                        
-                                        <!-- Point Marker -->
-                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" 
-                                                [attr.r]="hoveredPoint() === $index ? 7 : 5" 
-                                                class="fill-white dark:fill-[#1a1a1a] stroke-nutri-rose stroke-[3px] transition-all duration-300 cursor-pointer"
-                                                [class.!stroke-emerald-500]="hoveredPoint() === $index && point.isGood"
-                                                [class.!stroke-red-500]="hoveredPoint() === $index && !point.isGood" />
-                                        
-                                        <!-- Date Label -->
+                                <!-- X-Axis Date Labels (renderizadas una sola vez usando los puntos de la primera línea activa) -->
+                                @if (activeLines().length > 0) {
+                                    @for (point of activeLines()[0].points; track $index) {
                                         <text [attr.x]="point.x" [attr.y]="115" 
                                               text-anchor="middle" 
                                               class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
                                             {{ point.date | date:'dd MMM' }}
                                         </text>
+                                    }
+                                }
 
-                                        <!-- Custom Tooltip on Hover/Tap -->
-                                        @if (hoveredPoint() === $index) {
-                                            <g class="transition-all duration-300 pointer-events-none z-50">
-                                                <!-- Triangle Pointer -->
-                                                <polygon points="-5,-8 0,-3 5,-8" 
-                                                         [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
-                                                         fill="rgba(15, 23, 42, 0.95)" />
-                                                
-                                                <!-- Card Body -->
-                                                <rect [attr.x]="point.x - 50 + point.tooltipShift" 
-                                                      [attr.y]="point.y - 46" 
-                                                      width="100" 
-                                                      height="30" 
-                                                      rx="6" 
-                                                      fill="rgba(15, 23, 42, 0.95)" />
-                                                
-                                                <!-- Date Text -->
-                                                <text [attr.x]="point.x + point.tooltipShift" 
-                                                      [attr.y]="point.y - 36" 
+                                <!-- Puntos de Datos, Etiquetas y Tooltips -->
+                                @for (line of activeLines(); track line.key) {
+                                    @for (point of line.points; track $index) {
+                                        <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
+                                            <!-- Etiqueta de valor (Solo si hay exactamente 1 métrica activa y NO está hovered) -->
+                                            @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
+                                                <text [attr.x]="point.x" [attr.y]="point.y - 12" 
                                                       text-anchor="middle" 
-                                                      fill="#94a3b8" 
-                                                      class="text-[6.5px] font-bold uppercase tracking-wider">
-                                                    {{ point.date | date:'dd MMM, yyyy' }}
+                                                      class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
+                                                    {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
                                                 </text>
-                                                
-                                                <!-- Value and Diff Text -->
-                                                <text [attr.x]="point.x + point.tooltipShift" 
-                                                      [attr.y]="point.y - 24" 
-                                                      text-anchor="middle" 
-                                                      fill="#ffffff" 
-                                                      class="text-[9px] font-black">
-                                                    {{ point.value }}{{ point.unit }}
-                                                    @if (point.diff) {
-                                                        <tspan [attr.fill]="point.isGood ? '#10b981' : '#ef4444'" class="text-[7.5px] font-bold ml-1">
-                                                            ({{ point.diff }})
-                                                        </tspan>
+                                            }
+                                            
+                                            <!-- Marcador de Punto -->
+                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" 
+                                                    [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
+                                                    class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
+                                                    [attr.stroke]="line.color"
+                                                    [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
+                                                    [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
+                                            
+                                            <!-- Línea Guía Vertical y Tooltip al pasar el cursor (hover) -->
+                                            @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
+                                                <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
+                                                      stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
+
+                                                <g class="transition-all duration-300 pointer-events-none z-50">
+                                                    @if (point.y < 50) {
+                                                        <!-- Puntero Triángulo (Abajo) -->
+                                                        <polygon points="-5,8 0,3 5,8" 
+                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y + 8) + ')'"
+                                                                 [attr.fill]="line.color" />
+                                                        
+                                                        <!-- Cuerpo de la Tarjeta -->
+                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
+                                                              [attr.y]="point.y + 14" 
+                                                              width="110" 
+                                                              height="34" 
+                                                              rx="8" 
+                                                              fill="#0F172A"
+                                                              [attr.stroke]="line.color"
+                                                              stroke-width="1.5" />
+                                                        
+                                                        <!-- Fecha e Identificador de Métrica -->
+                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                              [attr.y]="point.y + 25" 
+                                                              text-anchor="middle" 
+                                                              fill="#94A3B8" 
+                                                              class="text-[7px] font-bold uppercase tracking-wider">
+                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
+                                                        </text>
+                                                        
+                                                        <!-- Valor e Indicador de Progreso -->
+                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                              [attr.y]="point.y + 39" 
+                                                              text-anchor="middle" 
+                                                              fill="#ffffff" 
+                                                              class="text-[9.5px] font-black">
+                                                            {{ point.value }}{{ point.unit }}
+                                                            @if (point.diff) {
+                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
+                                                                    ({{ point.diff }})
+                                                                </tspan>
+                                                            }
+                                                        </text>
+                                                    } @else {
+                                                        <!-- Puntero Triángulo (Arriba) -->
+                                                        <polygon points="-5,-8 0,-3 5,-8" 
+                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
+                                                                 [attr.fill]="line.color" />
+                                                        
+                                                        <!-- Cuerpo de la Tarjeta -->
+                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
+                                                              [attr.y]="point.y - 48" 
+                                                              width="110" 
+                                                              height="34" 
+                                                              rx="8" 
+                                                              fill="#0F172A"
+                                                              [attr.stroke]="line.color"
+                                                              stroke-width="1.5" />
+                                                        
+                                                        <!-- Fecha e Identificador de Métrica -->
+                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                              [attr.y]="point.y - 37" 
+                                                              text-anchor="middle" 
+                                                              fill="#94A3B8" 
+                                                              class="text-[7px] font-bold uppercase tracking-wider">
+                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
+                                                        </text>
+                                                        
+                                                        <!-- Valor e Indicador de Progreso -->
+                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                              [attr.y]="point.y - 23" 
+                                                              text-anchor="middle" 
+                                                              fill="#ffffff" 
+                                                              class="text-[9.5px] font-black">
+                                                            {{ point.value }}{{ point.unit }}
+                                                            @if (point.diff) {
+                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
+                                                                    ({{ point.diff }})
+                                                                </tspan>
+                                                            }
+                                                        </text>
                                                     }
-                                                </text>
-                                            </g>
-                                        }
+                                                </g>
+                                            }
 
-                                        <!-- Forgiving touch target/invisible overlay -->
-                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
-                                                fill="transparent" class="cursor-pointer"
-                                                (mouseenter)="hoveredPoint.set($index)" 
-                                                (mouseleave)="hoveredPoint.set(null)"
-                                                (click)="togglePoint($index); $event.stopPropagation()" />
-                                    </g>
+                                            <!-- Overlay invisible para detección táctil y de cursor -->
+                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
+                                                    fill="transparent" class="cursor-pointer"
+                                                    (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
+                                                    (mouseleave)="hoveredPoint.set(null)"
+                                                    (click)="togglePoint($index, line.key); $event.stopPropagation()" />
+                                        </g>
+                                    }
                                 }
                             </svg>
                         </div>
