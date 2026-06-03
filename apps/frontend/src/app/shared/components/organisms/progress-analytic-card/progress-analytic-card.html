@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/25 dark:border-white/10 shadow-md animate-fade-up transition-colors overflow-hidden">
+<div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/25 dark:border-white/10 shadow-md animate-fade-up transition-colors overflow-hidden">
     <div class="flex items-center justify-between mb-8">
         <div>
             <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">Composición Física Analítica</h3>
@@ -13,133 +13,226 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative">
         <!-- Tabla Izquierda: Métricas Generales -->
         <div class="space-y-0.5 bg-nutri-bg/40 dark:bg-white/10 rounded-2xl overflow-hidden border border-nutri-rose/20 dark:border-white/10">
-            <div class="grid grid-cols-2 p-3 border-b border-nutri-rose/20 dark:border-white/10 bg-nutri-rose/10 dark:bg-white/10">
+            <div class="grid grid-cols-2 p-2.5 sm:p-3 border-b border-nutri-rose/20 dark:border-white/10 bg-nutri-rose/10 dark:bg-white/10">
                 <span class="text-[9px] font-black uppercase text-nutri-rose dark:text-nutri-rose-soft/80">Métrica</span>
                 <span class="text-[9px] font-black uppercase text-nutri-rose dark:text-nutri-rose-soft/80 text-right">Resultado</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">PESO (KG)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().weight }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5 bg-white dark:bg-white/[0.04]">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-white/[0.04]">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">MASA GRASA (KG)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().masa_grasa || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">MINERALES (KG)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().minerales || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5 bg-white dark:bg-white/[0.04]">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-white/[0.04]">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">PROTEÍNAS (KG)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().proteinas || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">AGUA (L)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().agua_corporal || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5 bg-white dark:bg-white/[0.04]">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-white/[0.04]">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">MUSCULO ESQUELETICO (KG)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().musculo_esqueletico || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">MASA MAGRA (KG)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().masa_magra || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5 bg-white dark:bg-white/[0.04]">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-white/[0.04]">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">PGC (% GRASA)</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().pgc || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">GRASA VISCERAL</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().gv || '--' }}</span>
             </div>
-            <div class="grid grid-cols-2 px-4 py-2.5 bg-white dark:bg-white/[0.04]">
+            <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-white/[0.04]">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">EDAD METABÓLICA</span>
                 <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().edad_metabolica || '--' }}</span>
             </div>
         </div>
 
-        <!-- Centro: Diagrama de Cuerpo -->
-        <div class="relative py-10 lg:py-0 flex justify-center items-center h-[400px] lg:h-full">
-            <!-- Background Silhouette (SVG) -->
-            <svg viewBox="0 0 100 200" class="h-full w-auto opacity-20 dark:opacity-15 text-nutri-rose fill-current pointer-events-none">
-                <path d="M50 0 C55 0 60 5 60 12 C60 19 55 24 50 24 C45 24 40 19 40 12 C40 5 45 0 50 0 Z M38 28 C25 28 20 35 20 50 C20 70 25 80 25 110 L28 110 L28 190 C28 195 35 200 42 200 L45 200 L45 120 L55 120 L55 200 L58 200 C65 200 72 195 72 190 L72 110 L75 110 C75 80 80 70 80 50 C80 35 75 28 62 28 L38 28 Z"></path>
-            </svg>
+        <!-- Centro: Diagrama de Cuerpos -->
+        <div class="relative py-10 lg:py-0 flex justify-center items-center h-[460px] lg:h-full min-h-[460px]">
+            <!-- Responsive Container to keep SVG and absolute labels aligned -->
+            <div class="relative w-[220px] h-[440px] mx-auto flex justify-center items-center scale-90 xs:scale-95 sm:scale-100 transition-all duration-300 origin-center">
+                <!-- Background Silhouette (SVG) -->
+                <svg viewBox="0 0 100 200" class="h-full w-auto text-nutri-rose fill-current overflow-visible">
+                    <!-- Head -->
+                    <path d="M 50 3 C 54 3 57 6 57 10 C 57 14 54 17 50 17 C 46 17 43 14 43 10 C 43 6 46 3 50 3 Z M 48.5 18 L 51.5 18 L 51 22 L 49 22 Z"
+                          class="fill-slate-300 dark:fill-slate-700 opacity-25 dark:opacity-35 transition-all duration-300 cursor-pointer hover:opacity-100 hover:fill-nutri-rose"
+                          [class.!opacity-100]="hoveredPart() === 'head'"
+                          [class.!fill-nutri-rose]="hoveredPart() === 'head'"
+                          (mouseenter)="hoveredPart.set('head')"
+                          (mouseleave)="hoveredPart.set(null)"
+                          (click)="togglePart('head')"></path>
 
-            <!-- Etiquetas Flotantes: Brazos -->
-            <div class="absolute top-[10%] left-[5%] flex flex-col items-center bg-white dark:bg-slate-900 p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-none">
-                <span class="text-[7px] font-black uppercase text-nutri-rose">Brazo Izquierdo</span>
-                <span class="text-[10px] font-black dark:text-slate-100">{{ progress().brazo_izq_cm || '--' }}<span class="text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
-                <div class="flex gap-2 mt-1">
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
-                        <span class="text-[8px] font-black">{{ progress().brazo_izq_grasa || '--' }}</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
-                        <span class="text-[8px] font-black">{{ progress().brazo_izq_musculo || '--' }}</span>
-                    </div>
-                </div>
-            </div>
+                    <!-- Torso -->
+                    <path d="M 39 25 L 61 25 C 62.5 40 64 70 63 115 L 37 115 C 36 70 37.5 40 39 25 Z"
+                          class="fill-slate-300 dark:fill-slate-700 opacity-25 dark:opacity-35 transition-all duration-300 cursor-pointer hover:opacity-100 hover:fill-nutri-rose"
+                          [class.!opacity-100]="hoveredPart() === 'torso'"
+                          [class.!fill-nutri-rose]="hoveredPart() === 'torso'"
+                          (mouseenter)="hoveredPart.set('torso')"
+                          (mouseleave)="hoveredPart.set(null)"
+                          (click)="togglePart('torso')"></path>
 
-            <div class="absolute top-[10%] right-[5%] flex flex-col items-center bg-white dark:bg-slate-900 p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-none">
-                <span class="text-[7px] font-black uppercase text-nutri-rose">Brazo Derecho</span>
-                <span class="text-[10px] font-black dark:text-slate-100">{{ progress().brazo_der_cm || '--' }}<span class="text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
-                <div class="flex gap-2 mt-1">
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
-                        <span class="text-[8px] font-black">{{ progress().brazo_der_grasa || '--' }}</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
-                        <span class="text-[8px] font-black">{{ progress().brazo_der_musculo || '--' }}</span>
-                    </div>
-                </div>
-            </div>
+                    <!-- Left Arm -->
+                    <path d="M 35 25 C 24 25 18 32 18 47 C 18 67 23 77 23 107 L 27 107 C 27 77 22 67 22 47 C 22 35 27 29 35 29 Z"
+                          class="fill-slate-300 dark:fill-slate-700 opacity-25 dark:opacity-35 transition-all duration-300 cursor-pointer hover:opacity-100 hover:fill-nutri-rose"
+                          [class.!opacity-100]="hoveredPart() === 'left-arm'"
+                          [class.!fill-nutri-rose]="hoveredPart() === 'left-arm'"
+                          (mouseenter)="hoveredPart.set('left-arm')"
+                          (mouseleave)="hoveredPart.set(null)"
+                          (click)="togglePart('left-arm')"></path>
 
-            <!-- Etiquetas Flotantes: Tronco -->
-            <div class="absolute top-[40%] flex flex-col items-center gap-2 pointer-events-none">
-                <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-nutri-rose/20 shadow-sm">
-                    <span class="text-[7px] font-bold uppercase text-nutri-text/60">Cintura</span>
-                    <span class="text-[10px] font-black">{{ progress().cintura || '--' }} cm</span>
-                </div>
-                <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-nutri-rose/20 shadow-sm">
-                    <span class="text-[7px] font-bold uppercase text-nutri-text/60">Abdomen</span>
-                    <span class="text-[10px] font-black">{{ progress().abdomen || '--' }} cm</span>
-                </div>
-                <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-nutri-rose/20 shadow-sm">
-                    <span class="text-[7px] font-bold uppercase text-nutri-text/60">Cadera</span>
-                    <span class="text-[10px] font-black">{{ progress().cadera || '--' }} cm</span>
-                </div>
-            </div>
+                    <!-- Right Arm -->
+                    <path d="M 65 25 C 76 25 82 32 82 47 C 82 67 77 77 77 107 L 73 107 C 73 77 78 67 78 47 C 78 35 73 29 65 29 Z"
+                          class="fill-slate-300 dark:fill-slate-700 opacity-25 dark:opacity-35 transition-all duration-300 cursor-pointer hover:opacity-100 hover:fill-nutri-rose"
+                          [class.!opacity-100]="hoveredPart() === 'right-arm'"
+                          [class.!fill-nutri-rose]="hoveredPart() === 'right-arm'"
+                          (mouseenter)="hoveredPart.set('right-arm')"
+                          (mouseleave)="hoveredPart.set(null)"
+                          (click)="togglePart('right-arm')"></path>
 
-            <!-- Etiquetas Flotantes: Piernas -->
-            <div class="absolute bottom-[10%] left-[5%] flex flex-col items-center bg-white dark:bg-slate-900 p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-none">
-                <span class="text-[7px] font-black uppercase text-nutri-rose">Pierna Izquierda</span>
-                <span class="text-[10px] font-black dark:text-slate-100">{{ progress().pierna_izq_cm || '--' }}<span class="text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
-                <div class="flex gap-2 mt-1">
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
-                        <span class="text-[8px] font-black">{{ progress().pierna_izq_grasa || '--' }}</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
-                        <span class="text-[8px] font-black">{{ progress().pierna_izq_musculo || '--' }}</span>
+                    <!-- Left Leg -->
+                    <path d="M 37 120 L 48 120 L 48 190 C 48 193 42 197 35 197 L 31 197 L 31 190 C 31 150 37 135 37 120 Z"
+                          class="fill-slate-300 dark:fill-slate-700 opacity-25 dark:opacity-35 transition-all duration-300 cursor-pointer hover:opacity-100 hover:fill-nutri-rose"
+                          [class.!opacity-100]="hoveredPart() === 'left-leg'"
+                          [class.!fill-nutri-rose]="hoveredPart() === 'left-leg'"
+                          (mouseenter)="hoveredPart.set('left-leg')"
+                          (mouseleave)="hoveredPart.set(null)"
+                          (click)="togglePart('left-leg')"></path>
+
+                    <!-- Right Leg -->
+                    <path d="M 63 120 L 52 120 L 52 190 C 52 193 58 197 65 197 L 69 197 L 69 190 C 69 150 63 135 63 120 Z"
+                          class="fill-slate-300 dark:fill-slate-700 opacity-25 dark:opacity-35 transition-all duration-300 cursor-pointer hover:opacity-100 hover:fill-nutri-rose"
+                          [class.!opacity-100]="hoveredPart() === 'right-leg'"
+                          [class.!fill-nutri-rose]="hoveredPart() === 'right-leg'"
+                          (mouseenter)="hoveredPart.set('right-leg')"
+                          (mouseleave)="hoveredPart.set(null)"
+                          (click)="togglePart('right-leg')"></path>
+                </svg>
+
+                <!-- Etiquetas Flotantes: Brazos -->
+                <div class="absolute top-[8%] -left-[15px] sm:-left-[30px] w-[86px] sm:w-[95px] flex flex-col items-center bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-nutri-rose"
+                     [class.scale-105]="hoveredPart() === 'left-arm'"
+                     [class.shadow-xl]="hoveredPart() === 'left-arm'"
+                     [class.border-nutri-rose]="hoveredPart() === 'left-arm'"
+                     [class.bg-nutri-rose/5]="hoveredPart() === 'left-arm'"
+                     (mouseenter)="hoveredPart.set('left-arm')"
+                     (mouseleave)="hoveredPart.set(null)"
+                     (click)="togglePart('left-arm')">
+                    <span class="text-[6.5px] sm:text-[7px] font-black uppercase text-nutri-rose truncate w-full text-center">Brazo Izq.</span>
+                    <span class="text-[9px] sm:text-[10px] font-black dark:text-slate-100">{{ progress().brazo_izq_cm || '--' }}<span class="text-[6.5px] sm:text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
+                    <div class="flex gap-1.5 sm:gap-2 mt-1">
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().brazo_izq_grasa || '--' }}</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().brazo_izq_musculo || '--' }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="absolute bottom-[10%] right-[5%] flex flex-col items-center bg-white dark:bg-slate-900 p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-none">
-                <span class="text-[7px] font-black uppercase text-nutri-rose">Pierna Derecho</span>
-                <span class="text-[10px] font-black dark:text-slate-100">{{ progress().pierna_der_cm || '--' }}<span class="text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
-                <div class="flex gap-2 mt-1">
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
-                        <span class="text-[8px] font-black">{{ progress().pierna_der_grasa || '--' }}</span>
+                <div class="absolute top-[8%] -right-[15px] sm:-right-[30px] w-[86px] sm:w-[95px] flex flex-col items-center bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-nutri-rose"
+                     [class.scale-105]="hoveredPart() === 'right-arm'"
+                     [class.shadow-xl]="hoveredPart() === 'right-arm'"
+                     [class.border-nutri-rose]="hoveredPart() === 'right-arm'"
+                     [class.bg-nutri-rose/5]="hoveredPart() === 'right-arm'"
+                     (mouseenter)="hoveredPart.set('right-arm')"
+                     (mouseleave)="hoveredPart.set(null)"
+                     (click)="togglePart('right-arm')">
+                    <span class="text-[6.5px] sm:text-[7px] font-black uppercase text-nutri-rose truncate w-full text-center">Brazo Der.</span>
+                    <span class="text-[9px] sm:text-[10px] font-black dark:text-slate-100">{{ progress().brazo_der_cm || '--' }}<span class="text-[6.5px] sm:text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
+                    <div class="flex gap-1.5 sm:gap-2 mt-1">
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().brazo_der_grasa || '--' }}</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().brazo_der_musculo || '--' }}</span>
+                        </div>
                     </div>
-                    <div class="flex flex-col items-center">
-                        <span class="text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
-                        <span class="text-[8px] font-black">{{ progress().pierna_der_musculo || '--' }}</span>
+                </div>
+
+                <!-- Etiquetas Flotantes: Tronco -->
+                <div class="absolute top-[34%] w-[82px] sm:w-[90px] flex flex-col items-center gap-1 sm:gap-1.5 pointer-events-auto cursor-pointer transition-all duration-300"
+                     [class.scale-105]="hoveredPart() === 'torso'"
+                     (mouseenter)="hoveredPart.set('torso')"
+                     (mouseleave)="hoveredPart.set(null)"
+                     (click)="togglePart('torso')">
+                    <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border shadow-sm w-full transition-all"
+                         [class.border-nutri-rose]="hoveredPart() === 'torso'"
+                         [class.bg-nutri-rose/5]="hoveredPart() === 'torso'">
+                        <span class="text-[6.5px] sm:text-[7px] font-bold uppercase text-nutri-text/60">Cintura</span>
+                        <span class="text-[9px] sm:text-[10px] font-black">{{ progress().cintura || '--' }} cm</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border shadow-sm w-full transition-all"
+                         [class.border-nutri-rose]="hoveredPart() === 'torso'"
+                         [class.bg-nutri-rose/5]="hoveredPart() === 'torso'">
+                        <span class="text-[6.5px] sm:text-[7px] font-bold uppercase text-nutri-text/60">Abdomen</span>
+                        <span class="text-[9px] sm:text-[10px] font-black">{{ progress().abdomen || '--' }} cm</span>
+                    </div>
+                    <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border shadow-sm w-full transition-all"
+                         [class.border-nutri-rose]="hoveredPart() === 'torso'"
+                         [class.bg-nutri-rose/5]="hoveredPart() === 'torso'">
+                        <span class="text-[6.5px] sm:text-[7px] font-bold uppercase text-nutri-text/60">Cadera</span>
+                        <span class="text-[9px] sm:text-[10px] font-black">{{ progress().cadera || '--' }} cm</span>
+                    </div>
+                </div>
+
+                <!-- Etiquetas Flotantes: Piernas -->
+                <div class="absolute bottom-[8%] -left-[15px] sm:-left-[30px] w-[86px] sm:w-[95px] flex flex-col items-center bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-nutri-rose"
+                     [class.scale-105]="hoveredPart() === 'left-leg'"
+                     [class.shadow-xl]="hoveredPart() === 'left-leg'"
+                     [class.border-nutri-rose]="hoveredPart() === 'left-leg'"
+                     [class.bg-nutri-rose/5]="hoveredPart() === 'left-leg'"
+                     (mouseenter)="hoveredPart.set('left-leg')"
+                     (mouseleave)="hoveredPart.set(null)"
+                     (click)="togglePart('left-leg')">
+                    <span class="text-[6.5px] sm:text-[7px] font-black uppercase text-nutri-rose truncate w-full text-center">Pierna Izq.</span>
+                    <span class="text-[9px] sm:text-[10px] font-black dark:text-slate-100">{{ progress().pierna_izq_cm || '--' }}<span class="text-[6.5px] sm:text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
+                    <div class="flex gap-1.5 sm:gap-2 mt-1">
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().pierna_izq_grasa || '--' }}</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().pierna_izq_musculo || '--' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-[8%] -right-[15px] sm:-right-[30px] w-[86px] sm:w-[95px] flex flex-col items-center bg-white dark:bg-slate-900 p-1.5 sm:p-2 rounded-xl shadow-md border border-nutri-rose/25 pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-nutri-rose"
+                     [class.scale-105]="hoveredPart() === 'right-leg'"
+                     [class.shadow-xl]="hoveredPart() === 'right-leg'"
+                     [class.border-nutri-rose]="hoveredPart() === 'right-leg'"
+                     [class.bg-nutri-rose/5]="hoveredPart() === 'right-leg'"
+                     (mouseenter)="hoveredPart.set('right-leg')"
+                     (mouseleave)="hoveredPart.set(null)"
+                     (click)="togglePart('right-leg')">
+                    <span class="text-[6.5px] sm:text-[7px] font-black uppercase text-nutri-rose truncate w-full text-center">Pierna Der.</span>
+                    <span class="text-[9px] sm:text-[10px] font-black dark:text-slate-100">{{ progress().pierna_der_cm || '--' }}<span class="text-[6.5px] sm:text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
+                    <div class="flex gap-1.5 sm:gap-2 mt-1">
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().pierna_der_grasa || '--' }}</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
+                            <span class="text-[7.5px] sm:text-[8px] font-black">{{ progress().pierna_der_musculo || '--' }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -150,7 +243,10 @@
             <div class="bg-nutri-rose/10 dark:bg-white/10 p-5 rounded-3xl border border-nutri-rose/20 dark:border-white/10 shadow-sm">
                 <span class="text-[8px] font-black uppercase tracking-widest text-nutri-rose block mb-3">Tu Nutriólogo</span>
                 <h4 class="text-sm font-black serif flex items-center gap-2 dark:text-slate-200">
-                    <app-a-icon name="medical_services" size="18px" class="text-nutri-rose"></app-a-icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-[18px] h-[18px] text-nutri-rose inline-block select-none" style="font-size: 18px; width: 18px; height: 18px;">
+                        <path d="M19 6h-3V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-9-2h4v2h-4V4zm9 15H5V8h14v11z"/>
+                        <path d="M11 10h2v3h3v2h-3v3h-2v-3H8v-2h3z"/>
+                    </svg>
                     L.N. Velvet De la Cruz
                 </h4>
                 <p class="text-[9px] font-bold text-nutri-text/70 dark:text-slate-500 uppercase tracking-widest mt-1">Ced. Prof 10622381</p>

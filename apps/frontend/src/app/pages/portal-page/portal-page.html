@@ -1,7 +1,7 @@
 @if (patient()) {
     <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 pb-20">
         <!-- Header -->
-        <header class="bg-white dark:bg-[#080808]/80 dark:backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-6 py-6 sticky top-0 z-50 transition-colors duration-300">
+        <header class="bg-white dark:bg-[#080808]/80 dark:backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 sm:px-6 py-4 sm:py-6 sticky top-0 z-50 transition-colors duration-300">
             <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
                 <div class="flex items-center gap-4 sm:gap-6">
                     <!-- Brand Logo -->
@@ -27,15 +27,23 @@
                 
                 <div class="flex items-center gap-3">
                     <!-- Discrete Theme Selector -->
-                    <div class="group relative flex items-center h-10 px-2 rounded-xl transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5">
-                        <div class="flex items-center justify-center w-8 h-8 text-nutri-text/40 dark:text-white/40 group-hover:text-nutri-rose transition-colors">
+                    <div class="relative flex items-center h-10 px-2 rounded-xl transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5 cursor-pointer"
+                         (click)="showThemeMenu.set(!showThemeMenu()); $event.stopPropagation()">
+                        <div class="flex items-center justify-center w-8 h-8 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose transition-colors"
+                             [class.text-nutri-rose]="showThemeMenu()">
                             <app-a-icon name="palette" size="18px"></app-a-icon>
                         </div>
-                        <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5">
-                            <button (click)="themeService.setTheme('light')" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
-                            <button (click)="themeService.setTheme('dark')" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
-                            <button (click)="themeService.setTheme('vibrant')" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
-                            <button (click)="themeService.setTheme('purple')" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
+                        <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 transition-all duration-300 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50"
+                             [class.opacity-0]="!showThemeMenu()"
+                             [class.invisible]="!showThemeMenu()"
+                             [class.opacity-100]="showThemeMenu()"
+                             [class.visible]="showThemeMenu()"
+                             [class.translate-y-0]="showThemeMenu()"
+                             [class.translate-y-[-10px]]="!showThemeMenu()">
+                            <button (click)="themeService.setTheme('light'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
+                            <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
+                            <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
+                            <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
                         </div>
                     </div>
 
@@ -47,18 +55,87 @@
             </div>
         </header>
 
-        <main class="max-w-5xl mx-auto px-6 mt-8 space-y-8 animate-fade-up">
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 mt-8 space-y-8 animate-fade-up">
             
             @if (loading()) {
-                <div class="flex flex-col items-center justify-center py-40 gap-4 opacity-50">
-                    <div class="w-8 h-8 border-4 border-nutri-rose border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold uppercase tracking-widest dark:text-slate-400">Cargando tus avances...</p>
+                <!-- High-Fidelity Shimmering Skeleton Loader -->
+                <div class="space-y-8 animate-pulse">
+                    <!-- Resumen de Meta & Último Registro Skeletons -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <div class="h-44 bg-slate-100 dark:bg-white/[0.02] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/40 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative">
+                            <div class="absolute -right-10 -top-10 w-40 h-40 bg-slate-200/40 dark:bg-white/[0.02] rounded-full"></div>
+                            <div class="space-y-3">
+                                <div class="w-24 h-3 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                <div class="w-36 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            </div>
+                            <div class="w-2/3 h-4 bg-slate-200 dark:bg-white/10 rounded mt-4"></div>
+                        </div>
+
+                        <div class="h-44 bg-slate-100 dark:bg-white/[0.02] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/40 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative">
+                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-200/40 dark:bg-white/[0.02] rounded-full"></div>
+                            <div class="space-y-3">
+                                <div class="w-24 h-3 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                <div class="flex gap-4">
+                                    <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mt-4">
+                                <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10"></div>
+                                <div class="w-28 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plan Nutricional Skeleton -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between px-2">
+                            <div class="w-36 h-4 bg-slate-100 dark:bg-white/[0.02] rounded"></div>
+                            <div class="w-20 h-3 bg-slate-100 dark:bg-white/[0.02] rounded"></div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-slate-200/40 dark:border-white/5 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-white/10"></div>
+                                <div class="flex-1 space-y-2">
+                                    <div class="w-16 h-2 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="w-32 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-slate-200/40 dark:border-white/5 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-white/10"></div>
+                                <div class="flex-1 space-y-2">
+                                    <div class="w-16 h-2 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="w-32 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Métricas Skeleton -->
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
+                            <div class="w-10 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            <div class="w-20 h-6 bg-slate-200 dark:bg-white/10 rounded"></div>
+                        </div>
+                        <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
+                            <div class="w-12 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            <div class="w-20 h-6 bg-slate-200 dark:bg-white/10 rounded"></div>
+                        </div>
+                        <div class="col-span-2 lg:col-span-1 h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
+                            <div class="flex justify-between">
+                                <div class="w-10 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                <div class="w-8 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            </div>
+                            <div class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-full"></div>
+                        </div>
+                    </div>
                 </div>
             } @else {
                 
                 <!-- Resumen de Meta -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative transition-colors">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative transition-colors">
                         <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">
@@ -66,7 +143,7 @@
                                    currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
                                    currentGoal() === 'subir_musculo' ? 'Meta de Músculo' : 'Tu Objetivo' }}
                             </span>
-                            <h2 class="text-4xl font-bold serif">
+                            <h2 class="text-3xl sm:text-4xl font-bold serif">
                                 @if (currentGoal() === 'bajar_peso') {
                                     {{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
                                 } @else if (currentGoal() === 'bajar_grasa') {
@@ -81,25 +158,25 @@
                         <p class="text-xs text-nutri-text/50 dark:text-slate-600 mt-4 leading-relaxed italic">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
                     </div>
 
-                    <div class="bg-nutri-rose-soft/30 dark:bg-nutri-rose-soft/10 p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm text-nutri-rose flex flex-col justify-between overflow-hidden relative transition-all hover:bg-nutri-rose-soft/40 dark:hover:bg-nutri-rose-soft/20">
+                    <div class="bg-nutri-rose-soft/30 dark:bg-nutri-rose-soft/10 p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm text-nutri-rose flex flex-col justify-between overflow-hidden relative transition-all hover:bg-nutri-rose-soft/40 dark:hover:bg-nutri-rose-soft/20">
                         <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
                         <div>
                             <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose opacity-60 mb-2 block">Último Registro</span>
-                            <div class="flex flex-wrap items-baseline gap-4 text-nutri-rose dark:text-nutri-rose-soft">
+                            <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-4 text-nutri-rose dark:text-nutri-rose-soft">
                                 <!-- Peso -->
-                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
-                                    <h2 class="text-4xl font-bold serif">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
-                                    <span class="text-lg font-normal opacity-60">kg</span>
+                                <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
+                                    <h2 class="text-3xl sm:text-4xl font-bold serif leading-none">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                    <span class="text-[10px] sm:text-lg font-normal opacity-60">kg</span>
                                 </div>
                                 <!-- Grasa -->
-                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
-                                    <h2 class="text-2xl font-bold serif">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
-                                    <span class="text-sm font-normal opacity-60">% grasa</span>
+                                <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
+                                    <h2 class="text-xl sm:text-2xl font-bold serif leading-none">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                    <span class="text-[9px] sm:text-sm font-normal opacity-60">% gras.</span>
                                 </div>
                                 <!-- Musculo -->
-                                <div class="flex items-baseline gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
-                                    <h2 class="text-2xl font-bold serif">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
-                                    <span class="text-sm font-normal opacity-60">kg musc.</span>
+                                <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
+                                    <h2 class="text-xl sm:text-2xl font-bold serif leading-none">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                    <span class="text-[9px] sm:text-sm font-normal opacity-60">kg musc.</span>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +202,7 @@
                             @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                 @for (m of patient()?.current_menus; track $index) {
                                     <div (click)="openMenu(m.url)" 
-                                         class="group bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                         class="group bg-white dark:bg-[#111111] p-5 sm:p-6 rounded-[1.75rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
                                         <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
                                             <app-a-icon name="description"></app-a-icon>
@@ -141,7 +218,7 @@
                                 }
                             } @else if (patient()?.menu_url) {
                                 <div (click)="openMenu()" 
-                                     class="group bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                     class="group bg-white dark:bg-[#111111] p-5 sm:p-6 rounded-[1.75rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
                                     <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
                                         <app-a-icon name="description"></app-a-icon>
                                     </div>
@@ -154,7 +231,7 @@
 
                             <!-- Shopping List Card -->
                             <div (click)="openShoppingList()" 
-                                 class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-6 rounded-[2.5rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                 class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-5 sm:p-6 rounded-[1.75rem] sm:rounded-[2.5rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
                                 <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
                                     <app-a-icon name="shopping_cart"></app-a-icon>
                                 </div>
@@ -181,34 +258,34 @@
                 }
 
                 <!-- Grid de Métricas de Composición -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-up" style="animation-delay: 100ms">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-up" style="animation-delay: 100ms">
 
                     <!-- BMI Card -->
-                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                    <div class="col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
                         <div class="flex items-center gap-2 text-nutri-rose/40">
                             <app-a-icon name="speed" size="16px"></app-a-icon>
                             <span class="text-[9px] font-black uppercase tracking-widest">IMC</span>
                         </div>
                         <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ bmi() || '--' }}</span>
-                            <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
+                            <span class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ bmi() || '--' }}</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
                         </div>
                     </div>
 
                     <!-- Fat Card -->
-                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                    <div class="col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
                         <div class="flex items-center gap-2 text-nutri-rose/40">
                             <app-a-icon name="percent" size="16px"></app-a-icon>
                             <span class="text-[9px] font-black uppercase tracking-widest">% Grasa</span>
                         </div>
                         <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl font-bold serif text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
-                            <span class="text-[10px] font-bold text-nutri-rose/30 uppercase">% corporal</span>
+                            <span class="text-xl sm:text-2xl font-bold serif text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-nutri-rose/30 uppercase">% corp.</span>
                         </div>
                     </div>
 
                     <!-- Goal Card -->
-                    <div class="bg-white dark:bg-[#111111] p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-2 transition-colors">
+                    <div class="col-span-2 lg:col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-2 transition-colors">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2 text-nutri-rose/40">
                                 <app-a-icon name="flag" size="16px"></app-a-icon>
@@ -231,10 +308,9 @@
                         </app-progress-analytic-card>
                     </div>
                 }
-
                 <!-- Gráfica de Tendencia -->
                 @if (progress().length >= 2) {
-                    <div class="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">
+                    <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">
                         <div class="flex items-center justify-between mb-8">
                             <div>
                                 <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
@@ -263,7 +339,19 @@
                                 <path [attr.d]="goalTrendPath() + ' L 400 100 L 0 100 Z'" 
                                       fill="url(#chartGradient)" 
                                       class="animate-fade-in" />
-...
+                                
+                                <!-- Goal Target Line -->
+                                @if (goalTargetY() !== null) {
+                                    <g class="opacity-70">
+                                        <line x1="0" [attr.y1]="goalTargetY()!" x2="400" [attr.y2]="goalTargetY()!"
+                                              stroke="#10B981" stroke-width="1.5" stroke-dasharray="4 4" />
+                                        <text x="402" [attr.y]="goalTargetY()! + 3"
+                                              class="text-[8px] sm:text-[7px] font-black fill-emerald-500 dark:fill-emerald-400">
+                                            META: {{ targetGoalValue() }}{{ currentGoal() === 'bajar_grasa' ? '%' : 'kg' }}
+                                        </text>
+                                    </g>
+                                }
+
                                 <!-- Main Path -->
                                 <path [attr.d]="goalTrendPath()" 
                                       fill="none" 
@@ -275,24 +363,77 @@
 
                                 <!-- Data Points & Labels -->
                                 @for (point of chartPoints(); track $index) {
-                                    <g class="animate-fade-up" [style.animation-delay]="$index * 100 + 'ms'">
-                                        <!-- Weight Label -->
-                                        <text [attr.x]="point.x" [attr.y]="point.y - 12" 
-                                              text-anchor="middle" 
-                                              class="text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                            {{ point.value }}<tspan class="text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
-                                        </text>
+                                    <g class="animate-fade-up relative" [style.animation-delay]="$index * 100 + 'ms'">
+                                        <!-- Weight Label (only visible if not active) -->
+                                        @if (hoveredPoint() !== $index) {
+                                            <text [attr.x]="point.x" [attr.y]="point.y - 12" 
+                                                  text-anchor="middle" 
+                                                  class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
+                                                {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
+                                            </text>
+                                        }
                                         
                                         <!-- Point Marker -->
-                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" r="5" 
-                                                class="fill-white dark:fill-[#1a1a1a] stroke-nutri-rose stroke-[3px]" />
+                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" 
+                                                [attr.r]="hoveredPoint() === $index ? 7 : 5" 
+                                                class="fill-white dark:fill-[#1a1a1a] stroke-nutri-rose stroke-[3px] transition-all duration-300 cursor-pointer"
+                                                [class.!stroke-emerald-500]="hoveredPoint() === $index && point.isGood"
+                                                [class.!stroke-red-500]="hoveredPoint() === $index && !point.isGood" />
                                         
                                         <!-- Date Label -->
                                         <text [attr.x]="point.x" [attr.y]="115" 
                                               text-anchor="middle" 
-                                              class="text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
+                                              class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
                                             {{ point.date | date:'dd MMM' }}
                                         </text>
+
+                                        <!-- Custom Tooltip on Hover/Tap -->
+                                        @if (hoveredPoint() === $index) {
+                                            <g class="transition-all duration-300 pointer-events-none z-50">
+                                                <!-- Triangle Pointer -->
+                                                <polygon points="-5,-8 0,-3 5,-8" 
+                                                         [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
+                                                         fill="rgba(15, 23, 42, 0.95)" />
+                                                
+                                                <!-- Card Body -->
+                                                <rect [attr.x]="point.x - 50 + point.tooltipShift" 
+                                                      [attr.y]="point.y - 46" 
+                                                      width="100" 
+                                                      height="30" 
+                                                      rx="6" 
+                                                      fill="rgba(15, 23, 42, 0.95)" />
+                                                
+                                                <!-- Date Text -->
+                                                <text [attr.x]="point.x + point.tooltipShift" 
+                                                      [attr.y]="point.y - 36" 
+                                                      text-anchor="middle" 
+                                                      fill="#94a3b8" 
+                                                      class="text-[6.5px] font-bold uppercase tracking-wider">
+                                                    {{ point.date | date:'dd MMM, yyyy' }}
+                                                </text>
+                                                
+                                                <!-- Value and Diff Text -->
+                                                <text [attr.x]="point.x + point.tooltipShift" 
+                                                      [attr.y]="point.y - 24" 
+                                                      text-anchor="middle" 
+                                                      fill="#ffffff" 
+                                                      class="text-[9px] font-black">
+                                                    {{ point.value }}{{ point.unit }}
+                                                    @if (point.diff) {
+                                                        <tspan [attr.fill]="point.isGood ? '#10b981' : '#ef4444'" class="text-[7.5px] font-bold ml-1">
+                                                            ({{ point.diff }})
+                                                        </tspan>
+                                                    }
+                                                </text>
+                                            </g>
+                                        }
+
+                                        <!-- Forgiving touch target/invisible overlay -->
+                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
+                                                fill="transparent" class="cursor-pointer"
+                                                (mouseenter)="hoveredPoint.set($index)" 
+                                                (mouseleave)="hoveredPoint.set(null)"
+                                                (click)="togglePoint($index); $event.stopPropagation()" />
                                     </g>
                                 }
                             </svg>
@@ -308,13 +449,20 @@
                             <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 dark:text-nutri-rose-soft/40 uppercase">Celebrando tus grandes victorias</p>
                         </div>
 
-                        <div class="flex flex-wrap items-start justify-center gap-12 md:gap-32 relative w-full max-w-5xl">
-                            <!-- Progress Path Line -->
-                            <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-slate-50 dark:bg-white/5 -z-10 hidden md:block"></div>
+                        <div class="flex flex-col sm:flex-row items-start sm:items-start justify-center gap-12 sm:gap-20 md:gap-32 relative w-full max-w-[300px] sm:max-w-5xl mx-auto">
+                            <!-- Progress Path Line (Static Track + Active Dynamic Fill Line) - Desktop -->
+                            <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 hidden sm:block"></div>
+                            <div class="absolute top-12 left-[12.5%] h-[3px] bg-gradient-to-r from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 hidden sm:block transition-all duration-1000 origin-left"
+                                 [style.width.%]="(goalPercentage() / 100) * 75"></div>
+                            
+                            <!-- Progress Path Line (Static Track + Active Dynamic Fill Line) - Mobile -->
+                            <div class="absolute left-10 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 sm:hidden"></div>
+                            <div class="absolute left-10 -translate-x-1/2 top-10 w-[3px] bg-gradient-to-b from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 sm:hidden transition-all duration-1000 origin-top"
+                                 [style.height.%]="(goalPercentage() / 100) * 80"></div>
                             
                             @for (ms of milestones(); track ms.id) {
                                 <app-m-milestone-badge 
-                                    [image]="ms.image" 
+                                    [id]="ms.id" 
                                     [title]="ms.title" 
                                     [description]="ms.description" 
                                     [unlocked]="ms.unlocked">
@@ -353,16 +501,16 @@
 
 @if (showShoppingModal()) {
     <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#151515] w-full max-w-lg max-h-[85vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
+        <div class="bg-white dark:bg-[#151515] w-full max-w-lg max-h-[85vh] rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
             <!-- Header -->
-            <div class="p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5">
+            <div class="p-5 sm:p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
                         <app-a-icon name="shopping_cart"></app-a-icon>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold serif text-nutri-text dark:text-white">Lista de Súper</h3>
-                        <p class="text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-0.5">Nutrilev AI Intelligence</p>
+                        <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-white leading-none">Lista de Súper</h3>
+                        <p class="text-[9px] sm:text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-1">Nutrilev AI Intelligence</p>
                     </div>
                 </div>
                 <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose">
@@ -371,47 +519,30 @@
             </div>
       
             <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+            <div class="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6 sm:space-y-10 custom-scrollbar">
                 @if (loadingShoppingList()) {
                     <div class="flex flex-col items-center justify-center py-16">
-                        <div class="w-14 h-14 rounded-full border-4 border-nutri-rose/10 border-t-nutri-rose animate-spin mb-6"></div>
-                        <p class="text-nutri-text/60 dark:text-slate-400 text-sm font-bold serif">Analizando ingredientes...</p>
-                        <p class="text-[10px] text-nutri-rose/50 font-black uppercase tracking-widest mt-2">Expert Chef AI working</p>
+                        <div class="w-8 h-8 border-4 border-nutri-rose border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-nutri-text/40 dark:text-slate-500">Detectando ingredientes...</p>
                     </div>
-                }
-        
-                @if (!loadingShoppingList()) {
+                } @else {
                     @for (cat of shoppingList(); track cat.category) {
-                        <div class="space-y-5">
-                            <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-2">
-                                <h4 class="text-[11px] font-black text-nutri-rose uppercase tracking-[0.2em] flex items-center gap-2 serif">
-                                    {{ cat.category }}
-                                </h4>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-nutri-rose/5 text-nutri-rose opacity-50">
-                                    {{ cat.items.length }}
-                                </span>
-                            </div>
-          
-                            <div class="grid gap-3">
+                        <div class="space-y-4">
+                            <h4 class="text-[10px] font-black uppercase text-nutri-rose dark:text-nutri-rose-soft tracking-widest border-b border-nutri-rose/10 pb-1 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose"></span>
+                                {{ cat.category }}
+                            </h4>
+                            <div class="grid grid-cols-1 gap-2.5">
                                 @for (item of cat.items; track item.name) {
                                     <div (click)="toggleShoppingItem(cat.category, item)"
-                                         class="group flex items-center gap-4 p-5 rounded-[1.5rem] border transition-all cursor-pointer relative overflow-hidden"
-                                         [class.bg-nutri-green/5]="item.checked"
-                                         [class.border-nutri-green/20]="item.checked"
-                                         [class.bg-white]="!item.checked"
-                                         [class.dark:bg-white/5]="!item.checked"
-                                         [class.border-nutri-rose/5]="!item.checked"
-                                         [class.dark:border-white/10]="!item.checked"
-                                         [class.hover:border-nutri-rose/30]="!item.checked"
-                                         [class.shadow-sm]="!item.checked">
-                                      
-                                        <!-- Check Indicator -->
-                                        <div class="w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all shrink-0"
-                                             [class.bg-nutri-green]="item.checked"
-                                             [class.border-nutri-green]="item.checked"
+                                         class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-nutri-bg/40 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/10 group cursor-pointer transition-all hover:bg-white dark:hover:bg-white/10"
+                                         [class.opacity-50]="item.checked">
+                                        
+                                        <!-- Custom Checkbox -->
+                                        <div class="w-5 h-5 rounded-lg border flex items-center justify-center transition-all shrink-0 mt-0.5"
+                                             [class.bg-nutri-rose]="item.checked"
+                                             [class.border-nutri-rose]="item.checked"
                                              [class.text-white]="item.checked"
-                                             [class.shadow-lg]="item.checked"
-                                             [class.shadow-nutri-green/20]="item.checked"
                                              [class.border-nutri-rose/10]="!item.checked"
                                              [class.dark:border-white/10]="!item.checked"
                                              [class.group-hover:border-nutri-rose/40]="!item.checked">
@@ -422,26 +553,21 @@
             
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center justify-between gap-3 mb-1">
-                                                <span class="font-bold text-sm text-nutri-text dark:text-white transition-all truncate serif" [class.opacity-30]="item.checked" [class.line-through]="item.checked">
+                                                <span class="font-bold text-sm text-nutri-text dark:text-white transition-all truncate serif" [class.line-through]="item.checked">
                                                     {{ item.icon }} {{ item.name }}
                                                 </span>
                                                 <!-- Meta Column: Amount & Brand -->
-                                                <div class="flex flex-col items-end shrink-0 gap-1 mt-[-2px]">
+                                                <div class="flex flex-col items-end shrink-0 gap-1">
                                                     @if (item.amount) {
                                                         <span class="text-[9px] font-black px-2 py-0.5 rounded-lg bg-nutri-rose/10 text-nutri-rose uppercase tracking-tighter">
                                                             {{ item.amount }}
-                                                        </span>
-                                                    }
-                                                    @if (item.brand) {
-                                                        <span class="text-[7px] font-bold text-nutri-rose/40 bg-nutri-rose/5 dark:bg-white/5 border border-nutri-rose/10 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
-                                                            {{ item.brand }}
                                                         </span>
                                                     }
                                                 </div>
                                             </div>
                                             @if (item.tip) {
                                                 <p class="text-[11px] text-nutri-text/40 dark:text-slate-500 italic leading-snug">
-                                                    <span class="text-nutri-rose/40 not-italic font-bold">💡</span> {{ item.tip }}
+                                                    {{ item.tip }}
                                                 </p>
                                             }
                                         </div>
@@ -462,9 +588,14 @@
             </div>
         
             <!-- Footer -->
-            <div class="p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5">
-                <app-a-button (onClick)="closeShoppingModal()" label="¡Listo, a comprar!" variant="primary" size="lg"
-                            customClass="!rounded-2xl !shadow-2xl !shadow-nutri-rose/20 dark:!shadow-rose-900/20 active:scale-95 transition-all">
+            <div class="p-5 sm:p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5 flex gap-3">
+                @if (hasShoppingError()) {
+                    <app-a-button (onClick)="retryShoppingList()" label="Reintentar Generar" variant="primary" size="lg"
+                                customClass="!rounded-2xl flex-1 !shadow-xl !shadow-nutri-rose/20 active:scale-95 transition-all">
+                    </app-a-button>
+                }
+                <app-a-button (onClick)="closeShoppingModal()" [label]="hasShoppingError() ? 'Cerrar' : '¡Listo, a comprar!'" [variant]="hasShoppingError() ? 'outline' : 'primary'" size="lg"
+                            customClass="!rounded-2xl flex-1 active:scale-95 transition-all">
                 </app-a-button>
             </div>
         </div>

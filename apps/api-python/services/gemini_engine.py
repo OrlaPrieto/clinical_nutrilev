@@ -66,10 +66,14 @@ def _call_gemini(historial: dict, calorias: int, notas: str, menu_base_texto: st
     client = genai.Client(api_key=gemini_key)
     try:
         visible = [m.name for m in client.models.list()]
-        priority = ["models/gemini-2.0-flash", "models/gemini-1.5-flash"]
-        models_to_try = [m for p in priority for m in visible if p in m] or ["models/gemini-1.5-flash"]
+        priority = ["models/gemini-2.5-flash", "models/gemini-2.0-flash", "models/gemini-1.5-flash"]
+        # Filtrar modelos obsoletos/deprecados como lite o 001 para evitar errores 404
+        models_to_try = [
+            m for p in priority for m in visible 
+            if p in m and "lite" not in m and "001" not in m
+        ] or ["models/gemini-2.5-flash"]
     except Exception:
-        models_to_try = ["models/gemini-1.5-flash"]
+        models_to_try = ["models/gemini-2.5-flash"]
 
     prompt = _build_user_prompt(historial, calorias, notas)
     for model in models_to_try:

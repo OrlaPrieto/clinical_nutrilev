@@ -76,3 +76,69 @@ def generate_full_menu_docx(historial_paciente, calorias_objetivo, notas_persona
 
     # 3. Construir .docx
     return _build_docx(menu_json, historial_paciente, calorias_objetivo)
+
+def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
+    """
+    Genera la lista de compras en formato JSON estructurado.
+    """
+    import re
+    import json
+    from google import genai
+    from google.genai import types
+
+    todos_ingredientes = menu_data.get("todos_ingredientes", [])
+    ingredientes_str = "\n".join(todos_ingredientes)
+    
+    system_prompt = "Eres un asistente de nutrición que devuelve listas de compras en formato JSON estricto. NUNCA respondas con texto fuera del JSON."
+    
+    prompt = f"""
+Analiza los siguientes ingredientes extraídos del plan de alimentación de 7 días de un paciente. Consolida y agrupa los ingredientes en categorías lógicas (por ejemplo, lácteos, verduras, proteínas, cereales, etc.) y calcula las cantidades consolidadas necesarias para la semana entera.
+
+Ingredientes a analizar:
+{ingredientes_str}
+
+Responde ÚNICAMENTE con un objeto JSON válido (array de objetos) con la siguiente estructura exacta:
+[
+  {{
+    "category": "🥦 VERDURAS Y HORTALIZAS",
+    "items": [
+      {{ "icon": "🥬", "name": "Lechuga romana", "amount": "1 pieza", "tip": "Buscar hojas firmes y sin manchas cafés", "brand": "Local" }}
+    ]
+  }}
+]
+No incluyas markdown, solo el JSON puro.
+"""
+    
+    client = genai.Client(api_key=gemini_key)
+    
+    try:
+        visible = [m.name for m in client.models.list()]
+        priority = ["models/gemini-2.5-flash", "models/gemini-2.0-flash", "models/gemini-1.5-flash"]
+        # Filtrar modelos obsoletos/deprecados como lite o 001 para evitar errores 404
+        models_to_try = [
+            m for p in priority for m in visible 
+            if p in m and "lite" not in m and "001" not in m
+        ] or ["models/gemini-2.5-flash"]
+    except Exception:
+        models_to_try = ["models/gemini-2.5-flash"]
+
+    for model in models_to_try:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
+                config=types.GenerateContentConfig(temperature=0.1, response_mime_type="application/json"),
+            )
+            text = response.text.strip()
+            text = re.sub(r"^```json\s*", "", text)
+            text = re.sub(r"\s*```$", "", text)
+            return json.loads(text)
+        except Exception as e:
+            print(f"[Gemini JSON Shopping List] Error with {model}: {e}")
+            
+    return [
+        {
+            "category": "⚠️ ERROR AL GENERAR",
+            "items": [{"icon": "❌", "name": "No se pudo conectar con Gemini", "amount": "-", "tip": "Reintente más tarde", "brand": "-"}]
+        }
+    ]

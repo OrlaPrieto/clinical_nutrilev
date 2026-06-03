@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { PatientService } from '../../services/patient';
@@ -40,10 +40,29 @@ export class PortalPage implements OnInit {
   patient = signal<Patient | null>(null);
   progress = signal<PatientProgress[]>([]);
   loading = signal<boolean>(true);
+  hoveredPoint = signal<number | null>(null);
+  showThemeMenu = signal<boolean>(false);
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.showThemeMenu.set(false);
+  }
+
+  togglePoint(index: number) {
+    if (this.hoveredPoint() === index) {
+      this.hoveredPoint.set(null);
+    } else {
+      this.hoveredPoint.set(index);
+    }
+  }
   
   shoppingList = signal<ShoppingCategory[]>([]);
   loadingShoppingList = signal<boolean>(false);
   showShoppingModal = signal<boolean>(false);
+
+  hasShoppingError = computed(() => {
+    return this.shoppingList().some(cat => cat.category.includes('ERROR'));
+  });
 
   firstName = computed(() => {
     const p = this.patient();
@@ -172,9 +191,42 @@ export class PortalPage implements OnInit {
     return Math.max(0, Math.min(100, Math.round(progress)));
   });
 
+  targetGoalValue = computed(() => {
+    const p = this.patient();
+    const goal = this.currentGoal();
+    if (!p || !goal) return 0;
+    if (goal === 'bajar_peso') return Number(p.peso_meta || 0);
+    if (goal === 'bajar_grasa') return Number(p.grasa_meta || 0);
+    if (goal === 'subir_musculo') return Number(p.musculo_meta || 0);
+    return 0;
+  });
+
+  goalTargetY = computed(() => {
+    const prog = [...this.progress()].reverse();
+    const goal = this.currentGoal();
+    const target = this.targetGoalValue();
+    if (prog.length < 1 || !goal || target === 0) return null;
+    
+    const values = prog.map(p => {
+      if (goal === 'bajar_peso') return Number(p.weight || 0);
+      if (goal === 'bajar_grasa') return Number(p.body_fat || 0);
+      if (goal === 'subir_musculo') return Number(p.muscle_mass || 0);
+      return 0;
+    });
+
+    const allValues = [...values, target];
+    const minValue = Math.min(...allValues) - 1;
+    const maxValue = Math.max(...allValues) + 1;
+    const range = maxValue - minValue || 1;
+    
+    const height = 100;
+    return height - ((target - minValue) / range * height);
+  });
+
   goalTrendPath = computed(() => {
     const prog = [...this.progress()].reverse();
     const goal = this.currentGoal();
+    const target = this.targetGoalValue();
     if (prog.length < 2 || !goal) return '';
     
     const values = prog.map(p => {
@@ -184,8 +236,9 @@ export class PortalPage implements OnInit {
       return 0;
     });
 
-    const minValue = Math.min(...values) - 1;
-    const maxValue = Math.max(...values) + 1;
+    const allValues = target > 0 ? [...values, target] : values;
+    const minValue = Math.min(...allValues) - 1;
+    const maxValue = Math.max(...allValues) + 1;
     const range = maxValue - minValue || 1;
     
     const width = 400;
@@ -202,6 +255,7 @@ export class PortalPage implements OnInit {
   chartPoints = computed(() => {
     const prog = [...this.progress()].reverse();
     const goal = this.currentGoal();
+    const target = this.targetGoalValue();
     if (prog.length < 1 || !goal) return [];
     
     const values = prog.map(p => {
@@ -211,21 +265,43 @@ export class PortalPage implements OnInit {
       return 0;
     });
 
-    const minValue = Math.min(...values) - 1;
-    const maxValue = Math.max(...values) + 1;
+    const allValues = target > 0 ? [...values, target] : values;
+    const minValue = Math.min(...allValues) - 1;
+    const maxValue = Math.max(...allValues) + 1;
     const range = maxValue - minValue || 1;
     
     const width = 400;
     const height = 100;
     const stepX = prog.length > 1 ? width / (prog.length - 1) : width / 2;
     
-    return values.map((val, i) => ({
-      x: i * stepX,
-      y: height - ((val - minValue) / range * height),
-      value: val,
-      date: prog[i].date,
-      unit: goal === 'bajar_grasa' ? '%' : 'kg'
-    }));
+    return values.map((val, i) => {
+      const diff = i > 0 ? val - values[i - 1] : 0;
+      let isGood = true;
+      if (i > 0) {
+        if (goal === 'subir_musculo') {
+          isGood = diff >= 0;
+        } else {
+          isGood = diff <= 0;
+        }
+      }
+      
+      const diffText = i > 0 
+        ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}${goal === 'bajar_grasa' ? '%' : 'kg'}`
+        : '';
+        
+      const tooltipShift = i === 0 ? 35 : (i === prog.length - 1 ? -35 : 0);
+
+      return {
+        x: i * stepX,
+        y: height - ((val - minValue) / range * height),
+        value: val,
+        date: prog[i].date,
+        unit: goal === 'bajar_grasa' ? '%' : 'kg',
+        diff: diffText,
+        isGood,
+        tooltipShift
+      };
+    });
   });
 
   milestones = computed(() => {
@@ -288,12 +364,12 @@ export class PortalPage implements OnInit {
 
   async openShoppingList() {
     this.showShoppingModal.set(true);
-    if (this.shoppingList().length === 0) {
+    if (this.shoppingList().length === 0 || this.hasShoppingError()) {
       const p = this.patient();
       if (p) this.loadShoppingListFromCache(p);
       
-      // Si después de intentar cargar del caché sigue vacía, pedimos a la IA
-      if (this.shoppingList().length === 0) {
+      // Si después de intentar cargar del caché sigue vacía o tiene error, pedimos a la IA
+      if (this.shoppingList().length === 0 || this.hasShoppingError()) {
         await this.fetchShoppingList();
       }
     }
@@ -302,7 +378,8 @@ export class PortalPage implements OnInit {
   loadShoppingListFromCache(p: Patient) {
     const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
     const cached = this.storageService.getItem<ShoppingCategory[]>(cacheKey);
-    if (cached) {
+    // Solo cargamos la caché si no es una lista que represente un error
+    if (cached && !cached.some(cat => cat.category.includes('ERROR'))) {
       this.shoppingList.set(cached);
       console.log('Shopping list loaded from cache');
     }
@@ -330,14 +407,28 @@ export class PortalPage implements OnInit {
       
       this.shoppingList.set(enrichedList);
       
-      // Guardar lista completa en caché
-      const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
-      this.storageService.setItem(cacheKey, enrichedList);
+      // Guardar lista completa en caché únicamente si no contiene errores
+      const hasError = enrichedList.some(cat => cat.category.includes('ERROR'));
+      if (!hasError) {
+        const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+        this.storageService.setItem(cacheKey, enrichedList);
+      }
     } catch (err) {
       console.error('Error fetching shopping list', err);
+      this.shoppingList.set([
+        {
+          category: '⚠️ ERROR AL GENERAR',
+          items: [{ icon: '❌', name: 'No se pudo conectar con Gemini', amount: '-', tip: 'El límite de cuotas de la API Key se ha agotado o hay problemas de red. Intenta de nuevo.', brand: '-' }]
+        }
+      ]);
     } finally {
       this.loadingShoppingList.set(false);
     }
+  }
+
+  async retryShoppingList() {
+    this.shoppingList.set([]);
+    await this.fetchShoppingList();
   }
 
   toggleShoppingItem(category: string, item: ShoppingItem) {

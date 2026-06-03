@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal, input, effect, OnDestroy } from '@angular/core';
+import { Component, Input, computed, signal, input, effect, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -20,23 +20,25 @@ import { PortalModule } from '@angular/cdk/portal';
   ],
   templateUrl: './progress-history.html'
 })
-export class ProgressHistoryComponent implements OnDestroy {
+export class ProgressHistoryComponent implements OnInit, OnDestroy {
   history = input.required<any[]>();
   patient = input<any>(null);
   showActions = input<boolean>(false);
 
-  viewMode = signal<'cards' | 'table'>('cards');
+  viewMode = signal<'cards' | 'table'>('table');
   selectedRecordForDetail = signal<any | null>(null);
   copyingRecordId = signal<string | null>(null);
+  toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
+
+  ngOnInit() {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      this.viewMode.set('cards');
+    } else {
+      this.viewMode.set('table');
+    }
+  }
 
   constructor() {
-    // If not showing actions (Portal mode), default to table and hide toggles
-    effect(() => {
-      if (!this.showActions()) {
-        this.viewMode.set('table');
-      }
-    });
-
     effect(() => {
       if (this.selectedRecordForDetail()) {
         document.body.classList.add('modal-open');
@@ -113,6 +115,7 @@ export class ProgressHistoryComponent implements OnDestroy {
         quality: 1,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
+        skipFonts: true,
         style: {
           transform: 'none',
           borderRadius: '0',
@@ -128,8 +131,13 @@ export class ProgressHistoryComponent implements OnDestroy {
         })
       ]);
       
+      this.toast.set({ message: '¡Copiado con éxito!', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      
     } catch (err) {
       console.error('Error copying image:', err);
+      this.toast.set({ message: 'Error al copiar la imagen', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
     } finally {
       elementContainer.style.display = originalDisplay;
       this.copyingRecordId.set(null);

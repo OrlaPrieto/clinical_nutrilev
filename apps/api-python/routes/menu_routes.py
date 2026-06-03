@@ -151,8 +151,14 @@ def get_shopping_list():
             print(f"[ShoppingList] Unsupported format: {content_type}")
             return jsonify({"error": "Unsupported file format. Please use .docx or .pdf"}), 400
 
-        # 3. Generate JSON (Placeholder/Disabled)
-        return jsonify({"message": "Shopping list service is being refactored for v2.0 API compatibility."})
+        # 3. Generate JSON
+        from services.ai_service import generate_shopping_list_json
+        shopping_json = generate_shopping_list_json(menu_data, gemini_key)
+        
+        if isinstance(shopping_json, list) and len(shopping_json) > 0 and "ERROR" in shopping_json[0].get("category", ""):
+            return jsonify(shopping_json), 500
+            
+        return jsonify(shopping_json)
 
     except Exception as e:
         print(f"Error generating shopping list: {e}")
