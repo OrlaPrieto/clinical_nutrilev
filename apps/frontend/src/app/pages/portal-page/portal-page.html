@@ -682,188 +682,221 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="w-full overflow-hidden mt-4">
-                                        <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
-                                            <defs>
-                                                <!-- Gradiente Peso (Indigo) -->
-                                                <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stop-color="#6366F1" stop-opacity="0.15" />
-                                                    <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
-                                                </linearGradient>
-                                                <!-- Gradiente Grasa (Amber) -->
-                                                <linearGradient id="gradient-fat" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15" />
-                                                    <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
-                                                </linearGradient>
-                                                <!-- Gradiente Músculo (Rose) -->
-                                                <linearGradient id="gradient-muscle" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stop-color="#D81B60" stop-opacity="0.15" />
-                                                    <stop offset="100%" stop-color="#D81B60" stop-opacity="0" />
-                                                </linearGradient>
-                                            </defs>
-                                            
-                                            <!-- Area under path (Solo si hay exactamente 1 métrica seleccionada para evitar saturación) -->
-                                            @if (activeLines().length === 1) {
-                                                <path [attr.d]="activeLines()[0].path + ' L 400 100 L 0 100 Z'" 
-                                                      [attr.fill]="'url(#gradient-' + activeLines()[0].key + ')'" 
-                                                      class="animate-fade-in" />
-                                            }
-                                            
-                                            <!-- Líneas Meta (Goal Target Lines) -->
-                                            @for (line of activeLines(); track line.key) {
-                                                @if (line.targetY !== null) {
-                                                    <g class="opacity-70 transition-all duration-300">
-                                                        <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
-                                                              [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
-                                                        <text x="402" [attr.y]="line.targetY + 3"
-                                                              [attr.fill]="line.color"
-                                                              class="text-[7.5px] font-black">
-                                                            META: {{ line.targetValue }}{{ line.unit }}
-                                                        </text>
-                                                    </g>
+                                    <!-- Barra de Filtros y Límites -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 mb-6 bg-nutri-bg/40 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 rounded-2xl animate-fade-in">
+                                        <!-- Selector de Meses -->
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Filtrar por Mes:</span>
+                                            <select [value]="filterMonth()" (change)="onMonthChange($event)"
+                                                    class="bg-white dark:bg-[#1a1a1a] border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-[9px] font-black text-nutri-text dark:text-slate-200 uppercase tracking-wider shadow-sm transition-all cursor-pointer outline-none">
+                                                <option value="all">Todos los meses</option>
+                                                @for (m of availableMonths(); track m.value) {
+                                                    <option [value]="m.value">{{ m.label }}</option>
                                                 }
-                                            }
-
-                                            <!-- Caminos Principales (Main Paths) -->
-                                            @for (line of activeLines(); track line.key) {
-                                                <path [attr.d]="line.path" 
-                                                      fill="none" 
-                                                      [attr.stroke]="line.color" 
-                                                      stroke-width="3" 
-                                                      stroke-linecap="round" 
-                                                      stroke-linejoin="round"
-                                                      class="animate-draw-path transition-all duration-500" />
-                                            }
-
-                                            <!-- X-Axis Date Labels -->
-                                            @if (activeLines().length > 0) {
-                                                @for (point of activeLines()[0].points; track $index) {
-                                                    <text [attr.x]="point.x" [attr.y]="115" 
-                                                          text-anchor="middle" 
-                                                          class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
-                                                        {{ point.date | date:'dd MMM' }}
-                                                    </text>
-                                                }
-                                            }
-
-                                            <!-- Puntos de Datos, Etiquetas y Tooltips -->
-                                            @for (line of activeLines(); track line.key) {
-                                                @for (point of line.points; track $index) {
-                                                    <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
-                                                        <!-- Etiqueta de valor -->
-                                                        @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
-                                                            <text [attr.x]="point.x" [attr.y]="point.y - 12" 
-                                                                  text-anchor="middle" 
-                                                                  class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                                                {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
-                                                            </text>
-                                                        }
-                                                        
-                                                        <!-- Marcador de Punto -->
-                                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" 
-                                                                [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
-                                                                class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
-                                                                [attr.stroke]="line.color"
-                                                                [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
-                                                                [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
-                                                        
-                                                        <!-- Línea Guía Vertical y Tooltip (hover) -->
-                                                        @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
-                                                            <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
-                                                                  stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
-
-                                                            <g class="transition-all duration-300 pointer-events-none z-50">
-                                                                @if (point.y < 50) {
-                                                                    <!-- Puntero Triángulo (Abajo) -->
-                                                                    <polygon points="-5,8 0,3 5,8" 
-                                                                             [attr.transform]="'translate(' + point.x + ',' + (point.y + 8) + ')'"
-                                                                             [attr.fill]="line.color" />
-                                                                    
-                                                                    <!-- Cuerpo de la Tarjeta -->
-                                                                    <rect [attr.x]="point.x - 55 + point.tooltipShift" 
-                                                                          [attr.y]="point.y + 14" 
-                                                                          width="110" 
-                                                                          height="34" 
-                                                                          rx="8" 
-                                                                          fill="#0F172A"
-                                                                          [attr.stroke]="line.color"
-                                                                          stroke-width="1.5" />
-                                                                    
-                                                                    <!-- Fecha e Identificador -->
-                                                                    <text [attr.x]="point.x + point.tooltipShift" 
-                                                                          [attr.y]="point.y + 25" 
-                                                                          text-anchor="middle" 
-                                                                          fill="#94A3B8" 
-                                                                          class="text-[7px] font-bold uppercase tracking-wider">
-                                                                        {{ point.date | date:'dd MMM' }} • {{ line.label }}
-                                                                    </text>
-                                                                    
-                                                                    <!-- Valor e Indicador -->
-                                                                    <text [attr.x]="point.x + point.tooltipShift" 
-                                                                          [attr.y]="point.y + 39" 
-                                                                          text-anchor="middle" 
-                                                                          fill="#ffffff" 
-                                                                          class="text-[9.5px] font-black">
-                                                                        {{ point.value }}{{ point.unit }}
-                                                                        @if (point.diff) {
-                                                                            <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
-                                                                                ({{ point.diff }})
-                                                                            </tspan>
-                                                                        }
-                                                                    </text>
-                                                                } @else {
-                                                                    <!-- Puntero Triángulo (Arriba) -->
-                                                                    <polygon points="-5,-8 0,-3 5,-8" 
-                                                                             [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
-                                                                             [attr.fill]="line.color" />
-                                                                    
-                                                                    <!-- Cuerpo de la Tarjeta -->
-                                                                    <rect [attr.x]="point.x - 55 + point.tooltipShift" 
-                                                                          [attr.y]="point.y - 48" 
-                                                                          width="110" 
-                                                                          height="34" 
-                                                                          rx="8" 
-                                                                          fill="#0F172A"
-                                                                          [attr.stroke]="line.color"
-                                                                          stroke-width="1.5" />
-                                                                    
-                                                                    <!-- Fecha e Identificador -->
-                                                                    <text [attr.x]="point.x + point.tooltipShift" 
-                                                                          [attr.y]="point.y - 37" 
-                                                                          text-anchor="middle" 
-                                                                          fill="#94A3B8" 
-                                                                          class="text-[7px] font-bold uppercase tracking-wider">
-                                                                        {{ point.date | date:'dd MMM' }} • {{ line.label }}
-                                                                    </text>
-                                                                    
-                                                                    <!-- Valor e Indicador -->
-                                                                    <text [attr.x]="point.x + point.tooltipShift" 
-                                                                          [attr.y]="point.y - 23" 
-                                                                          text-anchor="middle" 
-                                                                          fill="#ffffff" 
-                                                                          class="text-[9.5px] font-black">
-                                                                        {{ point.value }}{{ point.unit }}
-                                                                        @if (point.diff) {
-                                                                            <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
-                                                                                ({{ point.diff }})
-                                                                            </tspan>
-                                                                        }
-                                                                    </text>
-                                                                }
-                                                            </g>
-                                                        }
-
-                                                        <!-- Detección táctil y de cursor -->
-                                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
-                                                                fill="transparent" class="cursor-pointer"
-                                                                (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
-                                                                (mouseleave)="hoveredPoint.set(null)"
-                                                                (click)="togglePoint($index, line.key); $event.stopPropagation()" />
-                                                    </g>
-                                                }
-                                            }
-                                        </svg>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Selector de Límite -->
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Registros Visibles:</span>
+                                            <div class="flex bg-nutri-bg dark:bg-white/5 p-1 rounded-xl border border-nutri-rose/5 dark:border-white/5">
+                                                <button (click)="limitRecords.set(5)" [class.bg-white]="limitRecords() === 5" [class.dark:bg-white/10]="limitRecords() === 5" [class.shadow-sm]="limitRecords() === 5" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">5</button>
+                                                <button (click)="limitRecords.set(8)" [class.bg-white]="limitRecords() === 8" [class.dark:bg-white/10]="limitRecords() === 8" [class.shadow-sm]="limitRecords() === 8" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">8</button>
+                                                <button (click)="limitRecords.set(10)" [class.bg-white]="limitRecords() === 10" [class.dark:bg-white/10]="limitRecords() === 10" [class.shadow-sm]="limitRecords() === 10" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">10</button>
+                                                <button (click)="limitRecords.set(13)" [class.bg-white]="limitRecords() === 13" [class.dark:bg-white/10]="limitRecords() === 13" [class.shadow-sm]="limitRecords() === 13" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">13</button>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    @if (filteredProgress().length === 0) {
+                                        <div class="h-48 flex flex-col items-center justify-center text-center opacity-30 gap-2 border border-dashed border-nutri-rose/10 rounded-2xl py-12 animate-fade-in">
+                                            <app-a-icon name="analytics" customClass="!text-3xl"></app-a-icon>
+                                            <p class="text-[10px] font-bold uppercase tracking-widest">Sin datos para este mes</p>
+                                        </div>
+                                    } @else {
+                                        <div class="w-full overflow-hidden mt-4">
+                                            <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
+                                                <defs>
+                                                    <!-- Gradiente Peso (Indigo) -->
+                                                    <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stop-color="#6366F1" stop-opacity="0.15" />
+                                                        <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
+                                                    </linearGradient>
+                                                    <!-- Gradiente Grasa (Amber) -->
+                                                    <linearGradient id="gradient-fat" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15" />
+                                                        <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+                                                    </linearGradient>
+                                                    <!-- Gradiente Músculo (Rose) -->
+                                                    <linearGradient id="gradient-muscle" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stop-color="#D81B60" stop-opacity="0.15" />
+                                                        <stop offset="100%" stop-color="#D81B60" stop-opacity="0" />
+                                                    </linearGradient>
+                                                </defs>
+                                                
+                                                <!-- Area under path (Solo si hay exactamente 1 métrica seleccionada para evitar saturación) -->
+                                                @if (activeLines().length === 1) {
+                                                    <path [attr.d]="activeLines()[0].path + ' L 400 100 L 0 100 Z'" 
+                                                          [attr.fill]="'url(#gradient-' + activeLines()[0].key + ')'" 
+                                                          class="animate-fade-in" />
+                                                }
+                                                
+                                                <!-- Líneas Meta (Goal Target Lines) -->
+                                                @for (line of activeLines(); track line.key) {
+                                                    @if (line.targetY !== null) {
+                                                        <g class="opacity-70 transition-all duration-300">
+                                                            <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
+                                                                  [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
+                                                            <text x="402" [attr.y]="line.targetY + 3"
+                                                                  [attr.fill]="line.color"
+                                                                  class="text-[7.5px] font-black">
+                                                                META: {{ line.targetValue }}{{ line.unit }}
+                                                            </text>
+                                                        </g>
+                                                    }
+                                                }
+
+                                                <!-- Caminos Principales (Main Paths) -->
+                                                @for (line of activeLines(); track line.key) {
+                                                    <path [attr.d]="line.path" 
+                                                          fill="none" 
+                                                          [attr.stroke]="line.color" 
+                                                          stroke-width="3" 
+                                                          stroke-linecap="round" 
+                                                          stroke-linejoin="round"
+                                                          class="animate-draw-path transition-all duration-500" />
+                                                }
+
+                                                <!-- X-Axis Date Labels -->
+                                                @if (activeLines().length > 0) {
+                                                    @for (point of activeLines()[0].points; track $index) {
+                                                        <text [attr.x]="point.x" [attr.y]="115" 
+                                                              text-anchor="middle" 
+                                                              class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
+                                                            {{ point.date | date:'dd MMM' }}
+                                                        </text>
+                                                    }
+                                                }
+
+                                                <!-- Puntos de Datos, Etiquetas y Tooltips -->
+                                                @for (line of activeLines(); track line.key) {
+                                                    @for (point of line.points; track $index) {
+                                                        <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
+                                                            <!-- Etiqueta de valor -->
+                                                            @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
+                                                                <text [attr.x]="point.x" [attr.y]="point.y - 12" 
+                                                                      text-anchor="middle" 
+                                                                      class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
+                                                                    {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
+                                                                </text>
+                                                            }
+                                                            
+                                                            <!-- Marcador de Punto -->
+                                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" 
+                                                                    [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
+                                                                    class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
+                                                                    [attr.stroke]="line.color"
+                                                                    [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
+                                                                    [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
+                                                            
+                                                            <!-- Línea Guía Vertical y Tooltip (hover) -->
+                                                            @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
+                                                                <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
+                                                                      stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
+
+                                                                <g class="transition-all duration-300 pointer-events-none z-50">
+                                                                    @if (point.y < 50) {
+                                                                        <!-- Puntero Triángulo (Abajo) -->
+                                                                        <polygon points="-5,8 0,3 5,8" 
+                                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y + 8) + ')'"
+                                                                                 [attr.fill]="line.color" />
+                                                                        
+                                                                        <!-- Cuerpo de la Tarjeta -->
+                                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
+                                                                              [attr.y]="point.y + 14" 
+                                                                              width="110" 
+                                                                              height="34" 
+                                                                              rx="8" 
+                                                                              fill="#0F172A"
+                                                                              [attr.stroke]="line.color"
+                                                                              stroke-width="1.5" />
+                                                                        
+                                                                        <!-- Fecha e Identificador -->
+                                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                                              [attr.y]="point.y + 25" 
+                                                                              text-anchor="middle" 
+                                                                              fill="#94A3B8" 
+                                                                              class="text-[7px] font-bold uppercase tracking-wider">
+                                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
+                                                                        </text>
+                                                                        
+                                                                        <!-- Valor e Indicador -->
+                                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                                              [attr.y]="point.y + 39" 
+                                                                              text-anchor="middle" 
+                                                                              fill="#ffffff" 
+                                                                              class="text-[9.5px] font-black">
+                                                                            {{ point.value }}{{ point.unit }}
+                                                                            @if (point.diff) {
+                                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
+                                                                                    ({{ point.diff }})
+                                                                                </tspan>
+                                                                            }
+                                                                        </text>
+                                                                    } @else {
+                                                                        <!-- Puntero Triángulo (Arriba) -->
+                                                                        <polygon points="-5,-8 0,-3 5,-8" 
+                                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
+                                                                                 [attr.fill]="line.color" />
+                                                                        
+                                                                        <!-- Cuerpo de la Tarjeta -->
+                                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
+                                                                              [attr.y]="point.y - 48" 
+                                                                              width="110" 
+                                                                              height="34" 
+                                                                              rx="8" 
+                                                                              fill="#0F172A"
+                                                                              [attr.stroke]="line.color"
+                                                                              stroke-width="1.5" />
+                                                                        
+                                                                        <!-- Fecha e Identificador -->
+                                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                                              [attr.y]="point.y - 37" 
+                                                                              text-anchor="middle" 
+                                                                              fill="#94A3B8" 
+                                                                              class="text-[7px] font-bold uppercase tracking-wider">
+                                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
+                                                                        </text>
+                                                                        
+                                                                        <!-- Valor e Indicador -->
+                                                                        <text [attr.x]="point.x + point.tooltipShift" 
+                                                                              [attr.y]="point.y - 23" 
+                                                                              text-anchor="middle" 
+                                                                              fill="#ffffff" 
+                                                                              class="text-[9.5px] font-black">
+                                                                            {{ point.value }}{{ point.unit }}
+                                                                            @if (point.diff) {
+                                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
+                                                                                    ({{ point.diff }})
+                                                                                </tspan>
+                                                                            }
+                                                                        </text>
+                                                                    }
+                                                                </g>
+                                                            }
+
+                                                            <!-- Detección táctil y de cursor -->
+                                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
+                                                                    fill="transparent" class="cursor-pointer"
+                                                                    (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
+                                                                    (mouseleave)="hoveredPoint.set(null)"
+                                                                    (click)="togglePoint($index, line.key); $event.stopPropagation()" />
+                                                        </g>
+                                                    }
+                                                }
+                                            </svg>
+                                        </div>
+                                    }
                                 </div>
                             } @else {
                                 <div class="bg-white dark:bg-[#111111] p-8 rounded-[1.75rem] border border-nutri-rose/10 dark:border-white/5 text-center py-16">

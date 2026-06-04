@@ -49,6 +49,10 @@ export class PortalPage implements OnInit {
   });
   activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history'>('dashboard');
 
+  limitRecords = signal<number>(5);
+  filterMonth = signal<string>('all');
+
+
   dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
     water: false,
     activity: false,
@@ -96,6 +100,12 @@ export class PortalPage implements OnInit {
       [key]: !current[key]
     });
   }
+
+  onMonthChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.filterMonth.set(target.value);
+  }
+
   
   shoppingList = signal<ShoppingCategory[]>([]);
   loadingShoppingList = signal<boolean>(false);
@@ -119,6 +129,39 @@ export class PortalPage implements OnInit {
       label: entry.date ? new Date(entry.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }) : ''
     }));
   });
+
+  availableMonths = computed(() => {
+    const list = this.progress();
+    const months = new Set<string>();
+    list.forEach(entry => {
+      if (entry.date) {
+        const yyyymm = entry.date.substring(0, 7);
+        months.add(yyyymm);
+      }
+    });
+    return Array.from(months).sort().reverse().map(yyyymm => {
+      const [year, month] = yyyymm.split('-');
+      const date = new Date(Number(year), Number(month) - 1, 1);
+      const name = date.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+      return {
+        value: yyyymm,
+        label: capitalized
+      };
+    });
+  });
+
+  filteredProgress = computed(() => {
+    let list = this.progress();
+    const selectedMonth = this.filterMonth();
+    if (selectedMonth !== 'all') {
+      list = list.filter(entry => entry.date && entry.date.startsWith(selectedMonth));
+    }
+    const limit = this.limitRecords();
+    list = list.slice(0, limit);
+    return [...list].reverse();
+  });
+
 
   isMenuValid = computed(() => {
     const p = this.patient();
@@ -264,7 +307,7 @@ export class PortalPage implements OnInit {
   });
 
   activeLines = computed(() => {
-    const prog = [...this.progress()].reverse();
+    const prog = this.filteredProgress();
     const patient = this.patient();
     const active = this.activeMetrics();
     if (prog.length < 1 || !patient) return [];
