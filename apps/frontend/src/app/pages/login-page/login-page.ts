@@ -45,6 +45,8 @@ export class LoginPage implements OnInit {
   }
 
   async ngOnInit() {
+    console.log('Test log');
+    
     await this.authService.ready;
     if (this.authService.isLoggedIn()) {
       const role = this.authService.userRole();
