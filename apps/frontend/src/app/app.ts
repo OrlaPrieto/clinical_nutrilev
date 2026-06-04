@@ -25,7 +25,7 @@ import { PortalModule } from '@angular/cdk/portal';
       </div>
     }
     
-    @if (authService.isLoggedIn()) {
+    @if (authService.isLoggedIn() && authService.userRole() !== 'patient') {
       <app-o-dashboard-footer [version]="version"></app-o-dashboard-footer>
     }
     <app-pwa-banner></app-pwa-banner>

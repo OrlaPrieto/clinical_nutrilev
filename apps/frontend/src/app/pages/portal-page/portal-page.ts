@@ -47,10 +47,33 @@ export class PortalPage implements OnInit {
     fat: false,
     muscle: false
   });
+  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history'>('dashboard');
+
+  dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
+    water: false,
+    activity: false,
+    diet: false,
+    sleep: false
+  });
+
+  habitsPercentage = computed(() => {
+    const habits = this.dailyHabits();
+    let count = 0;
+    if (habits.water) count++;
+    if (habits.activity) count++;
+    if (habits.diet) count++;
+    if (habits.sleep) count++;
+    return Math.round((count / 4) * 100);
+  });
 
   @HostListener('document:click')
   onDocumentClick() {
     this.showThemeMenu.set(false);
+  }
+
+  setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history') {
+    this.activeTab.set(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   togglePoint(index: number, key: 'weight' | 'fat' | 'muscle') {
@@ -139,6 +162,37 @@ export class PortalPage implements OnInit {
     if (targetUrl) {
       window.open(targetUrl, '_blank', 'noopener');
     }
+  }
+
+  getHabitsStorageKey(): string {
+    const user = this.authService.user;
+    if (!user || !user.email) return '';
+    const email = user.email.toLowerCase();
+    const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD in local time
+    return `nutri_habits_${email}_${todayStr}`;
+  }
+
+  loadDailyHabits() {
+    const key = this.getHabitsStorageKey();
+    if (!key) return;
+    const saved = this.storageService.getItem<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>(key);
+    if (saved) {
+      this.dailyHabits.set(saved);
+    } else {
+      this.dailyHabits.set({ water: false, activity: false, diet: false, sleep: false });
+    }
+  }
+
+  toggleHabit(habitKey: 'water' | 'activity' | 'diet' | 'sleep') {
+    const key = this.getHabitsStorageKey();
+    if (!key) return;
+    const current = this.dailyHabits();
+    const updated = {
+      ...current,
+      [habitKey]: !current[habitKey]
+    };
+    this.dailyHabits.set(updated);
+    this.storageService.setItem(key, updated);
   }
 
   bmi = computed(() => {
@@ -388,6 +442,9 @@ export class PortalPage implements OnInit {
 
           // Cargar lista de súper desde caché si existe
           this.loadShoppingListFromCache(currentPatient);
+
+          // Cargar hábitos diarios
+          this.loadDailyHabits();
         }
       } catch (err) {
         console.error('Error loading portal data', err);

@@ -1,578 +1,932 @@
 @if (patient()) {
-    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 pb-20">
-        <!-- Header -->
-        <header class="bg-white dark:bg-[#080808]/80 dark:backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 sm:px-6 py-4 sm:py-6 sticky top-0 z-50 transition-colors duration-300">
-            <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
-                <div class="flex items-center gap-4 sm:gap-6">
-                    <!-- Brand Logo -->
+    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 flex flex-col md:flex-row">
+        
+        <!-- Menú Lateral (Sidebar - Solo Escritorio) -->
+        <aside class="hidden md:flex fixed left-0 top-0 bottom-0 w-64 bg-white dark:bg-[#0c0c0c] border-r border-nutri-rose/10 dark:border-white/5 z-40 flex-col justify-between p-6 transition-colors duration-300 shadow-sm shrink-0">
+            <!-- Sección Superior: Logo, Perfil y Enlaces -->
+            <div class="space-y-8">
+                <!-- Logotipo de la Marca -->
+                <div class="flex justify-start pl-2">
                     <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="100" height="38" 
-                         class="h-8 sm:h-10 w-auto object-contain dark:brightness-110 dark:contrast-125 transition-all duration-300" priority>
+                         class="h-8 w-auto object-contain dark:brightness-110 dark:contrast-125 transition-all duration-300" priority>
+                </div>
+                
+                <!-- Tarjeta de Perfil del Paciente -->
+                <div class="flex items-center gap-3 p-3 bg-nutri-rose-soft/20 dark:bg-white/5 rounded-2xl border border-nutri-rose/5 dark:border-white/5">
+                    <div class="w-10 h-10 rounded-xl bg-nutri-rose text-white flex items-center justify-center text-lg font-bold shadow-md overflow-hidden shrink-0">
+                        @if (patient()?.foto_url) {
+                            <img [src]="patient()?.foto_url! | nutriImage:40:40" alt="Profile" class="w-full h-full object-cover">
+                        } @else {
+                            {{ patient()?.nombre ? patient()?.nombre!.charAt(0) : 'P' }}
+                        }
+                    </div>
+                    <div class="min-w-0">
+                        <h2 class="text-sm font-bold serif leading-none truncate">Hola, {{ firstName() }}</h2>
+                        <p class="text-[9px] uppercase tracking-widest font-black text-nutri-rose opacity-70 mt-1">Paciente</p>
+                    </div>
+                </div>
+                
+                <!-- Enlaces de Navegación -->
+                <nav class="space-y-1.5">
+                    <button (click)="setActiveTab('dashboard')"
+                            [class]="activeTab() === 'dashboard'
+                                     ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm'
+                                     : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'">
+                        <app-a-icon name="dashboard" size="18px"></app-a-icon>
+                        Inicio
+                    </button>
                     
-                    <div class="w-px h-8 bg-nutri-rose/10 dark:bg-white/10 hidden sm:block"></div>
-
-                    <div class="flex items-center gap-4">
-                        <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-nutri-rose text-white items-center justify-center text-xl font-bold shadow-lg overflow-hidden shrink-0">
-                            @if (patient()?.foto_url) {
-                                <img [src]="patient()?.foto_url! | nutriImage:48:48" alt="Profile" class="w-full h-full object-cover">
-                            } @else {
-                                {{ patient()?.nombre ? patient()?.nombre!.charAt(0) : 'P' }}
-                            }
-                        </div>
-                        <div>
-                            <h1 class="text-lg sm:text-xl font-bold serif leading-tight">Hola, {{ firstName() }}</h1>
-                            <p class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-nutri-text/60 dark:text-slate-500">Tu Portal de Bienestar</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                    <!-- Discrete Theme Selector -->
-                    <div class="relative flex items-center h-10 px-2 rounded-xl transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5 cursor-pointer"
-                         (click)="showThemeMenu.set(!showThemeMenu()); $event.stopPropagation()">
-                        <div class="flex items-center justify-center w-8 h-8 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose transition-colors"
-                             [class.text-nutri-rose]="showThemeMenu()">
-                            <app-a-icon name="palette" size="18px"></app-a-icon>
-                        </div>
-                        <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 transition-all duration-300 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50"
-                             [class.opacity-0]="!showThemeMenu()"
-                             [class.invisible]="!showThemeMenu()"
-                             [class.opacity-100]="showThemeMenu()"
-                             [class.visible]="showThemeMenu()"
-                             [class.translate-y-0]="showThemeMenu()"
-                             [class.translate-y-[-10px]]="!showThemeMenu()">
-                            <button (click)="themeService.setTheme('light'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
-                            <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
-                            <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
-                            <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
-                        </div>
-                    </div>
-
-                    <app-a-button variant="outline" label="Salir" size="sm" icon="logout"
-                        customClass="!rounded-xl border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-[10px] font-bold uppercase tracking-widest transition-all dark:text-slate-400"
-                        (onClick)="logout()">
-                    </app-a-button>
-                </div>
+                    <button (click)="setActiveTab('plan')"
+                            [class]="activeTab() === 'plan'
+                                     ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm'
+                                     : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'">
+                        <app-a-icon name="restaurant_menu" size="18px"></app-a-icon>
+                        Mi Plan
+                    </button>
+                    
+                    <button (click)="setActiveTab('analysis')"
+                            [class]="activeTab() === 'analysis'
+                                     ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm'
+                                     : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'">
+                        <app-a-icon name="insights" size="18px"></app-a-icon>
+                        Análisis
+                    </button>
+                    
+                    <button (click)="setActiveTab('history')"
+                            [class]="activeTab() === 'history'
+                                     ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm'
+                                     : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'">
+                        <app-a-icon name="history" size="18px"></app-a-icon>
+                        Historial
+                    </button>
+                </nav>
             </div>
-        </header>
-
-        <main class="max-w-5xl mx-auto px-4 sm:px-6 mt-8 space-y-8 animate-fade-up">
             
-            @if (loading()) {
-                <!-- High-Fidelity Shimmering Skeleton Loader -->
-                <div class="space-y-8 animate-pulse">
-                    <!-- Resumen de Meta & Último Registro Skeletons -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                        <div class="h-44 bg-slate-100 dark:bg-white/[0.02] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/40 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative">
-                            <div class="absolute -right-10 -top-10 w-40 h-40 bg-slate-200/40 dark:bg-white/[0.02] rounded-full"></div>
-                            <div class="space-y-3">
-                                <div class="w-24 h-3 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                <div class="w-36 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
-                            </div>
-                            <div class="w-2/3 h-4 bg-slate-200 dark:bg-white/10 rounded mt-4"></div>
-                        </div>
-
-                        <div class="h-44 bg-slate-100 dark:bg-white/[0.02] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/40 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative">
-                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-200/40 dark:bg-white/[0.02] rounded-full"></div>
-                            <div class="space-y-3">
-                                <div class="w-24 h-3 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                <div class="flex gap-4">
-                                    <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                    <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                    <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 mt-4">
-                                <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10"></div>
-                                <div class="w-28 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Plan Nutricional Skeleton -->
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between px-2">
-                            <div class="w-36 h-4 bg-slate-100 dark:bg-white/[0.02] rounded"></div>
-                            <div class="w-20 h-3 bg-slate-100 dark:bg-white/[0.02] rounded"></div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-slate-200/40 dark:border-white/5 flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-white/10"></div>
-                                <div class="flex-1 space-y-2">
-                                    <div class="w-16 h-2 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                    <div class="w-32 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                </div>
-                            </div>
-                            <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-slate-200/40 dark:border-white/5 flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-white/10"></div>
-                                <div class="flex-1 space-y-2">
-                                    <div class="w-16 h-2 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                    <div class="w-32 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Métricas Skeleton -->
-                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
-                            <div class="w-10 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
-                            <div class="w-20 h-6 bg-slate-200 dark:bg-white/10 rounded"></div>
-                        </div>
-                        <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
-                            <div class="w-12 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
-                            <div class="w-20 h-6 bg-slate-200 dark:bg-white/10 rounded"></div>
-                        </div>
-                        <div class="col-span-2 lg:col-span-1 h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
-                            <div class="flex justify-between">
-                                <div class="w-10 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
-                                <div class="w-8 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
-                            </div>
-                            <div class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-full"></div>
-                        </div>
+            <!-- Sección Inferior: Temas y Salida -->
+            <div class="space-y-4">
+                <!-- Selector de Temas Horizontal -->
+                <div class="flex items-center justify-between p-2.5 bg-nutri-bg dark:bg-white/5 border border-nutri-rose/5 dark:border-white/5 rounded-2xl">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 pl-2">Tema</span>
+                    <div class="flex gap-1.5">
+                        <button (click)="themeService.setTheme('light'); $event.stopPropagation()" class="w-4 h-4 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
+                        <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" class="w-4 h-4 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
+                        <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" class="w-4 h-4 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
+                        <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-4 h-4 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
                     </div>
                 </div>
-            } @else {
                 
-                <!-- Resumen de Meta -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative transition-colors">
-                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
-                        <div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">
-                                {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
-                                   currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
-                                   currentGoal() === 'subir_musculo' ? 'Meta de Músculo' : 'Tu Objetivo' }}
-                            </span>
-                            <h2 class="text-3xl sm:text-4xl font-bold serif">
-                                @if (currentGoal() === 'bajar_peso') {
-                                    {{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
-                                } @else if (currentGoal() === 'bajar_grasa') {
-                                    {{ patient()?.grasa_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">%</span>
-                                } @else if (currentGoal() === 'subir_musculo') {
-                                    {{ patient()?.musculo_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
-                                } @else {
-                                    <span class="text-xl">Sin objetivo</span>
-                                }
-                            </h2>
-                        </div>
-                        <p class="text-xs text-nutri-text/50 dark:text-slate-600 mt-4 leading-relaxed italic">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
-                    </div>
+                <button (click)="logout()"
+                        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-rose-500 dark:text-rose-400 bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/10 hover:border-rose-500/35 transition-all">
+                    <app-a-icon name="logout" size="14px"></app-a-icon>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Área de Contenido Principal -->
+        <div class="flex-1 md:pl-64 flex flex-col min-w-0">
+            
+            <!-- Encabezado Superior (Solo Móvil) -->
+            <header class="md:hidden bg-white dark:bg-[#080808]/80 dark:backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 sm:px-6 py-4 sm:py-6 sticky top-0 z-50 transition-colors duration-300">
+                <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 sm:gap-6">
+                        <!-- Logotipo -->
+                        <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="100" height="38" 
+                             class="h-8 sm:h-10 w-auto object-contain dark:brightness-110 dark:contrast-125 transition-all duration-300" priority>
+                        
+                        <div class="w-px h-8 bg-nutri-rose/10 dark:bg-white/10 hidden sm:block"></div>
 
-                    <div class="bg-nutri-rose-soft/30 dark:bg-nutri-rose-soft/10 p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm text-nutri-rose flex flex-col justify-between overflow-hidden relative transition-all hover:bg-nutri-rose-soft/40 dark:hover:bg-nutri-rose-soft/20">
-                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
-                        <div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose opacity-60 mb-2 block">Último Registro</span>
-                            <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-4 text-nutri-rose dark:text-nutri-rose-soft">
-                                <!-- Peso -->
-                                <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
-                                    <h2 class="text-3xl sm:text-4xl font-bold serif leading-none">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
-                                    <span class="text-[10px] sm:text-lg font-normal opacity-60">kg</span>
-                                </div>
-                                <!-- Grasa -->
-                                <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
-                                    <h2 class="text-xl sm:text-2xl font-bold serif leading-none">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
-                                    <span class="text-[9px] sm:text-sm font-normal opacity-60">% gras.</span>
-                                </div>
-                                <!-- Musculo -->
-                                <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
-                                    <h2 class="text-xl sm:text-2xl font-bold serif leading-none">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
-                                    <span class="text-[9px] sm:text-sm font-normal opacity-60">kg musc.</span>
-                                </div>
+                        <!-- Info del Perfil -->
+                        <div class="flex items-center gap-4">
+                            <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-nutri-rose text-white items-center justify-center text-xl font-bold shadow-lg overflow-hidden shrink-0">
+                                @if (patient()?.foto_url) {
+                                    <img [src]="patient()?.foto_url! | nutriImage:48:48" alt="Profile" class="w-full h-full object-cover">
+                                } @else {
+                                    {{ patient()?.nombre ? patient()?.nombre!.charAt(0) : 'P' }}
+                                }
+                            </div>
+                            <div>
+                                <h1 class="text-lg sm:text-xl font-bold serif leading-tight">Hola, {{ firstName() }}</h1>
+                                <p class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-nutri-text/60 dark:text-slate-500">Tu Portal de Bienestar</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 mt-4 text-nutri-rose/60">
-                            <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/10 flex items-center justify-center text-xs">
-                                <app-a-icon name="calendar_today"></app-a-icon>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <!-- Selector de Temas Táctil -->
+                        <div class="relative flex items-center h-10 px-2 rounded-xl transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5 cursor-pointer"
+                             (click)="showThemeMenu.set(!showThemeMenu()); $event.stopPropagation()">
+                            <div class="flex items-center justify-center w-8 h-8 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose transition-colors"
+                                 [class.text-nutri-rose]="showThemeMenu()">
+                                <app-a-icon name="palette" size="18px"></app-a-icon>
                             </div>
-                            <span class="text-xs font-bold uppercase tracking-widest">
-                                {{ progress().length > 0 ? (progress()[0].date | date:'dd MMM, yyyy') : 'Sin registros aún' }}
-                            </span>
+                            <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 transition-all duration-300 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50"
+                                 [class.opacity-0]="!showThemeMenu()"
+                                 [class.invisible]="!showThemeMenu()"
+                                 [class.opacity-100]="showThemeMenu()"
+                                 [class.visible]="showThemeMenu()"
+                                 [class.translate-y-0]="showThemeMenu()"
+                                 [class.translate-y-[-10px]]="!showThemeMenu()">
+                                <button (click)="themeService.setTheme('light'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'" title="Clásico"></button>
+                                <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
+                                <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'" title="Vibrante"></button>
+                                <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'" title="Místico"></button>
+                            </div>
                         </div>
+
+                        <app-a-button variant="outline" label="Salir" size="sm" icon="logout"
+                            customClass="!rounded-xl border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-[10px] font-bold uppercase tracking-widest transition-all dark:text-slate-400"
+                            (onClick)="logout()">
+                        </app-a-button>
                     </div>
                 </div>
-                @if (isMenuValid()) {
-                    <div class="space-y-4 animate-fade-up">
-                        <div class="flex items-center justify-between px-2">
-                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60">Tu Plan Nutricional</h3>
-                            <span class="text-[10px] font-bold text-nutri-text/30 italic">{{ expirationMessage() }}</span>
+            </header>
+
+            <!-- Contenedor Principal Adaptable (Capa Principal de Páginas) -->
+            <main class="max-w-4xl mx-auto px-4 sm:px-6 mt-6 md:mt-8 mb-24 md:mb-8 space-y-8 flex-1 w-full min-w-0">
+                @if (loading()) {
+                    <!-- Shimmering Skeleton Screen Loader -->
+                    <div class="space-y-8 animate-pulse">
+                        <!-- Metas and Last Progress Skeletons -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="h-44 bg-slate-100 dark:bg-white/[0.02] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/40 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative">
+                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-slate-200/40 dark:bg-white/[0.02] rounded-full"></div>
+                                <div class="space-y-3">
+                                    <div class="w-24 h-3 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="w-36 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                </div>
+                                <div class="w-2/3 h-4 bg-slate-200 dark:bg-white/10 rounded mt-4"></div>
+                            </div>
+                            <div class="h-44 bg-slate-100 dark:bg-white/[0.02] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/40 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative">
+                                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-200/40 dark:bg-white/[0.02] rounded-full"></div>
+                                <div class="space-y-3">
+                                    <div class="w-24 h-3 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="flex gap-4">
+                                        <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                        <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                        <div class="w-16 h-8 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mt-4">
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10"></div>
+                                    <div class="w-28 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- Principal / Multiple Menus -->
-                            @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
-                                @for (m of patient()?.current_menus; track $index) {
-                                    <div (click)="openMenu(m.url)" 
-                                         class="group bg-white dark:bg-[#111111] p-5 sm:p-6 rounded-[1.75rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                        <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
-                                            <app-a-icon name="description"></app-a-icon>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Archivo PDF</p>
-                                            <p class="text-sm font-bold serif truncate">{{ m.name }}</p>
-                                        </div>
-                                        <div class="w-8 h-8 rounded-full bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text/20 group-hover:text-nutri-rose transition-colors">
-                                            <app-a-icon name="download" size="18px"></app-a-icon>
-                                        </div>
-                                    </div>
-                                }
-                            } @else if (patient()?.menu_url) {
-                                <div (click)="openMenu()" 
-                                     class="group bg-white dark:bg-[#111111] p-5 sm:p-6 rounded-[1.75rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500">
-                                        <app-a-icon name="description"></app-a-icon>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Plan Principal</p>
-                                        <p class="text-sm font-bold serif truncate">Ver Menú Digital</p>
+                        <!-- Plan Nutritional Skeleton -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between px-2">
+                                <div class="w-36 h-4 bg-slate-100 dark:bg-white/[0.02] rounded"></div>
+                                <div class="w-20 h-3 bg-slate-100 dark:bg-white/[0.02] rounded"></div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-slate-200/40 dark:border-white/5 flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-white/10"></div>
+                                    <div class="flex-1 space-y-2">
+                                        <div class="w-16 h-2 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                        <div class="w-32 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
                                     </div>
                                 </div>
-                            }
+                                <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-slate-200/40 dark:border-white/5 flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-white/10"></div>
+                                    <div class="flex-1 space-y-2">
+                                        <div class="w-16 h-2 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                        <div class="w-32 h-4 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                            <!-- Shopping List Card -->
-                            <div (click)="openShoppingList()" 
-                                 class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-5 sm:p-6 rounded-[1.75rem] sm:rounded-[2.5rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
-                                    <app-a-icon name="shopping_cart"></app-a-icon>
+                        <!-- Metrics Skeleton -->
+                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
+                                <div class="w-10 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                <div class="w-20 h-6 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            </div>
+                            <div class="h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
+                                <div class="w-12 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                <div class="w-20 h-6 bg-slate-200 dark:bg-white/10 rounded"></div>
+                            </div>
+                            <div class="col-span-2 lg:col-span-1 h-24 bg-slate-100 dark:bg-white/[0.02] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 space-y-3">
+                                <div class="flex justify-between">
+                                    <div class="w-10 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
+                                    <div class="w-8 h-2.5 bg-slate-200 dark:bg-white/10 rounded"></div>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600/40 mb-0.5">Asistente</p>
-                                    <p class="text-sm font-bold serif truncate">Lista de Súper</p>
-                                </div>
-                                @if (loadingShoppingList()) {
-                                    <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                                }
+                                <div class="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-full"></div>
                             </div>
                         </div>
                     </div>
                 } @else {
-                    <div class="bg-white/50 dark:bg-[#111111]/50 p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-12 animate-fade-up">
-                        <div class="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
-                            <app-a-icon name="folder_off" customClass="text-2xl"></app-a-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold serif text-nutri-text/60 dark:text-slate-500">No hay plan activo</h3>
-                            <p class="text-xs text-nutri-text/60 dark:text-slate-600 mt-1 max-w-sm mx-auto">Tu menú nutricional aparecerá aquí cuando sea asignado, y estará disponible por {{ menuDurationDays }} días para su descarga.</p>
-                        </div>
-                    </div>
-                }
-
-                <!-- Grid de Métricas de Composición -->
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-up" style="animation-delay: 100ms">
-
-                    <!-- BMI Card -->
-                    <div class="col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
-                        <div class="flex items-center gap-2 text-nutri-rose/40">
-                            <app-a-icon name="speed" size="16px"></app-a-icon>
-                            <span class="text-[9px] font-black uppercase tracking-widest">IMC</span>
-                        </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ bmi() || '--' }}</span>
-                            <span class="text-[9px] sm:text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
-                        </div>
-                    </div>
-
-                    <!-- Fat Card -->
-                    <div class="col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
-                        <div class="flex items-center gap-2 text-nutri-rose/40">
-                            <app-a-icon name="percent" size="16px"></app-a-icon>
-                            <span class="text-[9px] font-black uppercase tracking-widest">% Grasa</span>
-                        </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-xl sm:text-2xl font-bold serif text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
-                            <span class="text-[9px] sm:text-[10px] font-bold text-nutri-rose/30 uppercase">% corp.</span>
-                        </div>
-                    </div>
-
-                    <!-- Goal Card -->
-                    <div class="col-span-2 lg:col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-2 transition-colors">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2 text-nutri-rose/40">
-                                <app-a-icon name="flag" size="16px"></app-a-icon>
-                                <span class="text-[9px] font-black uppercase tracking-widest">Meta</span>
-                            </div>
-                            <span class="text-[9px] font-black text-nutri-rose">{{ goalPercentage() | number:'1.0-0' }}%</span>
-                        </div>
-                        <div class="w-full h-1.5 bg-nutri-rose/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
-                            <div class="h-full bg-nutri-rose rounded-full transition-all duration-1000" [style.width.%]="goalPercentage()"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Composición Física Analítica -->
-                @if (latestProgress()) {
-                    <div class="animate-fade-up" style="animation-delay: 150ms">
-                        <app-progress-analytic-card 
-                            [progress]="latestProgress()!" 
-                            [patient]="patient()">
-                        </app-progress-analytic-card>
-                    </div>
-                }
-                <!-- Gráfica de Tendencia -->
-                @if (progress().length >= 2) {
-                    <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm animate-fade-up transition-colors" style="animation-delay: 200ms">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                            <div>
-                                <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
-                                    Tendencia de Progreso
-                                </h3>
-                                <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
-                            </div>
-                            
-                            <!-- Selectores de Métricas -->
-                            <div class="flex flex-wrap gap-2">
-                                <!-- Peso Toggle -->
-                                <button (click)="toggleMetric('weight'); $event.stopPropagation()"
-                                        [class]="activeMetrics().weight 
-                                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25 shadow-sm'
-                                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" [class.animate-pulse]="activeMetrics().weight"></span>
-                                    Peso
-                                </button>
-                                
-                                <!-- Grasa Toggle -->
-                                <button (click)="toggleMetric('fat'); $event.stopPropagation()"
-                                        [class]="activeMetrics().fat 
-                                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 shadow-sm'
-                                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500" [class.animate-pulse]="activeMetrics().fat"></span>
-                                    Grasa
-                                </button>
-                                
-                                <!-- Músculo Toggle -->
-                                <button (click)="toggleMetric('muscle'); $event.stopPropagation()"
-                                        [class]="activeMetrics().muscle 
-                                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose dark:text-nutri-rose-soft border-nutri-rose/25 shadow-sm'
-                                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose" [class.animate-pulse]="activeMetrics().muscle"></span>
-                                    Músculo
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="w-full overflow-hidden mt-4">
-                            <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
-                                <defs>
-                                    <!-- Gradiente Peso (Indigo) -->
-                                    <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#6366F1" stop-opacity="0.15" />
-                                        <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
-                                    </linearGradient>
-                                    <!-- Gradiente Grasa (Amber) -->
-                                    <linearGradient id="gradient-fat" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15" />
-                                        <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
-                                    </linearGradient>
-                                    <!-- Gradiente Músculo (Rose) -->
-                                    <linearGradient id="gradient-muscle" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#D81B60" stop-opacity="0.15" />
-                                        <stop offset="100%" stop-color="#D81B60" stop-opacity="0" />
-                                    </linearGradient>
-                                </defs>
-                                
-                                <!-- Area under path (Solo si hay exactamente 1 métrica seleccionada para evitar saturación) -->
-                                @if (activeLines().length === 1) {
-                                    <path [attr.d]="activeLines()[0].path + ' L 400 100 L 0 100 Z'" 
-                                          [attr.fill]="'url(#gradient-' + activeLines()[0].key + ')'" 
-                                          class="animate-fade-in" />
-                                }
-                                
-                                <!-- Líneas Meta (Goal Target Lines) -->
-                                @for (line of activeLines(); track line.key) {
-                                    @if (line.targetY !== null) {
-                                        <g class="opacity-70 transition-all duration-300">
-                                            <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
-                                                  [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
-                                            <text x="402" [attr.y]="line.targetY + 3"
-                                                  [attr.fill]="line.color"
-                                                  class="text-[7.5px] font-black">
-                                                META: {{ line.targetValue }}{{ line.unit }}
-                                            </text>
-                                        </g>
-                                    }
-                                }
-
-                                <!-- Caminos Principales (Main Paths) -->
-                                @for (line of activeLines(); track line.key) {
-                                    <path [attr.d]="line.path" 
-                                          fill="none" 
-                                          [attr.stroke]="line.color" 
-                                          stroke-width="3" 
-                                          stroke-linecap="round" 
-                                          stroke-linejoin="round"
-                                          class="animate-draw-path transition-all duration-500" />
-                                }
-
-                                <!-- X-Axis Date Labels (renderizadas una sola vez usando los puntos de la primera línea activa) -->
-                                @if (activeLines().length > 0) {
-                                    @for (point of activeLines()[0].points; track $index) {
-                                        <text [attr.x]="point.x" [attr.y]="115" 
-                                              text-anchor="middle" 
-                                              class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
-                                            {{ point.date | date:'dd MMM' }}
-                                        </text>
-                                    }
-                                }
-
-                                <!-- Puntos de Datos, Etiquetas y Tooltips -->
-                                @for (line of activeLines(); track line.key) {
-                                    @for (point of line.points; track $index) {
-                                        <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
-                                            <!-- Etiqueta de valor (Solo si hay exactamente 1 métrica activa y NO está hovered) -->
-                                            @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
-                                                <text [attr.x]="point.x" [attr.y]="point.y - 12" 
-                                                      text-anchor="middle" 
-                                                      class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                                    {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
-                                                </text>
+                    
+                    <!-- Pestaña 1: Inicio (Dashboard) -->
+                    @if (activeTab() === 'dashboard') {
+                        <div class="space-y-8 animate-fade-up">
+                            <!-- Fila de Metas Principales y Último Registro -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                <!-- Meta de Progreso -->
+                                <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative transition-colors">
+                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
+                                    <div>
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-2 block">
+                                            {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
+                                               currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
+                                               currentGoal() === 'subir_musculo' ? 'Meta de Músculo' : 'Tu Objetivo' }}
+                                        </span>
+                                        <h2 class="text-3xl sm:text-4xl font-bold serif">
+                                            @if (currentGoal() === 'bajar_peso') {
+                                                {{ patient()?.peso_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
+                                            } @else if (currentGoal() === 'bajar_grasa') {
+                                                {{ patient()?.grasa_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">%</span>
+                                            } @else if (currentGoal() === 'subir_musculo') {
+                                                {{ patient()?.musculo_meta || '--' }} <span class="text-lg font-normal text-nutri-text/50 dark:text-slate-500">kg</span>
+                                            } @else {
+                                                <span class="text-xl">Sin objetivo</span>
                                             }
-                                            
-                                            <!-- Marcador de Punto -->
-                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" 
-                                                    [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
-                                                    class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
-                                                    [attr.stroke]="line.color"
-                                                    [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
-                                                    [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
-                                            
-                                            <!-- Línea Guía Vertical y Tooltip al pasar el cursor (hover) -->
-                                            @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
-                                                <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
-                                                      stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
+                                        </h2>
+                                    </div>
+                                    <p class="text-xs text-nutri-text/50 dark:text-slate-600 mt-4 leading-relaxed italic">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
+                                </div>
 
-                                                <g class="transition-all duration-300 pointer-events-none z-50">
-                                                    @if (point.y < 50) {
-                                                        <!-- Puntero Triángulo (Abajo) -->
-                                                        <polygon points="-5,8 0,3 5,8" 
-                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y + 8) + ')'"
-                                                                 [attr.fill]="line.color" />
-                                                        
-                                                        <!-- Cuerpo de la Tarjeta -->
-                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
-                                                              [attr.y]="point.y + 14" 
-                                                              width="110" 
-                                                              height="34" 
-                                                              rx="8" 
-                                                              fill="#0F172A"
-                                                              [attr.stroke]="line.color"
-                                                              stroke-width="1.5" />
-                                                        
-                                                        <!-- Fecha e Identificador de Métrica -->
-                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                              [attr.y]="point.y + 25" 
-                                                              text-anchor="middle" 
-                                                              fill="#94A3B8" 
-                                                              class="text-[7px] font-bold uppercase tracking-wider">
-                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
-                                                        </text>
-                                                        
-                                                        <!-- Valor e Indicador de Progreso -->
-                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                              [attr.y]="point.y + 39" 
-                                                              text-anchor="middle" 
-                                                              fill="#ffffff" 
-                                                              class="text-[9.5px] font-black">
-                                                            {{ point.value }}{{ point.unit }}
-                                                            @if (point.diff) {
-                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
-                                                                    ({{ point.diff }})
-                                                                </tspan>
-                                                            }
-                                                        </text>
-                                                    } @else {
-                                                        <!-- Puntero Triángulo (Arriba) -->
-                                                        <polygon points="-5,-8 0,-3 5,-8" 
-                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
-                                                                 [attr.fill]="line.color" />
-                                                        
-                                                        <!-- Cuerpo de la Tarjeta -->
-                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
-                                                              [attr.y]="point.y - 48" 
-                                                              width="110" 
-                                                              height="34" 
-                                                              rx="8" 
-                                                              fill="#0F172A"
-                                                              [attr.stroke]="line.color"
-                                                              stroke-width="1.5" />
-                                                        
-                                                        <!-- Fecha e Identificador de Métrica -->
-                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                              [attr.y]="point.y - 37" 
-                                                              text-anchor="middle" 
-                                                              fill="#94A3B8" 
-                                                              class="text-[7px] font-bold uppercase tracking-wider">
-                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
-                                                        </text>
-                                                        
-                                                        <!-- Valor e Indicador de Progreso -->
-                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                              [attr.y]="point.y - 23" 
-                                                              text-anchor="middle" 
-                                                              fill="#ffffff" 
-                                                              class="text-[9.5px] font-black">
-                                                            {{ point.value }}{{ point.unit }}
-                                                            @if (point.diff) {
-                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
-                                                                    ({{ point.diff }})
-                                                                </tspan>
-                                                            }
-                                                        </text>
+                                <!-- Último Registro Físico -->
+                                <div class="bg-nutri-rose-soft/30 dark:bg-nutri-rose-soft/10 p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm text-nutri-rose flex flex-col justify-between overflow-hidden relative transition-all hover:bg-nutri-rose-soft/40 dark:hover:bg-nutri-rose-soft/20">
+                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full"></div>
+                                    <div>
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose opacity-60 mb-2 block">Último Registro</span>
+                                        <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-4 text-nutri-rose dark:text-nutri-rose-soft">
+                                            <!-- Peso -->
+                                            <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
+                                                <h2 class="text-3xl sm:text-4xl font-bold serif leading-none">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                                <span class="text-[10px] sm:text-lg font-normal opacity-60">kg</span>
+                                            </div>
+                                            <!-- Grasa -->
+                                            <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
+                                                <h2 class="text-xl sm:text-2xl font-bold serif leading-none">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                                <span class="text-[9px] sm:text-sm font-normal opacity-60">% gras.</span>
+                                            </div>
+                                            <!-- Músculo -->
+                                            <div class="flex flex-col sm:flex-row items-baseline gap-0.5 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
+                                                <h2 class="text-xl sm:text-2xl font-bold serif leading-none">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                                <span class="text-[9px] sm:text-sm font-normal opacity-60">kg musc.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-4 text-nutri-rose/60">
+                                        <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/10 flex items-center justify-center text-xs">
+                                            <app-a-icon name="calendar_today"></app-a-icon>
+                                        </div>
+                                        <span class="text-xs font-bold uppercase tracking-widest">
+                                            {{ progress().length > 0 ? (progress()[0].date | date:'dd MMM, yyyy') : 'Sin registros aún' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Grid de Métricas Rápidas -->
+                            <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- BMI Card -->
+                                <div class="col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                                    <div class="flex items-center gap-2 text-nutri-rose/40">
+                                        <app-a-icon name="speed" size="16px"></app-a-icon>
+                                        <span class="text-[9px] font-black uppercase tracking-widest">IMC</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1 mt-1">
+                                        <span class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ bmi() || '--' }}</span>
+                                        <span class="text-[9px] sm:text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
+                                    </div>
+                                </div>
+
+                                <!-- Fat Card -->
+                                <div class="col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-1 transition-colors">
+                                    <div class="flex items-center gap-2 text-nutri-rose/40">
+                                        <app-a-icon name="percent" size="16px"></app-a-icon>
+                                        <span class="text-[9px] font-black uppercase tracking-widest">% Grasa</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1 mt-1">
+                                        <span class="text-xl sm:text-2xl font-bold serif text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
+                                        <span class="text-[9px] sm:text-[10px] font-bold text-nutri-rose/30 uppercase">% corp.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Porcentaje de Avance General -->
+                                <div class="col-span-2 lg:col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col gap-2 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2 text-nutri-rose/40">
+                                            <app-a-icon name="flag" size="16px"></app-a-icon>
+                                            <span class="text-[9px] font-black uppercase tracking-widest">Avance Meta</span>
+                                        </div>
+                                        <span class="text-[9px] font-black text-nutri-rose">{{ goalPercentage() | number:'1.0-0' }}%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-nutri-rose/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
+                                        <div class="h-full bg-nutri-rose rounded-full transition-all duration-1000" [style.width.%]="goalPercentage()"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección de Logros (Estrellas de Logro) -->
+                            <div class="py-12 border-t border-nutri-rose/5 dark:border-white/5">
+                                <div class="flex flex-col items-center gap-10">
+                                    <div class="text-center space-y-2">
+                                        <h3 class="text-lg font-bold serif dark:text-slate-200">Estrellas Nutrilev</h3>
+                                        <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 dark:text-nutri-rose-soft/40 uppercase">Reconocimientos de tu disciplina</p>
+                                    </div>
+
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-start justify-center gap-12 sm:gap-20 md:gap-32 relative w-full max-w-[300px] sm:max-w-5xl mx-auto">
+                                        <!-- Línea de progreso - Escritorio -->
+                                        <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 hidden sm:block"></div>
+                                        <div class="absolute top-12 left-[12.5%] h-[3px] bg-gradient-to-r from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 hidden sm:block transition-all duration-1000 origin-left"
+                                             [style.width.%]="(goalPercentage() / 100) * 75"></div>
+                                        
+                                        <!-- Línea de progreso - Móvil -->
+                                        <div class="absolute left-10 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 sm:hidden"></div>
+                                        <div class="absolute left-10 -translate-x-1/2 top-10 w-[3px] bg-gradient-to-b from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 sm:hidden transition-all duration-1000 origin-top"
+                                             [style.height.%]="(goalPercentage() / 100) * 80"></div>
+                                        
+                                        @for (ms of milestones(); track ms.id) {
+                                            <app-m-milestone-badge 
+                                                [id]="ms.id" 
+                                                [title]="ms.title" 
+                                                [description]="ms.description" 
+                                                [unlocked]="ms.unlocked">
+                                            </app-m-milestone-badge>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Pestaña 2: Mi Plan (Digital Plan & Shopping List) -->
+                    @if (activeTab() === 'plan') {
+                        <div class="space-y-6 animate-fade-up">
+                            @if (isMenuValid()) {
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    
+                                    <!-- Columna Principal: Banner, Menús y Recomendaciones -->
+                                    <div class="lg:col-span-2 space-y-6">
+                                        
+                                        <!-- 1. Banner de Bienvenida Glassmorphic -->
+                                        <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-nutri-rose/10 via-transparent to-nutri-rose/5 border border-nutri-rose/10 p-6 sm:p-8 shadow-sm">
+                                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/10 rounded-full blur-2xl"></div>
+                                            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                <div>
+                                                    <span class="text-xs font-black uppercase tracking-widest text-nutri-rose">Tu Plan Nutricional Activo</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-bold serif text-nutri-text dark:text-white mt-1">¡Hola, {{ firstName() }}!</h2>
+                                                    <p class="text-xs sm:text-sm text-nutri-text/60 dark:text-slate-400 mt-2 max-w-lg">
+                                                        Aquí tienes acceso a tu plan de alimentación activo, tu lista de súper personalizada generada por IA y tu tracker diario de hábitos para mantenerte en el camino correcto.
+                                                    </p>
+                                                </div>
+                                                <div class="flex items-center gap-2 bg-white/50 dark:bg-black/20 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 shrink-0 self-start sm:self-center">
+                                                    <app-a-icon name="schedule" customClass="text-nutri-rose text-lg"></app-a-icon>
+                                                    <span class="text-xs font-bold text-nutri-text/80 dark:text-slate-300">{{ expirationMessage() }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 2. Descargas y Herramientas -->
+                                        <div class="space-y-3">
+                                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Descargas y Herramientas</h3>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <!-- Múltiples Menús PDFs -->
+                                                @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
+                                                    @for (m of patient()?.current_menus; track $index) {
+                                                        <div (click)="openMenu(m.url)" 
+                                                             class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
+                                                                <app-a-icon name="description"></app-a-icon>
+                                                            </div>
+                                                            <div class="flex-1 min-w-0">
+                                                                <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Archivo PDF</p>
+                                                                <p class="text-sm font-bold serif truncate">{{ m.name }}</p>
+                                                            </div>
+                                                            <div class="w-8 h-8 rounded-full bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text/20 group-hover:text-nutri-rose transition-colors shrink-0">
+                                                                <app-a-icon name="download" size="18px"></app-a-icon>
+                                                            </div>
+                                                        </div>
                                                     }
-                                                </g>
-                                            }
+                                                } @else if (patient()?.menu_url) {
+                                                    <div (click)="openMenu()" 
+                                                         class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
+                                                            <app-a-icon name="description"></app-a-icon>
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Plan Principal</p>
+                                                            <p class="text-sm font-bold serif truncate">Ver Menú Digital</p>
+                                                        </div>
+                                                    </div>
+                                                }
 
-                                            <!-- Overlay invisible para detección táctil y de cursor -->
-                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
-                                                    fill="transparent" class="cursor-pointer"
-                                                    (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
-                                                    (mouseleave)="hoveredPoint.set(null)"
-                                                    (click)="togglePoint($index, line.key); $event.stopPropagation()" />
-                                        </g>
-                                    }
-                                }
-                            </svg>
-                        </div>
-                    </div>
-                }
-                
-                <!-- Sección de Logros (Enhanced Star Milestones) -->
-                <div class="py-16 border-y border-nutri-rose/5 dark:border-white/5 animate-fade-up" style="animation-delay: 250ms">
-                    <div class="flex flex-col items-center gap-12">
-                        <div class="text-center space-y-2">
-                            <h3 class="text-xl font-bold serif dark:text-slate-200">Estrellas Nutrilev</h3>
-                            <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 dark:text-nutri-rose-soft/40 uppercase">Celebrando tus grandes victorias</p>
-                        </div>
+                                                <!-- Lista de Súper Card (Asistente IA) -->
+                                                <div (click)="openShoppingList()" 
+                                                     class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-5 rounded-[2rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0">
+                                                        <app-a-icon name="shopping_cart"></app-a-icon>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600/40 mb-0.5">Asistente</p>
+                                                        <p class="text-sm font-bold serif truncate">Lista de Súper</p>
+                                                    </div>
+                                                    @if (loadingShoppingList()) {
+                                                        <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
 
-                        <div class="flex flex-col sm:flex-row items-start sm:items-start justify-center gap-12 sm:gap-20 md:gap-32 relative w-full max-w-[300px] sm:max-w-5xl mx-auto">
-                            <!-- Progress Path Line (Static Track + Active Dynamic Fill Line) - Desktop -->
-                            <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 hidden sm:block"></div>
-                            <div class="absolute top-12 left-[12.5%] h-[3px] bg-gradient-to-r from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 hidden sm:block transition-all duration-1000 origin-left"
-                                 [style.width.%]="(goalPercentage() / 100) * 75"></div>
-                            
-                            <!-- Progress Path Line (Static Track + Active Dynamic Fill Line) - Mobile -->
-                            <div class="absolute left-10 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 sm:hidden"></div>
-                            <div class="absolute left-10 -translate-x-1/2 top-10 w-[3px] bg-gradient-to-b from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 sm:hidden transition-all duration-1000 origin-top"
-                                 [style.height.%]="(goalPercentage() / 100) * 80"></div>
-                            
-                            @for (ms of milestones(); track ms.id) {
-                                <app-m-milestone-badge 
-                                    [id]="ms.id" 
-                                    [title]="ms.title" 
-                                    [description]="ms.description" 
-                                    [unlocked]="ms.unlocked">
-                                </app-m-milestone-badge>
+                                        <!-- 3. Recomendaciones Clínicas -->
+                                        <div class="space-y-3">
+                                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Recomendaciones Clínicas</h3>
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                <!-- Hidratación -->
+                                                <div class="bg-sky-500/5 dark:bg-sky-500/10 p-5 rounded-[2rem] border border-sky-500/10 dark:border-sky-500/20 space-y-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
+                                                        <app-a-icon name="water_drop" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <h4 class="font-bold text-sm text-sky-700 dark:text-sky-400">Hidratación</h4>
+                                                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                        Tomar suficiente agua ayuda a metabolizar mejor las grasas y mantener la saciedad. Evita bebidas azucaradas.
+                                                    </p>
+                                                </div>
+
+                                                <!-- Porciones -->
+                                                <div class="bg-amber-500/5 dark:bg-amber-500/10 p-5 rounded-[2rem] border border-amber-500/10 dark:border-amber-500/20 space-y-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                                                        <app-a-icon name="restaurant" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <h4 class="font-bold text-sm text-amber-700 dark:text-amber-400">Porciones</h4>
+                                                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                        Mide tus porciones utilizando tazas medidoras o báscula de alimentos. El control de porciones es clave.
+                                                    </p>
+                                                </div>
+
+                                                <!-- Compras Inteligentes -->
+                                                <div class="bg-rose-500/5 dark:bg-rose-500/10 p-5 rounded-[2rem] border border-rose-500/10 dark:border-rose-500/20 space-y-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                                                        <app-a-icon name="shopping_basket" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <h4 class="font-bold text-sm text-rose-700 dark:text-rose-400">Compras</h4>
+                                                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                        Utiliza el Asistente IA de Lista de Súper para adquirir únicamente lo necesario y evitar tentaciones.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Columna Lateral: Tracker de Hábitos -->
+                                    <div class="lg:col-span-1">
+                                        <div class="bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm space-y-6">
+                                            <div>
+                                                <h3 class="font-bold text-lg serif text-nutri-text dark:text-slate-200">Hábitos de Hoy</h3>
+                                                <p class="text-xs text-nutri-text/40 dark:text-slate-500 mt-0.5">Mantén la constancia en tus metas diarias</p>
+                                            </div>
+
+                                            <!-- Barra de Progreso -->
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between items-center text-xs">
+                                                    <span class="font-bold text-nutri-rose">Progreso del día</span>
+                                                    <span class="font-black text-nutri-text dark:text-slate-300">{{ habitsPercentage() }}%</span>
+                                                </div>
+                                                <div class="h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-gradient-to-r from-nutri-rose to-pink-500 rounded-full transition-all duration-500 ease-out"
+                                                         [style.width.%]="habitsPercentage()"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Checklist de Hábitos -->
+                                            <div class="space-y-3">
+                                                <!-- Hábito 1: Agua -->
+                                                <div (click)="toggleHabit('water')"
+                                                     [class.bg-sky-500/5]="dailyHabits().water"
+                                                     [class.border-sky-500/20]="dailyHabits().water"
+                                                     class="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                                                    <div [class.bg-sky-500]="dailyHabits().water"
+                                                         [class.text-white]="dailyHabits().water"
+                                                         [class.bg-slate-100]="!dailyHabits().water"
+                                                         [class.dark:bg-white/5]="!dailyHabits().water"
+                                                         [class.text-slate-400]="!dailyHabits().water"
+                                                         class="w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0">
+                                                        <app-a-icon name="water_drop" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Tomar Agua</p>
+                                                        <p class="text-[10px] text-nutri-text/40 dark:text-slate-500">Meta: 2 Litros diarios</p>
+                                                    </div>
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                                                         [class.border-sky-500]="dailyHabits().water"
+                                                         [class.bg-sky-500]="dailyHabits().water"
+                                                         [class.border-slate-300]="!dailyHabits().water"
+                                                         [class.dark:border-white/20]="!dailyHabits().water">
+                                                        @if (dailyHabits().water) {
+                                                            <app-a-icon name="check" size="14px" customClass="text-white"></app-a-icon>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <!-- Hábito 2: Ejercicio -->
+                                                <div (click)="toggleHabit('activity')"
+                                                     [class.bg-indigo-500/5]="dailyHabits().activity"
+                                                     [class.border-indigo-500/20]="dailyHabits().activity"
+                                                     class="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                                                    <div [class.bg-indigo-500]="dailyHabits().activity"
+                                                         [class.text-white]="dailyHabits().activity"
+                                                         [class.bg-slate-100]="!dailyHabits().activity"
+                                                         [class.dark:bg-white/5]="!dailyHabits().activity"
+                                                         [class.text-slate-400]="!dailyHabits().activity"
+                                                         class="w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0">
+                                                        <app-a-icon name="fitness_center" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Actividad Física</p>
+                                                        <p class="text-[10px] text-nutri-text/40 dark:text-slate-500">Mínimo 30 minutos</p>
+                                                    </div>
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                                                         [class.border-indigo-500]="dailyHabits().activity"
+                                                         [class.bg-indigo-500]="dailyHabits().activity"
+                                                         [class.border-slate-300]="!dailyHabits().activity"
+                                                         [class.dark:border-white/20]="!dailyHabits().activity">
+                                                        @if (dailyHabits().activity) {
+                                                            <app-a-icon name="check" size="14px" customClass="text-white"></app-a-icon>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <!-- Hábito 3: Dieta -->
+                                                <div (click)="toggleHabit('diet')"
+                                                     [class.bg-nutri-rose/5]="dailyHabits().diet"
+                                                     [class.border-nutri-rose/20]="dailyHabits().diet"
+                                                     class="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                                                    <div [class.bg-nutri-rose]="dailyHabits().diet"
+                                                         [class.text-white]="dailyHabits().diet"
+                                                         [class.bg-slate-100]="!dailyHabits().diet"
+                                                         [class.dark:bg-white/5]="!dailyHabits().diet"
+                                                         [class.text-slate-400]="!dailyHabits().diet"
+                                                         class="w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0">
+                                                        <app-a-icon name="restaurant" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Seguir el Menú</p>
+                                                        <p class="text-[10px] text-nutri-text/40 dark:text-slate-500">Apegarse al plan del día</p>
+                                                    </div>
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                                                         [class.border-nutri-rose]="dailyHabits().diet"
+                                                         [class.bg-nutri-rose]="dailyHabits().diet"
+                                                         [class.border-slate-300]="!dailyHabits().diet"
+                                                         [class.dark:border-white/20]="!dailyHabits().diet">
+                                                        @if (dailyHabits().diet) {
+                                                            <app-a-icon name="check" size="14px" customClass="text-white"></app-a-icon>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <!-- Hábito 4: Descanso -->
+                                                <div (click)="toggleHabit('sleep')"
+                                                     [class.bg-purple-500/5]="dailyHabits().sleep"
+                                                     [class.border-purple-500/20]="dailyHabits().sleep"
+                                                     class="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                                                    <div [class.bg-purple-500]="dailyHabits().sleep"
+                                                         [class.text-white]="dailyHabits().sleep"
+                                                         [class.bg-slate-100]="!dailyHabits().sleep"
+                                                         [class.dark:bg-white/5]="!dailyHabits().sleep"
+                                                         [class.text-slate-400]="!dailyHabits().sleep"
+                                                         class="w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0">
+                                                        <app-a-icon name="bedtime" size="20px"></app-a-icon>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Buen Descanso</p>
+                                                        <p class="text-[10px] text-nutri-text/40 dark:text-slate-500">Dormir de 7 a 8 horas</p>
+                                                    </div>
+                                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                                                         [class.border-purple-500]="dailyHabits().sleep"
+                                                         [class.bg-purple-500]="dailyHabits().sleep"
+                                                         [class.border-slate-300]="!dailyHabits().sleep"
+                                                         [class.dark:border-white/20]="!dailyHabits().sleep">
+                                                        @if (dailyHabits().sleep) {
+                                                            <app-a-icon name="check" size="14px" customClass="text-white"></app-a-icon>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            } @else {
+                                <!-- Estado de plan inactivo -->
+                                <div class="bg-white/50 dark:bg-[#111111]/50 p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-16 animate-fade-up">
+                                    <div class="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
+                                        <app-a-icon name="folder_off" customClass="text-2xl"></app-a-icon>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold serif text-nutri-text/60 dark:text-slate-500">No hay plan activo</h3>
+                                        <p class="text-xs text-nutri-text/60 dark:text-slate-600 mt-1 max-w-sm mx-auto">Tu menú nutricional aparecerá aquí cuando sea asignado, y estará disponible por {{ menuDurationDays }} días para su descarga.</p>
+                                    </div>
+                                </div>
                             }
                         </div>
-                    </div>
-                </div>
+                    }
 
-                <!-- Historial Completo Unificado -->
-                <div class="animate-fade-up" style="animation-delay: 300ms">
-                    <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
-                </div>
+                    <!-- Pestaña 3: Análisis Físico (3D Body Silhouette & Trend SVG Chart) -->
+                    @if (activeTab() === 'analysis') {
+                        <div class="space-y-8 animate-fade-up">
+                            <!-- Composición Física Analítica (Silueta Corporal 3D) -->
+                            @if (latestProgress()) {
+                                <app-progress-analytic-card 
+                                    [progress]="latestProgress()!" 
+                                    [patient]="patient()">
+                                </app-progress-analytic-card>
+                            }
 
-            }
-        </main>
+                            <!-- Gráfica de Tendencia SVG -->
+                            @if (progress().length >= 2) {
+                                <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-colors">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                                        <div>
+                                            <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
+                                                Tendencia de Progreso
+                                            </h3>
+                                            <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
+                                        </div>
+                                        
+                                        <!-- Selectores de Métricas -->
+                                        <div class="flex flex-wrap gap-2">
+                                            <!-- Peso Toggle -->
+                                            <button (click)="toggleMetric('weight'); $event.stopPropagation()"
+                                                    [class]="activeMetrics().weight 
+                                                             ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25 shadow-sm'
+                                                             : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" [class.animate-pulse]="activeMetrics().weight"></span>
+                                                Peso
+                                            </button>
+                                            
+                                            <!-- Grasa Toggle -->
+                                            <button (click)="toggleMetric('fat'); $event.stopPropagation()"
+                                                    [class]="activeMetrics().fat 
+                                                             ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 shadow-sm'
+                                                             : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500" [class.animate-pulse]="activeMetrics().fat"></span>
+                                                Grasa
+                                            </button>
+                                            
+                                            <!-- Músculo Toggle -->
+                                            <button (click)="toggleMetric('muscle'); $event.stopPropagation()"
+                                                    [class]="activeMetrics().muscle 
+                                                             ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose dark:text-nutri-rose-soft border-nutri-rose/25 shadow-sm'
+                                                             : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose" [class.animate-pulse]="activeMetrics().muscle"></span>
+                                                Músculo
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="w-full overflow-hidden mt-4">
+                                        <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
+                                            <defs>
+                                                <!-- Gradiente Peso (Indigo) -->
+                                                <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stop-color="#6366F1" stop-opacity="0.15" />
+                                                    <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
+                                                </linearGradient>
+                                                <!-- Gradiente Grasa (Amber) -->
+                                                <linearGradient id="gradient-fat" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15" />
+                                                    <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+                                                </linearGradient>
+                                                <!-- Gradiente Músculo (Rose) -->
+                                                <linearGradient id="gradient-muscle" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stop-color="#D81B60" stop-opacity="0.15" />
+                                                    <stop offset="100%" stop-color="#D81B60" stop-opacity="0" />
+                                                </linearGradient>
+                                            </defs>
+                                            
+                                            <!-- Area under path (Solo si hay exactamente 1 métrica seleccionada para evitar saturación) -->
+                                            @if (activeLines().length === 1) {
+                                                <path [attr.d]="activeLines()[0].path + ' L 400 100 L 0 100 Z'" 
+                                                      [attr.fill]="'url(#gradient-' + activeLines()[0].key + ')'" 
+                                                      class="animate-fade-in" />
+                                            }
+                                            
+                                            <!-- Líneas Meta (Goal Target Lines) -->
+                                            @for (line of activeLines(); track line.key) {
+                                                @if (line.targetY !== null) {
+                                                    <g class="opacity-70 transition-all duration-300">
+                                                        <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
+                                                              [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
+                                                        <text x="402" [attr.y]="line.targetY + 3"
+                                                              [attr.fill]="line.color"
+                                                              class="text-[7.5px] font-black">
+                                                            META: {{ line.targetValue }}{{ line.unit }}
+                                                        </text>
+                                                    </g>
+                                                }
+                                            }
+
+                                            <!-- Caminos Principales (Main Paths) -->
+                                            @for (line of activeLines(); track line.key) {
+                                                <path [attr.d]="line.path" 
+                                                      fill="none" 
+                                                      [attr.stroke]="line.color" 
+                                                      stroke-width="3" 
+                                                      stroke-linecap="round" 
+                                                      stroke-linejoin="round"
+                                                      class="animate-draw-path transition-all duration-500" />
+                                            }
+
+                                            <!-- X-Axis Date Labels -->
+                                            @if (activeLines().length > 0) {
+                                                @for (point of activeLines()[0].points; track $index) {
+                                                    <text [attr.x]="point.x" [attr.y]="115" 
+                                                          text-anchor="middle" 
+                                                          class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
+                                                        {{ point.date | date:'dd MMM' }}
+                                                    </text>
+                                                }
+                                            }
+
+                                            <!-- Puntos de Datos, Etiquetas y Tooltips -->
+                                            @for (line of activeLines(); track line.key) {
+                                                @for (point of line.points; track $index) {
+                                                    <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
+                                                        <!-- Etiqueta de valor -->
+                                                        @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
+                                                            <text [attr.x]="point.x" [attr.y]="point.y - 12" 
+                                                                  text-anchor="middle" 
+                                                                  class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
+                                                                {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
+                                                            </text>
+                                                        }
+                                                        
+                                                        <!-- Marcador de Punto -->
+                                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" 
+                                                                [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
+                                                                class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
+                                                                [attr.stroke]="line.color"
+                                                                [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
+                                                                [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
+                                                        
+                                                        <!-- Línea Guía Vertical y Tooltip (hover) -->
+                                                        @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
+                                                            <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
+                                                                  stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
+
+                                                            <g class="transition-all duration-300 pointer-events-none z-50">
+                                                                @if (point.y < 50) {
+                                                                    <!-- Puntero Triángulo (Abajo) -->
+                                                                    <polygon points="-5,8 0,3 5,8" 
+                                                                             [attr.transform]="'translate(' + point.x + ',' + (point.y + 8) + ')'"
+                                                                             [attr.fill]="line.color" />
+                                                                    
+                                                                    <!-- Cuerpo de la Tarjeta -->
+                                                                    <rect [attr.x]="point.x - 55 + point.tooltipShift" 
+                                                                          [attr.y]="point.y + 14" 
+                                                                          width="110" 
+                                                                          height="34" 
+                                                                          rx="8" 
+                                                                          fill="#0F172A"
+                                                                          [attr.stroke]="line.color"
+                                                                          stroke-width="1.5" />
+                                                                    
+                                                                    <!-- Fecha e Identificador -->
+                                                                    <text [attr.x]="point.x + point.tooltipShift" 
+                                                                          [attr.y]="point.y + 25" 
+                                                                          text-anchor="middle" 
+                                                                          fill="#94A3B8" 
+                                                                          class="text-[7px] font-bold uppercase tracking-wider">
+                                                                        {{ point.date | date:'dd MMM' }} • {{ line.label }}
+                                                                    </text>
+                                                                    
+                                                                    <!-- Valor e Indicador -->
+                                                                    <text [attr.x]="point.x + point.tooltipShift" 
+                                                                          [attr.y]="point.y + 39" 
+                                                                          text-anchor="middle" 
+                                                                          fill="#ffffff" 
+                                                                          class="text-[9.5px] font-black">
+                                                                        {{ point.value }}{{ point.unit }}
+                                                                        @if (point.diff) {
+                                                                            <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
+                                                                                ({{ point.diff }})
+                                                                            </tspan>
+                                                                        }
+                                                                    </text>
+                                                                } @else {
+                                                                    <!-- Puntero Triángulo (Arriba) -->
+                                                                    <polygon points="-5,-8 0,-3 5,-8" 
+                                                                             [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
+                                                                             [attr.fill]="line.color" />
+                                                                    
+                                                                    <!-- Cuerpo de la Tarjeta -->
+                                                                    <rect [attr.x]="point.x - 55 + point.tooltipShift" 
+                                                                          [attr.y]="point.y - 48" 
+                                                                          width="110" 
+                                                                          height="34" 
+                                                                          rx="8" 
+                                                                          fill="#0F172A"
+                                                                          [attr.stroke]="line.color"
+                                                                          stroke-width="1.5" />
+                                                                    
+                                                                    <!-- Fecha e Identificador -->
+                                                                    <text [attr.x]="point.x + point.tooltipShift" 
+                                                                          [attr.y]="point.y - 37" 
+                                                                          text-anchor="middle" 
+                                                                          fill="#94A3B8" 
+                                                                          class="text-[7px] font-bold uppercase tracking-wider">
+                                                                        {{ point.date | date:'dd MMM' }} • {{ line.label }}
+                                                                    </text>
+                                                                    
+                                                                    <!-- Valor e Indicador -->
+                                                                    <text [attr.x]="point.x + point.tooltipShift" 
+                                                                          [attr.y]="point.y - 23" 
+                                                                          text-anchor="middle" 
+                                                                          fill="#ffffff" 
+                                                                          class="text-[9.5px] font-black">
+                                                                        {{ point.value }}{{ point.unit }}
+                                                                        @if (point.diff) {
+                                                                            <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
+                                                                                ({{ point.diff }})
+                                                                            </tspan>
+                                                                        }
+                                                                    </text>
+                                                                }
+                                                            </g>
+                                                        }
+
+                                                        <!-- Detección táctil y de cursor -->
+                                                        <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
+                                                                fill="transparent" class="cursor-pointer"
+                                                                (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
+                                                                (mouseleave)="hoveredPoint.set(null)"
+                                                                (click)="togglePoint($index, line.key); $event.stopPropagation()" />
+                                                    </g>
+                                                }
+                                            }
+                                        </svg>
+                                    </div>
+                                </div>
+                            } @else {
+                                <div class="bg-white dark:bg-[#111111] p-8 rounded-[1.75rem] border border-nutri-rose/10 dark:border-white/5 text-center py-16">
+                                    <app-a-icon name="show_chart" customClass="text-4xl text-nutri-rose/30 mb-3"></app-a-icon>
+                                    <h4 class="text-base font-bold serif text-nutri-text dark:text-white">Gráfica de Tendencia</h4>
+                                    <p class="text-xs text-nutri-text/60 dark:text-slate-500 mt-1 max-w-xs mx-auto">Necesitas al menos 2 registros de consulta para generar la gráfica de progreso de tendencia.</p>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <!-- Pestaña 4: Historial Clínico Completo -->
+                    @if (activeTab() === 'history') {
+                        <div class="animate-fade-up">
+                            <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
+                        </div>
+                    }
+                }
+            </main>
+        </div>
+
+        <!-- Barra de Navegación Inferior (Bottom Navigation Bar - Solo Móvil) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pb-4 pt-2.5 px-4 shadow-2xl flex justify-around items-center transition-colors duration-300">
+            <!-- Inicio -->
+            <button (click)="setActiveTab('dashboard')"
+                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'dashboard'"
+                    [class.text-slate-400]="activeTab() !== 'dashboard'"
+                    [class.dark:text-slate-500]="activeTab() !== 'dashboard'">
+                <app-a-icon name="dashboard" size="20px"></app-a-icon>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
+            </button>
+
+            <!-- Mi Plan -->
+            <button (click)="setActiveTab('plan')"
+                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'plan'"
+                    [class.text-slate-400]="activeTab() !== 'plan'"
+                    [class.dark:text-slate-500]="activeTab() !== 'plan'">
+                <app-a-icon name="restaurant_menu" size="20px"></app-a-icon>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Mi Plan</span>
+            </button>
+
+            <!-- Análisis -->
+            <button (click)="setActiveTab('analysis')"
+                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'analysis'"
+                    [class.text-slate-400]="activeTab() !== 'analysis'"
+                    [class.dark:text-slate-500]="activeTab() !== 'analysis'">
+                <app-a-icon name="insights" size="20px"></app-a-icon>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Análisis</span>
+            </button>
+
+            <!-- Historial -->
+            <button (click)="setActiveTab('history')"
+                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'history'"
+                    [class.text-slate-400]="activeTab() !== 'history'"
+                    [class.dark:text-slate-500]="activeTab() !== 'history'">
+                <app-a-icon name="history" size="20px"></app-a-icon>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Historial</span>
+            </button>
+        </nav>
     </div>
 } @else if (loading()) {
     <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] flex flex-col items-center justify-center gap-4 text-nutri-rose transition-colors">
@@ -580,7 +934,7 @@
         <p class="text-[10px] font-black uppercase tracking-widest">Sincronizando portal...</p>
     </div>
 } @else {
-    <!-- Error State -->
+    <!-- Estado de Error de Expediente No Localizado -->
     <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] flex flex-col items-center justify-center p-10 text-center space-y-6 transition-colors">
         <app-a-icon name="person_off" customClass="text-5xl text-nutri-rose/20 dark:text-white/10"></app-a-icon>
         <div class="space-y-2">
@@ -593,6 +947,7 @@
     </div>
 }
 
+<!-- Modal de Lista de Compras (Asistente IA Compartido en DOM) -->
 @if (showShoppingModal()) {
     <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
         <div class="bg-white dark:bg-[#151515] w-full max-w-lg max-h-[85vh] rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
