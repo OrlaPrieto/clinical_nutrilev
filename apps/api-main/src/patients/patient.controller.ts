@@ -12,7 +12,9 @@ import { PatientService } from './patient.service';
 import { Patient, PatientProgress } from '@shared/index';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { CreateProgressDto } from './dto/create-progress.dto';
+import { UpdateProgressDto } from './dto/update-progress.dto';
 import { AdminGuard } from '../common/guards/admin.guard';
+
 import { PatientAuthGuard } from '../common/guards/patient-auth.guard';
 
 @Controller('api/patients')
@@ -53,6 +55,16 @@ export class PatientController {
   ): Promise<PatientProgress> {
     return this.patientService.addProgress(progressData);
   }
+
+  @Put('progress/:id')
+  @UseGuards(AdminGuard)
+  async updateProgress(
+    @Param('id') id: string,
+    @Body() progressData: UpdateProgressDto,
+  ): Promise<PatientProgress> {
+    return this.patientService.updateProgress(id, progressData);
+  }
+
 
   @Delete(':identifier')
   @UseGuards(AdminGuard)

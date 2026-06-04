@@ -271,7 +271,7 @@
     <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 overflow-hidden">
         <!-- Glass Backdrop -->
         <div class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md transition-opacity animate-fade-in" 
-             (click)="selectedRecordForDetail.set(null)"></div>
+             (click)="closeModal()"></div>
         
         <!-- Modal Container -->
         <div class="relative w-full max-w-5xl max-h-[92vh] bg-white dark:bg-[#0d0d0d] rounded-[1.75rem] sm:rounded-[2.5rem] shadow-2xl border border-nutri-rose/10 dark:border-white/10 flex flex-col overflow-hidden animate-scale-up">
@@ -296,32 +296,72 @@
                                 <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-slate-100 tracking-tight leading-none">{{ patient()?.nombre || 'Expediente Clínico' }}</h3>
                                 <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose text-[7px] sm:text-[8px] font-black uppercase tracking-widest rounded-lg">Análisis Detallado</span>
                             </div>
-                            <div class="flex items-center gap-4 text-[9px] sm:text-[10px] font-medium text-nutri-text/40 dark:text-slate-500 italic">
-                                <div class="flex items-center gap-1.5">
-                                    <app-a-icon name="history" size="12px" class="opacity-40"></app-a-icon>
-                                    <span>Consulta de seguimiento nutricional</span>
+                            @if (isEditing()) {
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Fecha:</span>
+                                    <input type="date"
+                                           [ngModel]="editableRecord()?.date | date:'yyyy-MM-dd'"
+                                           (ngModelChange)="updateEditableField('date', $event)"
+                                           class="bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-lg px-2 py-1 text-xs font-bold text-nutri-text dark:text-slate-200 outline-none transition-all">
                                 </div>
-                            </div>
+                            } @else {
+                                <div class="flex items-center gap-4 text-[9px] sm:text-[10px] font-medium text-nutri-text/40 dark:text-slate-500 italic">
+                                    <div class="flex items-center gap-1.5">
+                                        <app-a-icon name="history" size="12px" class="opacity-40"></app-a-icon>
+                                        <span>Consulta de seguimiento nutricional</span>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                     
                     <!-- Right: Actions -->
                     <div class="flex items-center gap-3">
                         @if (showActions()) {
-                            <app-a-button variant="outline" size="md" icon="content_copy"
-                                         [loading]="copyingRecordId() === (record.id || record.date)"
-                                         (onClick)="copyProgressAsImage(record, hiddenCardContainerSlide)"
-                                         label="Copiar"
-                                         customClass="!rounded-xl !bg-white dark:!bg-white/5 !border-nutri-rose/20 !text-nutri-rose shadow-sm hidden sm:flex"></app-a-button>
+                            @if (isEditing()) {
+                                <app-a-button variant="outline" size="md" icon="close"
+                                             (onClick)="cancelEdit()"
+                                             label="Cancelar"
+                                             customClass="!rounded-xl shadow-sm hidden sm:flex"></app-a-button>
+                                <app-a-button variant="primary" size="md" icon="save"
+                                             (onClick)="saveEdit()"
+                                             label="Guardar"
+                                             customClass="!rounded-xl shadow-sm hidden sm:flex"></app-a-button>
+                            } @else {
+                                <app-a-button variant="outline" size="md" icon="edit"
+                                             (onClick)="startEdit(record)"
+                                             label="Editar"
+                                             customClass="!rounded-xl !bg-white dark:!bg-white/5 !border-nutri-rose/20 !text-nutri-rose shadow-sm hidden sm:flex"></app-a-button>
+                                <app-a-button variant="outline" size="md" icon="content_copy"
+                                             [loading]="copyingRecordId() === (record.id || record.date)"
+                                             (onClick)="copyProgressAsImage(record, hiddenCardContainerSlide)"
+                                             label="Copiar"
+                                             customClass="!rounded-xl !bg-white dark:!bg-white/5 !border-nutri-rose/20 !text-nutri-rose shadow-sm hidden sm:flex"></app-a-button>
+                            }
                             
-                            <!-- Mobile version of copy button -->
-                            <button (click)="copyProgressAsImage(record, hiddenCardContainerSlide)"
-                                    class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center text-nutri-rose sm:hidden">
-                                <app-a-icon name="content_copy" customClass="!text-xl"></app-a-icon>
-                            </button>
+                            <!-- Mobile versions of buttons -->
+                            @if (isEditing()) {
+                                <button (click)="cancelEdit()"
+                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 sm:hidden">
+                                    <app-a-icon name="close" customClass="!text-xl"></app-a-icon>
+                                </button>
+                                <button (click)="saveEdit()"
+                                        class="w-10 h-10 rounded-xl bg-nutri-rose flex items-center justify-center text-white sm:hidden shadow-lg shadow-nutri-rose/20">
+                                    <app-a-icon name="save" customClass="!text-xl"></app-a-icon>
+                                </button>
+                            } @else {
+                                <button (click)="startEdit(record)"
+                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center text-nutri-rose sm:hidden">
+                                    <app-a-icon name="edit" customClass="!text-xl"></app-a-icon>
+                                </button>
+                                <button (click)="copyProgressAsImage(record, hiddenCardContainerSlide)"
+                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center text-nutri-rose sm:hidden">
+                                    <app-a-icon name="content_copy" customClass="!text-xl"></app-a-icon>
+                                </button>
+                            }
                         }
                         
-                        <button (click)="selectedRecordForDetail.set(null)" 
+                        <button (click)="closeModal()" 
                                 class="w-10 h-10 rounded-xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm">
                             <app-a-icon name="close" customClass="!text-xl"></app-a-icon>
                         </button>
@@ -374,11 +414,11 @@
  
                                 <div class="grid grid-cols-2 gap-3 sm:gap-4">
                                     @for (field of section.fields; track field.key) {
-                                        @if (record[field.key]) {
+                                        @if (isEditing() || record[field.key]) {
                                             <div class="p-3 xs:p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
                                                 <div class="flex items-center justify-between mb-2">
                                                     <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">{{ field.label }}</span>
-                                                    @if (getPreviousRecord(record); as prev) {
+                                                    @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                         @if (calculateDelta(record, prev, field.key); as delta) {
                                                             <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm" [ngClass]="getDeltaColor(delta, field.key)">
                                                                 {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
@@ -386,10 +426,21 @@
                                                         }
                                                     }
                                                 </div>
-                                                <div class="flex items-baseline gap-1.5">
-                                                    <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
-                                                    <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
-                                                </div>
+                                                @if (isEditing()) {
+                                                    <div class="flex items-center gap-1.5 w-full mt-1">
+                                                        <input [type]="field.key === 'presion_arterial' ? 'text' : 'number'"
+                                                               [ngModel]="editableRecord()?.[field.key]"
+                                                               (ngModelChange)="updateEditableField(field.key, $event)"
+                                                               class="w-full bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-sm font-bold text-nutri-text dark:text-slate-200 outline-none transition-all"
+                                                               placeholder="--">
+                                                        <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
+                                                    </div>
+                                                } @else {
+                                                    <div class="flex items-baseline gap-1.5">
+                                                        <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                        <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     }
@@ -436,11 +487,11 @@
  
                                 <div class="grid grid-cols-2 gap-3 sm:gap-4">
                                     @for (field of section.fields; track field.key) {
-                                        @if (record[field.key]) {
+                                        @if (isEditing() || record[field.key]) {
                                             <div class="p-3 xs:p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
                                                 <div class="flex items-center justify-between mb-2">
                                                     <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">{{ field.label }}</span>
-                                                    @if (getPreviousRecord(record); as prev) {
+                                                    @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                         @if (calculateDelta(record, prev, field.key); as delta) {
                                                             <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm" [ngClass]="getDeltaColor(delta, field.key)">
                                                                 {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
@@ -448,10 +499,21 @@
                                                         }
                                                     }
                                                 </div>
-                                                <div class="flex items-baseline gap-1.5">
-                                                    <span class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
-                                                    <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
-                                                </div>
+                                                @if (isEditing()) {
+                                                    <div class="flex items-center gap-1.5 w-full mt-1">
+                                                        <input type="number"
+                                                               [ngModel]="editableRecord()?.[field.key]"
+                                                               (ngModelChange)="updateEditableField(field.key, $event)"
+                                                               class="w-full bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-sm font-bold text-nutri-text dark:text-slate-200 outline-none transition-all"
+                                                               placeholder="--">
+                                                        <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
+                                                    </div>
+                                                } @else {
+                                                    <div class="flex items-baseline gap-1.5">
+                                                        <span class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                        <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     }
@@ -460,15 +522,23 @@
                         }
  
                         <!-- Notas Destacadas -->
-                        @if (record.notes) {
+                        @if (isEditing() || record.notes) {
                             <div class="bg-nutri-rose/[0.02] dark:bg-white/5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 p-5 sm:p-8 space-y-4">
                                 <div class="flex items-center gap-2">
                                     <app-a-icon name="sticky_note_2" customClass="text-nutri-rose text-sm"></app-a-icon>
                                     <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">Observaciones Clínicas</span>
                                 </div>
-                                <p class="text-sm font-medium italic leading-relaxed text-nutri-text/70 dark:text-slate-300">
-                                    "{{ record.notes }}"
-                                </p>
+                                @if (isEditing()) {
+                                    <textarea [ngModel]="editableRecord()?.notes"
+                                              (ngModelChange)="updateEditableField('notes', $event)"
+                                              rows="3"
+                                              class="w-full bg-white dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-xl p-3 text-sm font-medium text-nutri-text dark:text-slate-200 outline-none transition-all resize-y"
+                                              placeholder="Escribe observaciones aquí..."></textarea>
+                                } @else {
+                                    <p class="text-sm font-medium italic leading-relaxed text-nutri-text/70 dark:text-slate-300">
+                                        "{{ record.notes }}"
+                                    </p>
+                                }
                             </div>
                         }
                     </div>

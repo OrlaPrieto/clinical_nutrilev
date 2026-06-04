@@ -115,6 +115,24 @@ export class PatientService {
     return response.json();
   }
 
+  async updateProgressEntry(id: string, entry: Partial<PatientProgress>): Promise<any> {
+    if (this.authService.isDevMode()) {
+      const index = MOCK_PROGRESS.findIndex(p => p.id === id);
+      if (index !== -1) {
+        MOCK_PROGRESS[index] = { ...MOCK_PROGRESS[index], ...entry };
+        return new Promise(resolve => setTimeout(() => resolve(MOCK_PROGRESS[index]), 500));
+      }
+      throw new Error('Progress entry not found in mock data');
+    }
+    const response = await fetch(`${this.apiUrl}/progress/${id}`, {
+      method: 'PUT',
+      headers: this.headers,
+      body: JSON.stringify(entry)
+    });
+    if (!response.ok) throw new Error('Error updating progress entry');
+    return response.json();
+  }
+
   async getShoppingList(menuUrl: string): Promise<ShoppingCategory[]> {
     const response = await fetch(`${this.apiUrl}/shopping-list`, {
       method: 'POST',

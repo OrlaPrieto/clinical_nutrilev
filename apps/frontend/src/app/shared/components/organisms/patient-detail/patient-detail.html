@@ -1150,7 +1150,7 @@
                 </div>
 
                 <!-- HISTORIAL DE AVANCES -->
-                <app-progress-history [history]="progressHistory()" [patient]="patient()" [showActions]="true"></app-progress-history>
+                <app-progress-history [history]="progressHistory()" [patient]="patient()" [showActions]="true" (progressUpdated)="loadProgress()"></app-progress-history>
             </div>
         }
 

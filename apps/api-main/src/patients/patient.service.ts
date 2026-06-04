@@ -9,6 +9,8 @@ import {
   PatientUpdate,
   PatientProgressInsert,
 } from '@shared/index';
+import { UpdateProgressDto } from './dto/update-progress.dto';
+
 
 @Injectable()
 export class PatientService {
@@ -192,6 +194,38 @@ export class PatientService {
     if (error) throw error;
     return data as PatientProgress;
   }
+
+  async updateProgress(
+    id: string,
+    progressData: UpdateProgressDto,
+  ): Promise<PatientProgress> {
+    const formattedData = { ...progressData } as Record<string, unknown>;
+
+    // Remove id and metadata fields from update payload if they exist
+    delete formattedData.id;
+    delete formattedData.created_at;
+
+    // Convert all numeric values to strings for Supabase storage consistency
+    Object.keys(formattedData).forEach((key) => {
+      const value = formattedData[key];
+      if (typeof value === 'number') {
+        formattedData[key] = value.toString();
+      }
+    });
+
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('patient_progress')
+      // @ts-expect-error Supabase inference issue with 'patient_progress' table
+      .update(formattedData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as PatientProgress;
+  }
+
 
   async remove(identifier: string): Promise<{ success: boolean }> {
     const { error } = await this.supabaseService

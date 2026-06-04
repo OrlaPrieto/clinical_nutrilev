@@ -1,10 +1,12 @@
-import { Component, Input, computed, signal, input, effect, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, computed, signal, input, output, effect, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 import { toBlob } from 'html-to-image';
 import { ThemeService } from '../../../services/theme.service';
+import { PatientService } from '../../../../services/patient';
+import { FormsModule } from '@angular/forms';
 
 import { PortalModule } from '@angular/cdk/portal';
 
@@ -17,12 +19,14 @@ import { PortalModule } from '@angular/cdk/portal';
     DatePipe, 
     IconComponent, 
     ButtonComponent,
-    ProgressAnalyticCardComponent
+    ProgressAnalyticCardComponent,
+    FormsModule
   ],
   templateUrl: './progress-history.html'
 })
 export class ProgressHistoryComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
+  private patientService = inject(PatientService);
 
   history = input.required<any[]>();
   patient = input<any>(null);
@@ -32,6 +36,88 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
   selectedRecordForDetail = signal<any | null>(null);
   copyingRecordId = signal<string | null>(null);
   toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
+
+  isEditing = signal<boolean>(false);
+  editableRecord = signal<any | null>(null);
+  progressUpdated = output<void>();
+
+  startEdit(record: any) {
+    this.editableRecord.set({ ...record });
+    this.isEditing.set(true);
+  }
+
+  cancelEdit() {
+    this.isEditing.set(false);
+    this.editableRecord.set(null);
+  }
+
+  updateEditableField(key: string, value: any) {
+    const current = this.editableRecord();
+    if (current) {
+      this.editableRecord.set({
+        ...current,
+        [key]: value
+      });
+    }
+  }
+
+  closeModal() {
+    this.selectedRecordForDetail.set(null);
+    this.isEditing.set(false);
+    this.editableRecord.set(null);
+  }
+
+  async saveEdit() {
+    const record = this.editableRecord();
+    if (!record || !record.id) return;
+
+    if (!record.weight || isNaN(Number(record.weight))) {
+      this.toast.set({ message: 'El peso es requerido y debe ser un número', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      return;
+    }
+
+    try {
+      const payload = { ...record };
+      const recordId = payload.id;
+      
+      // Remove non-whitelisted metadata fields
+      delete payload.id;
+      delete payload.created_at;
+      delete payload.updated_at;
+
+      // Clean up fields: convert empty strings to null, and make sure numbers are numbers
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === '') {
+          payload[key] = null;
+        } else if (key !== 'presion_arterial' && key !== 'notes' && key !== 'date' && key !== 'patient_email') {
+          if (payload[key] !== null && payload[key] !== undefined) {
+            const num = Number(payload[key]);
+            payload[key] = isNaN(num) ? null : num;
+          }
+        }
+      });
+
+      // Call service to update progress entry on DB or Mock
+      await this.patientService.updateProgressEntry(recordId, payload);
+
+      this.toast.set({ message: 'Registro actualizado con éxito', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+
+      this.isEditing.set(false);
+      this.editableRecord.set(null);
+      
+      // Restore ID for selected record detail display
+      payload.id = recordId;
+      this.selectedRecordForDetail.set(payload);
+
+      this.progressUpdated.emit();
+    } catch (err) {
+      console.error('Error saving progress update:', err);
+      this.toast.set({ message: 'Error al guardar los cambios', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+    }
+  }
 
   ngOnInit() {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
