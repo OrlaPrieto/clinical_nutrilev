@@ -111,3 +111,43 @@
   height: auto;
   overflow: visible;
 }
+
+/* High Contrast Overrides for Image Export (Copying) */
+.is-copying-image {
+  /* Prevent transitions or animation pulses during capture */
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Make SVG silhouette body parts more opaque and defined */
+  svg path {
+    opacity: 0.65 !important;
+    stroke: var(--nutri-rose) !important;
+    stroke-width: 0.6px !important;
+    fill: #cbd5e1 !important; /* slate-300 */
+  }
+
+  /* Make floating labels pop and remain sharp */
+  .absolute {
+    background-color: #ffffff !important;
+    border-color: rgba(216, 27, 96, 0.4) !important; /* nutri-rose */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.dark .is-copying-image {
+  svg path {
+    opacity: 0.75 !important;
+    stroke: var(--nutri-rose-light) !important;
+    stroke-width: 0.6px !important;
+    fill: #475569 !important; /* slate-600 */
+  }
+
+  .absolute {
+    background-color: #0f172a !important; /* slate-900 */
+    border-color: rgba(255, 107, 155, 0.3) !important; /* nutri-rose-light */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+

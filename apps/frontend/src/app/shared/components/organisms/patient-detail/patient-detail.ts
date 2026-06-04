@@ -89,6 +89,8 @@ export class PatientDetailComponent implements OnInit {
   
   // Progress signals
   progressHistory = signal<any[]>([]);
+  changedFields = signal<Record<string, boolean>>({});
+  hasHistory = computed(() => this.progressHistory().length > 0);
   newProgress = signal<any>({ 
     weight: null, body_fat: null, muscle_mass: null, 
     agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
@@ -186,10 +188,103 @@ export class PatientDetailComponent implements OnInit {
       try {
         const history = await this.patientService.getPatientProgress(p.email);
         this.progressHistory.set(history);
+        this.initializeNewProgressFromLastRecord();
       } catch (err) {
         console.error('Error loading progress history', err);
       }
     }
+  }
+
+  initializeNewProgressFromLastRecord() {
+    const history = this.progressHistory();
+    if (history && history.length > 0) {
+      const lastRecord = history[0];
+      const prevData: any = {};
+      const fields = [
+        'weight', 'body_fat', 'muscle_mass', 
+        'agua_corporal', 'proteinas', 'minerales', 'masa_grasa', 
+        'musculo_esqueletico', 'masa_magra', 'imc', 'pgc',
+        'brazo_der_grasa', 'brazo_der_musculo', 'brazo_der_cm',
+        'brazo_izq_grasa', 'brazo_izq_musculo', 'brazo_izq_cm',
+        'tronco_grasa', 'tronco_musculo',
+        'pierna_der_grasa', 'pierna_der_musculo', 'pierna_der_cm',
+        'pierna_izq_grasa', 'pierna_izq_musculo', 'pierna_izq_cm',
+        'icc', 'gv', 'abdomen', 'cintura', 'cadera',
+        'edad_metabolica', 'presion_arterial', 'pulso', 'pliegue_cutaneo'
+      ];
+      
+      for (const field of fields) {
+        const val = lastRecord[field];
+        prevData[field] = (val !== undefined && val !== null) ? val : (field === 'presion_arterial' ? '' : null);
+      }
+      
+      prevData.notes = '';
+      this.newProgress.set(prevData);
+      
+      const flags: Record<string, boolean> = {};
+      for (const field of fields) {
+        flags[field] = false;
+      }
+      this.changedFields.set(flags);
+    } else {
+      this.resetNewProgress();
+    }
+  }
+
+  resetNewProgress() {
+    this.newProgress.set({ 
+      weight: null, body_fat: null, muscle_mass: null,
+      agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
+      musculo_esqueletico: null, masa_magra: null, imc: null, pgc: null,
+      brazo_der_grasa: null, brazo_der_musculo: null, brazo_der_cm: null,
+      brazo_izq_grasa: null, brazo_izq_musculo: null, brazo_izq_cm: null,
+      tronco_grasa: null, tronco_musculo: null,
+      pierna_der_grasa: null, pierna_der_musculo: null, pierna_der_cm: null,
+      pierna_izq_grasa: null, pierna_izq_musculo: null, pierna_izq_cm: null,
+      icc: null, gv: null, abdomen: null, cintura: null, cadera: null,
+      edad_metabolica: null, presion_arterial: '', pulso: null, pliegue_cutaneo: null,
+      notes: '' 
+    });
+    this.changedFields.set({});
+  }
+
+  updateProgressField(key: string, value: any) {
+    const current = this.newProgress();
+    const updated = {
+      ...current,
+      [key]: value
+    };
+    this.newProgress.set(updated);
+    
+    const history = this.progressHistory();
+    const lastRecord = history && history.length > 0 ? history[0] : null;
+    const prevValue = lastRecord ? lastRecord[key] : null;
+    
+    const isDifferent = this.isFieldValueDifferent(prevValue, value);
+    
+    this.changedFields.update(flags => ({
+      ...flags,
+      [key]: isDifferent
+    }));
+  }
+
+  private isFieldValueDifferent(prev: any, current: any): boolean {
+    if (prev === current) return false;
+    
+    const normalizedPrev = (prev === null || prev === undefined || prev === '') ? null : String(prev).trim();
+    const normalizedCurrent = (current === null || current === undefined || current === '') ? null : String(current).trim();
+    
+    if (normalizedPrev === normalizedCurrent) return false;
+    
+    if (normalizedPrev !== null && normalizedCurrent !== null) {
+      const numPrev = Number(normalizedPrev);
+      const numCurrent = Number(normalizedCurrent);
+      if (!isNaN(numPrev) && !isNaN(numCurrent)) {
+        return numPrev !== numCurrent;
+      }
+    }
+    
+    return true;
   }
 
   async addProgressRecord() {
@@ -203,20 +298,7 @@ export class PatientDetailComponent implements OnInit {
         patient_email: p.email,
         ...progressData
       });
-      // Reset form and reload
-      this.newProgress.set({ 
-        weight: null, body_fat: null, muscle_mass: null,
-        agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
-        musculo_esqueletico: null, masa_magra: null, imc: null, pgc: null,
-        brazo_der_grasa: null, brazo_der_musculo: null, brazo_der_cm: null,
-        brazo_izq_grasa: null, brazo_izq_musculo: null, brazo_izq_cm: null,
-        tronco_grasa: null, tronco_musculo: null,
-        pierna_der_grasa: null, pierna_der_musculo: null, pierna_der_cm: null,
-        pierna_izq_grasa: null, pierna_izq_musculo: null, pierna_izq_cm: null,
-        icc: null, gv: null, abdomen: null, cintura: null, cadera: null,
-        edad_metabolica: null, presion_arterial: '', pulso: null, pliegue_cutaneo: null,
-        notes: '' 
-      });
+      this.resetNewProgress();
       await this.loadProgress();
       this.showSuccess.set(true);
       setTimeout(() => this.showSuccess.set(false), 3000);

@@ -1,9 +1,10 @@
-import { Component, Input, computed, signal, input, effect, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, computed, signal, input, effect, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 import { toBlob } from 'html-to-image';
+import { ThemeService } from '../../../services/theme.service';
 
 import { PortalModule } from '@angular/cdk/portal';
 
@@ -21,6 +22,8 @@ import { PortalModule } from '@angular/cdk/portal';
   templateUrl: './progress-history.html'
 })
 export class ProgressHistoryComponent implements OnInit, OnDestroy {
+  private themeService = inject(ThemeService);
+
   history = input.required<any[]>();
   patient = input<any>(null);
   showActions = input<boolean>(false);
@@ -105,16 +108,25 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     elementContainer.style.display = 'block';
     this.copyingRecordId.set(entry.id || entry.date);
 
+    let targetElement: HTMLElement | null = null;
     try {
-      const targetElement = elementContainer.querySelector('.progress-analytic-card-container') as HTMLElement;
+      targetElement = elementContainer.querySelector('.progress-analytic-card-container') as HTMLElement;
       if (!targetElement) throw new Error('Target element not found');
+
+      // Add temporary class to make SVG and text sharp/opaque during copying
+      targetElement.classList.add('is-copying-image');
 
       await new Promise(resolve => setTimeout(resolve, 100));
 
+      const activeTheme = this.themeService.theme();
+      const bgColor = activeTheme === 'dark' ? '#080808' : 
+                      activeTheme === 'purple' ? '#fcfbff' : 
+                      activeTheme === 'vibrant' ? '#fdfffd' : '#ffffff';
+
       const blob = await toBlob(targetElement, {
         quality: 1,
-        pixelRatio: 2,
-        backgroundColor: '#ffffff',
+        pixelRatio: 2.5, // Slightly higher ratio for crisper text/numbers
+        backgroundColor: bgColor,
         skipFonts: true,
         style: {
           transform: 'none',
@@ -139,6 +151,9 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
       this.toast.set({ message: 'Error al copiar la imagen', type: 'error' });
       setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
     } finally {
+      if (targetElement) {
+        targetElement.classList.remove('is-copying-image');
+      }
       elementContainer.style.display = originalDisplay;
       this.copyingRecordId.set(null);
     }

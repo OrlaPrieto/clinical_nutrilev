@@ -26,6 +26,7 @@ export class InputComponent {
   inputClass = input<string>('');
   step = input<number>(1);
   showSpinner = input<boolean>(true);
+  dimmed = input<boolean>(false);
 
   valueChange = output<any>();
 
