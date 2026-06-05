@@ -10,6 +10,7 @@ jest.mock('../supabase', () => ({
       onAuthStateChange: jest.fn(),
       getSession: jest.fn().mockResolvedValue({ data: { session: null } }),
       signInWithIdToken: jest.fn(),
+      signInWithPassword: jest.fn(),
       signOut: jest.fn(),
     },
     from: jest.fn().mockReturnThis(),
@@ -58,24 +59,16 @@ describe('AuthService', () => {
     });
   });
 
-  describe('signInWithMagicLink', () => {
-    it('should call fetch and return success', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
+  describe('loginWithPassword', () => {
+    it('should return denied on error', async () => {
+      (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+        data: { user: null },
+        error: new Error('Invalid credentials'),
       });
 
-      const result = await service.signInWithMagicLink('test@test.com');
-      expect(result.error).toBeNull();
-      expect(global.fetch).toHaveBeenCalled();
-    });
-
-    it('should return error on failure', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: false,
-      });
-
-      const result = await service.signInWithMagicLink('test@test.com');
-      expect(result.error).toBeDefined();
+      const result = await service.loginWithPassword('test@test.com', 'wrongpassword');
+      expect(result).toBe('denied');
+      expect(supabase.auth.signInWithPassword).toHaveBeenCalled();
     });
   });
 

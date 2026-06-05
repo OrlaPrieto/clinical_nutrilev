@@ -27,6 +27,7 @@ export class AuthService {
   public currentUser = signal<User | null>(null);
   public userRole = signal<'admin' | 'patient' | 'pending' | 'denied' | null>(null);
   public isInitialLoading = signal<boolean>(true);
+  public isRecoveryMode = signal<boolean>(false);
   private _accessToken = signal<string | null>(null);
   
   public ready: Promise<void>;
@@ -38,6 +39,23 @@ export class AuthService {
     this.ready = new Promise((resolve) => {
       this.resolveReady = resolve;
     });
+
+    // Detectar parámetros de recuperación de forma sincrónica para evitar condiciones de carrera (race conditions)
+    const search = window.location.search || '';
+    const hash = window.location.hash || '';
+    const href = window.location.href || '';
+    const isRecovery = search.includes('recovery=true') || 
+                       search.includes('recovery') ||
+                       hash.includes('type=recovery') || 
+                       href.includes('type=recovery') || 
+                       hash.includes('recovery') || 
+                       (typeof window !== 'undefined' && (window as any).__supabase_recovery_mode === true);
+                       
+    if (isRecovery) {
+      console.log('Auth: Parámetros de recuperación detectados en la URL de forma síncrona.');
+      this.isRecoveryMode.set(true);
+    }
+
     this.initializeAuth();
     this.pingServer();
     this.checkDevMode();
@@ -93,6 +111,11 @@ export class AuthService {
       console.log(`Auth: Event [${event}] for ${email || 'unknown user'}`);
       this._accessToken.set(session?.access_token || null);
       
+      if (event === 'PASSWORD_RECOVERY') {
+        console.log('Auth: PASSWORD_RECOVERY event detected. Switching to recovery mode.');
+        this.isRecoveryMode.set(true);
+      }
+      
       if (event === 'SIGNED_OUT') {
         // Log the reason if possible (though Supabase doesn't always provide it)
         console.warn('Auth: SIGNED_OUT event detected. Current state:', {
@@ -134,6 +157,7 @@ export class AuthService {
       if (session?.user) {
         console.log('Auth: Session recovered for', session.user.email);
         this.currentUser.set(session.user);
+        this._accessToken.set(session.access_token || null);
         
         // Optimistic restore to avoid Render cold-start blocking PWA load
         const cachedRole = this.storage.getItem<'admin' | 'patient' | 'pending' | 'denied' | null>('nutrilev_role');
@@ -270,18 +294,37 @@ export class AuthService {
     }
   }
 
-  async signInWithMagicLink(email: string): Promise<{error: any}> {
-    const apiUrl = `${environment.apiUrl}/auth/magic-link`;
+  async loginWithPassword(email: string, password: string): Promise<'success' | 'pending' | 'denied'> {
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
-      if (!response.ok) throw new Error('Error sending magic link');
-      return { error: null };
+
+      if (error || !data.user) {
+        console.error('Password login error:', error);
+        return 'denied';
+      }
+
+      this._accessToken.set(data.session?.access_token || null);
+
+      const role = await this.determineRole(data.user.email!);
+      this.userRole.set(role);
+      if (role) this.storage.setItem('nutrilev_role', role);
+      this.roleReady.set(true);
+
+      if (role === 'admin' || role === 'patient') {
+        const target = role === 'admin' ? '/dashboard' : '/portal';
+        console.log(`Auth: Login with password success, navigating to ${target}`);
+        await this.router.navigate([target]);
+        return 'success';
+      }
+
+      await this.logout();
+      return role === 'pending' ? 'pending' : 'denied';
     } catch (err) {
-      return { error: err };
+      console.error('Password login error:', err);
+      return 'denied';
     }
   }
 
@@ -338,5 +381,59 @@ export class AuthService {
 
   get accessToken(): string | null {
     return this._accessToken();
+  }
+
+  async sendPasswordResetLink(email: string): Promise<{ success: boolean; message?: string }> {
+    const cleanEmail = email.toLowerCase();
+    
+    // 1. Verificar si está registrado y activo
+    const role = await this.determineRole(cleanEmail);
+    if (role !== 'admin' && role !== 'patient') {
+      if (role === 'pending') {
+        return { success: false, message: 'Tu cuenta está pendiente de activación. Contacta a tu nutrióloga.' };
+      } else if (role === 'denied') {
+        return { success: false, message: 'Acceso denegado para este correo.' };
+      } else {
+        return { success: false, message: 'Tu correo no está registrado como paciente activo.' };
+      }
+    }
+
+    // 2. Disparar correo de recuperación de contraseña
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: `${window.location.origin}/login?recovery=true`
+    });
+
+    if (error) {
+      console.error('Reset password error:', error);
+      return { success: false, message: 'Error al enviar el enlace de configuración: ' + error.message };
+    }
+
+    return { success: true };
+  }
+
+  async updatePassword(password: string): Promise<{ success: boolean; message?: string }> {
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      console.error('Update password error:', error);
+      return { success: false, message: 'Error al actualizar la contraseña: ' + error.message };
+    }
+    
+    // Restablecer el estado de recuperación tras actualizar con éxito
+    this.isRecoveryMode.set(false);
+    
+    // Obtener y confirmar el rol del usuario que acaba de recuperar contraseña para redirección
+    const session = (await supabase.auth.getSession()).data.session;
+    if (session?.user?.email) {
+      this.currentUser.set(session.user);
+      const role = await this.determineRole(session.user.email);
+      this.userRole.set(role);
+      if (role) {
+        this.storage.setItem('nutrilev_role', role);
+        const target = role === 'admin' ? '/dashboard' : '/portal';
+        await this.router.navigate([target]);
+      }
+    }
+
+    return { success: true };
   }
 }

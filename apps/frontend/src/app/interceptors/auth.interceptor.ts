@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { supabase } from '../supabase';
+import { AuthService } from '../services/auth.service';
 import { environment } from '../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -11,25 +11,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // Intentamos obtener la sesión de Supabase de forma sincrónica si es posible, 
-  // o confiamos en que el cliente de Supabase ya tiene la sesión cargada.
-  // Nota: supabase.auth.getSession() es asíncrono, pero para un interceptor 
-  // a menudo queremos evitar convertirlo todo en una promesa si no es necesario.
-  // Sin embargo, Supabase expone la sesión internamente.
-  
-  const session = (supabase.auth as any).session?.() || (supabase.auth as any).currentSession;
-  const token = (supabase.auth as any).session?.access_token || 
-                (supabase.auth as any).data?.session?.access_token;
-
-  // Una forma más robusta usando el almacenamiento interno si el getter falla
-  let authToken = token;
-  if (!authToken) {
-    // Intentar recuperar del estado interno del cliente
-    try {
-      // @ts-ignore - Accediendo a propiedad interna para rapidez en interceptor
-      authToken = supabase.auth.session()?.access_token;
-    } catch {}
-  }
+  // Obtenemos el token del AuthService usando Angular DI y el signal reactivo de forma limpia
+  const authService = inject(AuthService);
+  const authToken = authService.accessToken;
 
   if (authToken) {
     const authReq = req.clone({

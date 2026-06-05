@@ -48,6 +48,12 @@ export class LoginPage implements OnInit {
     console.log('Test log');
     
     await this.authService.ready;
+    
+    if (this.authService.isRecoveryMode()) {
+      console.log('LoginPage: Recovery mode active. Preventing auto-redirect to dashboard.');
+      return;
+    }
+    
     if (this.authService.isLoggedIn()) {
       const role = this.authService.userRole();
       if (role === 'admin') {
