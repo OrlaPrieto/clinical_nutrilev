@@ -102,7 +102,6 @@ export interface PatientProgress {
   proteinas?: number | string | null;
   minerales?: number | string | null;
   masa_grasa?: number | string | null;
-  musculo_esqueletico?: number | string | null;
   masa_magra?: number | string | null;
   imc?: number | string | null;
   pgc?: number | string | null;

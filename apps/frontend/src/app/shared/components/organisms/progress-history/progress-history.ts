@@ -156,7 +156,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     if (delta === 0) return type === 'text' ? 'text-slate-400' : 'bg-slate-100 dark:bg-white/5';
     
     const positiveIsGoodFields = [
-      'muscle_mass', 'musculo_esqueletico', 'masa_magra', 'proteinas',
+      'muscle_mass', 'masa_magra', 'proteinas',
       'brazo_der_musculo', 'brazo_izq_musculo', 'tronco_musculo', 'pierna_der_musculo', 'pierna_izq_musculo'
     ];
     const negativeIsGoodFields = [

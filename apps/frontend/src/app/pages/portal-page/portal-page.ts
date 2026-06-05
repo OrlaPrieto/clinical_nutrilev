@@ -418,7 +418,7 @@ export class PortalPage implements OnInit {
       lines.push(
         createLineData(
           'muscle',
-          'Músculo',
+          'M. Esquelético',
           'kg',
           '#D81B60', // Rose
           '#E91E63', // Rose light

@@ -39,7 +39,7 @@
             </div>
             <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-white/[0.04]">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">MUSCULO ESQUELETICO (KG)</span>
-                <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().musculo_esqueletico || '--' }}</span>
+                <span class="text-xs font-black text-nutri-text dark:text-slate-200 text-right">{{ progress().muscle_mass || '--' }}</span>
             </div>
             <div class="grid grid-cols-2 px-3 py-2 sm:px-4 sm:py-2.5">
                 <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">MASA MAGRA (KG)</span>
@@ -258,19 +258,19 @@
                 </div>
                 <div class="divide-y divide-nutri-rose/20 dark:divide-white/10">
                     <div class="flex items-center justify-between px-5 py-3">
-                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">ICC</span>
+                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300 whitespace-nowrap">ICC</span>
                         <span class="text-xs font-black text-nutri-text dark:text-slate-100">{{ progress().icc || '--' }}</span>
                     </div>
                     <div class="flex items-center justify-between px-5 py-3 bg-white/50 dark:bg-white/[0.04]">
-                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">PLIEGUE CUTÁNEO</span>
+                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300 whitespace-nowrap">PLIEGUE CUTÁNEO</span>
                         <span class="text-xs font-black text-nutri-text dark:text-slate-100">{{ progress().pliegue_cutaneo || '--' }}</span>
                     </div>
                     <div class="flex items-center justify-between px-5 py-3">
-                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">PRESIÓN ARTERIAL</span>
+                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300 whitespace-nowrap">PRESIÓN ARTERIAL</span>
                         <span class="text-xs font-black text-nutri-text dark:text-slate-100">{{ progress().presion_arterial || '--' }}</span>
                     </div>
                     <div class="flex items-center justify-between px-5 py-3 bg-white/50 dark:bg-white/[0.04]">
-                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300">PULSO</span>
+                        <span class="text-[10px] font-bold text-nutri-text dark:text-slate-300 whitespace-nowrap">PULSO</span>
                         <span class="text-xs font-black text-nutri-text dark:text-slate-100">{{ progress().pulso || '--' }}</span>
                     </div>
                 </div>

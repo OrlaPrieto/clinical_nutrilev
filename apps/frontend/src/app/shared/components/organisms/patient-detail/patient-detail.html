@@ -695,12 +695,12 @@
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">M. Esquelético (kg)</label>
                                         @if (hasHistory()) {
                                             <span class="text-[6px] font-black uppercase tracking-wider px-1 py-0.2 rounded"
-                                                  [ngClass]="!changedFields()['musculo_esqueletico'] ? 'text-indigo-500 bg-indigo-500/10 dark:bg-indigo-500/20' : 'text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20'">
-                                                {{ !changedFields()['musculo_esqueletico'] ? 'Ant.' : 'Mod.' }}
+                                                  [ngClass]="!changedFields()['muscle_mass'] ? 'text-indigo-500 bg-indigo-500/10 dark:bg-indigo-500/20' : 'text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20'">
+                                                {{ !changedFields()['muscle_mass'] ? 'Ant.' : 'Mod.' }}
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().musculo_esqueletico" (valueChange)="updateProgressField('musculo_esqueletico', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['musculo_esqueletico']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().muscle_mass" (valueChange)="updateProgressField('muscle_mass', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['muscle_mass']"></app-a-input>
                                 </div>
 
                                 <!-- Masa Magra (kg) -->
@@ -757,20 +757,6 @@
                                         }
                                     </div>
                                     <app-a-input type="number" [showSpinner]="false" [value]="newProgress().body_fat" (valueChange)="updateProgressField('body_fat', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['body_fat']"></app-a-input>
-                                </div>
-
-                                <!-- Músculo (kg) -->
-                                <div class="space-y-1">
-                                    <div class="flex items-center justify-between ml-1">
-                                        <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Músculo (kg)</label>
-                                        @if (hasHistory()) {
-                                            <span class="text-[6px] font-black uppercase tracking-wider px-1 py-0.2 rounded"
-                                                  [ngClass]="!changedFields()['muscle_mass'] ? 'text-indigo-500 bg-indigo-500/10 dark:bg-indigo-500/20' : 'text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20'">
-                                                {{ !changedFields()['muscle_mass'] ? 'Ant.' : 'Mod.' }}
-                                            </span>
-                                        }
-                                    </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().muscle_mass" (valueChange)="updateProgressField('muscle_mass', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['muscle_mass']"></app-a-input>
                                 </div>
                             </div>
                         </div>

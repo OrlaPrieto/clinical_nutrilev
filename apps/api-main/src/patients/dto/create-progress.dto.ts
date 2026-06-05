@@ -50,11 +50,6 @@ export class CreateProgressDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
-  musculo_esqueletico?: number;
-
-  @IsNumber()
-  @IsOptional()
-  @Type(() => Number)
   masa_magra?: number;
 
   @IsNumber()
