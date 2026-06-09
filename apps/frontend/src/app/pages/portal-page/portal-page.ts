@@ -42,12 +42,13 @@ export class PortalPage implements OnInit {
   loading = signal<boolean>(true);
   hoveredPoint = signal<{ index: number; key: 'weight' | 'fat' | 'muscle' } | null>(null);
   showThemeMenu = signal<boolean>(false);
+  showHabitsFloatingModal = signal<boolean>(false);
   activeMetrics = signal<{ weight: boolean; fat: boolean; muscle: boolean }>({
     weight: false,
     fat: false,
     muscle: false
   });
-  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history'>('dashboard');
+  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history'>('plan');
 
   limitRecords = signal<number>(5);
   filterMonth = signal<string>('all');
@@ -73,6 +74,7 @@ export class PortalPage implements OnInit {
   @HostListener('document:click')
   onDocumentClick() {
     this.showThemeMenu.set(false);
+    this.showHabitsFloatingModal.set(false);
   }
 
   setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history') {
@@ -119,6 +121,61 @@ export class PortalPage implements OnInit {
     const p = this.patient();
     if (!p || !p.nombre) return 'Usuario';
     return p.nombre.split(' ')[0];
+  });
+
+  welcomeMessage = computed(() => {
+    const hours = new Date().getHours();
+    const name = this.firstName();
+    let greeting = 'Hola';
+    
+    if (hours < 12) {
+      greeting = 'Buenos días';
+    } else if (hours < 19) {
+      greeting = 'Buenas tardes';
+    } else {
+      greeting = 'Buenas noches';
+    }
+    
+    return `¡${greeting}, ${name}!`;
+  });
+
+  goalSubtitle = computed(() => {
+    const goal = this.currentGoal();
+    switch (goal) {
+      case 'bajar_peso':
+        return 'Paso a paso hacia una versión más ligera, ágil y saludable.';
+      case 'bajar_grasa':
+        return 'Enfoque en tu composición corporal, definición y bienestar.';
+      case 'subir_musculo':
+        return 'Construyendo fuerza, masa muscular y vitalidad hoy.';
+      default:
+        return 'En camino hacia tu mejor versión y bienestar integral.';
+    }
+  });
+
+  preferredFoods = computed(() => {
+    const foods = this.patient()?.alimentos_preferidos;
+    if (!foods) return [];
+    return foods.split(',').map(f => f.trim()).filter(Boolean);
+  });
+
+  dislikedFoods = computed(() => {
+    const foods = this.patient()?.alimentos_no_agradan;
+    if (!foods) return [];
+    return foods.split(',').map(f => f.trim()).filter(Boolean);
+  });
+
+  allergies = computed(() => {
+    const algs = this.patient()?.alergias_alimentarias;
+    if (!algs) return [];
+    return algs.split(',').map(a => a.trim()).filter(Boolean);
+  });
+
+  supplements = computed(() => {
+    const hasSuplements = this.patient()?.suplementos_si_no === 'si';
+    const sups = this.patient()?.suplementos_cuales;
+    if (!hasSuplements || !sups) return [];
+    return sups.split(',').map(s => s.trim()).filter(Boolean);
   });
 
   weightChartData = computed(() => {

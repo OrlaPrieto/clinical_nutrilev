@@ -90,7 +90,35 @@ export class PatientListPage implements OnInit {
 
   pageNumbers = computed(() => {
     const total = this.totalPages();
-    return Array.from({ length: total }, (_, i) => i + 1);
+    const current = this.currentPage();
+    const pages: (number | string)[] = [];
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (current <= 4) {
+        pages.push(2, 3, 4, 5);
+        pages.push('...');
+        pages.push(total);
+      } else if (current >= total - 3) {
+        pages.push('...');
+        for (let i = total - 4; i <= total; i++) {
+          if (i > 1) {
+            pages.push(i);
+          }
+        }
+      } else {
+        pages.push('...');
+        pages.push(current - 1, current, current + 1);
+        pages.push('...');
+        pages.push(total);
+      }
+    }
+    return pages;
   });
 
   // Statistics Computed
@@ -157,9 +185,10 @@ export class PatientListPage implements OnInit {
     this.currentPage.set(1);
   }
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages()) {
-      this.currentPage.set(page);
+  goToPage(page: number | string) {
+    const pageNum = Number(page);
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= this.totalPages()) {
+      this.currentPage.set(pageNum);
     }
   }
 
