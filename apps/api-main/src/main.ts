@@ -3,8 +3,13 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Security: Global Exception Filter
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Security: Global Validation Pipe
   app.useGlobalPipes(
