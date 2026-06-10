@@ -7,6 +7,7 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { ThemeService } from '../../shared/services/theme.service';
 import { StorageService } from '../../shared/services/storage.service';
+import { PushNotificationService } from '../../shared/services/push-notification.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -36,6 +37,7 @@ export class PortalPage implements OnInit {
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
   private storageService = inject(StorageService);
+  private pushService = inject(PushNotificationService);
 
   patient = signal<Patient | null>(null);
   progress = signal<PatientProgress[]>([]);
@@ -545,6 +547,9 @@ export class PortalPage implements OnInit {
 
           // Cargar hábitos diarios
           this.loadDailyHabits();
+
+          // Solicitar suscripción de notificaciones push
+          this.pushService.requestSubscription(userEmail);
         }
       } catch (err) {
         console.error('Error loading portal data', err);

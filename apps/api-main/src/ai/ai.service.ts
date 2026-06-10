@@ -8,6 +8,7 @@ import {
   NotifyMenuRequest,
 } from '@shared/index';
 import { EmailService } from '../common/email.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class AiService {
@@ -17,6 +18,7 @@ export class AiService {
     private configService: ConfigService,
     private emailService: EmailService,
     private httpService: HttpService,
+    private notificationsService: NotificationsService,
   ) {
     this.flaskBaseUrl =
       this.configService.get<string>('FLASK_API_URL') ||
@@ -46,6 +48,12 @@ export class AiService {
 
   async notifyMenu(data: NotifyMenuRequest): Promise<AiResponse> {
     const success = await this.emailService.sendMenuNotification(data);
+    
+    if (success) {
+      this.notificationsService.sendMenuPushNotification(data.email, data.nombre)
+        .catch(err => console.error('Failed to send push notification:', err));
+    }
+
     return {
       success,
       message: success ? 'Email sent successfully' : 'Failed to send email',

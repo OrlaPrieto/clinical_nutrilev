@@ -6,6 +6,7 @@ import { CommonModule } from './common/common.module';
 import { PatientModule } from './patients/patient.module';
 import { AuthModule } from './auth/auth.module';
 import { AiModule } from './ai/ai.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AiModule } from './ai/ai.module';
     PatientModule,
     AuthModule,
     AiModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
