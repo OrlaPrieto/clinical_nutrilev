@@ -88,6 +88,7 @@ export class EmailService {
             Authorization: `Bearer ${this.resendApiKey}`,
             'Content-Type': 'application/json',
           },
+          timeout: 10000,
         },
       );
       return true;

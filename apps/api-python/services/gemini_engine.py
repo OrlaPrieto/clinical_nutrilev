@@ -62,8 +62,13 @@ HISTORIAL: {progreso_str}
 NOTAS: {notas}
 """
 
-def _call_gemini(historial: dict, calorias: int, notas: str, menu_base_texto: str, gemini_key: str) -> dict:
-    client = genai.Client(api_key=gemini_key)
+_RESOLVED_MODEL_CACHE = None
+
+def _resolve_model(client) -> list:
+    global _RESOLVED_MODEL_CACHE
+    if _RESOLVED_MODEL_CACHE is not None:
+        return _RESOLVED_MODEL_CACHE
+        
     try:
         visible = [m.name for m in client.models.list()]
         priority = ["models/gemini-2.5-flash", "models/gemini-2.0-flash", "models/gemini-1.5-flash"]
@@ -71,9 +76,19 @@ def _call_gemini(historial: dict, calorias: int, notas: str, menu_base_texto: st
         models_to_try = [
             m for p in priority for m in visible 
             if p in m and "lite" not in m and "001" not in m
-        ] or ["models/gemini-2.5-flash"]
-    except Exception:
-        models_to_try = ["models/gemini-2.5-flash"]
+        ]
+        if models_to_try:
+            _RESOLVED_MODEL_CACHE = models_to_try
+            return _RESOLVED_MODEL_CACHE
+    except Exception as e:
+        print(f"[Gemini Cache] Error listing models: {e}")
+        
+    # Default fallback list (don't cache fallback to allow retrying listing next time)
+    return ["models/gemini-2.5-flash"]
+
+def _call_gemini(historial: dict, calorias: int, notas: str, menu_base_texto: str, gemini_key: str) -> dict:
+    client = genai.Client(api_key=gemini_key)
+    models_to_try = _resolve_model(client)
 
     prompt = _build_user_prompt(historial, calorias, notas)
     for model in models_to_try:

@@ -116,7 +116,7 @@ def get_shopping_list():
 
     try:
         # 1. Download the file
-        response = requests.get(menu_url)
+        response = requests.get(menu_url, timeout=10)
         response.raise_for_status()
         file_bytes = response.content
         

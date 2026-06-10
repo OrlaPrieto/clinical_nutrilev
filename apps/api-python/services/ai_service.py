@@ -7,7 +7,7 @@ Orquestador principal que integra Gemini y la generación de DOCX.
 from services.docx_utils import (
     Document, _build_docx, GRUPOS_PERMITIDOS, _norm_g
 )
-from services.gemini_engine import _call_gemini
+from services.gemini_engine import _call_gemini, _resolve_model
 
 def _normalizar_menu(menu_json: dict) -> dict:
     """Garantiza que los 3 menús tengan las mismas equivalencias que el esquema_dia."""
@@ -110,17 +110,7 @@ No incluyas markdown, solo el JSON puro.
 """
     
     client = genai.Client(api_key=gemini_key)
-    
-    try:
-        visible = [m.name for m in client.models.list()]
-        priority = ["models/gemini-2.5-flash", "models/gemini-2.0-flash", "models/gemini-1.5-flash"]
-        # Filtrar modelos obsoletos/deprecados como lite o 001 para evitar errores 404
-        models_to_try = [
-            m for p in priority for m in visible 
-            if p in m and "lite" not in m and "001" not in m
-        ] or ["models/gemini-2.5-flash"]
-    except Exception:
-        models_to_try = ["models/gemini-2.5-flash"]
+    models_to_try = _resolve_model(client)
 
     for model in models_to_try:
         try:
