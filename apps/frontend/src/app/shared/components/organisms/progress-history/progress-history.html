@@ -55,7 +55,7 @@
                             <!-- Metrics Grid (Desktop: 6 columns, Tablet: 3 columns) -->
                             <div class="flex-1 grid grid-cols-3 gap-2.5 lg:grid-cols-6 lg:gap-2.5 overflow-visible">
                                 <!-- Peso -->
-                                <div class="flex flex-col items-start justify-between p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[85px] w-full">
+                                <div class="flex flex-col items-start justify-between p-2 lg:p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
                                     <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Peso</span>
                                     <div class="flex items-baseline gap-0.5 mt-1">
                                         <span class="text-sm font-black dark:text-slate-200">{{ record.weight }}</span>
@@ -69,7 +69,7 @@
                                     }
                                 </div>
                                 <!-- Grasa -->
-                                <div class="flex flex-col items-start justify-between p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[85px] w-full">
+                                <div class="flex flex-col items-start justify-between p-2 lg:p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
                                     <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Grasa</span>
                                     <div class="flex items-baseline gap-0.5 mt-1">
                                         <span class="text-sm font-black dark:text-slate-200">{{ record.body_fat }}</span>
@@ -83,8 +83,8 @@
                                     }
                                 </div>
                                 <!-- Musculo -->
-                                <div class="flex flex-col items-start justify-between p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[85px] w-full">
-                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">M. Esquelético</span>
+                                <div class="flex flex-col items-start justify-between p-2 lg:p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Músculo</span>
                                     <div class="flex items-baseline gap-0.5 mt-1">
                                         <span class="text-sm font-black dark:text-slate-200">{{ record.muscle_mass }}</span>
                                         <span class="text-[8px] font-bold opacity-40 ml-0.5">kg</span>
@@ -97,7 +97,7 @@
                                     }
                                 </div>
                                 <!-- Cintura -->
-                                <div class="flex flex-col items-start justify-between p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[85px] w-full">
+                                <div class="flex flex-col items-start justify-between p-2 lg:p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
                                     <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Cintura</span>
                                     <div class="flex items-baseline gap-0.5 mt-1">
                                         <span class="text-sm font-black dark:text-slate-200">{{ record.cintura || '--' }}</span>
@@ -111,7 +111,7 @@
                                     }
                                 </div>
                                 <!-- Abdomen -->
-                                <div class="flex flex-col items-start justify-between p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[85px] w-full">
+                                <div class="flex flex-col items-start justify-between p-2 lg:p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
                                     <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Abdomen</span>
                                     <div class="flex items-baseline gap-0.5 mt-1">
                                         <span class="text-sm font-black dark:text-slate-200">{{ record.abdomen || '--' }}</span>
@@ -125,7 +125,7 @@
                                     }
                                 </div>
                                 <!-- Cadera -->
-                                <div class="flex flex-col items-start justify-between p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[85px] w-full">
+                                <div class="flex flex-col items-start justify-between p-2 lg:p-2.5 rounded-xl lg:rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
                                     <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Cadera</span>
                                     <div class="flex items-baseline gap-0.5 mt-1">
                                         <span class="text-sm font-black dark:text-slate-200">{{ record.cadera || '--' }}</span>
@@ -242,7 +242,7 @@
                                 <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Fecha</th>
                                 <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Peso</th>
                                 <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Grasa</th>
-                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">M. Esquelético</th>
+                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Músculo</th>
                                 <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60 text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -456,7 +456,7 @@
                                 fields: [
                                     { key: 'weight', label: 'Peso Corporal', unit: 'kg' },
                                     { key: 'body_fat', label: 'Grasa Corporal', unit: '%' },
-                                    { key: 'muscle_mass', label: 'M. Esquelético', unit: 'kg' },
+                                    { key: 'muscle_mass', label: 'Músculo Esquelético', unit: 'kg' },
                                     { key: 'imc', label: 'IMC', unit: '' },
                                     { key: 'gv', label: 'Grasa Visceral', unit: '' },
                                     { key: 'pgc', label: 'PGC', unit: '' }
