@@ -170,17 +170,18 @@
                                     <span class="text-[7.5px] font-black uppercase text-nutri-text/40 dark:text-slate-500 leading-none mt-0.5">{{ record.date | date:'MMM' }}</span>
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-nutri-rose/85">Control</span>
+                                    <span class="text-[9px] font-black uppercase tracking-wider text-nutri-rose/85">Consulta</span>
                                     <span class="text-[7.5px] font-bold text-nutri-text/30 dark:text-slate-600">{{ record.date | date:'yyyy' }}</span>
                                 </div>
                             </div>
 
                             <!-- Center: Key Metrics Grid -->
-                            <div class="flex items-center gap-2.5">
+                            <div class="flex items-center gap-2 sm:gap-3.5">
                                 <!-- Peso -->
-                                <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center min-w-[42px]">
+                                    <span class="text-[7.5px] font-black text-nutri-text/30 dark:text-slate-500 uppercase tracking-wider mb-0.5">Peso</span>
                                     <div class="flex items-baseline gap-0.5">
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.weight }}</span>
+                                        <span class="text-[13px] font-black dark:text-slate-200">{{ record.weight }}</span>
                                         <span class="text-[7px] font-bold opacity-45">kg</span>
                                     </div>
                                     @if (calculateDelta(record, history()[i + 1], 'weight'); as delta) {
@@ -190,12 +191,13 @@
                                     }
                                 </div>
                                 
-                                <div class="h-5 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
+                                <div class="h-6 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
 
                                 <!-- Grasa -->
-                                <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center min-w-[42px]">
+                                    <span class="text-[7.5px] font-black text-nutri-text/30 dark:text-slate-500 uppercase tracking-wider mb-0.5">Grasa</span>
                                     <div class="flex items-baseline gap-0.5">
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.body_fat }}</span>
+                                        <span class="text-[13px] font-black dark:text-slate-200">{{ record.body_fat }}</span>
                                         <span class="text-[7px] font-bold opacity-45">%</span>
                                     </div>
                                     @if (calculateDelta(record, history()[i + 1], 'body_fat'); as delta) {
@@ -205,12 +207,13 @@
                                     }
                                 </div>
 
-                                <div class="h-5 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
+                                <div class="h-6 w-px bg-nutri-rose/10 dark:bg-white/10"></div>
 
                                 <!-- Músculo -->
-                                <div class="flex flex-col items-end">
+                                <div class="flex flex-col items-center min-w-[42px]">
+                                    <span class="text-[7.5px] font-black text-nutri-text/30 dark:text-slate-500 uppercase tracking-wider mb-0.5">Músculo</span>
                                     <div class="flex items-baseline gap-0.5">
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.muscle_mass }}</span>
+                                        <span class="text-[13px] font-black dark:text-slate-200">{{ record.muscle_mass }}</span>
                                         <span class="text-[7px] font-bold opacity-45">kg</span>
                                     </div>
                                     @if (calculateDelta(record, history()[i + 1], 'muscle_mass'); as delta) {
