@@ -75,76 +75,88 @@
                             <!-- Metrics Grid -->
                             <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 w-full">
                                 <!-- Peso -->
-                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
-                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Peso</span>
-                                    <div class="flex items-center gap-1.5">
-                                        @if (calculateDelta(record, history()[i + 1], 'weight'); as delta) {
-                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'weight')">
-                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                            </span>
-                                        }
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.weight }}<span class="text-[7px] ml-0.5 opacity-40">kg</span></span>
+                                <div class="flex flex-col items-start justify-between p-3 rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Peso</span>
+                                    <div class="flex items-baseline gap-0.5 mt-1">
+                                        <span class="text-base font-black dark:text-slate-200">{{ record.weight }}</span>
+                                        <span class="text-[8px] font-bold opacity-40 ml-0.5">kg</span>
                                     </div>
+                                    @if (calculateDelta(record, history()[i + 1], 'weight'); as delta) {
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded-lg mt-1.5 flex items-center gap-0.5"
+                                              [ngClass]="getDeltaColor(delta, 'weight') + ' ' + getDeltaColor(delta, 'weight', 'bg')">
+                                            {{ delta > 0 ? '↑' : '↓' }} {{ delta | number:'1.1-1' }}
+                                        </span>
+                                    }
                                 </div>
                                 <!-- Grasa -->
-                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
-                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Grasa</span>
-                                    <div class="flex items-center gap-1.5">
-                                        @if (calculateDelta(record, history()[i + 1], 'body_fat'); as delta) {
-                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'body_fat')">
-                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                            </span>
-                                        }
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.body_fat }}<span class="text-[7px] ml-0.5 opacity-40">%</span></span>
+                                <div class="flex flex-col items-start justify-between p-3 rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Grasa</span>
+                                    <div class="flex items-baseline gap-0.5 mt-1">
+                                        <span class="text-base font-black dark:text-slate-200">{{ record.body_fat }}</span>
+                                        <span class="text-[8px] font-bold opacity-40 ml-0.5">%</span>
                                     </div>
+                                    @if (calculateDelta(record, history()[i + 1], 'body_fat'); as delta) {
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded-lg mt-1.5 flex items-center gap-0.5"
+                                              [ngClass]="getDeltaColor(delta, 'body_fat') + ' ' + getDeltaColor(delta, 'body_fat', 'bg')">
+                                            {{ delta > 0 ? '↑' : '↓' }} {{ delta | number:'1.1-1' }}
+                                        </span>
+                                    }
                                 </div>
                                 <!-- Musculo -->
-                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
-                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">M. Esquelético</span>
-                                    <div class="flex items-center gap-1.5">
-                                        @if (calculateDelta(record, history()[i + 1], 'muscle_mass'); as delta) {
-                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'muscle_mass')">
-                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                            </span>
-                                        }
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.muscle_mass }}<span class="text-[7px] ml-0.5 opacity-40">kg</span></span>
+                                <div class="flex flex-col items-start justify-between p-3 rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">M. Esquelético</span>
+                                    <div class="flex items-baseline gap-0.5 mt-1">
+                                        <span class="text-base font-black dark:text-slate-200">{{ record.muscle_mass }}</span>
+                                        <span class="text-[8px] font-bold opacity-40 ml-0.5">kg</span>
                                     </div>
+                                    @if (calculateDelta(record, history()[i + 1], 'muscle_mass'); as delta) {
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded-lg mt-1.5 flex items-center gap-0.5"
+                                              [ngClass]="getDeltaColor(delta, 'muscle_mass') + ' ' + getDeltaColor(delta, 'muscle_mass', 'bg')">
+                                            {{ delta > 0 ? '↑' : '↓' }} {{ delta | number:'1.1-1' }}
+                                        </span>
+                                    }
                                 </div>
                                 <!-- Cintura -->
-                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
-                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Cintura</span>
-                                    <div class="flex items-center gap-1.5">
-                                        @if (calculateDelta(record, history()[i + 1], 'cintura'); as delta) {
-                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'cintura')">
-                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                            </span>
-                                        }
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.cintura || '--' }}<span class="text-[7px] ml-0.5 opacity-40">cm</span></span>
+                                <div class="flex flex-col items-start justify-between p-3 rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Cintura</span>
+                                    <div class="flex items-baseline gap-0.5 mt-1">
+                                        <span class="text-base font-black dark:text-slate-200">{{ record.cintura || '--' }}</span>
+                                        <span class="text-[8px] font-bold opacity-40 ml-0.5">cm</span>
                                     </div>
+                                    @if (calculateDelta(record, history()[i + 1], 'cintura'); as delta) {
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded-lg mt-1.5 flex items-center gap-0.5"
+                                              [ngClass]="getDeltaColor(delta, 'cintura') + ' ' + getDeltaColor(delta, 'cintura', 'bg')">
+                                            {{ delta > 0 ? '↑' : '↓' }} {{ delta | number:'1.1-1' }}
+                                        </span>
+                                    }
                                 </div>
                                 <!-- Abdomen -->
-                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
-                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Abdomen</span>
-                                    <div class="flex items-center gap-1.5">
-                                        @if (calculateDelta(record, history()[i + 1], 'abdomen'); as delta) {
-                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'abdomen')">
-                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                            </span>
-                                        }
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.abdomen || '--' }}<span class="text-[7px] ml-0.5 opacity-40">cm</span></span>
+                                <div class="flex flex-col items-start justify-between p-3 rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Abdomen</span>
+                                    <div class="flex items-baseline gap-0.5 mt-1">
+                                        <span class="text-base font-black dark:text-slate-200">{{ record.abdomen || '--' }}</span>
+                                        <span class="text-[8px] font-bold opacity-40 ml-0.5">cm</span>
                                     </div>
+                                    @if (calculateDelta(record, history()[i + 1], 'abdomen'); as delta) {
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded-lg mt-1.5 flex items-center gap-0.5"
+                                              [ngClass]="getDeltaColor(delta, 'abdomen') + ' ' + getDeltaColor(delta, 'abdomen', 'bg')">
+                                            {{ delta > 0 ? '↑' : '↓' }} {{ delta | number:'1.1-1' }}
+                                        </span>
+                                    }
                                 </div>
                                 <!-- Cadera -->
-                                <div class="flex flex-col items-end px-3 py-1 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5">
-                                    <span class="text-[8px] font-bold text-nutri-rose/60 uppercase">Cadera</span>
-                                    <div class="flex items-center gap-1.5">
-                                        @if (calculateDelta(record, history()[i + 1], 'cadera'); as delta) {
-                                            <span class="text-[8px] font-black" [ngClass]="getDeltaColor(delta, 'cadera')">
-                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                            </span>
-                                        }
-                                        <span class="text-xs font-black dark:text-slate-200">{{ record.cadera || '--' }}<span class="text-[7px] ml-0.5 opacity-40">cm</span></span>
+                                <div class="flex flex-col items-start justify-between p-3 rounded-2xl bg-white dark:bg-[#151515] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-all min-h-[90px] w-full">
+                                    <span class="text-[8px] font-black text-nutri-rose/60 uppercase tracking-wider">Cadera</span>
+                                    <div class="flex items-baseline gap-0.5 mt-1">
+                                        <span class="text-base font-black dark:text-slate-200">{{ record.cadera || '--' }}</span>
+                                        <span class="text-[8px] font-bold opacity-40 ml-0.5">cm</span>
                                     </div>
+                                    @if (calculateDelta(record, history()[i + 1], 'cadera'); as delta) {
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded-lg mt-1.5 flex items-center gap-0.5"
+                                              [ngClass]="getDeltaColor(delta, 'cadera') + ' ' + getDeltaColor(delta, 'cadera', 'bg')">
+                                            {{ delta > 0 ? '↑' : '↓' }} {{ delta | number:'1.1-1' }}
+                                        </span>
+                                    }
                                 </div>
                             </div>
  
