@@ -41,6 +41,12 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
   editableRecord = signal<any | null>(null);
   progressUpdated = output<void>();
 
+  visibleCount = signal<number>(6);
+
+  loadMore() {
+    this.visibleCount.update(c => c + 6);
+  }
+
   startEdit(record: any) {
     this.editableRecord.set({ ...record });
     this.isEditing.set(true);
