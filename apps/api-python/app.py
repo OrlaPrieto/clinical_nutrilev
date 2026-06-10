@@ -7,9 +7,13 @@ from google import genai
 from config import GEMINI_API_KEY, ALLOWED_ORIGINS, MAX_CONTENT_LENGTH
 from routes.menu_routes import menu_bp
 from routes.health_routes import health_bp
+from utils.limiter import limiter
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    
+    # Initialize rate limiter
+    limiter.init_app(app)
     
     # Configure CORS to only allow configured origins from .env
     CORS(app, resources={

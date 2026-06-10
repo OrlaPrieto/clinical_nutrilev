@@ -5,7 +5,9 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, request, send_file, jsonify
 from docx import Document
+from urllib.parse import urlparse
 from config import GEMINI_API_KEY, INTERNAL_API_KEY
+from utils.limiter import limiter
 
 from services.extraction_service import detect_format, extract_menu_data
 from services.ai_service import generate_full_menu_docx, get_base_menu_text
@@ -20,6 +22,28 @@ from services.document_service import (
 import requests
 # import pypdf (Moved inside route to avoid import-time crashes)
 
+def is_safe_url(url: str) -> bool:
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+            
+        hostname = parsed.hostname
+        if not hostname:
+            return False
+            
+        hostname_lower = hostname.lower()
+        # Allow official Supabase domains
+        if hostname_lower.endswith('.supabase.co'):
+            return True
+        # Allow local development hostnames
+        if hostname_lower in ('localhost', '127.0.0.1', '::1'):
+            return True
+            
+        return False
+    except Exception:
+        return False
+
 menu_bp = Blueprint('menu_routes', __name__)
 
 @menu_bp.before_request
@@ -27,10 +51,12 @@ def check_internal_key():
     if request.method == 'OPTIONS':
         return
     key = request.headers.get('x-internal-key')
-    if INTERNAL_API_KEY and key != INTERNAL_API_KEY:
+    # Enforce strictly: key must match and cannot be missing or empty
+    if not INTERNAL_API_KEY or key != INTERNAL_API_KEY:
         return jsonify({"error": "Unauthorized inter-service request"}), 401
 
 @menu_bp.route('/generate-ai-menu', methods=['POST', 'OPTIONS'])
+@limiter.limit("10 per hour")
 def generate_ai_menu():
     if request.method == 'OPTIONS':
         return '', 200
@@ -106,12 +132,17 @@ def process_menu():
         return jsonify({"error": str(e)}), 500
 
 @menu_bp.route('/shopping-list', methods=['POST', 'OPTIONS'])
+@limiter.limit("10 per hour")
 def get_shopping_list():
     if request.method == 'OPTIONS':
         return '', 200
     
     data = request.json
     menu_url = data.get('menu_url')
+    
+    if not menu_url or not is_safe_url(menu_url):
+        return jsonify({"error": "Invalid or restricted menu URL"}), 400
+        
     gemini_key = GEMINI_API_KEY # Strictly from environment
 
     try:

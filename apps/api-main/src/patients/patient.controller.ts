@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { Patient, PatientProgress } from '@shared/index';
@@ -76,7 +77,11 @@ export class PatientController {
 
   @Post('shopping-list')
   @UseGuards(PatientAuthGuard)
-  async getShoppingList(@Body('menu_url') menuUrl: string): Promise<any> {
-    return this.patientService.getShoppingList(menuUrl);
+  async getShoppingList(
+    @Body('menu_url') menuUrl: string,
+    @Req() req: any,
+  ): Promise<any> {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    return this.patientService.getShoppingList(menuUrl, clientIp);
   }
 }

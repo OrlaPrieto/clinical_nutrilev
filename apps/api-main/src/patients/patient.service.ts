@@ -238,11 +238,19 @@ export class PatientService {
     return { success: true };
   }
 
-  async getShoppingList(menuUrl: string): Promise<any> {
+  async getShoppingList(menuUrl: string, clientIp?: string): Promise<any> {
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
 
     if (!flaskApiUrl) {
       throw new Error('FLASK_API_URL is not defined in environment variables');
+    }
+
+    const headers: Record<string, string> = {
+      'x-internal-key': this.configService.get<string>('INTERNAL_API_KEY') || '',
+    };
+
+    if (clientIp) {
+      headers['x-forwarded-for'] = clientIp;
     }
 
     try {
@@ -253,10 +261,7 @@ export class PatientService {
             menu_url: menuUrl,
           },
           {
-            headers: {
-              'x-internal-key':
-                this.configService.get<string>('INTERNAL_API_KEY'),
-            },
+            headers,
             timeout: 30000,
           }, // 30 second timeout
         ),
