@@ -244,6 +244,7 @@
                                         <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6 text-nutri-rose dark:text-nutri-rose-soft">
                                             <!-- Peso -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
+                                                <span class="text-[8px] font-black uppercase tracking-wider opacity-60">Peso</span>
                                                 <div class="flex items-baseline gap-0.5">
                                                     <h2 class="text-3xl sm:text-4xl font-black font-sans leading-none tracking-tight">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
                                                     <span class="text-xs font-bold opacity-60">kg</span>
@@ -257,6 +258,7 @@
                                             </div>
                                             <!-- Grasa -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
+                                                <span class="text-[8px] font-black uppercase tracking-wider opacity-60">Grasa</span>
                                                 <div class="flex items-baseline gap-0.5">
                                                     <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
                                                     <span class="text-[10px] font-bold opacity-60">%</span>
@@ -270,6 +272,7 @@
                                             </div>
                                             <!-- Músculo -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
+                                                <span class="text-[8px] font-black uppercase tracking-wider opacity-60">Músculo</span>
                                                 <div class="flex items-baseline gap-0.5">
                                                     <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
                                                     <span class="text-[10px] font-bold opacity-60">kg</span>
