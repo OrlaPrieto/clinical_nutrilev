@@ -46,3 +46,19 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+.dashboard-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(216, 27, 96, 0.15);
+  box-shadow: 0 16px 32px -12px rgba(216, 27, 96, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.03);
+}
+
+/* Oscurecer el sombreado en modo oscuro */
+html.dark .dashboard-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.5);
+}

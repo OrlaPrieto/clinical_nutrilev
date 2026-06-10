@@ -312,6 +312,74 @@ export class PortalPage implements OnInit {
     return (weight / (height * height)).toFixed(1);
   });
 
+  bmiPosition = computed(() => {
+    const val = Number(this.bmi());
+    if (!val) return 0;
+    const min = 15;
+    const max = 35;
+    const pct = ((val - min) / (max - min)) * 100;
+    return Math.max(0, Math.min(100, Math.round(pct)));
+  });
+
+  bmiCategory = computed(() => {
+    const val = Number(this.bmi());
+    if (!val) return '';
+    if (val < 18.5) return 'Bajo peso';
+    if (val < 25.0) return 'Normal';
+    if (val < 30.0) return 'Sobrepeso';
+    return 'Obesidad';
+  });
+
+  bmiColorClass = computed(() => {
+    const val = Number(this.bmi());
+    if (!val) return 'text-slate-400';
+    if (val < 18.5) return 'text-sky-500 dark:text-sky-400'; // Bajo Peso
+    if (val < 25.0) return 'text-emerald-500 dark:text-emerald-400'; // Normal
+    if (val < 30.0) return 'text-amber-500 dark:text-amber-400'; // Sobrepeso
+    return 'text-rose-500 dark:text-rose-400'; // Obesidad
+  });
+
+  weightDiff = computed(() => {
+    const history = this.progress();
+    if (history.length < 2) return null;
+    const current = Number(history[0].weight || 0);
+    const prev = Number(history[1].weight || 0);
+    const diff = current - prev;
+    return {
+      value: Math.abs(diff).toFixed(1),
+      isIncrease: diff > 0,
+      text: diff > 0 ? `+${diff.toFixed(1)} kg` : `${diff.toFixed(1)} kg`
+    };
+  });
+
+  fatDiff = computed(() => {
+    const history = this.progress();
+    if (history.length < 2) return null;
+    const current = Number(history[0].body_fat || 0);
+    const prev = Number(history[1].body_fat || 0);
+    if (!current || !prev) return null;
+    const diff = current - prev;
+    return {
+      value: Math.abs(diff).toFixed(1),
+      isIncrease: diff > 0,
+      text: diff > 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`
+    };
+  });
+
+  muscleDiff = computed(() => {
+    const history = this.progress();
+    if (history.length < 2) return null;
+    const current = Number(history[0].muscle_mass || 0);
+    const prev = Number(history[1].muscle_mass || 0);
+    if (!current || !prev) return null;
+    const diff = current - prev;
+    return {
+      value: Math.abs(diff).toFixed(1),
+      isIncrease: diff > 0,
+      text: diff > 0 ? `+${diff.toFixed(1)} kg` : `${diff.toFixed(1)} kg`
+    };
+  });
+
   latestProgress = computed(() => this.progress().length > 0 ? this.progress()[0] : null);
 
   currentGoal = computed(() => this.patient()?.meta_objetivo || null);
