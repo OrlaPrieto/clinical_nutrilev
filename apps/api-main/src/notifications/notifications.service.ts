@@ -129,4 +129,120 @@ export class NotificationsService {
 
     await Promise.all(sendPromises);
   }
+
+  async sendAppointmentReminderPushNotification(
+    email: string,
+    patientName: string,
+    timeStr: string,
+    eventId: string,
+    targetDayStr: string = 'mañana',
+  ): Promise<void> {
+    const cleanEmail = email.toLowerCase().trim();
+    const supabase = this.supabaseService.getClient() as any;
+
+    // Fetch all active subscriptions for this patient
+    const { data: subs, error } = await supabase
+      .from('push_subscriptions')
+      .select('*')
+      .eq('email', cleanEmail);
+
+    if (error) {
+      this.logger.error(`Error loading subscriptions for ${cleanEmail}:`, error);
+      return;
+    }
+
+    if (!subs || subs.length === 0) {
+      this.logger.log(`No active push subscriptions found for ${cleanEmail}`);
+      return;
+    }
+
+    const payload = JSON.stringify({
+      notification: {
+        title: '⏰ Confirmación de Cita',
+        body: `Hola, ${patientName}. Recuerda que tienes una cita programada para ${targetDayStr} a las ${timeStr}. Confírmala o cancélala aquí en el portal.`,
+        icon: '/images/nutrition-icon.png',
+        badge: '/images/nutrition-icon.png',
+        data: {
+          url: '/portal',
+        },
+      },
+    });
+
+    const sendPromises = subs.map(async (subRecord: any) => {
+      const sub = subRecord.subscription_json;
+      try {
+        await webpush.sendNotification(sub, payload);
+      } catch (err: any) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          this.logger.warn(`Subscription expired or gone (endpoint: ${subRecord.endpoint}). Deleting...`);
+          await supabase
+            .from('push_subscriptions')
+            .delete()
+            .eq('id', subRecord.id);
+        } else {
+          this.logger.error(`Error sending notification to endpoint ${subRecord.endpoint}:`, err);
+        }
+      }
+    });
+
+    await Promise.all(sendPromises);
+  }
+
+  async sendAppointmentShortReminderPushNotification(
+    email: string,
+    patientName: string,
+    timeStr: string,
+    minutesRemaining: number,
+  ): Promise<void> {
+    const cleanEmail = email.toLowerCase().trim();
+    const supabase = this.supabaseService.getClient() as any;
+
+    const { data: subs, error } = await supabase
+      .from('push_subscriptions')
+      .select('*')
+      .eq('email', cleanEmail);
+
+    if (error) {
+      this.logger.error(`Error loading subscriptions for ${cleanEmail}:`, error);
+      return;
+    }
+
+    if (!subs || subs.length === 0) {
+      this.logger.log(`No active push subscriptions found for ${cleanEmail}`);
+      return;
+    }
+
+    const payload = JSON.stringify({
+      notification: {
+        title: '🔔 Tu cita está por comenzar',
+        body: `¡Hola, ${patientName}! Recuerda que tu consulta inicia en ${minutesRemaining} minutos (a las ${timeStr}). ¡Te esperamos!`,
+        icon: '/images/nutrition-icon.png',
+        badge: '/images/nutrition-icon.png',
+        data: {
+          url: '/portal',
+        },
+      },
+    });
+
+    const sendPromises = subs.map(async (subRecord: any) => {
+      const sub = subRecord.subscription_json;
+      try {
+        await webpush.sendNotification(sub, payload);
+      } catch (err: any) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          this.logger.warn(`Subscription expired or gone (endpoint: ${subRecord.endpoint}). Deleting...`);
+          await supabase
+            .from('push_subscriptions')
+            .delete()
+            .eq('id', subRecord.id);
+        } else {
+          this.logger.error(`Error sending notification to endpoint ${subRecord.endpoint}:`, err);
+        }
+      }
+    });
+
+    await Promise.all(sendPromises);
+  }
 }
+
+

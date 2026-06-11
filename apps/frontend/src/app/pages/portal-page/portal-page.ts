@@ -8,6 +8,7 @@ import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { ThemeService } from '../../shared/services/theme.service';
 import { StorageService } from '../../shared/services/storage.service';
 import { PushNotificationService } from '../../shared/services/push-notification.service';
+import { AppointmentService, Appointment } from '../../services/appointment.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -38,13 +39,17 @@ export class PortalPage implements OnInit {
   public themeService = inject(ThemeService);
   private storageService = inject(StorageService);
   private pushService = inject(PushNotificationService);
+  private appointmentService = inject(AppointmentService);
 
   patient = signal<Patient | null>(null);
+  nextAppointment = signal<Appointment | null>(null);
+  loadingAppointmentAction = signal<boolean>(false);
   progress = signal<PatientProgress[]>([]);
   loading = signal<boolean>(true);
   hoveredPoint = signal<{ index: number; key: 'weight' | 'fat' | 'muscle' } | null>(null);
   showThemeMenu = signal<boolean>(false);
   showHabitsFloatingModal = signal<boolean>(false);
+  showCancelConfirmModal = signal<boolean>(false);
   activeMetrics = signal<{ weight: boolean; fat: boolean; muscle: boolean }>({
     weight: false,
     fat: false,
@@ -247,13 +252,13 @@ export class PortalPage implements OnInit {
     const remainingHours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
     if (remainingDays >= 1) {
-      return `Quedan ${remainingDays} día${remainingDays > 1 ? 's' : ''}${remainingHours > 0 ? ' y ' + remainingHours + ' hora' + (remainingHours > 1 ? 's' : '') : ''}`;
+      return `Tiempo para ver tu menú: ${remainingDays} día${remainingDays > 1 ? 's' : ''}${remainingHours > 0 ? ' y ' + remainingHours + ' hora' + (remainingHours > 1 ? 's' : '') : ''}`;
     } else {
       const remainingMinutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
       if (remainingHours > 0) {
-        return `Quedan ${remainingHours} hora${remainingHours > 1 ? 's' : ''}${remainingMinutes > 0 ? ' y ' + remainingMinutes + ' min' : ''}`;
+        return `Tiempo para ver tu menú: ${remainingHours} hora${remainingHours > 1 ? 's' : ''}${remainingMinutes > 0 ? ' y ' + remainingMinutes + ' min' : ''}`;
       }
-      return `Quedan ${remainingMinutes} minuto${remainingMinutes > 1 ? 's' : ''}`;
+      return `Tiempo para ver tu menú: ${remainingMinutes} minuto${remainingMinutes > 1 ? 's' : ''}`;
     }
   });
 
@@ -381,6 +386,65 @@ export class PortalPage implements OnInit {
   });
 
   latestProgress = computed(() => this.progress().length > 0 ? this.progress()[0] : null);
+
+  rescheduleWhatsappUrl = computed(() => {
+    const apt = this.nextAppointment();
+    const dateStr = apt?.start 
+      ? new Date(apt.start).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }) 
+      : '';
+    const message = encodeURIComponent(`Hola, tengo un contratiempo y me gustaría reagendar mi cita del ${dateStr}.`);
+    return `https://wa.me/526143958598?text=${message}`;
+  });
+
+  appointmentDateStr = computed(() => {
+    const apt = this.nextAppointment();
+    if (!apt || !apt.start) return '';
+    const date = new Date(apt.start);
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    };
+    let formattedDate = date.toLocaleDateString('es-MX', options);
+    // Capitalize first letter
+    formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+    
+    // Get time: e.g. "4:30 PM"
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+    const timeStr = `${hours}:${minutesStr} ${ampm}`;
+
+    return `${formattedDate} a las ${timeStr}`;
+  });
+
+  showConfirmButtons = computed(() => {
+    const apt = this.nextAppointment();
+    if (!apt || !apt.start || apt.status !== 'pending') return false;
+    
+    const start = new Date(apt.start);
+    const now = new Date();
+    
+    const startZero = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const nowZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffDays = (startZero.getTime() - nowZero.getTime()) / (24 * 60 * 60 * 1000);
+
+    // Standard: today or tomorrow
+    if (diffDays <= 1) {
+      return true;
+    }
+    
+    // Weekend exception: If today is Saturday (6) and appointment is Monday (diffDays === 2)
+    const todayDay = now.getDay();
+    if (todayDay === 6 && diffDays === 2) {
+      return true;
+    }
+    
+    return false;
+  });
 
   currentGoal = computed(() => this.patient()?.meta_objetivo || null);
 
@@ -618,12 +682,77 @@ export class PortalPage implements OnInit {
 
           // Solicitar suscripción de notificaciones push
           this.pushService.requestSubscription(userEmail);
+
+          // Cargar siguiente cita
+          this.loadNextAppointment(userEmail);
         }
       } catch (err) {
         console.error('Error loading portal data', err);
       } finally {
         this.loading.set(false);
       }
+    }
+  }
+
+  async loadNextAppointment(email: string) {
+    try {
+      const apt = await this.appointmentService.getNextAppointment(email);
+      if (apt && apt.hasAppointment) {
+        this.nextAppointment.set(apt);
+      } else {
+        this.nextAppointment.set(null);
+      }
+    } catch (err) {
+      console.error('Error loading next appointment:', err);
+    }
+  }
+
+  async confirmAppointment() {
+    const apt = this.nextAppointment();
+    const p = this.patient();
+    if (!apt || !apt.eventId || !p || !p.email) return;
+
+    this.loadingAppointmentAction.set(true);
+    try {
+      const res = await this.appointmentService.confirmAppointment(p.email, apt.eventId);
+      if (res && res.success) {
+        this.nextAppointment.set({
+          ...apt,
+          status: 'confirmed',
+          colorId: res.colorId || '10'
+        });
+      }
+    } catch (err) {
+      console.error('Error confirming appointment:', err);
+    } finally {
+      this.loadingAppointmentAction.set(false);
+    }
+  }
+
+  cancelAppointment() {
+    this.showCancelConfirmModal.set(true);
+  }
+
+  async confirmCancelAppointment() {
+    const apt = this.nextAppointment();
+    const p = this.patient();
+    if (!apt || !apt.eventId || !p || !p.email) return;
+
+    this.showCancelConfirmModal.set(false);
+    this.loadingAppointmentAction.set(true);
+    try {
+      const res = await this.appointmentService.cancelAppointment(p.email, apt.eventId);
+      if (res && res.success) {
+        this.nextAppointment.set({
+          ...apt,
+          status: 'cancelled',
+          colorId: '11'
+        });
+      }
+    } catch (err) {
+      console.error('Error cancelling appointment:', err);
+    } finally {
+      this.loadingAppointmentAction.set(false);
     }
   }
 

@@ -397,6 +397,104 @@
                     <!-- Pestaña 2: Mi Plan (Digital Plan & Shopping List) -->
                     @if (activeTab() === 'plan') {
                         <div class="space-y-6 animate-fade-up">
+                            
+                            <!-- Widget de Siguiente Cita (Estático) -->
+                            @if (nextAppointment() && nextAppointment()?.hasAppointment) {
+                                <div class="relative overflow-hidden rounded-[2rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 shadow-xl shadow-slate-200/20 dark:shadow-none transition-all duration-300 mb-6 border-l-4"
+                                     [class.border-l-amber-500]="nextAppointment()?.status === 'pending'"
+                                     [class.border-l-emerald-500]="nextAppointment()?.status === 'confirmed'"
+                                     [class.border-l-rose-500]="nextAppointment()?.status === 'cancelled'">
+                                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-nutri-rose/5 dark:bg-white/[0.01] rounded-full blur-xl"></div>
+                                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-nutri-rose/10 to-nutri-rose/5 dark:from-white/5 dark:to-white/[0.01] border border-nutri-rose/10 dark:border-white/5 flex items-center justify-center text-nutri-rose shrink-0 shadow-inner">
+                                                <app-a-icon name="calendar_today" size="22px"></app-a-icon>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Próxima Consulta</span>
+                                                    @if (nextAppointment()?.status === 'pending') {
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200/50 dark:border-amber-500/20">Pendiente 🟡</span>
+                                                    } @else if (nextAppointment()?.status === 'confirmed') {
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/20">Confirmada ✅</span>
+                                                    } @else if (nextAppointment()?.status === 'cancelled') {
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200/50 dark:border-rose-500/20">Cancelada ❌</span>
+                                                    }
+                                                </div>
+                                                <h3 class="text-base sm:text-lg font-extrabold text-nutri-text dark:text-white leading-tight font-sans">
+                                                    {{ appointmentDateStr() }}
+                                                </h3>
+                                            </div>
+                                        </div>
+
+                                        <!-- Acciones dinámicas de confirmación -->
+                                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
+                                            @if (nextAppointment()?.status === 'pending') {
+                                                @if (showConfirmButtons()) {
+                                                    <button (click)="confirmAppointment()" 
+                                                            [disabled]="loadingAppointmentAction()"
+                                                            class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/10 hover:shadow-xl hover:shadow-emerald-500/20 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
+                                                        @if (loadingAppointmentAction()) {
+                                                            <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                                        } @else {
+                                                            <app-a-icon name="check" size="14px"></app-a-icon>
+                                                         }
+                                                        Confirmar cita
+                                                    </button>
+                                                    <button (click)="cancelAppointment()" 
+                                                            [disabled]="loadingAppointmentAction()"
+                                                            class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-white/5 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
+                                                        Cancelar
+                                                    </button>
+                                                } @else {
+                                                    <div class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/40 dark:border-white/5 justify-center">
+                                                        <app-a-icon name="info" customClass="text-slate-400 dark:text-slate-500" size="14px"></app-a-icon>
+                                                        <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                                                            La confirmación se habilitará 1 día antes.
+                                                        </span>
+                                                    </div>
+                                                }
+                                            } @else if (nextAppointment()?.status === 'confirmed') {
+                                                <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
+                                                   class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/15 hover:shadow-xl hover:shadow-[#25D366]/25 active:scale-[0.98] transition-all duration-200 h-11">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16">
+                                                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93a7.9 7.9 0 0 0 1.08 3.851L0 16l4.25-1.116a7.89 7.89 0 0 0 3.74.935h.007c4.364 0 7.92-3.559 7.924-7.929a7.85 7.85 0 0 0-2.322-5.564H13.6zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.954c-.199-.1-.179-.176-.408-.505-.23-.329-1.248-1.233-1.428-1.329-.18-.098-.31-.147-.441.049-.13.197-.509.642-.624.774-.114.133-.23.148-.43.05-.2-.1-.843-.311-1.607-.991-.595-.53-1.002-1.185-1.119-1.385-.118-.2-.012-.307.088-.406.09-.089.199-.232.299-.348.1-.117.133-.198.199-.33.065-.133.033-.25-.017-.35-.05-.01-1.248-3.003-1.428-3.43-.175-.423-.348-.365-.48-.372-.124-.007-.267-.008-.41-.008a.78.78 0 0 0-.563.263c-.193.21-.737.72-.737 1.757s.754 2.04 1.868 2.529c1.114.49 2.188.89 3.09 1.127.461.12.83.18 1.14.226.347.05.663.023.91-.013.276-.04.843-.344 1.057-.83.214-.488.214-.907.15-1.026-.064-.118-.23-.197-.43-.297"/>
+                                                    </svg>
+                                                    Reagendar cita
+                                                </a>
+                                                <button (click)="cancelAppointment()" 
+                                                        [disabled]="loadingAppointmentAction()"
+                                                        class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 border border-rose-500/10 hover:border-rose-500/20 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
+                                                    Cancelar
+                                                </button>
+                                            } @else if (nextAppointment()?.status === 'cancelled') {
+                                                <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
+                                                   class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/15 hover:shadow-xl hover:shadow-[#25D366]/25 active:scale-[0.98] transition-all duration-200 h-11">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16">
+                                                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93a7.9 7.9 0 0 0 1.08 3.851L0 16l4.25-1.116a7.89 7.89 0 0 0 3.74.935h.007c4.364 0 7.92-3.559 7.924-7.929a7.85 7.85 0 0 0-2.322-5.564H13.6zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.954c-.199-.1-.179-.176-.408-.505-.23-.329-1.248-1.233-1.428-1.329-.18-.098-.31-.147-.441.049-.13.197-.509.642-.624.774-.114.133-.23.148-.43.05-.2-.1-.843-.311-1.607-.991-.595-.53-1.002-1.185-1.119-1.385-.118-.2-.012-.307.088-.406.09-.089.199-.232.299-.348.1-.117.133-.198.199-.33.065-.133.033-.25-.017-.35-.05-.01-1.248-3.003-1.428-3.43-.175-.423-.348-.365-.48-.372-.124-.007-.267-.008-.41-.008a.78.78 0 0 0-.563.263c-.193.21-.737.72-.737 1.757s.754 2.04 1.868 2.529c1.114.49 2.188.89 3.09 1.127.461.12.83.18 1.14.226.347.05.663.023.91-.013.276-.04.843-.344 1.057-.83.214-.488.214-.907.15-1.026-.064-.118-.23-.197-.43-.297"/>
+                                                    </svg>
+                                                    Reagendar cita
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            } @else {
+                                <div class="relative overflow-hidden rounded-[2rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 shadow-md transition-all duration-300 mb-6 border-l-4 border-l-slate-300 dark:border-l-white/10">
+                                    <div class="relative z-10 flex items-center gap-4">
+                                        <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0 shadow-inner">
+                                            <app-a-icon name="calendar_today" size="22px"></app-a-icon>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Próxima Consulta</span>
+                                            <h3 class="text-base font-bold text-slate-500 dark:text-slate-400 mt-1 font-sans">
+                                                No se ha establecido una nueva cita.
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
                             @if (isMenuValid()) {
                                 <div class="space-y-6">
                                         
@@ -1221,6 +1319,38 @@
                 <app-a-button (onClick)="closeShoppingModal()" [label]="hasShoppingError() ? 'Cerrar' : '¡Listo, a comprar!'" [variant]="hasShoppingError() ? 'outline' : 'primary'" size="lg"
                             customClass="!rounded-2xl flex-1 active:scale-95 transition-all">
                 </app-a-button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal de Confirmación de Cancelación de Cita (Custom Premium) -->
+@if (showCancelConfirmModal()) {
+    <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#151515] w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up border border-nutri-rose/10 dark:border-white/5">
+            <!-- Header/Icon -->
+            <div class="p-6 pb-2 flex flex-col items-center text-center space-y-4">
+                <div class="w-16 h-16 rounded-full bg-rose-500/10 dark:bg-rose-500/20 text-rose-500 flex items-center justify-center shadow-inner mt-4">
+                    <app-a-icon name="warning" size="large"></app-a-icon>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold serif text-nutri-text dark:text-white leading-tight">¿Cancelar tu consulta?</h3>
+                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 max-w-sm px-2 leading-relaxed">
+                        Esta acción cambiará el estado de la cita en el sistema y notificará a tu especialista de nutrición.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="p-6 pt-4 border-t border-nutri-rose/10 dark:border-white/5 bg-nutri-bg/50 dark:bg-white/5 flex flex-col sm:flex-row gap-3">
+                <button (click)="showCancelConfirmModal.set(false)" 
+                        class="flex-1 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-white/5 active:scale-[0.98] transition-all duration-200 h-11">
+                    No, mantener cita
+                </button>
+                <button (click)="confirmCancelAppointment()" 
+                        class="flex-1 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/15 hover:shadow-xl hover:shadow-rose-500/25 active:scale-[0.98] transition-all duration-200 h-11">
+                    Sí, cancelar cita
+                </button>
             </div>
         </div>
     </div>

@@ -51,3 +51,5 @@ Thumbs.db
 patients_migration.json
 *.csv
 migration_*.json
+google-credentials.json
+
