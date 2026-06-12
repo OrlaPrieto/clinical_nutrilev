@@ -104,6 +104,7 @@ export class GoogleCalendarService {
         calendarId: this.calendarId,
         timeMin,
         timeMax,
+        q: cleanEmail,
         singleEvents: true,
         orderBy: 'startTime',
       });
