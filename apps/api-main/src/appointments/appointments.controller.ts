@@ -14,6 +14,7 @@ import { GoogleCalendarService } from './google-calendar.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PatientAuthGuard } from '../common/guards/patient-auth.guard';
 import { ConfigService } from '@nestjs/config';
+import { PatientService } from '../patients/patient.service';
 
 @Controller('api/appointments')
 export class AppointmentsController {
@@ -24,6 +25,7 @@ export class AppointmentsController {
     private readonly calendarService: GoogleCalendarService,
     private readonly notificationsService: NotificationsService,
     private readonly configService: ConfigService,
+    private readonly patientService: PatientService,
   ) {}
 
   /**
@@ -198,12 +200,30 @@ export class AppointmentsController {
         const emailMatch = contact.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const cleanEmail = emailMatch ? emailMatch[0].toLowerCase().trim() : contact.toLowerCase().trim();
 
-        // Clean patient name
-        const patientName = (event.summary || '')
-          .replace(/\s*\(\d+\)\s*/g, '')
-          .replace(/virtual/gi, '')
-          .replace(/\s*\d+\/\d+\s*/g, '')
-          .trim();
+        // Resolve patient's first name
+        let patientName = '';
+        try {
+          const patient = await this.patientService.findByEmail(cleanEmail);
+          if (patient && patient.nombre) {
+            const firstName = patient.nombre.trim().split(/\s+/)[0];
+            patientName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+          }
+        } catch (err) {
+          this.logger.warn(`Could not find patient in DB by email: ${cleanEmail}. Fallback to event summary.`);
+        }
+
+        if (!patientName) {
+          // Fallback: clean the Google Calendar event summary
+          const summaryCleaned = (event.summary || '')
+            .replace(/\s*\(\d+\)\s*/g, '')
+            .replace(/virtual/gi, '')
+            .replace(/cita/gi, '')
+            .replace(/consulta/gi, '')
+            .replace(/\s*\d+\/\d+\s*/g, '')
+            .trim();
+          const firstWord = summaryCleaned.split(/\s+/)[0] || 'Paciente';
+          patientName = firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+        }
 
         // Format start time in UTC-6
         const eventStartDate = new Date(event.start.dateTime || event.start.date);
@@ -313,12 +333,30 @@ export class AppointmentsController {
         const emailMatch = contact.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const cleanEmail = emailMatch ? emailMatch[0].toLowerCase().trim() : contact.toLowerCase().trim();
 
-        // Clean patient name
-        const patientName = (event.summary || '')
-          .replace(/\s*\(\d+\)\s*/g, '')
-          .replace(/virtual/gi, '')
-          .replace(/\s*\d+\/\d+\s*/g, '')
-          .trim();
+        // Resolve patient's first name
+        let patientName = '';
+        try {
+          const patient = await this.patientService.findByEmail(cleanEmail);
+          if (patient && patient.nombre) {
+            const firstName = patient.nombre.trim().split(/\s+/)[0];
+            patientName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+          }
+        } catch (err) {
+          this.logger.warn(`Could not find patient in DB by email: ${cleanEmail}. Fallback to event summary.`);
+        }
+
+        if (!patientName) {
+          // Fallback: clean the Google Calendar event summary
+          const summaryCleaned = (event.summary || '')
+            .replace(/\s*\(\d+\)\s*/g, '')
+            .replace(/virtual/gi, '')
+            .replace(/cita/gi, '')
+            .replace(/consulta/gi, '')
+            .replace(/\s*\d+\/\d+\s*/g, '')
+            .trim();
+          const firstWord = summaryCleaned.split(/\s+/)[0] || 'Paciente';
+          patientName = firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+        }
 
         // Format start time in UTC-6
         const eventStartDate = new Date(event.start.dateTime || event.start.date);
