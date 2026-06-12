@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
 import { PatientService } from '../../services/patient';
 import { Patient, PatientProgress, ShoppingCategory, ShoppingItem } from '@shared/models/interfaces';
@@ -31,9 +32,18 @@ import { ProgressHistoryComponent } from '../../shared/components/organisms/prog
     ProgressHistoryComponent
   ],
   templateUrl: './portal-page.html',
-  styleUrl: './portal-page.css'
+  styleUrl: './portal-page.css',
+  animations: [
+    trigger('tabAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(15px)' }),
+        animate('300ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class PortalPage implements OnInit {
+  sidebarCollapsed = signal<boolean>(false);
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
