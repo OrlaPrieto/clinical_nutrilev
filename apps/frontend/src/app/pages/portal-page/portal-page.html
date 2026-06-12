@@ -454,19 +454,6 @@
                                                         </span>
                                                     </div>
                                                 }
-                                            } @else if (nextAppointment()?.status === 'confirmed') {
-                                                <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
-                                                   class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/15 hover:shadow-xl hover:shadow-[#25D366]/25 active:scale-[0.98] transition-all duration-200 h-11">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16">
-                                                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93a7.9 7.9 0 0 0 1.08 3.851L0 16l4.25-1.116a7.89 7.89 0 0 0 3.74.935h.007c4.364 0 7.92-3.559 7.924-7.929a7.85 7.85 0 0 0-2.322-5.564H13.6zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.954c-.199-.1-.179-.176-.408-.505-.23-.329-1.248-1.233-1.428-1.329-.18-.098-.31-.147-.441.049-.13.197-.509.642-.624.774-.114.133-.23.148-.43.05-.2-.1-.843-.311-1.607-.991-.595-.53-1.002-1.185-1.119-1.385-.118-.2-.012-.307.088-.406.09-.089.199-.232.299-.348.1-.117.133-.198.199-.33.065-.133.033-.25-.017-.35-.05-.01-1.248-3.003-1.428-3.43-.175-.423-.348-.365-.48-.372-.124-.007-.267-.008-.41-.008a.78.78 0 0 0-.563.263c-.193.21-.737.72-.737 1.757s.754 2.04 1.868 2.529c1.114.49 2.188.89 3.09 1.127.461.12.83.18 1.14.226.347.05.663.023.91-.013.276-.04.843-.344 1.057-.83.214-.488.214-.907.15-1.026-.064-.118-.23-.197-.43-.297"/>
-                                                    </svg>
-                                                    Reagendar cita
-                                                </a>
-                                                <button (click)="cancelAppointment()" 
-                                                        [disabled]="loadingAppointmentAction()"
-                                                        class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 border border-rose-500/10 hover:border-rose-500/20 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
-                                                    Cancelar
-                                                </button>
                                             } @else if (nextAppointment()?.status === 'cancelled') {
                                                 <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
                                                    class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/15 hover:shadow-xl hover:shadow-[#25D366]/25 active:scale-[0.98] transition-all duration-200 h-11">
