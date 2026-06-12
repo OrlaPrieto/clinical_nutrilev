@@ -333,4 +333,49 @@ export class PatientService {
       throw error;
     }
   }
+
+  async cleanupOldStorageFiles(): Promise<{ deletedCount: number }> {
+    try {
+      const client = this.supabaseService.getClient();
+      if (!client || !client.storage) return { deletedCount: 0 };
+
+      let allFiles: any[] = [];
+      let page = 0;
+      const limit = 1000;
+      
+      while (true) {
+        const { data: files } = await client.storage
+          .from('patient_menus')
+          .list('', {
+            limit,
+            offset: page * limit,
+            sortBy: { column: 'name', order: 'asc' }
+          });
+          
+        if (!files || files.length === 0) break;
+        allFiles = allFiles.concat(files);
+        if (files.length < limit) break;
+        page++;
+      }
+
+      const now = new Date();
+      const cutoffDate = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000);
+      const filesToDelete = allFiles
+        .filter(f => f.name !== '.emptyFolderPlaceholder' && new Date(f.created_at) < cutoffDate)
+        .map(f => f.name);
+
+      if (filesToDelete.length > 0) {
+        const chunkSize = 100;
+        for (let i = 0; i < filesToDelete.length; i += chunkSize) {
+          const chunk = filesToDelete.slice(i, i + chunkSize);
+          await client.storage.from('patient_menus').remove(chunk);
+        }
+      }
+
+      return { deletedCount: filesToDelete.length };
+    } catch (err) {
+      console.error('Failed to run automated storage cleanup:', err);
+      throw err;
+    }
+  }
 }

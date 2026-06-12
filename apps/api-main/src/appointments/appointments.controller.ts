@@ -407,5 +407,35 @@ export class AppointmentsController {
       );
     }
   }
+
+  /**
+   * Cron endpoint called externally to clean up expired menu files (older than 8 days)
+   * from Supabase Storage.
+   */
+  @Get('cron/cleanup-storage')
+  async runCronStorageCleanup(@Query('secret') secret: string) {
+    const expectedSecret = this.configService.get<string>('CRON_SECRET');
+    if (!expectedSecret || secret !== expectedSecret) {
+      throw new HttpException('No autorizado', HttpStatus.UNAUTHORIZED);
+    }
+
+    this.logger.log('Executing storage cleanup cron job...');
+
+    try {
+      const result = await this.patientService.cleanupOldStorageFiles();
+      this.logger.log(`Storage cleanup cron completed. Deleted ${result.deletedCount} files.`);
+      return {
+        success: true,
+        message: `Limpieza de storage completada exitosamente. Se eliminaron ${result.deletedCount} archivos.`,
+        ...result
+      };
+    } catch (error: any) {
+      this.logger.error(`Error running storage cleanup cron: ${error.message}`);
+      throw new HttpException(
+        `Error al ejecutar limpieza de storage: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }
 
