@@ -14,6 +14,8 @@ import { UpdateProgressDto } from './dto/update-progress.dto';
 
 @Injectable()
 export class PatientService {
+  private shoppingListCache = new Map<string, any>();
+
   constructor(
     private supabaseService: SupabaseService,
     private httpService: HttpService,
@@ -239,6 +241,11 @@ export class PatientService {
   }
 
   async getShoppingList(menuUrl: string, clientIp?: string): Promise<any> {
+    const cached = this.shoppingListCache.get(menuUrl);
+    if (cached) {
+      return cached;
+    }
+
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
 
     if (!flaskApiUrl) {
@@ -266,7 +273,13 @@ export class PatientService {
           }, // 120 second timeout
         ),
       );
-      return response.data;
+      
+      const result = response.data;
+      const hasError = Array.isArray(result) && result.some(cat => cat.category?.includes('ERROR'));
+      if (!hasError) {
+        this.shoppingListCache.set(menuUrl, result);
+      }
+      return result;
     } catch (error) {
       console.error(
         'Error calling Python AI service (Shopping List):',
