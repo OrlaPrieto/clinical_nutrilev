@@ -23,4 +23,12 @@ export class AuthController {
   async getRole(@Body('email') email: string): Promise<{ role: string }> {
     return this.authService.getRole(email);
   }
+
+  @Post('send-reset-password')
+  @HttpCode(200)
+  async sendResetPassword(
+    @Body('email') email: string,
+  ): Promise<{ success: boolean; message?: string }> {
+    return this.authService.sendResetPassword(email);
+  }
 }

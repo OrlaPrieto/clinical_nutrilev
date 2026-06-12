@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 import { supabase } from '../supabase';
 
 jest.mock('../supabase', () => ({
@@ -24,6 +26,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let router: any;
   let socialAuthService: any;
+  let mockHttpClient: any;
 
   beforeEach(() => {
     router = {
@@ -33,12 +36,17 @@ describe('AuthService', () => {
     socialAuthService = {
       signOut: jest.fn().mockResolvedValue(undefined),
     };
+    mockHttpClient = {
+      get: jest.fn().mockReturnValue(of('')),
+      post: jest.fn(),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         AuthService,
         { provide: Router, useValue: router },
         { provide: SocialAuthService, useValue: socialAuthService },
+        { provide: HttpClient, useValue: mockHttpClient },
       ],
     });
     service = TestBed.inject(AuthService);
@@ -77,6 +85,27 @@ describe('AuthService', () => {
       await service.logout();
       expect(supabase.auth.signOut).toHaveBeenCalled();
       expect(router.navigate).toHaveBeenCalledWith(['/login']);
+    });
+  });
+
+  describe('sendPasswordResetLink', () => {
+    it('should return success true on server success', async () => {
+      mockHttpClient.post.mockReturnValue(of({ success: true }));
+      const result = await service.sendPasswordResetLink('test@test.com');
+      expect(result).toEqual({ success: true });
+      expect(mockHttpClient.post).toHaveBeenCalledWith('/api/auth/send-reset-password', {
+        email: 'test@test.com'
+      });
+    });
+
+    it('should return success false and message on error', async () => {
+      const mockError = { error: { message: 'Some error' } };
+      const { throwError } = require('rxjs');
+      mockHttpClient.post.mockReturnValue(throwError(() => mockError));
+
+      const result = await service.sendPasswordResetLink('test@test.com');
+      expect(result.success).toBe(false);
+      expect(result.message).toBe('Some error');
     });
   });
 });

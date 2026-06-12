@@ -386,29 +386,18 @@ export class AuthService {
   async sendPasswordResetLink(email: string): Promise<{ success: boolean; message?: string }> {
     const cleanEmail = email.toLowerCase();
     
-    // 1. Verificar si está registrado y activo
-    const role = await this.determineRole(cleanEmail);
-    if (role !== 'admin' && role !== 'patient') {
-      if (role === 'pending') {
-        return { success: false, message: 'Tu cuenta está pendiente de activación. Contacta a tu nutrióloga.' };
-      } else if (role === 'denied') {
-        return { success: false, message: 'Acceso denegado para este correo.' };
-      } else {
-        return { success: false, message: 'Tu correo no está registrado como paciente activo.' };
-      }
+    try {
+      const apiUrl = `${environment.apiUrl}/auth/send-reset-password`;
+      const obs = this.http.post<{ success: boolean; message?: string }>(apiUrl, { email: cleanEmail });
+      const response = await firstValueFrom(obs);
+      return response || { success: false, message: 'Respuesta inválida del servidor.' };
+    } catch (err: any) {
+      console.error('Send reset password link error:', err);
+      return { 
+        success: false, 
+        message: err?.error?.message || 'Error al enviar el enlace de configuración.' 
+      };
     }
-
-    // 2. Disparar correo de recuperación de contraseña
-    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-      redirectTo: `${window.location.origin}/login?recovery=true`
-    });
-
-    if (error) {
-      console.error('Reset password error:', error);
-      return { success: false, message: 'Error al enviar el enlace de configuración: ' + error.message };
-    }
-
-    return { success: true };
   }
 
   async updatePassword(password: string): Promise<{ success: boolean; message?: string }> {

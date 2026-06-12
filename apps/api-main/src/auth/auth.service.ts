@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseService } from '../common/supabase.service';
 import { AuthResponse } from '@shared/index';
+import { EmailService } from '../common/email.service';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +11,7 @@ export class AuthService {
   constructor(
     private supabaseService: SupabaseService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {
     const adminStr = this.configService.get<string>('ADMIN_EMAILS') || '';
     this.adminEmails = adminStr
@@ -141,5 +143,88 @@ export class AuthService {
     const result = { role };
     this.roleCache.set(cleanEmail, { ...result, expiry: now + this.CACHE_TTL });
     return result;
+  }
+
+  async sendResetPassword(
+    email: string,
+  ): Promise<{ success: boolean; message?: string }> {
+    const cleanEmail = email.toLowerCase();
+
+    // 1. Verify role
+    const { role } = await this.getRole(cleanEmail);
+    if (role !== 'admin' && role !== 'patient') {
+      if (role === 'pending') {
+        return {
+          success: false,
+          message:
+            'Tu cuenta está pendiente de activación. Contacta a tu nutrióloga.',
+        };
+      } else if (role === 'denied') {
+        return { success: false, message: 'Acceso denegado para este correo.' };
+      } else {
+        return {
+          success: false,
+          message: 'Tu correo no está registrado como paciente activo.',
+        };
+      }
+    }
+
+    // Intentar crear el usuario en Supabase Auth en caso de que no exista aún.
+    // Si ya existe, este llamado fallará con un error de duplicado (ej. 'Email already registered'),
+    // el cual podemos ignorar de forma segura ya que el usuario ya existe.
+    const { error: createError } = await this.supabaseService
+      .getClient()
+      .auth.admin.createUser({
+        email: cleanEmail,
+        email_confirm: true,
+      });
+
+    if (
+      createError &&
+      createError.message !== 'Email already registered' &&
+      !createError.message.includes('already')
+    ) {
+      console.warn('Note: Suppressed Supabase Auth creation result:', createError.message);
+    }
+
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:4200';
+
+    // 2. Generate Link using Supabase Admin API (now guaranteed to exist)
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .auth.admin.generateLink({
+        type: 'recovery',
+        email: cleanEmail,
+        options: {
+          redirectTo: `${frontendUrl}/login?recovery=true`,
+        },
+      });
+
+    if (error || !data?.properties?.action_link) {
+      console.error('Error generating recovery link:', error);
+      return {
+        success: false,
+        message:
+          'Error al generar el enlace de recuperación: ' +
+          (error?.message || 'enlace vacío'),
+      };
+    }
+
+    // 3. Send email via Resend
+    const emailSent = await this.emailService.sendPasswordResetEmail(
+      cleanEmail,
+      data.properties.action_link,
+    );
+
+    if (!emailSent) {
+      return {
+        success: false,
+        message:
+          'Error al enviar el correo de recuperación. Inténtalo más tarde.',
+      };
+    }
+
+    return { success: true };
   }
 }
