@@ -262,8 +262,8 @@ export class PatientService {
           },
           {
             headers,
-            timeout: 30000,
-          }, // 30 second timeout
+            timeout: 120000,
+          }, // 120 second timeout
         ),
       );
       return response.data;
