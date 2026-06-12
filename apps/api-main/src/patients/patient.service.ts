@@ -230,6 +230,51 @@ export class PatientService {
 
 
   async remove(identifier: string): Promise<{ success: boolean }> {
+    let email: string | null = null;
+    if (identifier.includes('@')) {
+      email = identifier.toLowerCase().trim();
+    } else {
+      try {
+        const { data } = await this.supabaseService
+          .getClient()
+          .from('patients')
+          .select('email')
+          .eq('nombre', identifier)
+          .maybeSingle() as any;
+        if (data && data.email) {
+          email = data.email.toLowerCase().trim();
+        }
+      } catch (err) {
+        console.error('Failed to resolve patient email for deletion:', err);
+      }
+    }
+
+    if (email) {
+      try {
+        const client = this.supabaseService.getClient();
+        if (client && client.storage) {
+          const { data: files } = await client.storage
+            .from('patient_menus')
+            .list();
+        
+          if (files && files.length > 0) {
+            const prefix = `menu_${email}_`;
+            const filesToDelete = files
+              .filter((f) => f.name.startsWith(prefix))
+              .map((f) => f.name);
+            
+            if (filesToDelete.length > 0) {
+              await client.storage
+                .from('patient_menus')
+                .remove(filesToDelete);
+            }
+          }
+        }
+      } catch (storageErr) {
+        console.error(`Failed to clean up storage for deleted patient ${email}:`, storageErr);
+      }
+    }
+
     const { error } = await this.supabaseService
       .getClient()
       .from('patients')

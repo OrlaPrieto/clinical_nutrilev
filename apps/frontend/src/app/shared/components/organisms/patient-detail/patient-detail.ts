@@ -428,6 +428,34 @@ export class PatientDetailComponent implements OnInit {
 
     this.isUploadingMenu.set(true);
     try {
+      // Eliminar menús anteriores de Supabase Storage para evitar fugas de espacio
+      const oldMenus = p.current_menus || [];
+      if (oldMenus.length > 0) {
+        const filesToDelete = oldMenus
+          .map((m: any) => {
+            if (!m.url) return null;
+            try {
+              return m.url.substring(m.url.lastIndexOf('/') + 1);
+            } catch (e) {
+              return null;
+            }
+          })
+          .filter(Boolean) as string[];
+
+        if (filesToDelete.length > 0) {
+          await supabase.storage
+            .from('patient_menus')
+            .remove(filesToDelete);
+        }
+      } else if (p.menu_url) {
+        try {
+          const oldFileName = p.menu_url.substring(p.menu_url.lastIndexOf('/') + 1);
+          await supabase.storage.from('patient_menus').remove([oldFileName]);
+        } catch (e) {
+          console.error('Failed to clean up legacy menu_url:', e);
+        }
+      }
+
       const uploadedMenus = [];
 
       for (let i = 0; i < filesToUpload.length; i++) {
