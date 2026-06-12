@@ -658,13 +658,25 @@ export class PortalPage implements OnInit {
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        // Cargar datos del paciente de forma directa y segura
-        const currentPatient = await this.patientService.getPatientByEmail(userEmail);
+        // Cargar datos en paralelo para evitar waterfall
+        const [currentPatient, history, apt] = await Promise.all([
+          this.patientService.getPatientByEmail(userEmail),
+          this.patientService.getPatientProgress(userEmail),
+          this.appointmentService.getNextAppointment(userEmail).catch(err => {
+            console.error('Error loading next appointment:', err);
+            return null;
+          })
+        ]);
+
         if (currentPatient) {
           this.patient.set(currentPatient);
-          // Cargar historial
-          const history = await this.patientService.getPatientProgress(userEmail);
-          this.progress.set(history);
+          this.progress.set(history || []);
+
+          if (apt && apt.hasAppointment) {
+            this.nextAppointment.set(apt);
+          } else {
+            this.nextAppointment.set(null);
+          }
 
           // Inicializar métricas activas según el objetivo principal
           const goal = currentPatient.meta_objetivo;
@@ -682,9 +694,6 @@ export class PortalPage implements OnInit {
 
           // Solicitar suscripción de notificaciones push
           this.pushService.requestSubscription(userEmail);
-
-          // Cargar siguiente cita
-          this.loadNextAppointment(userEmail);
         }
       } catch (err) {
         console.error('Error loading portal data', err);
