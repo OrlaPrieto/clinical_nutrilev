@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { Patient } from '../models/patient.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { PatientProgress, ShoppingCategory, PatientUpdate, PatientProgressInsert } from '@shared/models/interfaces';
-import { User } from '@supabase/supabase-js';
 import { MOCK_PATIENTS, MOCK_PROGRESS } from '../shared/mocks/mock-data';
 
 @Injectable({
@@ -12,37 +13,15 @@ import { MOCK_PATIENTS, MOCK_PROGRESS } from '../shared/mocks/mock-data';
 export class PatientService {
   private readonly apiUrl = `${environment.apiUrl}/patients`;
   private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
   constructor() { }
-
-  private get headers(): Record<string, string> {
-    const reqHeaders: Record<string, string> = {
-      'Content-Type': 'application/json'
-    };
-    
-    const token = this.authService.accessToken;
-    if (token) {
-      reqHeaders['Authorization'] = `Bearer ${token}`;
-    }
-    
-    // Legacy support for x-user-email if still needed by some old guards
-    const user = this.authService.currentUser();
-    if (user?.email) {
-      reqHeaders['x-user-email'] = user.email;
-    }
-    
-    return reqHeaders;
-  }
 
   async getPatients(): Promise<Patient[]> {
     if (this.authService.isDevMode()) {
       return new Promise(resolve => setTimeout(() => resolve(MOCK_PATIENTS), 500));
     }
-    const response = await fetch(this.apiUrl, {
-      headers: this.headers
-    });
-    if (!response.ok) throw new Error('Error fetching patients');
-    return response.json();
+    return firstValueFrom(this.http.get<Patient[]>(this.apiUrl));
   }
 
   async getPatientByEmail(email: string): Promise<Patient> {
@@ -50,11 +29,7 @@ export class PatientService {
       const p = MOCK_PATIENTS.find(p => p.email === email) || MOCK_PATIENTS[0];
       return new Promise(resolve => setTimeout(() => resolve(p), 500));
     }
-    const response = await fetch(`${this.apiUrl}/${email}`, {
-      headers: this.headers
-    });
-    if (!response.ok) throw new Error('Error fetching patient');
-    return response.json();
+    return firstValueFrom(this.http.get<Patient>(`${this.apiUrl}/${email}`));
   }
 
   async addPatientEntry(
@@ -65,31 +40,14 @@ export class PatientService {
     if (action === 'update') {
       // Prioritize ID (UUID) for reliable identification with non-unique emails
       const targetId = payload.id || originalEmail || email;
-      const response = await fetch(`${this.apiUrl}/${targetId}`, {
-        method: 'PUT',
-        headers: this.headers,
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error('Error updating patient');
-      return response.json();
+      return firstValueFrom(this.http.put<any>(`${this.apiUrl}/${targetId}`, payload));
     }
 
-    const response = await fetch(this.apiUrl, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) throw new Error('Error adding patient');
-    return response.json();
+    return firstValueFrom(this.http.post<any>(this.apiUrl, payload));
   }
 
   async deletePatient(email: string, name: string): Promise<any> {
-    const response = await fetch(`${this.apiUrl}/${email || name}`, {
-      method: 'DELETE',
-      headers: this.headers
-    });
-    if (!response.ok) throw new Error('Error deleting patient');
-    return response.json();
+    return firstValueFrom(this.http.delete<any>(`${this.apiUrl}/${email || name}`));
   }
 
   // Progress Tracking Methods
@@ -98,21 +56,11 @@ export class PatientService {
       const prog = MOCK_PROGRESS.filter(p => p.patient_email === email);
       return new Promise(resolve => setTimeout(() => resolve(prog), 500));
     }
-    const response = await fetch(`${this.apiUrl}/${email}/progress`, {
-      headers: this.headers
-    });
-    if (!response.ok) throw new Error('Error fetching patient progress');
-    return response.json();
+    return firstValueFrom(this.http.get<PatientProgress[]>(`${this.apiUrl}/${email}/progress`));
   }
 
   async addProgressEntry(entry: PatientProgressInsert): Promise<any> {
-    const response = await fetch(`${this.apiUrl}/progress`, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify(entry)
-    });
-    if (!response.ok) throw new Error('Error adding progress entry');
-    return response.json();
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/progress`, entry));
   }
 
   async updateProgressEntry(id: string, entry: Partial<PatientProgress>): Promise<any> {
@@ -124,22 +72,11 @@ export class PatientService {
       }
       throw new Error('Progress entry not found in mock data');
     }
-    const response = await fetch(`${this.apiUrl}/progress/${id}`, {
-      method: 'PUT',
-      headers: this.headers,
-      body: JSON.stringify(entry)
-    });
-    if (!response.ok) throw new Error('Error updating progress entry');
-    return response.json();
+    return firstValueFrom(this.http.put<any>(`${this.apiUrl}/progress/${id}`, entry));
   }
 
   async getShoppingList(menuUrl: string): Promise<ShoppingCategory[]> {
-    const response = await fetch(`${this.apiUrl}/shopping-list`, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({ menu_url: menuUrl })
-    });
-    if (!response.ok) throw new Error('Error fetching shopping list');
-    return response.json();
+    return firstValueFrom(this.http.post<ShoppingCategory[]>(`${this.apiUrl}/shopping-list`, { menu_url: menuUrl }));
   }
 }
+
