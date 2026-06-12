@@ -1,4 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
@@ -19,21 +21,9 @@ export interface Appointment {
 export class AppointmentService {
   private readonly apiUrl = `${environment.apiUrl}/appointments`;
   private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
   constructor() {}
-
-  private get headers(): Record<string, string> {
-    const reqHeaders: Record<string, string> = {
-      'Content-Type': 'application/json'
-    };
-    
-    const token = this.authService.accessToken;
-    if (token) {
-      reqHeaders['Authorization'] = `Bearer ${token}`;
-    }
-    
-    return reqHeaders;
-  }
 
   async getNextAppointment(email: string): Promise<Appointment> {
     if (this.authService.isDevMode()) {
@@ -56,11 +46,7 @@ export class AppointmentService {
       }), 500));
     }
 
-    const response = await fetch(`${this.apiUrl}/next/${email}`, {
-      headers: this.headers
-    });
-    if (!response.ok) throw new Error('Error fetching next appointment');
-    return response.json();
+    return firstValueFrom(this.http.get<Appointment>(`${this.apiUrl}/next/${email}`));
   }
 
   async confirmAppointment(email: string, eventId: string): Promise<any> {
@@ -69,13 +55,7 @@ export class AppointmentService {
       return new Promise(resolve => setTimeout(() => resolve({ success: true, status: 'confirmed' }), 500));
     }
 
-    const response = await fetch(`${this.apiUrl}/confirm`, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({ email, eventId })
-    });
-    if (!response.ok) throw new Error('Error confirming appointment');
-    return response.json();
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/confirm`, { email, eventId }));
   }
 
   async cancelAppointment(email: string, eventId: string): Promise<any> {
@@ -84,12 +64,7 @@ export class AppointmentService {
       return new Promise(resolve => setTimeout(() => resolve({ success: true, status: 'cancelled' }), 500));
     }
 
-    const response = await fetch(`${this.apiUrl}/cancel`, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({ email, eventId })
-    });
-    if (!response.ok) throw new Error('Error cancelling appointment');
-    return response.json();
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/cancel`, { email, eventId }));
   }
 }
+
