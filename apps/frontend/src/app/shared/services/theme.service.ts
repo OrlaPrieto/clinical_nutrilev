@@ -35,6 +35,9 @@ export class ThemeService {
   private updateTheme(newTheme: ThemeType) {
     const root = document.documentElement;
     
+    // Disable transitions temporarily to prevent visual flashing
+    root.classList.add('no-transitions');
+    
     // Remove all theme classes
     root.classList.remove('dark', 'theme-vibrant', 'theme-purple', 'theme-soft');
     
@@ -42,6 +45,14 @@ export class ThemeService {
     if (newTheme !== 'light') {
       root.classList.add(newTheme === 'dark' ? 'dark' : `theme-${newTheme}`);
     }
+    
+    // Force browser reflow to apply classes instantly
+    const _ = window.getComputedStyle(root).opacity;
+    
+    // Re-enable transitions on the next tick
+    setTimeout(() => {
+      root.classList.remove('no-transitions');
+    }, 0);
     
     // Persist
     this.storage.setItem(this.THEME_KEY, newTheme);
