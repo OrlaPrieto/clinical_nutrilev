@@ -1,4 +1,4 @@
-import { Component, input, output, ViewEncapsulation, HostListener, ElementRef, inject } from '@angular/core';
+import { Component, input, output, ViewEncapsulation, HostListener, ElementRef, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +15,12 @@ import { CalendarComponent } from '../calendar/calendar';
 export class InputComponent {
   private elementRef = inject(ElementRef);
   
+  id = input<string>('');
   label = input<string>('');
+  
+  private uniqueId = 'nutri-input-' + Math.random().toString(36).substring(2, 9);
+  inputId = computed(() => this.id() || this.uniqueId);
+
   placeholder = input<string>('');
   value = input<any>('');
   type = input<string>('text');

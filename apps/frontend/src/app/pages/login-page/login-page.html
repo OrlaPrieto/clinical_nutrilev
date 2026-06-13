@@ -9,14 +9,17 @@
 
     <!-- Discrete Theme Selector -->
     <div class="fixed top-6 right-6 group z-50">
-        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md transition-all duration-300 hover:bg-white/20 text-nutri-text/30 dark:text-white/40 group-hover:text-nutri-rose cursor-pointer">
+        <button type="button" 
+                aria-haspopup="true"
+                aria-label="Seleccionar tema"
+                class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md transition-all duration-300 hover:bg-white/20 text-nutri-text/30 dark:text-white/40 group-hover:text-nutri-rose group-focus-within:text-nutri-rose cursor-pointer border-0 outline-none focus:ring-2 focus:ring-nutri-rose/40">
             <app-a-icon name="palette" size="20px"></app-a-icon>
-        </div>
-        <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5">
-            <button (click)="themeService.setTheme('light')" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40" [class.ring-2]="themeService.theme() === 'light'"></button>
-            <button (click)="themeService.setTheme('dark')" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20" [class.ring-2]="themeService.theme() === 'dark'"></button>
-            <button (click)="themeService.setTheme('vibrant')" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40" [class.ring-2]="themeService.theme() === 'vibrant'"></button>
-            <button (click)="themeService.setTheme('purple')" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40" [class.ring-2]="themeService.theme() === 'purple'"></button>
+        </button>
+        <div class="absolute right-0 top-full mt-2 flex flex-col items-center gap-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0 group-focus-within:translate-y-0 bg-white dark:bg-[#111111] p-1.5 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5">
+            <button (click)="themeService.setTheme('light')" aria-label="Tema clásico (rosa)" class="w-5 h-5 rounded-full bg-[#D81B60] transition-all hover:scale-125 ring-offset-2 ring-[#D81B60]/40 outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'light'"></button>
+            <button (click)="themeService.setTheme('dark')" aria-label="Tema oscuro" class="w-5 h-5 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20 outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'dark'"></button>
+            <button (click)="themeService.setTheme('vibrant')" aria-label="Tema vibrante (verde)" class="w-5 h-5 rounded-full bg-[#2E7D32] transition-all hover:scale-125 border-2 border-[#FF9800] ring-offset-2 ring-[#2E7D32]/40 outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'vibrant'"></button>
+            <button (click)="themeService.setTheme('purple')" aria-label="Tema místico (morado)" class="w-5 h-5 rounded-full bg-[#7B1FA2] transition-all hover:scale-125 border-2 border-[#E1BEE7] ring-offset-2 ring-[#7B1FA2]/40 outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'purple'"></button>
         </div>
     </div>
 

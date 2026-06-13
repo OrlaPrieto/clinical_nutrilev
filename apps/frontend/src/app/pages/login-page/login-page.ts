@@ -7,6 +7,7 @@ import { ThemeService } from '../../shared/services/theme.service';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { Router } from '@angular/router';
 import { LegalModalComponent } from '../../shared/components/organisms/legal-modal/legal-modal';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login-page',
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   public themeService = inject(ThemeService);
+  private titleService = inject(Title);
   errorMessage: string | null = null;
   isLoggingIn = false;
   showLegalModal = signal<'privacy' | 'support' | null>(null);
@@ -45,6 +47,7 @@ export class LoginPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.titleService.setTitle('Iniciar Sesión - Clinical Nutrilev');
     console.log('Test log');
     
     await this.authService.ready;

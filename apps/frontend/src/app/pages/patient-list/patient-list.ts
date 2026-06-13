@@ -16,6 +16,7 @@ import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { APP_VERSION } from '../../version';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-patient-list-page',
@@ -39,6 +40,7 @@ export class PatientListPage implements OnInit {
   public themeService = inject(ThemeService);
   private patientService = inject(PatientService);
   private router = inject(Router);
+  private titleService = inject(Title);
 
   // Signals
   uniquePatients = signal<Patient[]>([]);
@@ -128,6 +130,7 @@ export class PatientListPage implements OnInit {
   bajaCount = computed(() => this.uniquePatients().filter(p => p.dado_de_baja).length);
 
   ngOnInit() {
+    this.titleService.setTitle('Panel de Pacientes - Clinical Nutrilev');
     this.loadPatients();
   }
 

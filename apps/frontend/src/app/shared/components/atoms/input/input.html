@@ -1,6 +1,6 @@
 <div class="input-container" [class]="customClass()">
   @if (label()) {
-    <label class="block text-[10px] font-black text-nutri-text/50 dark:text-slate-500 uppercase tracking-[0.2em] mb-2 ml-2">
+    <label [attr.for]="inputId()" class="block text-[10px] font-black text-nutri-text/50 dark:text-slate-500 uppercase tracking-[0.2em] mb-2 ml-2">
       {{ label() }}
     </label>
   }
@@ -14,6 +14,7 @@
 
     <input 
       #inputField
+      [id]="inputId()"
       [type]="type() === 'calendar' ? 'text' : type()"
       [value]="value()"
       [placeholder]="placeholder()"
@@ -21,6 +22,9 @@
       [readonly]="type() === 'calendar'"
       (input)="onInput($event)"
       (click)="handleDateClick(inputField)"
+      [attr.aria-invalid]="error() ? 'true' : 'false'"
+      [attr.aria-describedby]="error() ? inputId() + '-error' : null"
+      [attr.aria-label]="label() ? null : placeholder()"
       class="w-full h-14 bg-white/70 dark:bg-white/[0.03] rounded-2xl border border-nutri-rose/10 dark:border-white/5 focus:border-nutri-rose/20 dark:focus:border-nutri-rose/40 outline-none transition-all shadow-sm font-medium text-sm text-nutri-text dark:text-slate-200 placeholder:text-nutri-text/50 dark:placeholder:text-slate-600"
       [ngClass]="[inputClass(), icon() ? 'pl-12' : 'px-6', (type() === 'number' && showSpinner()) || type() === 'calendar' ? 'pr-12' : 'pr-6', type() === 'calendar' ? 'cursor-pointer' : '', error() ? 'border-rose-500/50 focus:border-rose-500' : '', dimmed() ? '!opacity-50 focus:!opacity-100 hover:!opacity-80 transition-opacity duration-200' : '']">
     
@@ -53,7 +57,7 @@
   </div>
 
   @if (error()) {
-    <p class="text-[9px] text-rose-500 font-bold mt-1 ml-4 animate-fade-in">
+    <p [id]="inputId() + '-error'" class="text-[9px] text-rose-500 font-bold mt-1 ml-4 animate-fade-in">
       {{ error() }}
     </p>
   }

@@ -3,6 +3,7 @@ import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
 import { PatientService } from '../../services/patient';
+import { Title } from '@angular/platform-browser';
 import { Patient, PatientProgress, ShoppingCategory, ShoppingItem } from '@shared/models/interfaces';
 import { ButtonComponent } from '../../shared/components/atoms/button/button';
 import { IconComponent } from '../../shared/components/atoms/icon/icon';
@@ -50,6 +51,7 @@ export class PortalPage implements OnInit {
   private storageService = inject(StorageService);
   private pushService = inject(PushNotificationService);
   private appointmentService = inject(AppointmentService);
+  private titleService = inject(Title);
 
   patient = signal<Patient | null>(null);
   nextAppointment = signal<Appointment | null>(null);
@@ -680,6 +682,7 @@ export class PortalPage implements OnInit {
 
         if (currentPatient) {
           this.patient.set(currentPatient);
+          this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Clinical Nutrilev`);
           this.progress.set(history || []);
 
           if (apt && apt.hasAppointment) {
