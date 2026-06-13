@@ -3,12 +3,12 @@
 // --- Design Tokens (CSS Variables) ---
 // We use RGB format to allow Tailwind opacity modifiers (/90, etc.)
 :root {
-  --nutri-rose-rgb: 216 27 96;
-  --nutri-rose-light-rgb: 255 107 155;
-  --nutri-rose-soft-rgb: 255 209 220;
-  --nutri-rose-extra-rgb: 255 240 245;
-  --nutri-bg-rgb: 250 249 246;
-  --nutri-text-rgb: 26 26 26;
+  --nutri-rose-rgb: 196 109 118; // Refined Champagne Rose
+  --nutri-rose-light-rgb: 224 149 158;
+  --nutri-rose-soft-rgb: 243 204 208;
+  --nutri-rose-extra-rgb: 250 240 241;
+  --nutri-bg-rgb: 250 249 246; // Warm White
+  --nutri-text-rgb: 30 30 30; // Soft Charcoal
 
   // Resolved colors for standard usage
   --nutri-rose: rgb(var(--nutri-rose-rgb));
@@ -37,32 +37,60 @@
   --mat-sys-on-surface: #e2e8f0;
 }
 
-// Nutri-Vibrant Theme (Green & Orange)
+// Nutri-Sage Organic Theme (Verde Salvia)
 .theme-vibrant {
-  --nutri-rose-rgb: 46 125 50; // Green 700
-  --nutri-rose-light-rgb: 245 124 0; // Orange 700
-  --nutri-rose-soft-rgb: 255 224 178; // Orange 100
-  --nutri-rose-extra-rgb: 232 245 233; // Green 50
-  --nutri-bg-rgb: 253 255 253;
-  --nutri-text-rgb: 27 46 27;
+  --nutri-rose-rgb: 74 107 93; // Sage Green
+  --nutri-rose-light-rgb: 140 174 158;
+  --nutri-rose-soft-rgb: 194 214 204;
+  --nutri-rose-extra-rgb: 233 242 238;
+  --nutri-bg-rgb: 248 250 248;
+  --nutri-text-rgb: 32 51 43;
 
   --mat-sys-primary: var(--nutri-rose);
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: var(--nutri-rose-extra);
 }
 
-// Nutri-Purple Theme (Mystic & Soft)
+// Nutri-Lavender Zen Theme (Morado Zen)
 .theme-purple {
-  --nutri-rose-rgb: 123 31 162; // Purple 700
-  --nutri-rose-light-rgb: 225 190 231; // Purple 100
-  --nutri-rose-soft-rgb: 243 229 245; // Purple 50
-  --nutri-rose-extra-rgb: 186 104 200; // Purple 300
-  --nutri-bg-rgb: 252 251 255;
-  --nutri-text-rgb: 74 20 140; // Purple 900
+  --nutri-rose-rgb: 92 107 192; // Lavender
+  --nutri-rose-light-rgb: 159 168 218;
+  --nutri-rose-soft-rgb: 197 202 233;
+  --nutri-rose-extra-rgb: 232 234 246;
+  --nutri-bg-rgb: 250 249 252;
+  --nutri-text-rgb: 40 53 147;
 
   --mat-sys-primary: var(--nutri-rose);
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: var(--nutri-rose-light);
+}
+
+// Nutri-Ocean Teal Theme (Brisa Marina)
+.theme-ocean {
+  --nutri-rose-rgb: 14 116 144; // Ocean Teal
+  --nutri-rose-light-rgb: 6 182 212;
+  --nutri-rose-soft-rgb: 207 250 254;
+  --nutri-rose-extra-rgb: 236 254 255;
+  --nutri-bg-rgb: 248 250 252;
+  --nutri-text-rgb: 15 58 72;
+
+  --mat-sys-primary: var(--nutri-rose);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--nutri-rose-soft);
+}
+
+// Nutri-Terracotta Sand Theme (Terracota y Arena)
+.theme-terracotta {
+  --nutri-rose-rgb: 194 65 12; // Terracotta
+  --nutri-rose-light-rgb: 249 115 22;
+  --nutri-rose-soft-rgb: 255 237 213;
+  --nutri-rose-extra-rgb: 255 247 237;
+  --nutri-bg-rgb: 250 247 242;
+  --nutri-text-rgb: 67 20 7;
+
+  --mat-sys-primary: var(--nutri-rose);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--nutri-rose-soft);
 }
 
 // --- Angular Material Theme Configuration ---
