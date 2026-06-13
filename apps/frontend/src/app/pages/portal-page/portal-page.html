@@ -127,8 +127,6 @@
                             <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" aria-label="Tema oscuro" class="w-4 h-4 rounded-full bg-[#111111] transition-all hover:scale-125 border border-white/10 ring-offset-2 ring-white/20 cursor-pointer outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'dark'" title="Oscuro"></button>
                             <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" aria-label="Tema salvia orgánico" class="w-4 h-4 rounded-full bg-[#4A6B5D] transition-all hover:scale-125 ring-offset-2 ring-[#4A6B5D]/40 cursor-pointer outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'vibrant'" title="Salvia"></button>
                             <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" aria-label="Tema lavanda zen" class="w-4 h-4 rounded-full bg-[#5C6BC0] transition-all hover:scale-125 ring-offset-2 ring-[#5C6BC0]/40 cursor-pointer outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'purple'" title="Lavanda"></button>
-                            <button (click)="themeService.setTheme('ocean'); $event.stopPropagation()" aria-label="Tema brisa marina" class="w-4 h-4 rounded-full bg-[#0E7490] transition-all hover:scale-125 ring-offset-2 ring-[#0E7490]/40 cursor-pointer outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'ocean'" title="Brisa Marina"></button>
-                            <button (click)="themeService.setTheme('terracotta'); $event.stopPropagation()" aria-label="Tema terracota arena" class="w-4 h-4 rounded-full bg-[#C2410C] transition-all hover:scale-125 ring-offset-2 ring-[#C2410C]/40 cursor-pointer outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'terracotta'" title="Terracota"></button>
                         </div>
                     } @else {
                         <!-- Botón de paleta para sidebar colapsado con dropdown lateral -->
@@ -154,12 +152,6 @@
                             </button>
                             <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'purple'" [class.dark:bg-white/10]="themeService.theme() === 'purple'" title="Lavanda" aria-label="Tema lavanda zen">
                                 <span class="w-5 h-5 rounded-full bg-[#5C6BC0]"></span>
-                            </button>
-                            <button (click)="themeService.setTheme('ocean'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'ocean'" [class.dark:bg-white/10]="themeService.theme() === 'ocean'" title="Brisa Marina" aria-label="Tema brisa marina">
-                                <span class="w-5 h-5 rounded-full bg-[#0E7490]"></span>
-                            </button>
-                            <button (click)="themeService.setTheme('terracotta'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'terracotta'" [class.dark:bg-white/10]="themeService.theme() === 'terracotta'" title="Terracota" aria-label="Tema terracota arena">
-                                <span class="w-5 h-5 rounded-full bg-[#C2410C]"></span>
                             </button>
                         </div>
                     }
@@ -215,12 +207,6 @@
                                 </button>
                                 <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-11 h-11 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'purple'" [class.dark:bg-white/10]="themeService.theme() === 'purple'" title="Lavanda" aria-label="Tema lavanda zen">
                                     <span class="w-5 h-5 rounded-full bg-[#5C6BC0] ring-offset-2 ring-[#5C6BC0]/40" [class.ring-2]="themeService.theme() === 'purple'"></span>
-                                </button>
-                                <button (click)="themeService.setTheme('ocean'); $event.stopPropagation()" class="w-11 h-11 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'ocean'" [class.dark:bg-white/10]="themeService.theme() === 'ocean'" title="Brisa Marina" aria-label="Tema brisa marina">
-                                    <span class="w-5 h-5 rounded-full bg-[#0E7490] ring-offset-2 ring-[#0E7490]/40" [class.ring-2]="themeService.theme() === 'ocean'"></span>
-                                </button>
-                                <button (click)="themeService.setTheme('terracotta'); $event.stopPropagation()" class="w-11 h-11 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'terracotta'" [class.dark:bg-white/10]="themeService.theme() === 'terracotta'" title="Terracota" aria-label="Tema terracota arena">
-                                    <span class="w-5 h-5 rounded-full bg-[#C2410C] ring-offset-2 ring-[#C2410C]/40" [class.ring-2]="themeService.theme() === 'terracotta'"></span>
                                 </button>
                             </div>
                         </button>

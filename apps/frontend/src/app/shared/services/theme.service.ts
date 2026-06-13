@@ -1,7 +1,7 @@
 import { Injectable, signal, effect, inject } from '@angular/core';
 import { StorageService } from './storage.service';
 
-export type ThemeType = 'light' | 'dark' | 'vibrant' | 'purple' | 'ocean' | 'terracotta';
+export type ThemeType = 'light' | 'dark' | 'vibrant' | 'purple';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +39,7 @@ export class ThemeService {
     root.classList.add('no-transitions');
     
     // Remove all theme classes
-    root.classList.remove('dark', 'theme-vibrant', 'theme-purple', 'theme-soft', 'theme-ocean', 'theme-terracotta');
+    root.classList.remove('dark', 'theme-vibrant', 'theme-purple', 'theme-soft');
     
     // Add the selected one (unless it's light which is the default)
     if (newTheme !== 'light') {
