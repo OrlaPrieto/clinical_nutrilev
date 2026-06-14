@@ -262,9 +262,9 @@
 
         <!-- Tab 1: Clínica / Antecedentes Compacto -->
         @if (activeTab() === 1) {
-            <div class="space-y-6 animate-fade-up">
+            <div class="space-y-4 md:space-y-6 animate-fade-up">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
+                    <div class="bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                         <app-m-detail-field
                             label="Patologías"
                             [value]="patient()?.antecedentes_patologicos"
@@ -286,7 +286,7 @@
                             </app-m-detail-field>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
+                    <div class="bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                         <app-m-detail-field
                             label="Medicamentos"
                             [value]="patient()?.medicamentos"
@@ -316,19 +316,21 @@
                                 (valueChange)="patient().cirugias = $event">
                             </app-m-detail-field>
                         </div>
-                        <app-m-detail-field
-                            label="Familiar"
-                            [value]="patient()?.antecedentes_familiares"
-                            icon="groups"
-                            [isEditing]="isEditing()"
-                            type="textarea"
-                            placeholder="Antecedentes familiares..."
-                            (valueChange)="patient().antecedentes_familiares = $event">
-                        </app-m-detail-field>
+                        <div class="border-t border-nutri-rose/[0.03] pt-4">
+                            <app-m-detail-field
+                                label="Familiar"
+                                [value]="patient()?.antecedentes_familiares"
+                                icon="groups"
+                                [isEditing]="isEditing()"
+                                type="textarea"
+                                placeholder="Antecedentes familiares..."
+                                (valueChange)="patient().antecedentes_familiares = $event">
+                            </app-m-detail-field>
+                        </div>
                     </div>
                 </div>
     
-                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm transition-colors">
+                <div class="bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm transition-colors">
                     <app-m-detail-field
                         label="Laboratorios"
                         [value]="patient()?.laboratorios"

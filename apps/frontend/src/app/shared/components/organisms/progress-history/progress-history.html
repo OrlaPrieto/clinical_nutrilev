@@ -239,63 +239,63 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-nutri-rose/5 dark:border-white/5 bg-nutri-bg/20 dark:bg-white/5">
-                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Fecha</th>
-                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Peso</th>
-                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Grasa</th>
-                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Músculo</th>
-                                <th class="p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60 text-center">Acciones</th>
+                                <th class="p-2 sm:p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Fecha</th>
+                                <th class="p-2 sm:p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Peso</th>
+                                <th class="p-2 sm:p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Grasa</th>
+                                <th class="p-2 sm:p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60">Músculo</th>
+                                <th class="p-2 sm:p-4 text-[8px] font-black uppercase tracking-widest text-nutri-rose/60 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-nutri-rose/5 dark:divide-white/5">
                             @for (record of history().slice(0, visibleCount()); track record.id; let i = $index) {
                                 <tr class="hover:bg-nutri-bg/10 dark:hover:bg-white/[0.02] transition-colors group">
-                                    <td class="p-4">
+                                    <td class="p-2 sm:p-4">
                                         <div class="flex flex-col">
-                                            <span class="text-xs font-black dark:text-slate-200">{{ record.date | date:'dd MMM' }}</span>
-                                            <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ record.date | date:'yyyy' }}</span>
+                                            <span class="text-[10px] sm:text-xs font-black dark:text-slate-200">{{ record.date | date:'dd MMM' }}</span>
+                                            <span class="text-[7px] sm:text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ record.date | date:'yyyy' }}</span>
                                         </div>
                                     </td>
-                                    <td class="p-4">
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-sm font-black dark:text-slate-200">{{ record.weight }}kg</span>
+                                    <td class="p-2 sm:p-4">
+                                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                            <span class="text-xs sm:text-sm font-black dark:text-slate-200">{{ record.weight }}kg</span>
                                             @if (calculateDelta(record, history()[i + 1], 'weight'); as delta) {
-                                                <div class="flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm" [ngClass]="getDeltaColor(delta, 'weight', 'bg')">
-                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" size="10px" [customClass]="getDeltaColor(delta, 'weight', 'text')"></app-a-icon>
-                                                    <span class="text-[9px] font-black" [ngClass]="getDeltaColor(delta, 'weight', 'text')">
+                                                <div class="flex items-center gap-0.5 px-1 py-0.2 sm:px-2 sm:py-0.5 rounded-full shadow-sm text-[8px] sm:text-[9px] font-black w-max" [ngClass]="getDeltaColor(delta, 'weight', 'bg')">
+                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" [size]="'8px'" [customClass]="getDeltaColor(delta, 'weight', 'text')"></app-a-icon>
+                                                    <span [ngClass]="getDeltaColor(delta, 'weight', 'text')">
                                                         {{ delta | number:'1.1-1' }}
                                                     </span>
                                                 </div>
                                             }
                                         </div>
                                     </td>
-                                    <td class="p-4">
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-sm font-black dark:text-slate-200">{{ record.body_fat }}%</span>
+                                    <td class="p-2 sm:p-4">
+                                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                            <span class="text-xs sm:text-sm font-black dark:text-slate-200">{{ record.body_fat }}%</span>
                                             @if (calculateDelta(record, history()[i + 1], 'body_fat'); as delta) {
-                                                <div class="flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm" [ngClass]="getDeltaColor(delta, 'body_fat', 'bg')">
-                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" size="10px" [customClass]="getDeltaColor(delta, 'body_fat', 'text')"></app-a-icon>
-                                                    <span class="text-[9px] font-black" [ngClass]="getDeltaColor(delta, 'body_fat', 'text')">
+                                                <div class="flex items-center gap-0.5 px-1 py-0.2 sm:px-2 sm:py-0.5 rounded-full shadow-sm text-[8px] sm:text-[9px] font-black w-max" [ngClass]="getDeltaColor(delta, 'body_fat', 'bg')">
+                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" [size]="'8px'" [customClass]="getDeltaColor(delta, 'body_fat', 'text')"></app-a-icon>
+                                                    <span [ngClass]="getDeltaColor(delta, 'body_fat', 'text')">
                                                         {{ delta | number:'1.1-1' }}
                                                     </span>
                                                 </div>
                                             }
                                         </div>
                                     </td>
-                                    <td class="p-4">
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-sm font-black dark:text-slate-200">{{ record.muscle_mass }}kg</span>
+                                    <td class="p-2 sm:p-4">
+                                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                            <span class="text-xs sm:text-sm font-black dark:text-slate-200">{{ record.muscle_mass }}kg</span>
                                             @if (calculateDelta(record, history()[i + 1], 'muscle_mass'); as delta) {
-                                                <div class="flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm" [ngClass]="getDeltaColor(delta, 'muscle_mass', 'bg')">
-                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" size="10px" [customClass]="getDeltaColor(delta, 'muscle_mass', 'text')"></app-a-icon>
-                                                    <span class="text-[9px] font-black" [ngClass]="getDeltaColor(delta, 'muscle_mass', 'text')">
+                                                <div class="flex items-center gap-0.5 px-1 py-0.2 sm:px-2 sm:py-0.5 rounded-full shadow-sm text-[8px] sm:text-[9px] font-black w-max" [ngClass]="getDeltaColor(delta, 'muscle_mass', 'bg')">
+                                                    <app-a-icon [name]="delta > 0 ? 'trending_up' : 'trending_down'" [size]="'8px'" [customClass]="getDeltaColor(delta, 'muscle_mass', 'text')"></app-a-icon>
+                                                    <span [ngClass]="getDeltaColor(delta, 'muscle_mass', 'text')">
                                                         {{ delta | number:'1.1-1' }}
                                                     </span>
                                                 </div>
                                             }
                                         </div>
                                     </td>
-                                    <td class="p-4">
-                                        <div class="flex items-center justify-center gap-2">
+                                    <td class="p-2 sm:p-4">
+                                        <div class="flex items-center justify-center gap-1 sm:gap-2">
                                             <!-- Hidden Container for copying from table list -->
                                             <div #hiddenCardContainerTable class="fixed top-0 left-0 w-[1000px] pointer-events-none" style="display: none; z-index: -9999; opacity: 0;">
                                                 <div class="progress-analytic-card-container bg-white dark:bg-[#080808] p-8 w-full">
@@ -303,19 +303,19 @@
                                                 </div>
                                             </div>
                                             <button (click)="selectedRecordForDetail.set(record)"
-                                                    class="p-2 rounded-xl bg-nutri-bg dark:bg-white/5 text-nutri-rose/40 hover:text-nutri-rose transition-colors"
+                                                    class="p-1.5 sm:p-2 rounded-xl bg-nutri-bg dark:bg-white/5 text-nutri-rose/40 hover:text-nutri-rose transition-colors"
                                                     title="Ver detalle">
-                                                <app-a-icon name="visibility" size="18px"></app-a-icon>
+                                                <app-a-icon name="visibility" [size]="'16px'"></app-a-icon>
                                             </button>
                                             @if (showActions()) {
                                                 <button (click)="copyProgressAsImage(record, hiddenCardContainerTable)"
                                                         [disabled]="copyingRecordId() === (record.id || record.date)"
-                                                        class="p-2 rounded-xl bg-nutri-bg dark:bg-white/5 text-nutri-rose/40 hover:text-nutri-rose transition-colors"
+                                                        class="p-1.5 sm:p-2 rounded-xl bg-nutri-bg dark:bg-white/5 text-nutri-rose/40 hover:text-nutri-rose transition-colors"
                                                         title="Copiar reporte como imagen">
-                                                    <app-a-icon name="content_copy" size="18px"></app-a-icon>
+                                                    <app-a-icon name="content_copy" [size]="'16px'"></app-a-icon>
                                                 </button>
-                                                <button class="p-2 rounded-xl bg-nutri-rose/5 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all">
-                                                    <app-a-icon name="edit" size="18px"></app-a-icon>
+                                                <button class="p-1.5 sm:p-2 rounded-xl bg-nutri-rose/5 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all">
+                                                    <app-a-icon name="edit" [size]="'16px'"></app-a-icon>
                                                 </button>
                                             }
                                         </div>
@@ -349,32 +349,32 @@
         <div class="relative w-full md:max-w-5xl h-[85vh] md:h-auto max-h-[85vh] md:max-h-[92vh] bg-white dark:bg-[#0d0d0d] rounded-t-[2rem] md:rounded-[2.5rem] shadow-2xl border-t border-x md:border border-nutri-rose/10 dark:border-white/10 flex flex-col overflow-hidden animate-fade-up md:animate-scale-up">
             
             <!-- Premium Header Redesign -->
-            <div class="px-4 py-4 sm:px-8 sm:py-6 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent dark:from-nutri-rose/5 border-b border-nutri-rose/5 dark:border-white/5 relative overflow-hidden shrink-0">
+            <div class="px-4 py-4 sm:px-8 sm:py-6 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent dark:from-nutri-rose/5 border-b border-nutri-rose/5 dark:border-white/5 relative overflow-hidden shrink-0 pr-14 sm:pr-8">
                 <!-- Decoration -->
                 <div class="absolute -right-20 -top-20 w-48 h-48 bg-nutri-rose/5 rounded-full blur-3xl"></div>
                 
-                <div class="flex items-center justify-between gap-4 relative z-10">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10 w-full">
                     <!-- Left: Date & Patient Info -->
-                    <div class="flex items-center gap-4 sm:gap-5">
+                    <div class="flex items-center gap-3 sm:gap-5 w-full">
                         <!-- Compact Date Badge -->
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white dark:bg-white/5 border border-nutri-rose/10 shadow-xl flex flex-col items-center justify-center text-nutri-rose shrink-0">
-                            <span class="text-lg sm:text-2xl font-black leading-none">{{ record.date | date:'dd' }}</span>
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white dark:bg-white/5 border border-nutri-rose/10 shadow-xl flex flex-col items-center justify-center text-nutri-rose shrink-0 animate-scale-up">
+                            <span class="text-base sm:text-2xl font-black leading-none">{{ record.date | date:'dd' }}</span>
                             <span class="text-[7px] sm:text-[9px] font-black uppercase leading-none mt-0.5 sm:mt-1">{{ record.date | date:'MMM' }}</span>
                             <span class="text-[6px] sm:text-[8px] font-bold text-nutri-text/30 dark:text-slate-500 mt-0.5 sm:mt-1">{{ record.date | date:'yyyy' }}</span>
                         </div>
                         
-                        <div>
+                        <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-0.5 sm:mb-1">
-                                <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-slate-100 tracking-tight leading-none">{{ patient()?.nombre || 'Expediente Clínico' }}</h3>
+                                <h3 class="text-lg sm:text-2xl font-bold serif text-nutri-text dark:text-slate-100 tracking-tight leading-none truncate max-w-full">{{ patient()?.nombre || 'Expediente Clínico' }}</h3>
                                 <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose text-[7px] sm:text-[8px] font-black uppercase tracking-widest rounded-lg">Análisis Detallado</span>
                             </div>
                             @if (isEditing()) {
-                                <div class="flex items-center gap-2 mt-2">
+                                <div class="flex items-center gap-2 mt-1.5">
                                     <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Fecha:</span>
                                     <input type="date"
                                            [ngModel]="editableRecord()?.date | date:'yyyy-MM-dd'"
                                            (ngModelChange)="updateEditableField('date', $event)"
-                                           class="bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-lg px-2 py-1 text-xs font-bold text-nutri-text dark:text-slate-200 outline-none transition-all">
+                                           class="bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-lg px-2 py-0.5 text-xs font-bold text-nutri-text dark:text-slate-200 outline-none transition-all">
                                 </div>
                             } @else {
                                 <div class="flex items-center gap-4 text-[9px] sm:text-[10px] font-medium text-nutri-text/40 dark:text-slate-500 italic">
@@ -387,8 +387,8 @@
                         </div>
                     </div>
                     
-                    <!-- Right: Actions -->
-                    <div class="flex items-center gap-3">
+                    <!-- Actions Row (border top visual separator in mobile) -->
+                    <div class="flex items-center justify-start sm:justify-end gap-2.5 w-full sm:w-auto border-t border-nutri-rose/[0.04] dark:border-white/5 pt-3 sm:border-t-0 sm:pt-0 shrink-0">
                         @if (showActions()) {
                             @if (isEditing()) {
                                 <app-a-button variant="outline" size="md" icon="close"
@@ -411,34 +411,39 @@
                                              customClass="!rounded-xl !bg-white dark:!bg-white/5 !border-nutri-rose/20 !text-nutri-rose shadow-sm hidden sm:flex"></app-a-button>
                             }
                             
-                            <!-- Mobile versions of buttons -->
+                            <!-- Mobile versions of buttons (more compact, full functionality) -->
                             @if (isEditing()) {
                                 <button (click)="cancelEdit()"
-                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 sm:hidden">
-                                    <app-a-icon name="close" customClass="!text-xl"></app-a-icon>
+                                        class="flex-1 sm:flex-none h-9 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 sm:hidden">
+                                    <app-a-icon name="close" customClass="!text-base"></app-a-icon>
+                                    <span>Cancelar</span>
                                 </button>
                                 <button (click)="saveEdit()"
-                                        class="w-10 h-10 rounded-xl bg-nutri-rose flex items-center justify-center text-white sm:hidden shadow-lg shadow-nutri-rose/20">
-                                    <app-a-icon name="save" customClass="!text-xl"></app-a-icon>
+                                        class="flex-1 sm:flex-none h-9 rounded-xl bg-nutri-rose flex items-center justify-center gap-1.5 text-xs font-bold text-white sm:hidden shadow-lg shadow-nutri-rose/20">
+                                    <app-a-icon name="save" customClass="!text-base"></app-a-icon>
+                                    <span>Guardar</span>
                                 </button>
                             } @else {
                                 <button (click)="startEdit(record)"
-                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center text-nutri-rose sm:hidden">
-                                    <app-a-icon name="edit" customClass="!text-xl"></app-a-icon>
+                                        class="flex-1 sm:flex-none h-9 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center gap-1.5 text-xs font-bold text-nutri-rose sm:hidden">
+                                    <app-a-icon name="edit" customClass="!text-base"></app-a-icon>
+                                    <span>Editar</span>
                                 </button>
                                 <button (click)="copyProgressAsImage(record, hiddenCardContainerSlide)"
-                                        class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center text-nutri-rose sm:hidden">
-                                    <app-a-icon name="content_copy" customClass="!text-xl"></app-a-icon>
+                                        class="flex-1 sm:flex-none h-9 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/20 flex items-center justify-center gap-1.5 text-xs font-bold text-nutri-rose sm:hidden">
+                                    <app-a-icon name="content_copy" customClass="!text-base"></app-a-icon>
+                                    <span>Copiar</span>
                                 </button>
                             }
                         }
-                        
-                        <button (click)="closeModal()" 
-                                class="w-10 h-10 rounded-xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm">
-                            <app-a-icon name="close" customClass="!text-xl"></app-a-icon>
-                        </button>
                     </div>
                 </div>
+                
+                <!-- Close Modal Button (Absolute positioned) -->
+                <button (click)="closeModal()" 
+                        class="absolute top-4 right-4 sm:top-6 sm:right-8 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm z-20 cursor-pointer">
+                    <app-a-icon name="close" customClass="!text-lg"></app-a-icon>
+                </button>
             </div>
  
             <!-- Content Area -->
@@ -488,11 +493,11 @@
                                     @for (field of section.fields; track field.key) {
                                         @if (isEditing() || record[field.key]) {
                                             <div class="p-3 xs:p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
-                                                <div class="flex items-center justify-between mb-2">
-                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">{{ field.label }}</span>
+                                                <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-1 mb-2">
+                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate xs:whitespace-normal">{{ field.label }}</span>
                                                     @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                         @if (calculateDelta(record, prev, field.key); as delta) {
-                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm" [ngClass]="getDeltaColor(delta, field.key)">
+                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm w-max shrink-0" [ngClass]="getDeltaColor(delta, field.key)">
                                                                 {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
                                                              </span>
                                                         }
@@ -561,11 +566,11 @@
                                     @for (field of section.fields; track field.key) {
                                         @if (isEditing() || record[field.key]) {
                                             <div class="p-3 xs:p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
-                                                <div class="flex items-center justify-between mb-2">
-                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">{{ field.label }}</span>
+                                                <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-1 mb-2">
+                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate xs:whitespace-normal">{{ field.label }}</span>
                                                     @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                         @if (calculateDelta(record, prev, field.key); as delta) {
-                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm" [ngClass]="getDeltaColor(delta, field.key)">
+                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm w-max shrink-0" [ngClass]="getDeltaColor(delta, field.key)">
                                                                 {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
                                                             </span>
                                                         }
@@ -618,7 +623,7 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="px-12 py-6 bg-white dark:bg-[#0d0d0d] border-t border-nutri-rose/5 dark:border-white/5 flex items-center justify-between shrink-0">
+            <div class="hidden md:flex px-12 py-6 bg-white dark:bg-[#0d0d0d] border-t border-nutri-rose/5 dark:border-white/5 items-center justify-between shrink-0">
                 <div class="flex items-center gap-4">
                     <p class="text-[9px] font-black text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.4em]">Nutrilev Intelligence System</p>
                 </div>

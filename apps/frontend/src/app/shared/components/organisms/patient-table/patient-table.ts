@@ -16,9 +16,19 @@ import { environment } from '../../../../../environments/environment';
 export class PatientTableOrganism {
   patients = input.required<Patient[]>();
   activeTooltipId = signal<string | null>(null);
+  expandedPatientId = signal<string | null>(null);
 
   view = output<Patient>();
   delete = output<Patient>();
+
+  toggleExpand(patientId: string, event: Event) {
+    event.stopPropagation();
+    if (this.expandedPatientId() === patientId) {
+      this.expandedPatientId.set(null);
+    } else {
+      this.expandedPatientId.set(patientId);
+    }
+  }
 
   toggleTooltip(id: string, event: Event) {
     event.stopPropagation();

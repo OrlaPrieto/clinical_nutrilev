@@ -178,7 +178,7 @@
 <!-- Mobile Card View -->
 <div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-4 space-y-4 animate-fade-up scroll-premium lg:hidden text-left">
   @for (patient of patients(); track patient.email || $index; let i = $index) {
-    <div class="bg-white dark:bg-[#111111] rounded-3xl p-6 shadow-nutri border border-nutri-rose/5 dark:border-white/5 space-y-4 transition-all duration-300"
+    <div class="bg-white dark:bg-[#111111] rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 shadow-nutri border border-nutri-rose/5 dark:border-white/5 space-y-3.5 transition-all duration-300"
          [ngClass]="{
             'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40 border-gray-300/50 dark:border-gray-700/50': patient.dado_de_baja,
             '!bg-amber-50/40 dark:!bg-amber-500/5 border-amber-200/50 dark:border-amber-500/10': !patient.acceso_portal && !patient.dado_de_baja
@@ -190,7 +190,7 @@
           <div class="flex items-center gap-0.5 transition-all duration-300"
                [ngClass]="getMenuStatus(patient) !== 'none' ? 'group/menu relative cursor-pointer active:scale-90' : 'opacity-20 grayscale pointer-events-none'"
                (click)="patient.menu_url && openMenu(patient.menu_url, $event)">
-            <div class="w-1 h-1 rounded-full" 
+            <div class="w-1.5 h-1.5 rounded-full" 
               [ngClass]="getMenuStatus(patient) === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'">
             </div>
             <app-a-icon name="restaurant_menu" 
@@ -207,33 +207,84 @@
 
           <div>
             <div class="flex items-center gap-2">
-              <p class="font-bold text-nutri-text dark:text-slate-200 serif text-lg leading-tight">{{ patient.nombre }}</p>
+              <p class="font-bold text-nutri-text dark:text-slate-200 serif text-base sm:text-lg leading-tight">{{ patient.nombre }}</p>
               @if (patient.dado_de_baja) {
                 <app-a-badge label="BAJA" variant="danger" size="sm" icon="person_off"></app-a-badge>
               } @else if (!patient.acceso_portal) {
-                <app-a-badge label="PENDIENTE" variant="warning" size="sm" icon="schedule"></app-a-badge>
+                <app-a-badge label="PENDIENTE" variant="warning" size="sm" icon="schedule" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
               }
             </div>
-            <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>
+            <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5">{{ patient.fecha_nacimiento || '---' }}</p>
           </div>
         </div>
       </div>
 
-      <div class="p-4 bg-nutri-bg dark:bg-white/5 rounded-2xl space-y-2">
+      <div class="p-3.5 bg-nutri-bg/40 dark:bg-white/5 rounded-xl space-y-2 text-left border border-nutri-rose/[0.03] dark:border-white/[0.02]">
         <div>
-          <p class="text-[9px] font-black text-nutri-rose/40 dark:text-nutri-rose/60 uppercase tracking-widest">Motivo de Consulta</p>
-          <p class="text-xs text-nutri-text/60 dark:text-slate-400 font-medium line-clamp-2 leading-relaxed">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
+          <p class="text-[8px] font-black text-nutri-rose/50 dark:text-nutri-rose/65 uppercase tracking-widest mb-0.5">Motivo de Consulta</p>
+          <p class="text-xs text-nutri-text/70 dark:text-slate-400 font-medium line-clamp-2 leading-relaxed">{{ patient.motivos_consulta || 'Sin especificar' }}</p>
         </div>
         
         @if (patient.alimentos_preferidos || patient.alimentos_no_agradan) {
           <div class="pt-2 border-t border-nutri-rose/5 dark:border-white/5">
-            <p class="text-[9px] font-black text-emerald-600/40 dark:text-emerald-400/60 uppercase tracking-widest mb-1">Preferencias</p>
-            <p class="text-[10px] text-nutri-text/50 dark:text-slate-500 italic line-clamp-1">{{ patient.alimentos_preferidos || 'No especificado' }}</p>
+            <p class="text-[8px] font-black text-emerald-600/50 dark:text-emerald-400/60 uppercase tracking-widest mb-0.5">Preferencias</p>
+            <p class="text-[10px] text-nutri-text/60 dark:text-slate-500 italic line-clamp-1 font-medium">{{ patient.alimentos_preferidos || 'No especificado' }}</p>
           </div>
         }
       </div>
 
-      <div class="flex items-center gap-3">
+      <!-- Botón de Expansión de Detalles -->
+      <button (click)="toggleExpand(patient.email || '', $event)"
+              class="w-full flex items-center justify-between py-2 px-3.5 bg-nutri-bg/30 dark:bg-white/5 hover:bg-nutri-rose/[0.04] dark:hover:bg-white/[0.08] rounded-xl transition-all group duration-300 border border-nutri-rose/[0.02] dark:border-white/[0.02] cursor-pointer">
+        <span class="text-[8.5px] font-black uppercase tracking-widest text-nutri-text/50 dark:text-slate-400 group-hover:text-nutri-rose transition-colors">
+          {{ expandedPatientId() === patient.email ? 'Ocultar Información' : 'Ver Información Completa' }}
+        </span>
+        <app-a-icon [name]="expandedPatientId() === patient.email ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" 
+                    [customClass]="(expandedPatientId() === patient.email ? 'text-nutri-rose' : 'text-nutri-text/30') + ' text-base group-hover:text-nutri-rose transition-colors'"></app-a-icon>
+      </button>
+
+      <!-- Panel de Detalles Expandible -->
+      @if (expandedPatientId() === patient.email) {
+        <div class="space-y-3 pt-3.5 border-t border-nutri-rose/10 dark:border-white/10 animate-fade-down text-left">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="p-3 bg-nutri-bg/20 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/[0.02] rounded-xl">
+              <span class="text-[7.5px] font-black text-nutri-rose/60 dark:text-nutri-rose/85 uppercase tracking-widest block mb-0.5">Correo Electrónico</span>
+              <a [href]="'mailto:' + patient.email" class="text-xs font-semibold text-nutri-text dark:text-slate-300 hover:text-nutri-rose truncate block">{{ patient.email || '---' }}</a>
+            </div>
+            <div class="p-3 bg-nutri-bg/20 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/[0.02] rounded-xl">
+              <span class="text-[7.5px] font-black text-nutri-rose/60 dark:text-nutri-rose/85 uppercase tracking-widest block mb-0.5">Edad / Cumpleaños</span>
+              <span class="text-xs font-bold text-nutri-text dark:text-slate-300">{{ patient.edad ? patient.edad + ' años' : '---' }} ({{ patient.fecha_nacimiento }})</span>
+            </div>
+          </div>
+
+          <!-- Preferencias Alimentarias Completas -->
+          <div class="p-3.5 bg-emerald-500/[0.01] dark:bg-emerald-950/5 border border-emerald-500/10 dark:border-emerald-500/5 rounded-xl space-y-2.5">
+            <span class="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.15em] block border-b border-emerald-500/5 pb-1">Preferencia Alimenticia</span>
+            <div class="space-y-2">
+              <div>
+                <span class="text-[7px] font-black text-emerald-600/75 dark:text-emerald-400/80 uppercase tracking-widest block">Favoritos</span>
+                <p class="text-[11px] text-emerald-950/80 dark:text-slate-300 font-medium leading-relaxed italic mt-0.5">{{ patient.alimentos_preferidos || 'Sin especificar' }}</p>
+              </div>
+              <div class="border-t border-emerald-500/5 pt-1.5">
+                <span class="text-[7px] font-black text-rose-500/75 dark:text-rose-400/80 uppercase tracking-widest block">Alimentos que Evita</span>
+                <p class="text-[11px] text-rose-950/80 dark:text-slate-300 font-medium leading-relaxed italic mt-0.5">{{ patient.alimentos_no_agradan || 'Sin especificar' }}</p>
+              </div>
+              <div class="border-t border-emerald-500/5 pt-1.5">
+                <span class="text-[7px] font-black text-amber-600/75 dark:text-amber-500/80 uppercase tracking-widest block">Alergias</span>
+                <p class="text-[11px] text-amber-950/80 dark:text-slate-300 font-medium leading-relaxed italic mt-0.5">{{ patient.alergias_alimentarias || 'Ninguna' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notas Clínicas -->
+          <div class="p-3.5 bg-nutri-bg/20 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/[0.02] rounded-xl space-y-1">
+            <span class="text-[7.5px] font-black text-nutri-rose/60 dark:text-nutri-rose/85 uppercase tracking-widest block border-b border-nutri-rose/5 dark:border-white/5 pb-1">Notas Clínicas del Paciente</span>
+            <p class="text-[11px] text-nutri-text/80 dark:text-slate-300 font-medium leading-relaxed whitespace-pre-wrap mt-1">{{ patient.notas || 'Sin notas registradas.' }}</p>
+          </div>
+        </div>
+      }
+
+      <div class="flex items-center gap-3 pt-1">
         <app-a-button 
           variant="primary" 
           size="md" 
