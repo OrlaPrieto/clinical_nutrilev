@@ -27,6 +27,7 @@ export class PatientDetailComponent implements OnInit {
   saving = signal<boolean>(false);
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
+  headerCollapsed = signal<boolean>(false);
   saved = output<void>();
   
   fruitImages = [
@@ -70,6 +71,9 @@ export class PatientDetailComponent implements OnInit {
   ngOnInit() {
     this.assignPersistentFruit();
     this.loadProgress();
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      this.headerCollapsed.set(true);
+    }
   }
 
   assignPersistentFruit() {

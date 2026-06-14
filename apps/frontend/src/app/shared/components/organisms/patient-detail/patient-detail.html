@@ -4,102 +4,133 @@
     <!-- Sticky Header & Tabs Group -->
     <div class="flex-none sticky top-0 z-[100] bg-white dark:bg-[#0b0b0b] shadow-sm transition-colors duration-300">
         <!-- Profile Banner -->
-        <div class="pt-6 pb-6 px-10 relative overflow-hidden">
+        <div class="relative overflow-hidden transition-all duration-300 border-b border-nutri-rose/5 dark:border-white/5"
+             [class.pt-6]="!headerCollapsed()"
+             [class.pb-6]="!headerCollapsed()"
+             [class.px-10]="!headerCollapsed()"
+             [class.py-3]="headerCollapsed()"
+             [class.px-6]="headerCollapsed()">
             <!-- Background Decoration (Fruit Image) -->
-            <div class="absolute right-[-2rem] top-[-2rem] w-64 h-64 opacity-[0.07] pointer-events-none rotate-12 transition-all duration-1000">
-                <img [src]="randomFruit()" class="w-full h-full object-cover rounded-full" alt="decoration">
-            </div>
+            @if (!headerCollapsed()) {
+                <div class="absolute right-[-2rem] top-[-2rem] w-64 h-64 opacity-[0.07] pointer-events-none rotate-12 transition-all duration-1000">
+                    <img [src]="randomFruit()" class="w-full h-full object-cover rounded-full" alt="decoration">
+                </div>
+            }
 
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative pr-12 md:pr-16">
-                <div class="flex items-center gap-6">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 relative pr-12 md:pr-16">
+                <div class="flex items-center gap-3 md:gap-6 min-w-0 w-full md:w-auto">
                     <!-- Fruit Icon (Instead of Initial) -->
-                    <div class="w-16 h-16 rounded-2xl bg-nutri-rose/5 border border-nutri-rose/10 flex items-center justify-center shadow-sm overflow-hidden group">
-                         <img [src]="randomFruit()" class="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt="fruit">
+                    <div class="rounded-2xl bg-nutri-rose/5 border border-nutri-rose/10 flex items-center justify-center shadow-sm overflow-hidden group shrink-0 transition-all duration-300"
+                         [class.w-16]="!headerCollapsed()"
+                         [class.h-16]="!headerCollapsed()"
+                         [class.w-9]="headerCollapsed()"
+                         [class.h-9]="headerCollapsed()">
+                          <img [src]="randomFruit()" class="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt="fruit">
                     </div>
 
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-3">
+                    <div class="space-y-1 min-w-0 flex-1">
+                        <div class="flex items-center gap-2 md:gap-3 flex-wrap">
                             @if (!isEditing()) {
-                                <h2 class="text-2xl font-bold serif text-nutri-text dark:text-slate-100 tracking-tight">{{patient()?.nombre}}</h2>
+                                <h2 class="font-bold serif text-nutri-text dark:text-slate-100 tracking-tight truncate transition-all duration-300"
+                                    [class.text-2xl]="!headerCollapsed()"
+                                    [class.text-base]="headerCollapsed()">
+                                    {{patient()?.nombre}}
+                                </h2>
                             } @else {
                                 <app-a-input [value]="patient().nombre" (valueChange)="patient().nombre = $event" 
-                                            customClass="w-full"
-                                            inputClass="!text-2xl !font-bold !serif !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto">
+                                            customClass="w-full max-w-[240px] md:max-w-md"
+                                            [inputClass]="'!font-bold !serif !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto ' + (headerCollapsed() ? '!text-base' : '!text-2xl')">
                                 </app-a-input>
                             }
+
+                            <!-- Collapse/Expand Trigger Button -->
+                            <button (click)="headerCollapsed.set(!headerCollapsed())" 
+                                    class="w-7 h-7 rounded-full hover:bg-nutri-rose/5 dark:hover:bg-white/5 text-nutri-text/30 dark:text-slate-500 hover:text-nutri-rose dark:hover:text-nutri-rose flex items-center justify-center transition-colors cursor-pointer outline-none shrink-0"
+                                    [title]="headerCollapsed() ? 'Expandir cabecera' : 'Colapsar cabecera'"
+                                    [aria-label]="headerCollapsed() ? 'Expandir cabecera' : 'Colapsar cabecera'">
+                                <app-a-icon [name]="headerCollapsed() ? 'unfold_more' : 'unfold_less'" size="16px"></app-a-icon>
+                            </button>
                             
-                            @if (patient()?.ultima_actualizacion) {
+                            @if (!headerCollapsed() && patient()?.ultima_actualizacion) {
                                 <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-500 uppercase tracking-widest mt-1 border-l border-nutri-rose/20 pl-3">
                                     Act: {{ patient()?.ultima_actualizacion | date:'dd/MM/yy' }}
                                 </span>
                             }
                         </div>
                         
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose font-black tracking-widest uppercase text-[8px] rounded-md">Expediente</span>
-                                @if (patient()?.dado_de_baja) {
-                                    <app-a-badge label="INACTIVO" variant="danger" size="sm"></app-a-badge>
-                                } @else if (!patient()?.acceso_portal) {
-                                    <app-a-badge label="PENDIENTE" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
-                                }
+                        @if (!headerCollapsed()) {
+                            <div class="flex flex-wrap items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose font-black tracking-widest uppercase text-[8px] rounded-md">Expediente</span>
+                                    @if (patient()?.dado_de_baja) {
+                                        <app-a-badge label="INACTIVO" variant="danger" size="sm"></app-a-badge>
+                                    } @else if (!patient()?.acceso_portal) {
+                                        <app-a-badge label="PENDIENTE" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
+                                    }
+                                </div>
+                                
+                                <div class="flex items-center gap-2 text-[10px] text-nutri-text/50 dark:text-slate-400 font-medium truncate">
+                                    <app-a-icon name="mail" customClass="text-xs opacity-40 flex-shrink-0"></app-a-icon>
+                                    @if (!isEditing()) {
+                                        <span>{{patient()?.email}}</span>
+                                    } @else {
+                                        <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
+                                                    customClass="w-full max-w-[200px]"
+                                                    inputClass="!text-[10px] !font-medium !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto">
+                                        </app-a-input>
+                                    }
+                                </div>
                             </div>
-                            
-                            <div class="flex items-center gap-2 text-[10px] text-nutri-text/50 dark:text-slate-400 font-medium w-full">
-                                <app-a-icon name="mail" customClass="text-xs opacity-40 flex-shrink-0"></app-a-icon>
-                                @if (!isEditing()) {
-                                    <span>{{patient()?.email}}</span>
-                                } @else {
-                                    <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
-                                                customClass="w-full max-w-[200px]"
-                                                inputClass="!text-[10px] !font-medium !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto">
-                                    </app-a-input>
-                                }
-                            </div>
-                        </div>
+                        }
                     </div>
                 </div>
 
                 <!-- Header Actions -->
-                <div class="flex items-center gap-3">
-                    <!-- Files Button -->
-                    <app-a-button (onClick)="showMenuModal.set(true); highlightCopy.set(false)" 
-                                [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
-                                label="Archivos" icon="folder_open" variant="outline" size="md"
-                                customClass="!rounded-xl !border-nutri-rose/20 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white">
-                    </app-a-button>
-
-                    <!-- Edit/Save Button -->
-                    <app-a-button (onClick)="isEditing() ? saveChanges() : toggleEdit()" 
-                                [disabled]="saving()" [loading]="saving()"
-                                [variant]="isEditing() ? 'primary' : 'outline'" 
-                                [icon]="isEditing() ? 'check' : 'edit'"
-                                [label]="isEditing() ? 'Guardar' : 'Editar'" size="md"
-                                [customClass]="isEditing() ? '!rounded-xl !bg-emerald-500 !shadow-lg !shadow-emerald-500/20' : '!rounded-xl !border-nutri-text/10 dark:!border-white/10 dark:!text-slate-300'">
-                    </app-a-button>
-
-                    <!-- Cancel Edit (Only when editing) -->
+                <div class="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto" [class.hidden]="headerCollapsed() && !isEditing()">
                     @if (isEditing()) {
-                        <app-a-button (onClick)="toggleEdit()" variant="ghost" icon="close" size="md"
+                        <app-a-button (onClick)="saveChanges()" 
+                                    [disabled]="saving()" [loading]="saving()"
+                                    variant="primary" 
+                                    icon="check"
+                                    label="Guardar" [size]="headerCollapsed() ? 'sm' : 'md'"
+                                    customClass="!rounded-xl !bg-emerald-500 !shadow-lg !shadow-emerald-500/20">
+                        </app-a-button>
+
+                        <app-a-button (onClick)="toggleEdit()" variant="ghost" icon="close" [size]="headerCollapsed() ? 'sm' : 'md'"
                                     customClass="!rounded-xl !text-rose-500 hover:!bg-rose-50">
                         </app-a-button>
+                    } @else {
+                        <!-- Files Button -->
+                        <app-a-button (onClick)="showMenuModal.set(true); highlightCopy.set(false)" 
+                                    [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
+                                    label="Archivos" icon="folder_open" variant="outline" size="md"
+                                    customClass="!rounded-xl !border-nutri-rose/20 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white">
+                        </app-a-button>
+
+                        <!-- Edit/Save Button -->
+                        <app-a-button (onClick)="toggleEdit()" 
+                                    variant="outline" 
+                                    icon="edit"
+                                    label="Editar" size="md"
+                                    customClass="!rounded-xl !border-nutri-text/10 dark:!border-white/10 dark:!text-slate-300">
+                        </app-a-button>
+
+                        <!-- Portal Access Toggle (Compact) -->
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-nutri-bg/50 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/5 transition-all" [ngClass]="patient()?.acceso_portal ? 'border-emerald-500/20 bg-emerald-500/5' : ''">
+                            <app-a-icon [name]="patient()?.acceso_portal ? 'vpn_key' : 'lock'" size="14px" [customClass]="patient()?.acceso_portal ? 'text-emerald-500' : 'text-amber-500'"></app-a-icon>
+                            <span class="text-[9px] font-black uppercase tracking-widest hidden sm:inline" [ngClass]="patient()?.acceso_portal ? 'text-emerald-500' : 'text-amber-500'">Portal</span>
+                            <input type="checkbox" [(ngModel)]="patient().acceso_portal" (change)="togglePortalAccess()" 
+                                   class="accent-emerald-500 w-4 h-4 cursor-pointer">
+                        </div>
+
+                        <!-- Deactivation Toggle (Compact) -->
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-nutri-bg/50 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/5 transition-all" [ngClass]="patient()?.dado_de_baja ? 'border-rose-500/20 bg-rose-500/5' : ''">
+                            <app-a-icon [name]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'" size="14px" [customClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-blue-500'"></app-a-icon>
+                            <span class="text-[9px] font-black uppercase tracking-widest hidden sm:inline" [ngClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-blue-500'">{{ patient()?.dado_de_baja ? 'Baja' : 'Activo' }}</span>
+                            <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" 
+                                   class="accent-nutri-rose w-4 h-4 cursor-pointer">
+                        </div>
                     }
-
-                    <!-- Portal Access Toggle (Compact) -->
-                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-nutri-bg/50 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/5 transition-all" [ngClass]="patient()?.acceso_portal ? 'border-emerald-500/20 bg-emerald-500/5' : ''">
-                        <app-a-icon [name]="patient()?.acceso_portal ? 'vpn_key' : 'lock'" size="14px" [customClass]="patient()?.acceso_portal ? 'text-emerald-500' : 'text-amber-500'"></app-a-icon>
-                        <span class="text-[9px] font-black uppercase tracking-widest" [ngClass]="patient()?.acceso_portal ? 'text-emerald-500' : 'text-amber-500'">Portal</span>
-                        <input type="checkbox" [(ngModel)]="patient().acceso_portal" (change)="togglePortalAccess()" 
-                               class="accent-emerald-500 w-4 h-4 cursor-pointer">
-                    </div>
-
-                    <!-- Deactivation Toggle (Compact) -->
-                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-nutri-bg/50 dark:bg-white/5 border border-nutri-rose/5 dark:border-white/5 transition-all" [ngClass]="patient()?.dado_de_baja ? 'border-rose-500/20 bg-rose-500/5' : ''">
-                        <app-a-icon [name]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'" size="14px" [customClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-blue-500'"></app-a-icon>
-                        <span class="text-[9px] font-black uppercase tracking-widest" [ngClass]="patient()?.dado_de_baja ? 'text-rose-500' : 'text-blue-500'">{{ patient()?.dado_de_baja ? 'Baja' : 'Activo' }}</span>
-                        <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" 
-                               class="accent-nutri-rose w-4 h-4 cursor-pointer">
-                    </div>
                 </div>
             </div>
         </div>
@@ -593,34 +624,34 @@
             <div class="space-y-6 animate-fade-up">
                 
                 <!-- NEW RECORD FORM AT THE TOP -->
-                <div class="bg-white dark:bg-[#111111] p-6 md:p-8 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
-                    <div class="flex items-center justify-between">
+                <div class="bg-white dark:bg-[#111111] p-4 md:p-8 rounded-[1.75rem] md:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-4 md:space-y-6 transition-colors">
+                    <div class="flex items-center justify-between flex-wrap gap-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
-                                <app-a-icon name="add"></app-a-icon>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
+                                <app-a-icon name="add" customClass="text-sm md:text-base"></app-a-icon>
                             </div>
                             <div>
-                                <h3 class="text-xl font-bold serif dark:text-slate-200">Nuevo Registro de Seguimiento</h3>
-                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Ingrese los datos de la medición actual</p>
+                                <h3 class="text-lg md:text-xl font-bold serif dark:text-slate-200">Nuevo Registro de Seguimiento</h3>
+                                <p class="text-[8px] md:text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Ingrese los datos de la medición actual</p>
                             </div>
                         </div>
                         <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
-                                    label="Guardar Registro" variant="primary" size="md"
-                                    customClass="!px-8 !rounded-xl !text-[9px] !uppercase !tracking-[0.1em] !shadow-lg !shadow-nutri-rose/20">
+                                    label="Guardar" variant="primary" size="sm"
+                                    customClass="!px-6 md:!px-8 !rounded-xl !text-[9px] !uppercase !tracking-[0.1em] !shadow-lg !shadow-nutri-rose/20">
                         </app-a-button>
                     </div>
 
                     <!-- Grid Principal de Datos -->
-                    <div class="space-y-8">
+                    <div class="space-y-4 md:space-y-8">
                         
                         <!-- Grupo 1: Composición Corporal General -->
-                        <div class="space-y-4">
+                        <div class="space-y-2.5 md:space-y-4">
                             <div class="flex items-center gap-2 border-l-2 border-nutri-rose pl-3">
                                 <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">Composición Corporal General</span>
                             </div>
-                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
                                 <!-- Agua (L) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Agua (L)</label>
                                         @if (hasHistory()) {
@@ -630,11 +661,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().agua_corporal" (valueChange)="updateProgressField('agua_corporal', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['agua_corporal']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().agua_corporal" (valueChange)="updateProgressField('agua_corporal', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['agua_corporal']"></app-a-input>
                                 </div>
 
                                 <!-- Proteínas (kg) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Proteínas (kg)</label>
                                         @if (hasHistory()) {
@@ -644,11 +675,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().proteinas" (valueChange)="updateProgressField('proteinas', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['proteinas']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().proteinas" (valueChange)="updateProgressField('proteinas', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['proteinas']"></app-a-input>
                                 </div>
 
                                 <!-- Minerales (kg) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Minerales (kg)</label>
                                         @if (hasHistory()) {
@@ -658,11 +689,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().minerales" (valueChange)="updateProgressField('minerales', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['minerales']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().minerales" (valueChange)="updateProgressField('minerales', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['minerales']"></app-a-input>
                                 </div>
 
                                 <!-- Masa Grasa (kg) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Masa Grasa (kg)</label>
                                         @if (hasHistory()) {
@@ -672,11 +703,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().masa_grasa" (valueChange)="updateProgressField('masa_grasa', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['masa_grasa']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().masa_grasa" (valueChange)="updateProgressField('masa_grasa', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['masa_grasa']"></app-a-input>
                                 </div>
 
                                 <!-- Peso (kg) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Peso (kg)</label>
                                         @if (hasHistory()) {
@@ -686,11 +717,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().weight" (valueChange)="updateProgressField('weight', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['weight']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().weight" (valueChange)="updateProgressField('weight', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['weight']"></app-a-input>
                                 </div>
 
                                 <!-- M. Esquelético (kg) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">M. Esquelético (kg)</label>
                                         @if (hasHistory()) {
@@ -700,11 +731,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().muscle_mass" (valueChange)="updateProgressField('muscle_mass', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['muscle_mass']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().muscle_mass" (valueChange)="updateProgressField('muscle_mass', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['muscle_mass']"></app-a-input>
                                 </div>
 
                                 <!-- Masa Magra (kg) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Masa Magra (kg)</label>
                                         @if (hasHistory()) {
@@ -714,11 +745,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().masa_magra" (valueChange)="updateProgressField('masa_magra', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['masa_magra']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().masa_magra" (valueChange)="updateProgressField('masa_magra', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['masa_magra']"></app-a-input>
                                 </div>
 
                                 <!-- IMC -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">IMC</label>
                                         @if (hasHistory()) {
@@ -728,11 +759,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().imc" (valueChange)="updateProgressField('imc', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['imc']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().imc" (valueChange)="updateProgressField('imc', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['imc']"></app-a-input>
                                 </div>
 
                                 <!-- PGC -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">PGC</label>
                                         @if (hasHistory()) {
@@ -742,11 +773,11 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().pgc" (valueChange)="updateProgressField('pgc', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['pgc']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().pgc" (valueChange)="updateProgressField('pgc', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['pgc']"></app-a-input>
                                 </div>
 
                                 <!-- Grasa (%) -->
-                                <div class="space-y-1">
+                                <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">
                                         <label class="text-[8px] font-bold text-nutri-text/40 uppercase">Grasa (%)</label>
                                         @if (hasHistory()) {
@@ -756,14 +787,14 @@
                                             </span>
                                         }
                                     </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().body_fat" (valueChange)="updateProgressField('body_fat', $event)" placeholder="00.0" inputClass="!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['body_fat']"></app-a-input>
+                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().body_fat" (valueChange)="updateProgressField('body_fat', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['body_fat']"></app-a-input>
                                 </div>
                             </div>
                         </div>
 
                                   <!-- Grupo 2: Tren Superior (Brazos y Tronco) -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+                            <div class="space-y-2.5 md:space-y-4">
                                 <div class="flex items-center gap-2 border-l-2 border-blue-400 pl-3">
                                     <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Tren Superior (Brazos)</span>
                                 </div>
@@ -828,7 +859,7 @@
                                 </div>
                             </div>
 
-                            <div class="space-y-4">
+                            <div class="space-y-2.5 md:space-y-4">
                                 <div class="flex items-center gap-2 border-l-2 border-amber-400 pl-3">
                                     <span class="text-[10px] font-black text-amber-400 uppercase tracking-widest">Tronco</span>
                                 </div>
@@ -857,8 +888,8 @@
                         </div>
 
                         <!-- Grupo 3: Tren Inferior y Medidas -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+                            <div class="space-y-2.5 md:space-y-4">
                                 <div class="flex items-center gap-2 border-l-2 border-emerald-400 pl-3">
                                     <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Tren Inferior (Piernas)</span>
                                 </div>
@@ -923,7 +954,7 @@
                                 </div>
                             </div>
 
-                            <div class="space-y-4">
+                            <div class="space-y-2.5 md:space-y-4">
                                 <div class="flex items-center gap-2 border-l-2 border-purple-400 pl-3">
                                     <span class="text-[10px] font-black text-purple-400 uppercase tracking-widest">Circunferencias, Índices y Signos</span>
                                 </div>
