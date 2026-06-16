@@ -31,5 +31,25 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mi Plan Alimenticio",
+      "short_name": "Plan",
+      "url": "./portal?tab=plan",
+      "icons": [{ "src": "images/pwa-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Siguiente Cita",
+      "short_name": "Cita",
+      "url": "./portal?tab=dashboard",
+      "icons": [{ "src": "images/pwa-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Historial de Progreso",
+      "short_name": "Historial",
+      "url": "./portal?tab=history",
+      "icons": [{ "src": "images/pwa-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
   ]
 }

@@ -724,26 +724,34 @@ export class PortalPage implements OnInit {
       const params = new URLSearchParams(window.location.search);
       const action = params.get('action');
       const id = params.get('id');
+      const tab = params.get('tab');
 
-      if (!action || !id) return;
-
-      const apt = this.nextAppointment();
-      if (!apt || apt.eventId !== id) {
-        console.warn('Notification action eventId mismatch or no appointment found.', { action, id, aptId: apt?.eventId });
-        return;
+      if (tab && ['dashboard', 'plan', 'analysis', 'history'].includes(tab)) {
+        console.log(`PWA: Navigating to tab ${tab} via shortcut/URL param...`);
+        this.setActiveTab(tab as any);
       }
 
-      if (action === 'confirm') {
-        console.log('Automatically confirming appointment via notification action...');
-        await this.confirmAppointment();
-      } else if (action === 'cancel') {
-        console.log('Automatically opening cancel confirmation modal via notification action...');
-        this.cancelAppointment();
+      if (action && id) {
+        const apt = this.nextAppointment();
+        if (!apt || apt.eventId !== id) {
+          console.warn('Notification action eventId mismatch or no appointment found.', { action, id, aptId: apt?.eventId });
+          return;
+        }
+
+        if (action === 'confirm') {
+          console.log('Automatically confirming appointment via notification action...');
+          await this.confirmAppointment();
+        } else if (action === 'cancel') {
+          console.log('Automatically opening cancel confirmation modal via notification action...');
+          this.cancelAppointment();
+        }
       }
 
       // Clean query parameters from URL so refreshes don't re-trigger the action
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
+      if (action || id || tab) {
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
     } catch (err) {
       console.error('Error handling URL notification action:', err);
     }
