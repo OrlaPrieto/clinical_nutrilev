@@ -623,8 +623,8 @@
                                                 <!-- Múltiples Menús PDFs -->
                                                 @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                                     @for (m of patient()?.current_menus; track m.url) {
-                                                        <div (click)="openMenu(m.url)" 
-                                                             class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                        <a [href]="m.url" target="_blank" rel="noopener noreferrer" 
+                                                           class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
                                                             <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                                             <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
                                                                 <app-a-icon name="description"></app-a-icon>
@@ -636,11 +636,11 @@
                                                             <div class="w-8 h-8 rounded-full bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text/20 group-hover:text-nutri-rose transition-colors shrink-0">
                                                                 <app-a-icon name="download" size="18px"></app-a-icon>
                                                             </div>
-                                                        </div>
+                                                        </a>
                                                     }
                                                 } @else if (patient()?.menu_url) {
-                                                    <div (click)="openMenu()" 
-                                                         class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                    <a [href]="patient()?.menu_url" target="_blank" rel="noopener noreferrer" 
+                                                       class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
                                                         <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
                                                             <app-a-icon name="description"></app-a-icon>
                                                         </div>
@@ -648,7 +648,7 @@
                                                             <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Plan Principal</p>
                                                             <p class="text-sm font-bold serif truncate">Ver Menú Digital</p>
                                                         </div>
-                                                    </div>
+                                                    </a>
                                                 }
 
                                                 <!-- Lista de Súper Card (Asistente IA) -->

@@ -39,8 +39,8 @@ export class PatientService {
     this.patientProgressCache.clear();
   }
 
-  async getPatients(): Promise<Patient[]> {
-    if (this.isCacheValid(this.patientsListCache)) {
+  async getPatients(forceRefresh = false): Promise<Patient[]> {
+    if (!forceRefresh && this.isCacheValid(this.patientsListCache)) {
       return this.patientsListCache!.data;
     }
 
@@ -55,9 +55,9 @@ export class PatientService {
     return data;
   }
 
-  async getPatientByEmail(email: string): Promise<Patient> {
+  async getPatientByEmail(email: string, forceRefresh = false): Promise<Patient> {
     const cached = this.patientByEmailCache.get(email);
-    if (this.isCacheValid(cached)) {
+    if (!forceRefresh && this.isCacheValid(cached)) {
       return cached!.data;
     }
 
@@ -98,9 +98,9 @@ export class PatientService {
   }
 
   // Progress Tracking Methods
-  async getPatientProgress(email: string): Promise<PatientProgress[]> {
+  async getPatientProgress(email: string, forceRefresh = false): Promise<PatientProgress[]> {
     const cached = this.patientProgressCache.get(email);
-    if (this.isCacheValid(cached)) {
+    if (!forceRefresh && this.isCacheValid(cached)) {
       return cached!.data;
     }
 

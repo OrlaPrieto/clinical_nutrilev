@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
@@ -44,8 +44,11 @@ import { ProgressHistoryComponent } from '../../shared/components/organisms/prog
     ])
   ]
 })
-export class PortalPage implements OnInit {
+export class PortalPage implements OnInit, OnDestroy {
   sidebarCollapsed = signal<boolean>(false);
+  private lastFocusTime = Date.now();
+  private focusListener?: () => void;
+  private visibilityListener?: () => void;
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
@@ -751,56 +754,96 @@ export class PortalPage implements OnInit {
     ];
   });
 
+  async loadPortalData(userEmail: string, forceRefresh = false) {
+    try {
+      // Cargar datos en paralelo para evitar waterfall
+      const [currentPatient, history, apt] = await Promise.all([
+        this.patientService.getPatientByEmail(userEmail, forceRefresh),
+        this.patientService.getPatientProgress(userEmail, forceRefresh),
+        this.appointmentService.getNextAppointment(userEmail).catch(err => {
+          console.error('Error loading next appointment:', err);
+          return null;
+        })
+      ]);
+
+      if (currentPatient) {
+        this.patient.set(currentPatient);
+        this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Clinical Nutrilev`);
+        this.progress.set(history || []);
+
+        if (apt && apt.hasAppointment) {
+          this.nextAppointment.set(apt);
+        } else {
+          this.nextAppointment.set(null);
+        }
+
+        // Inicializar métricas activas según el objetivo principal
+        const goal = currentPatient.meta_objetivo;
+        this.activeMetrics.set({
+          weight: goal === 'bajar_peso' || !goal,
+          fat: goal === 'bajar_grasa',
+          muscle: goal === 'subir_musculo'
+        });
+
+        // Cargar lista de súper desde caché si existe
+        this.loadShoppingListFromCache(currentPatient);
+
+        // Cargar hábitos diarios
+        this.loadDailyHabits();
+      }
+    } catch (err) {
+      console.error('Error loading portal data', err);
+    }
+  }
+
   async ngOnInit() {
     const user = this.authService.user;
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        // Cargar datos en paralelo para evitar waterfall
-        const [currentPatient, history, apt] = await Promise.all([
-          this.patientService.getPatientByEmail(userEmail),
-          this.patientService.getPatientProgress(userEmail),
-          this.appointmentService.getNextAppointment(userEmail).catch(err => {
-            console.error('Error loading next appointment:', err);
-            return null;
-          })
-        ]);
+        await this.loadPortalData(userEmail);
 
-        if (currentPatient) {
-          this.patient.set(currentPatient);
-          this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Clinical Nutrilev`);
-          this.progress.set(history || []);
+        // Solicitar suscripción de notificaciones push
+        this.pushService.requestSubscription(userEmail);
 
-          if (apt && apt.hasAppointment) {
-            this.nextAppointment.set(apt);
-          } else {
-            this.nextAppointment.set(null);
-          }
+        // Verificar si hay alguna acción desde notificaciones en la URL
+        this.handleUrlActions();
 
-          // Inicializar métricas activas según el objetivo principal
-          const goal = currentPatient.meta_objetivo;
-          this.activeMetrics.set({
-            weight: goal === 'bajar_peso' || !goal,
-            fat: goal === 'bajar_grasa',
-            muscle: goal === 'subir_musculo'
-          });
+        // Listen for visibility and focus events to refresh data if user resumes PWA
+        if (typeof window !== 'undefined') {
+          this.focusListener = () => this.refreshDataIfVisible(userEmail);
+          this.visibilityListener = () => this.refreshDataIfVisible(userEmail);
 
-          // Cargar lista de súper desde caché si existe
-          this.loadShoppingListFromCache(currentPatient);
-
-          // Cargar hábitos diarios
-          this.loadDailyHabits();
-
-          // Solicitar suscripción de notificaciones push
-          this.pushService.requestSubscription(userEmail);
-
-          // Verificar si hay alguna acción desde notificaciones en la URL
-          this.handleUrlActions();
+          window.addEventListener('focus', this.focusListener);
+          document.addEventListener('visibilitychange', this.visibilityListener);
         }
       } catch (err) {
-        console.error('Error loading portal data', err);
+        console.error('Error in ngOnInit:', err);
       } finally {
         this.loading.set(false);
+      }
+    }
+  }
+
+  refreshDataIfVisible(userEmail: string) {
+    if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+      const now = Date.now();
+      // Refrescar al menos cada 15 segundos si se enfoca el PWA
+      if (now - this.lastFocusTime > 15000) {
+        this.lastFocusTime = now;
+        console.log('PWA focused/visible: Refreshing portal data from backend...');
+        this.loadPortalData(userEmail, true);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      if (this.focusListener) {
+        window.removeEventListener('focus', this.focusListener);
+      }
+      if (this.visibilityListener) {
+        document.removeEventListener('visibilitychange', this.visibilityListener);
       }
     }
   }
