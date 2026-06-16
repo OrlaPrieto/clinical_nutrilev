@@ -1272,7 +1272,7 @@
 
                 <!-- File Slots Grid -->
                 <div class="grid grid-cols-1 gap-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                    @for (item of menuFilesToUpload(); track $index) {
+                    @for (item of menuFilesToUpload(); track item.id) {
                         <div class="group relative flex flex-col md:flex-row items-center gap-4 bg-nutri-bg/40 dark:bg-white/[0.02] p-5 rounded-3xl border border-nutri-rose/5 hover:border-nutri-rose/20 transition-all duration-300">
                             <div class="flex-1 w-full relative">
                                 <label class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 absolute -top-2 left-4 bg-white dark:bg-[#151515] px-2 z-10">Nombre del archivo</label>

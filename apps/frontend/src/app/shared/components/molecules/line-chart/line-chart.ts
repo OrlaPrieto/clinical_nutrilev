@@ -25,7 +25,7 @@ interface DataPoint {
                 stroke-linecap="round" stroke-linejoin="round"></path>
           
           <!-- Points -->
-          @for (p of points(); track $index) {
+          @for (p of points(); track p.label) {
             <g class="group/point">
               <circle [attr.cx]="p.x + '%'" [attr.cy]="p.y + '%'" r="4" 
                       class="fill-white stroke-nutri-rose stroke-2 transition-all duration-300 group-hover/point:r-6"></circle>
@@ -47,7 +47,7 @@ interface DataPoint {
       
       <!-- X Axis Labels -->
       <div class="flex justify-between mt-2 px-[5%]">
-        @for (p of points(); track $index) {
+        @for (p of points(); track p.label) {
           <span class="text-[7px] font-black uppercase tracking-widest text-nutri-text/30 dark:text-white/20">{{ p.label }}</span>
         }
       </div>

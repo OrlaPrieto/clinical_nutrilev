@@ -13,7 +13,7 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-nutri-rose/[0.03] dark:divide-white/5">
-        @for (patient of patients(); track patient.email || $index; let i = $index) {
+        @for (patient of patients(); track patient.id; let i = $index) {
           <tr class="group relative hover:bg-nutri-rose/[0.03] dark:hover:bg-white/[0.04] transition-all duration-300"
               [ngClass]="{
                   'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40': patient.dado_de_baja,
@@ -177,7 +177,7 @@
 
 <!-- Mobile Card View -->
 <div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-4 space-y-4 animate-fade-up scroll-premium lg:hidden text-left">
-  @for (patient of patients(); track patient.email || $index; let i = $index) {
+  @for (patient of patients(); track patient.id; let i = $index) {
     <div class="bg-white dark:bg-[#111111] rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 shadow-nutri border border-nutri-rose/5 dark:border-white/5 space-y-3.5 transition-all duration-300"
          [ngClass]="{
             'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40 border-gray-300/50 dark:border-gray-700/50': patient.dado_de_baja,

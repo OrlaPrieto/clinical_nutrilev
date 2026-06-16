@@ -111,8 +111,8 @@ export class PatientDetailComponent implements OnInit {
   addingProgress = signal<boolean>(false);
   isUploadingMenu = signal<boolean>(false);
   lastGeneratedUrl = signal<string | null>(null);
-  menuFilesToUpload = signal<Array<{ file: File | null; name: string }>>([
-    { file: null, name: 'Menú Principal' }
+  menuFilesToUpload = signal<Array<{ id: string; file: File | null; name: string }>>([
+    { id: 'initial-slot', file: null, name: 'Menú Principal' }
   ]);
   copied = signal<boolean>(false);
   originalEmail = '';
@@ -403,7 +403,7 @@ export class PatientDetailComponent implements OnInit {
 
   addMenuSlot() {
     if (this.menuFilesToUpload().length < 4) {
-      this.menuFilesToUpload.update(files => [...files, { file: null, name: `Archivo ${files.length + 1}` }]);
+      this.menuFilesToUpload.update(files => [...files, { id: 'slot-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6), file: null, name: `Archivo ${files.length + 1}` }]);
     }
   }
 
@@ -526,7 +526,7 @@ export class PatientDetailComponent implements OnInit {
       setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
       
       // Reset upload slots
-      this.menuFilesToUpload.set([{ file: null, name: 'Menú Principal' }]);
+      this.menuFilesToUpload.set([{ id: 'initial-slot', file: null, name: 'Menú Principal' }]);
     } catch (err) {
       console.error('Error uploading menus', err);
       this.toast.set({ message: 'Error al subir los archivos. Por favor intenta de nuevo.', type: 'error' });

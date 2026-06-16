@@ -622,7 +622,7 @@
                                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <!-- Múltiples Menús PDFs -->
                                                 @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
-                                                    @for (m of patient()?.current_menus; track $index) {
+                                                    @for (m of patient()?.current_menus; track m.url) {
                                                         <div (click)="openMenu(m.url)" 
                                                              class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
                                                             <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -948,7 +948,7 @@
 
                                                 <!-- X-Axis Date Labels -->
                                                 @if (activeLines().length > 0) {
-                                                    @for (point of activeLines()[0].points; track $index) {
+                                                    @for (point of activeLines()[0].points; track point.date) {
                                                         <text [attr.x]="point.x" [attr.y]="115" 
                                                               text-anchor="middle" 
                                                               class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
@@ -959,7 +959,7 @@
 
                                                 <!-- Puntos de Datos, Etiquetas y Tooltips -->
                                                 @for (line of activeLines(); track line.key) {
-                                                    @for (point of line.points; track $index) {
+                                                    @for (point of line.points; track point.date) {
                                                         <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
                                                             <!-- Etiqueta de valor -->
                                                             @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
