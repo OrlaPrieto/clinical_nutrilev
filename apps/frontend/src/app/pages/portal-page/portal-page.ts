@@ -769,6 +769,12 @@ export class PortalPage implements OnInit, OnDestroy {
       ]);
 
       if (currentPatient) {
+        const oldPatient = this.patient();
+        const menuChanged = oldPatient && (
+          oldPatient.menu_url !== currentPatient.menu_url || 
+          oldPatient.menu_created_at !== currentPatient.menu_created_at
+        );
+
         this.patient.set(currentPatient);
         this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Clinical Nutrilev`);
         this.progress.set(history || []);
@@ -787,8 +793,15 @@ export class PortalPage implements OnInit, OnDestroy {
           muscle: goal === 'subir_musculo'
         });
 
-        // Cargar lista de súper desde caché si existe
-        this.loadShoppingListFromCache(currentPatient);
+        // Cargar o reiniciar la lista de súper según corresponda
+        if (menuChanged) {
+          console.log('PWA: Menu changed! Resetting shopping list signal...');
+          this.shoppingList.set([]);
+          this.loadShoppingListFromCache(currentPatient);
+        } else if (!oldPatient) {
+          // Carga inicial
+          this.loadShoppingListFromCache(currentPatient);
+        }
 
         // Cargar hábitos diarios
         this.loadDailyHabits();
@@ -803,7 +816,7 @@ export class PortalPage implements OnInit, OnDestroy {
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        await this.loadPortalData(userEmail);
+        await this.loadPortalData(userEmail, true); // Force fresh load on initialization
 
         // Solicitar suscripción de notificaciones push
         this.pushService.requestSubscription(userEmail);
