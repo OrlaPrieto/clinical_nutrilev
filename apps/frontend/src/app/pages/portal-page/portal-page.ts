@@ -195,7 +195,7 @@ export class PortalPage implements OnInit {
     }
 
     this.activeTab.set(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   }
 
   togglePoint(index: number, key: 'weight' | 'fat' | 'muscle') {
