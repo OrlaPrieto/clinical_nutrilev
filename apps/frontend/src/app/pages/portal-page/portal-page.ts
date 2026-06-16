@@ -217,6 +217,8 @@ export class PortalPage implements OnInit, OnDestroy {
   shoppingList = signal<ShoppingCategory[]>([]);
   loadingShoppingList = signal<boolean>(false);
   showShoppingModal = signal<boolean>(false);
+  shoppingListProgress = signal<number>(0);
+  shoppingListLoadingMessage = signal<string>('Detectando ingredientes...');
 
   hasShoppingError = computed(() => {
     return this.shoppingList().some(cat => cat.category.includes('ERROR'));
@@ -986,8 +988,50 @@ export class PortalPage implements OnInit, OnDestroy {
     if (!p || !p.menu_url) return;
     
     this.loadingShoppingList.set(true);
+    this.shoppingListProgress.set(0);
+    this.shoppingListLoadingMessage.set('Iniciando lectura de tu plan...');
+    
+    let currentProgress = 0;
+    const updateProgressMessage = (pct: number) => {
+      if (pct < 15) {
+        this.shoppingListLoadingMessage.set('Leyendo archivo PDF del plan alimenticio...');
+      } else if (pct < 35) {
+        this.shoppingListLoadingMessage.set('Detectando comidas e ingredientes...');
+      } else if (pct < 55) {
+        this.shoppingListLoadingMessage.set('Clasificando ingredientes en categorías...');
+      } else if (pct < 75) {
+        this.shoppingListLoadingMessage.set('Procesando con Inteligencia Artificial...');
+      } else if (pct < 90) {
+        this.shoppingListLoadingMessage.set('Generando tips de marcas y cantidades...');
+      } else {
+        this.shoppingListLoadingMessage.set('Casi listo, ordenando tu lista final...');
+      }
+    };
+
+    // Simulate smooth progress over time, decelerating as it approaches 95%
+    const progressInterval = setInterval(() => {
+      if (currentProgress < 95) {
+        let increment = 1.8; // Starts relatively fast
+        if (currentProgress >= 40 && currentProgress < 75) {
+          increment = 0.9;   // Slows down in the middle
+        } else if (currentProgress >= 75) {
+          increment = 0.3;   // Very slow near the end
+        }
+        
+        currentProgress = Math.min(95, currentProgress + increment);
+        const roundedProgress = Math.round(currentProgress);
+        this.shoppingListProgress.set(roundedProgress);
+        updateProgressMessage(roundedProgress);
+      }
+    }, 1000);
+
     try {
       const list = await this.patientService.getShoppingList(p.menu_url);
+      
+      // Stop simulator, set immediately to 100%
+      clearInterval(progressInterval);
+      this.shoppingListProgress.set(100);
+      this.shoppingListLoadingMessage.set('¡Lista generada con éxito!');
       
       // Persistencia: Guardar marcados vinculados al email y fecha del menú
       const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
@@ -1001,6 +1045,9 @@ export class PortalPage implements OnInit, OnDestroy {
         }))
       }));
       
+      // Wait briefly (600ms) for the user to see the 100% completion before rendering
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
       this.shoppingList.set(enrichedList);
       
       // Guardar lista completa en caché únicamente si no contiene errores
@@ -1011,6 +1058,8 @@ export class PortalPage implements OnInit, OnDestroy {
       }
     } catch (err) {
       console.error('Error fetching shopping list', err);
+      clearInterval(progressInterval);
+      this.shoppingListProgress.set(0);
       this.shoppingList.set([
         {
           category: '⚠️ ERROR AL GENERAR',
