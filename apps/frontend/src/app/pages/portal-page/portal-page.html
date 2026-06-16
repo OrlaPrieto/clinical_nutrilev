@@ -807,10 +807,16 @@
                         <div [@tabAnimation] class="space-y-8">
                             <!-- Composición Física Analítica (Silueta Corporal 3D) -->
                             @if (latestProgress()) {
-                                <app-progress-analytic-card 
-                                    [progress]="latestProgress()!" 
-                                    [patient]="patient()">
-                                </app-progress-analytic-card>
+                                @defer (on idle) {
+                                    <app-progress-analytic-card 
+                                        [progress]="latestProgress()!" 
+                                        [patient]="patient()">
+                                    </app-progress-analytic-card>
+                                } @placeholder {
+                                    <div class="h-96 animate-pulse bg-slate-100 dark:bg-white/5 rounded-3xl border border-nutri-rose/10 flex items-center justify-center">
+                                        <p class="text-xs text-nutri-text/40 dark:text-slate-500 font-medium">Cargando análisis tridimensional...</p>
+                                    </div>
+                                }
                             }
 
                             <!-- Gráfica de Tendencia SVG -->
@@ -1083,9 +1089,15 @@
 
                     <!-- Pestaña 4: Historial Clínico Completo -->
                     @if (activeTab() === 'history') {
-                        <div [@tabAnimation]>
-                            <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
-                        </div>
+                        @defer (on idle) {
+                            <div [@tabAnimation]>
+                                <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
+                            </div>
+                        } @placeholder {
+                            <div class="h-64 animate-pulse bg-slate-100 dark:bg-white/5 rounded-3xl border border-nutri-rose/10 flex items-center justify-center">
+                                <p class="text-xs text-nutri-text/40 dark:text-slate-500 font-medium">Cargando registros históricos...</p>
+                            </div>
+                        }
                     }
                 }
             </main>

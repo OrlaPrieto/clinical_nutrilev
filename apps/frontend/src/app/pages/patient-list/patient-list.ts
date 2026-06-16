@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientService } from '../../services/patient';
@@ -33,7 +33,8 @@ import { Title } from '@angular/platform-browser';
     IconComponent
   ],
   templateUrl: './patient-list.html',
-  styleUrl: './patient-list.css'
+  styleUrl: './patient-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientListPage implements OnInit {
   public authService = inject(AuthService);

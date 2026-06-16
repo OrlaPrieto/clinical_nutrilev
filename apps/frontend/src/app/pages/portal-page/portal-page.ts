@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
@@ -34,6 +34,7 @@ import { ProgressHistoryComponent } from '../../shared/components/organisms/prog
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('tabAnimation', [
       transition(':enter', [
