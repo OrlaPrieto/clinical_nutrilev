@@ -155,3 +155,18 @@
   }
 }
 
+/* PWA Native Mobile CSS Optimizations */
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain; /* Prevents native Chrome/Safari pull-to-refresh */
+}
+
+/* Allow text selection in inputs, textareas, and explicit selectable zones */
+input, textarea, [contenteditable="true"], .selectable-text {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
