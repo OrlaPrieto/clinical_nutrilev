@@ -1,6 +1,22 @@
 @if (patient()) {
     <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 flex flex-col md:flex-row">
         
+        <!-- Pull to Refresh Spinner -->
+        <div class="fixed top-0 left-0 right-0 flex items-center justify-center pointer-events-none transition-all duration-150 z-[120]"
+             [style.transform]="'translateY(' + (pullDistance() - 40) + 'px)'"
+             [style.opacity]="pullDistance() > 10 ? 1 : 0">
+            <div class="w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] shadow-md flex items-center justify-center border border-nutri-rose/10">
+                @if (!isRefreshing()) {
+                    <span class="material-symbols-rounded text-nutri-rose transition-transform"
+                          [style.transform]="'rotate(' + (pullDistance() * 3) + 'deg)'">
+                        arrow_downward
+                    </span>
+                } @else {
+                    <div class="w-5 h-5 rounded-full border-2 border-nutri-rose/20 border-t-nutri-rose animate-spin"></div>
+                }
+            </div>
+        </div>
+        
         <!-- Menú Lateral (Sidebar - Solo Escritorio) -->
         <aside [class]="'hidden md:flex fixed left-0 top-0 bottom-0 bg-white dark:bg-[#0c0c0c] border-r border-nutri-rose/10 dark:border-white/5 z-40 flex-col justify-between shadow-sm shrink-0 transition-all duration-300 ' + (sidebarCollapsed() ? 'w-16 px-3 py-6' : 'w-64 p-6')">
             <!-- Sección Superior: Logo, Perfil y Enlaces -->

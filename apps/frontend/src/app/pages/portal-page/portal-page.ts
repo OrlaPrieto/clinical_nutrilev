@@ -98,16 +98,42 @@ export class PortalPage implements OnInit {
 
   private swipeStartX = 0;
   private swipeStartY = 0;
+  private touchStartY = 0;
+  private isPulling = false;
+  public pullDistance = signal<number>(0);
+  public isRefreshing = signal<boolean>(false);
 
   @HostListener('touchstart', ['$event'])
-  onSwipeStart(event: TouchEvent) {
+  onTouchStart(event: TouchEvent) {
     this.swipeStartX = event.touches[0].clientX;
     this.swipeStartY = event.touches[0].clientY;
+
+    if (window.scrollY === 0 && !this.isRefreshing()) {
+      this.touchStartY = event.touches[0].clientY;
+      this.isPulling = true;
+    }
+  }
+
+  @HostListener('touchmove', ['$event'])
+  onTouchMove(event: TouchEvent) {
+    if (!this.isPulling) return;
+    const currentY = event.touches[0].clientY;
+    const diff = currentY - this.touchStartY;
+    if (diff > 0) {
+      // Pulling down
+      const distance = Math.min(100, diff * 0.4); // Dampen distance
+      this.pullDistance.set(distance);
+      if (distance > 15) {
+        if (event.cancelable) {
+          event.preventDefault();
+        }
+      }
+    }
   }
 
   @HostListener('touchend', ['$event'])
-  onSwipeEnd(event: TouchEvent) {
-    // Only detect swipe if not scrolling significantly vertically
+  async onTouchEnd(event: TouchEvent) {
+    // 1. Handle Swipe navigation
     const diffX = event.changedTouches[0].clientX - this.swipeStartX;
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
 
@@ -116,17 +142,38 @@ export class PortalPage implements OnInit {
       const currentIdx = tabs.indexOf(this.activeTab());
       
       if (diffX > 0 && currentIdx > 0) {
-        // Swipe right (prev tab)
         this.setActiveTab(tabs[currentIdx - 1]);
         if (typeof window !== 'undefined' && 'vibrate' in navigator) {
           navigator.vibrate(15);
         }
       } else if (diffX < 0 && currentIdx < tabs.length - 1) {
-        // Swipe left (next tab)
         this.setActiveTab(tabs[currentIdx + 1]);
         if (typeof window !== 'undefined' && 'vibrate' in navigator) {
           navigator.vibrate(15);
         }
+      }
+    }
+
+    // 2. Handle Pull to Refresh
+    if (this.isPulling) {
+      this.isPulling = false;
+      const distance = this.pullDistance();
+      if (distance >= 35) {
+        this.isRefreshing.set(true);
+        this.pullDistance.set(40); // hold spinner
+        try {
+          await this.ngOnInit();
+          if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+            navigator.vibrate(30);
+          }
+        } catch (err) {
+          console.error('Pull to refresh failed:', err);
+        } finally {
+          this.isRefreshing.set(false);
+          this.pullDistance.set(0);
+        }
+      } else {
+        this.pullDistance.set(0);
       }
     }
   }
