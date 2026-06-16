@@ -312,6 +312,9 @@ export class PortalPage implements OnInit {
     };
     this.dailyHabits.set(updated);
     this.storageService.setItem(key, updated);
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(30);
+    }
   }
 
   bmi = computed(() => {
@@ -779,6 +782,9 @@ export class PortalPage implements OnInit {
     try {
       const res = await this.appointmentService.confirmAppointment(p.email, apt.eventId);
       if (res && res.success) {
+        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate([40, 45, 40]); // Double micro-vibration
+        }
         this.nextAppointment.set({
           ...apt,
           status: 'confirmed',
@@ -806,6 +812,9 @@ export class PortalPage implements OnInit {
     try {
       const res = await this.appointmentService.cancelAppointment(p.email, apt.eventId);
       if (res && res.success) {
+        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate(60); // Single longer alert-like vibration
+        }
         this.nextAppointment.set({
           ...apt,
           status: 'cancelled',
