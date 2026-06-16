@@ -71,7 +71,7 @@ export class PortalPage implements OnInit, OnDestroy {
     fat: false,
     muscle: false
   });
-  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history'>('plan');
+  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history' | 'resources'>('plan');
 
   limitRecords = signal<number>(5);
   filterMonth = signal<string>('all');
@@ -142,7 +142,7 @@ export class PortalPage implements OnInit, OnDestroy {
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
 
     if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
-      const tabs: ('dashboard' | 'plan' | 'analysis' | 'history')[] = ['plan', 'dashboard', 'analysis', 'history'];
+      const tabs: ('dashboard' | 'plan' | 'analysis' | 'history' | 'resources')[] = ['plan', 'dashboard', 'resources', 'analysis', 'history'];
       const currentIdx = tabs.indexOf(this.activeTab());
       
       if (diffX > 0 && currentIdx > 0) {
@@ -182,7 +182,7 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history') {
+  setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history' | 'resources') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

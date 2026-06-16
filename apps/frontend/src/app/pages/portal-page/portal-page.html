@@ -93,6 +93,21 @@
                         }
                     </button>
                     
+                    <button (click)="setActiveTab('resources')"
+                            role="tab"
+                            [attr.aria-selected]="activeTab() === 'resources' ? 'true' : 'false'"
+                            aria-label="Documentos de Apoyo"
+                            [title]="sidebarCollapsed() ? 'Recursos' : ''"
+                            [class]="(activeTab() === 'resources'
+                                     ? 'w-full flex items-center rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm '
+                                     : 'w-full flex items-center rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 ') +
+                                     (sidebarCollapsed() ? 'justify-center p-3 gap-0' : 'gap-3 px-4 py-3')">
+                        <app-a-icon name="folder_open" size="18px"></app-a-icon>
+                        @if (!sidebarCollapsed()) {
+                            <span>Recursos</span>
+                        }
+                    </button>
+                    
                     <button (click)="setActiveTab('analysis')"
                             role="tab"
                             [attr.aria-selected]="activeTab() === 'analysis' ? 'true' : 'false'"
@@ -802,6 +817,116 @@
                         </div>
                     }
 
+                    <!-- Pestaña: Recursos (Guías y Documentos de Apoyo) -->
+                    @if (activeTab() === 'resources') {
+                        <div [@tabAnimation] class="space-y-8 animate-fade-in">
+                            <!-- Hero Section del Recurso -->
+                            <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-nutri-rose/10 via-nutri-rose-soft/20 to-orange-500/5 dark:from-nutri-rose/5 dark:to-transparent border border-nutri-rose/10 dark:border-white/5 p-8 shadow-sm">
+                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/10 dark:bg-white/[0.01] rounded-full blur-2xl"></div>
+                                <div class="max-w-2xl relative z-10 space-y-3">
+                                    <span class="text-[8px] font-black tracking-[0.3em] uppercase text-nutri-rose bg-nutri-rose/10 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
+                                    <h2 class="text-3xl sm:text-4xl font-medium serif text-nutri-text dark:text-white leading-tight">Documentos de Apoyo</h2>
+                                    <p class="text-xs sm:text-sm text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                        Accede a las guías generales, manuales de equivalentes y recomendaciones de marcas aprobadas para acompañar tu plan alimentario.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Grid de Documentos -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Tarjeta 1: Guía de Equivalentes -->
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
+                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-nutri-rose/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                    <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                        <div class="space-y-4">
+                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 dark:bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                                                <app-a-icon name="menu_book" size="24px"></app-a-icon>
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Lista de Equivalentes</h3>
+                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                    Manual oficial para conocer las porciones correctas e intercambiar alimentos de forma segura sin alterar tu plan.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <a href="assets/documents/lista-equivalentes.pdf" target="_blank"
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/5 hover:bg-nutri-rose/10 border border-nutri-rose/10 hover:border-nutri-rose/20 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                                <app-a-icon name="visibility" size="14px"></app-a-icon>
+                                                Ver
+                                            </a>
+                                            <a href="assets/documents/lista-equivalentes.pdf" download="Lista_Equivalentes_Nutrilev.pdf"
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-nutri-rose hover:opacity-95 shadow-md shadow-nutri-rose/15 hover:shadow-lg hover:shadow-nutri-rose/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                                <app-a-icon name="download" size="14px"></app-a-icon>
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tarjeta 2: Guía de Marcas -->
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
+                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-amber-500/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                    <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                        <div class="space-y-4">
+                                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 flex items-center justify-center text-amber-500">
+                                                <app-a-icon name="local_mall" size="24px"></app-a-icon>
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Marcas Recomendadas</h3>
+                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                    Catálogo visual con los productos comerciales aprobados en el consultorio, marcas saludables y opciones del supermercado.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <a href="assets/documents/guia-marcas-recomendadas.pdf" target="_blank"
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 hover:border-amber-500/20 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                                <app-a-icon name="visibility" size="14px"></app-a-icon>
+                                                Ver
+                                            </a>
+                                            <a href="assets/documents/guia-marcas-recomendadas.pdf" download="Guia_Marcas_Recomendadas.pdf"
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-amber-500 hover:bg-amber-600 shadow-md shadow-amber-500/15 hover:shadow-lg hover:shadow-amber-500/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                                <app-a-icon name="download" size="14px"></app-a-icon>
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tarjeta 3: Condimentos -->
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
+                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                    <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                        <div class="space-y-4">
+                                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/5 flex items-center justify-center text-emerald-500">
+                                                <app-a-icon name="dining" size="24px"></app-a-icon>
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Condimentos Libres</h3>
+                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                    Lista de especias, aderezos y condimentos libres de calorías que puedes usar para darle sabor premium a todas tus comidas.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <a href="assets/documents/condimentos.pdf" target="_blank"
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/20 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                                <app-a-icon name="visibility" size="14px"></app-a-icon>
+                                                Ver
+                                            </a>
+                                            <a href="assets/documents/condimentos.pdf" download="Condimentos_Libres_Nutrilev.pdf"
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-emerald-500 hover:bg-emerald-600 shadow-md shadow-emerald-500/15 hover:shadow-lg hover:shadow-emerald-500/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                                <app-a-icon name="download" size="14px"></app-a-icon>
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                     <!-- Pestaña 3: Análisis Físico (3D Body Silhouette & Trend SVG Chart) -->
                     @if (activeTab() === 'analysis') {
                         <div [@tabAnimation] class="space-y-8">
@@ -1124,6 +1249,16 @@
                     [class.dark:text-slate-500]="activeTab() !== 'dashboard'">
                 <app-a-icon name="dashboard" size="20px"></app-a-icon>
                 <span class="text-[9px] font-bold uppercase tracking-wider">Mi Progreso</span>
+            </button>
+
+            <!-- Recursos -->
+            <button (click)="setActiveTab('resources')"
+                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'resources'"
+                    [class.text-slate-400]="activeTab() !== 'resources'"
+                    [class.dark:text-slate-500]="activeTab() !== 'resources'">
+                <app-a-icon name="folder_open" size="20px"></app-a-icon>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Recursos</span>
             </button>
 
             <!-- Análisis -->
