@@ -37,13 +37,14 @@ import { ProgressHistoryComponent } from '../../shared/components/organisms/prog
   animations: [
     trigger('tabAnimation', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(6px)' }),
-        animate('220ms cubic-bezier(0.2, 0.8, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
+        style({ opacity: 0, transform: 'translateX({{xOffset}}) translateY({{yOffset}})' }),
+        animate('320ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateX(0) translateY(0)' }))
+      ], { params: { xOffset: '0px', yOffset: '0px' } })
     ])
   ]
 })
 export class PortalPage implements OnInit {
+  swipeDirection = signal<'left' | 'right' | 'none'>('none');
   sidebarCollapsed = signal<boolean>(false);
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
@@ -179,6 +180,20 @@ export class PortalPage implements OnInit {
   }
 
   setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history') {
+    const tabs: ('dashboard' | 'plan' | 'analysis' | 'history')[] = ['plan', 'dashboard', 'analysis', 'history'];
+    const currentIdx = tabs.indexOf(this.activeTab());
+    const targetIdx = tabs.indexOf(tab);
+
+    if (currentIdx !== -1 && targetIdx !== -1 && currentIdx !== targetIdx) {
+      if (targetIdx > currentIdx) {
+        this.swipeDirection.set('left');
+      } else {
+        this.swipeDirection.set('right');
+      }
+    } else {
+      this.swipeDirection.set('none');
+    }
+
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

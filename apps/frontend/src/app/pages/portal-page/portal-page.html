@@ -322,7 +322,7 @@
                     
                     <!-- Pestaña 1: Inicio (Dashboard) -->
                     @if (activeTab() === 'dashboard') {
-                        <div [@tabAnimation] class="space-y-8">
+                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }" class="space-y-8">
                             <!-- Fila de Metas Principales y Último Registro -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                 <!-- Meta de Progreso -->
@@ -509,7 +509,7 @@
 
                     <!-- Pestaña 2: Mi Plan (Digital Plan & Shopping List) -->
                     @if (activeTab() === 'plan') {
-                        <div [@tabAnimation] class="space-y-6">
+                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }" class="space-y-6">
                             
                             <!-- Widget de Siguiente Cita (Estático) -->
                             @if (nextAppointment() && nextAppointment()?.hasAppointment) {
@@ -804,7 +804,7 @@
 
                     <!-- Pestaña 3: Análisis Físico (3D Body Silhouette & Trend SVG Chart) -->
                     @if (activeTab() === 'analysis') {
-                        <div [@tabAnimation] class="space-y-8">
+                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }" class="space-y-8">
                             <!-- Composición Física Analítica (Silueta Corporal 3D) -->
                             @if (latestProgress()) {
                                 <app-progress-analytic-card 
@@ -1083,7 +1083,7 @@
 
                     <!-- Pestaña 4: Historial Clínico Completo -->
                     @if (activeTab() === 'history') {
-                        <div [@tabAnimation]>
+                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }">
                             <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
                         </div>
                     }
