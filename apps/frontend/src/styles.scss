@@ -162,7 +162,6 @@ html, body {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain; /* Prevents native Chrome/Safari pull-to-refresh */
-  overflow-x: hidden; /* Prevents horizontal scroll/viewport flashes on animations */
 }
 
 /* Allow text selection in inputs, textareas, and explicit selectable zones */

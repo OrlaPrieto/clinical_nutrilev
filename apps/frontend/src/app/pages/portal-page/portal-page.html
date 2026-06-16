@@ -1,5 +1,5 @@
 @if (patient()) {
-    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 flex flex-col md:flex-row overflow-x-hidden">
+    <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] text-nutri-text dark:text-slate-100 transition-colors duration-300 selection:bg-nutri-rose/10 flex flex-col md:flex-row">
         
         <!-- Pull to Refresh Spinner -->
         <div class="fixed top-0 left-0 right-0 flex items-center justify-center pointer-events-none transition-all duration-150 z-[120]"
@@ -322,7 +322,7 @@
                     
                     <!-- Pestaña 1: Inicio (Dashboard) -->
                     @if (activeTab() === 'dashboard') {
-                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }" class="space-y-8">
+                        <div [@tabAnimation] class="space-y-8">
                             <!-- Fila de Metas Principales y Último Registro -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                 <!-- Meta de Progreso -->
@@ -509,7 +509,7 @@
 
                     <!-- Pestaña 2: Mi Plan (Digital Plan & Shopping List) -->
                     @if (activeTab() === 'plan') {
-                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }" class="space-y-6">
+                        <div [@tabAnimation] class="space-y-6">
                             
                             <!-- Widget de Siguiente Cita (Estático) -->
                             @if (nextAppointment() && nextAppointment()?.hasAppointment) {
@@ -804,7 +804,7 @@
 
                     <!-- Pestaña 3: Análisis Físico (3D Body Silhouette & Trend SVG Chart) -->
                     @if (activeTab() === 'analysis') {
-                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }" class="space-y-8">
+                        <div [@tabAnimation] class="space-y-8">
                             <!-- Composición Física Analítica (Silueta Corporal 3D) -->
                             @if (latestProgress()) {
                                 <app-progress-analytic-card 
@@ -1083,7 +1083,7 @@
 
                     <!-- Pestaña 4: Historial Clínico Completo -->
                     @if (activeTab() === 'history') {
-                        <div [@tabAnimation]="{ value: activeTab(), params: { xOffset: swipeDirection() === 'left' ? '120px' : (swipeDirection() === 'right' ? '-120px' : '0px'), yOffset: swipeDirection() === 'none' ? '12px' : '0px' } }">
+                        <div [@tabAnimation]>
                             <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
                         </div>
                     }
