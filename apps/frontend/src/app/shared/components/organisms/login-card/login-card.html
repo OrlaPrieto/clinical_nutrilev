@@ -20,12 +20,12 @@
             <div class="relative animate-fade-in">
               <app-a-input id="new-password-input" [type]="showNewPassword ? 'text' : 'password'" [value]="newPassword" (valueChange)="newPassword = $event" placeholder="Nueva Contraseña"
                           inputClass="!bg-white/10 !border-white/20 !rounded-2xl !pl-6 !pr-14 !py-5 focus:!ring-2 focus:!ring-nutri-rose/40 transition-all placeholder:!text-nutri-text/30 dark:placeholder:!text-white/20 !text-base">
+                <button type="button" (click)="toggleNewPasswordVisibility()" 
+                        class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-xl bg-transparent text-nutri-text/30 dark:text-white/30 hover:text-nutri-rose hover:bg-white/5 transition-all z-10"
+                        [attr.aria-label]="showNewPassword ? 'Ocultar nueva contraseña' : 'Mostrar nueva contraseña'">
+                  <mat-icon class="material-symbols-rounded select-none">{{ showNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
               </app-a-input>
-              <button type="button" (click)="toggleNewPasswordVisibility()" 
-                      class="absolute right-4 top-[14px] flex items-center justify-center w-10 h-10 rounded-xl bg-transparent text-nutri-text/30 dark:text-white/30 hover:text-nutri-rose hover:bg-white/5 transition-all z-10"
-                      [attr.aria-label]="showNewPassword ? 'Ocultar nueva contraseña' : 'Mostrar nueva contraseña'">
-                <mat-icon class="material-symbols-rounded select-none">{{ showNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
             </div>
           </div>
 
@@ -33,12 +33,12 @@
             <div class="relative animate-fade-in">
               <app-a-input id="confirm-password-input" [type]="showConfirmPassword ? 'text' : 'password'" [value]="confirmPassword" (valueChange)="confirmPassword = $event" placeholder="Confirmar Contraseña"
                           inputClass="!bg-white/10 !border-white/20 !rounded-2xl !pl-6 !pr-14 !py-5 focus:!ring-2 focus:!ring-nutri-rose/40 transition-all placeholder:!text-nutri-text/30 dark:placeholder:!text-white/20 !text-base">
+                <button type="button" (click)="toggleConfirmPasswordVisibility()" 
+                        class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-xl bg-transparent text-nutri-text/30 dark:text-white/30 hover:text-nutri-rose hover:bg-white/5 transition-all z-10"
+                        [attr.aria-label]="showConfirmPassword ? 'Ocultar confirmación de contraseña' : 'Mostrar confirmación de contraseña'">
+                  <mat-icon class="material-symbols-rounded select-none">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
               </app-a-input>
-              <button type="button" (click)="toggleConfirmPasswordVisibility()" 
-                      class="absolute right-4 top-[14px] flex items-center justify-center w-10 h-10 rounded-xl bg-transparent text-nutri-text/30 dark:text-white/30 hover:text-nutri-rose hover:bg-white/5 transition-all z-10"
-                      [attr.aria-label]="showConfirmPassword ? 'Ocultar confirmación de contraseña' : 'Mostrar confirmación de contraseña'">
-                <mat-icon class="material-symbols-rounded select-none">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
             </div>
           </div>
 
@@ -68,12 +68,12 @@
               <app-a-input id="password-login-input" [type]="showPassword ? 'text' : 'password'" [value]="password" (valueChange)="password = $event" placeholder="Contraseña"
                           label="Contraseña"
                           inputClass="!bg-white/10 !border-white/20 !rounded-2xl !pl-6 !pr-14 !py-5 focus:!ring-2 focus:!ring-nutri-rose/40 transition-all placeholder:!text-nutri-text/30 dark:placeholder:!text-white/20 !text-base">
+                <button type="button" (click)="togglePasswordVisibility()" 
+                        class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-xl bg-transparent text-nutri-text/30 dark:text-white/30 hover:text-nutri-rose hover:bg-white/5 transition-all z-10"
+                        [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                  <mat-icon class="material-symbols-rounded select-none">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
               </app-a-input>
-              <button type="button" (click)="togglePasswordVisibility()" 
-                      class="absolute right-4 top-[14px] flex items-center justify-center w-10 h-10 rounded-xl bg-transparent text-nutri-text/30 dark:text-white/30 hover:text-nutri-rose hover:bg-white/5 transition-all z-10"
-                      [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
-                <mat-icon class="material-symbols-rounded select-none">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
             </div>
           </div>
           
