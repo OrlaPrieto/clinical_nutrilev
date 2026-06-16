@@ -104,7 +104,13 @@ export class NotificationsService {
         icon: '/images/nutrition-icon.png',
         badge: '/images/nutrition-icon.png',
         data: {
-          url: '/portal'
+          url: '/portal',
+          onActionClick: {
+            default: {
+              operation: 'focusLastFocusedOrOpen',
+              url: '/portal'
+            }
+          }
         }
       }
     });
@@ -159,11 +165,29 @@ export class NotificationsService {
     const payload = JSON.stringify({
       notification: {
         title: '⏰ Confirmación de Cita',
-        body: `Hola, ${patientName}. Recuerda que tienes una cita programada para ${targetDayStr} a las ${timeStr}. Confírmala o cancélala aquí en el portal.`,
+        body: `Hola, ${patientName}. Recuerda que tienes una cita programada para ${targetDayStr} a las ${timeStr}.`,
         icon: '/images/nutrition-icon.png',
         badge: '/images/nutrition-icon.png',
+        actions: [
+          { action: 'confirm', title: 'Confirmar Cita' },
+          { action: 'cancel', title: 'Cancelar' }
+        ],
         data: {
           url: '/portal',
+          onActionClick: {
+            default: {
+              operation: 'focusLastFocusedOrOpen',
+              url: '/portal'
+            },
+            confirm: {
+              operation: 'focusLastFocusedOrOpen',
+              url: `/portal?action=confirm&id=${eventId}`
+            },
+            cancel: {
+              operation: 'focusLastFocusedOrOpen',
+              url: `/portal?action=cancel&id=${eventId}`
+            }
+          }
         },
       },
     });
@@ -220,6 +244,12 @@ export class NotificationsService {
         badge: '/images/nutrition-icon.png',
         data: {
           url: '/portal',
+          onActionClick: {
+            default: {
+              operation: 'focusLastFocusedOrOpen',
+              url: '/portal'
+            }
+          }
         },
       },
     });

@@ -707,12 +707,45 @@ export class PortalPage implements OnInit {
 
           // Solicitar suscripción de notificaciones push
           this.pushService.requestSubscription(userEmail);
+
+          // Verificar si hay alguna acción desde notificaciones en la URL
+          this.handleUrlActions();
         }
       } catch (err) {
         console.error('Error loading portal data', err);
       } finally {
         this.loading.set(false);
       }
+    }
+  }
+
+  async handleUrlActions() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const action = params.get('action');
+      const id = params.get('id');
+
+      if (!action || !id) return;
+
+      const apt = this.nextAppointment();
+      if (!apt || apt.eventId !== id) {
+        console.warn('Notification action eventId mismatch or no appointment found.', { action, id, aptId: apt?.eventId });
+        return;
+      }
+
+      if (action === 'confirm') {
+        console.log('Automatically confirming appointment via notification action...');
+        await this.confirmAppointment();
+      } else if (action === 'cancel') {
+        console.log('Automatically opening cancel confirmation modal via notification action...');
+        this.cancelAppointment();
+      }
+
+      // Clean query parameters from URL so refreshes don't re-trigger the action
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    } catch (err) {
+      console.error('Error handling URL notification action:', err);
     }
   }
 
