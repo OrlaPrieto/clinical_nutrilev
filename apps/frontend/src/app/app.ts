@@ -6,13 +6,14 @@ import { ThemeService } from './shared/services/theme.service';
 import { AuthService } from './services/auth.service';
 import { DashboardFooterComponent } from './shared/components/organisms/dashboard-footer/dashboard-footer';
 import { PwaBannerComponent } from './shared/components/molecules/pwa-banner/pwa-banner';
+import { PwaUpdateBannerComponent } from './shared/components/molecules/pwa-update-banner/pwa-update-banner';
 import { APP_VERSION } from './version';
 import { PortalModule } from '@angular/cdk/portal';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, DashboardFooterComponent, PwaBannerComponent],
+  imports: [CommonModule, RouterOutlet, DashboardFooterComponent, PwaBannerComponent, PwaUpdateBannerComponent],
   template: `
     <router-outlet></router-outlet>
     
@@ -29,6 +30,7 @@ import { PortalModule } from '@angular/cdk/portal';
       <app-o-dashboard-footer [version]="version"></app-o-dashboard-footer>
     }
     <app-pwa-banner></app-pwa-banner>
+    <app-pwa-update-banner></app-pwa-update-banner>
   `,
 })
 export class App implements OnInit {
