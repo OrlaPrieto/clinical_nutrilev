@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { injectSpeedInsights } from '@vercel/speed-insights';
@@ -15,6 +15,13 @@ import { PortalModule } from '@angular/cdk/portal';
   standalone: true,
   imports: [CommonModule, RouterOutlet, DashboardFooterComponent, PwaBannerComponent, PwaUpdateBannerComponent],
   template: `
+    @if (isOffline()) {
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-amber-500 text-white text-[11px] font-bold py-1.5 px-4 text-center shadow-md flex items-center justify-center gap-2 animate-fade-in">
+        <span class="material-symbols-rounded !text-[14px]">wifi_off</span>
+        Sin conexión a internet. Mostrando versión local sin conexión.
+      </div>
+    }
+
     <router-outlet></router-outlet>
     
     @if (authService.isInitialLoading()) {
@@ -38,8 +45,14 @@ export class App implements OnInit {
   title = 'clinical-nutrilev';
   public authService = inject(AuthService);
   private themeService = inject(ThemeService);
+  public isOffline = signal<boolean>(typeof window !== 'undefined' ? !navigator.onLine : false);
 
   ngOnInit(): void {
     injectSpeedInsights();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => this.isOffline.set(false));
+      window.addEventListener('offline', () => this.isOffline.set(true));
+    }
   }
 }
