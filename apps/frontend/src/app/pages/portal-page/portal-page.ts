@@ -96,6 +96,41 @@ export class PortalPage implements OnInit {
     this.showHabitsFloatingModal.set(false);
   }
 
+  private swipeStartX = 0;
+  private swipeStartY = 0;
+
+  @HostListener('touchstart', ['$event'])
+  onSwipeStart(event: TouchEvent) {
+    this.swipeStartX = event.touches[0].clientX;
+    this.swipeStartY = event.touches[0].clientY;
+  }
+
+  @HostListener('touchend', ['$event'])
+  onSwipeEnd(event: TouchEvent) {
+    // Only detect swipe if not scrolling significantly vertically
+    const diffX = event.changedTouches[0].clientX - this.swipeStartX;
+    const diffY = event.changedTouches[0].clientY - this.swipeStartY;
+
+    if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
+      const tabs: ('dashboard' | 'plan' | 'analysis' | 'history')[] = ['plan', 'dashboard', 'analysis', 'history'];
+      const currentIdx = tabs.indexOf(this.activeTab());
+      
+      if (diffX > 0 && currentIdx > 0) {
+        // Swipe right (prev tab)
+        this.setActiveTab(tabs[currentIdx - 1]);
+        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate(15);
+        }
+      } else if (diffX < 0 && currentIdx < tabs.length - 1) {
+        // Swipe left (next tab)
+        this.setActiveTab(tabs[currentIdx + 1]);
+        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate(15);
+        }
+      }
+    }
+  }
+
   setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
