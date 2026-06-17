@@ -368,13 +368,19 @@
     <div class="relative w-full bg-white dark:bg-[#111111] rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-md flex flex-col overflow-hidden animate-fade-in">
             
             <!-- Premium Header Redesign -->
-            <div class="px-4 py-4 sm:px-8 sm:py-6 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent dark:from-nutri-rose/5 border-b border-nutri-rose/5 dark:border-white/5 relative overflow-hidden shrink-0 pr-14 sm:pr-8">
+            <div class="px-4 py-4 sm:px-8 sm:py-6 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent dark:from-nutri-rose/5 border-b border-nutri-rose/5 dark:border-white/5 relative overflow-hidden shrink-0">
                 <!-- Decoration -->
                 <div class="absolute -right-20 -top-20 w-48 h-48 bg-nutri-rose/5 rounded-full blur-3xl"></div>
                 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10 w-full">
                     <!-- Left: Date & Patient Info -->
                     <div class="flex items-center gap-3 sm:gap-5 w-full">
+                        <!-- Back Button -->
+                        <button (click)="closeModal()" 
+                                class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm shrink-0 cursor-pointer"
+                                title="Volver al historial">
+                            <app-a-icon name="arrow_back" customClass="!text-lg"></app-a-icon>
+                        </button>
                         <!-- Compact Date Badge -->
                         <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white dark:bg-white/5 border border-nutri-rose/10 shadow-xl flex flex-col items-center justify-center text-nutri-rose shrink-0 animate-scale-up">
                             <span class="text-base sm:text-2xl font-black leading-none">{{ record.date | date:'dd' }}</span>
@@ -467,12 +473,6 @@
                     </div>
                 </div>
                 
-                <!-- Close / Back Button (Absolute positioned) -->
-                <button (click)="closeModal()" 
-                        class="absolute top-4 right-4 sm:top-6 sm:right-8 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all shadow-sm z-20 cursor-pointer"
-                        title="Volver al historial">
-                    <app-a-icon name="arrow_back" customClass="!text-lg"></app-a-icon>
-                </button>
             </div>
  
             <!-- Content Area -->

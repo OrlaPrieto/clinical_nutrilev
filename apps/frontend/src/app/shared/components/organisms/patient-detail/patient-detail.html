@@ -744,7 +744,7 @@
         <!-- Tab 4: Seguimiento / Antropometría -->
         @if (activeTab() === 4) {
             <div class="space-y-6 animate-fade-up">
-                
+                @if (!historyComp?.selectedRecordForDetail?.()) {
                 <!-- NEW RECORD FORM AT THE TOP -->
                 <div class="bg-white dark:bg-[#111111] p-4 md:p-8 rounded-[1.75rem] md:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-4 md:space-y-6 transition-colors">
                     <div class="flex items-center justify-between flex-wrap gap-3">
@@ -1365,9 +1365,10 @@
                         }
                     </div>
                 </div>
+                }
 
                 <!-- HISTORIAL DE AVANCES -->
-                <app-progress-history [history]="progressHistory()" [patient]="patient()" [showActions]="true" (progressUpdated)="loadProgress()"></app-progress-history>
+                <app-progress-history #historyComp [history]="progressHistory()" [patient]="patient()" [showActions]="true" (progressUpdated)="loadProgress()"></app-progress-history>
             </div>
         }
 
