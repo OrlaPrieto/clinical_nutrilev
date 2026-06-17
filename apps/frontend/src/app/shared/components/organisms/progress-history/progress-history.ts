@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal, input, output, effect, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, computed, signal, input, output, effect, OnDestroy, OnInit, inject, ElementRef } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -27,6 +27,7 @@ import { PortalModule } from '@angular/cdk/portal';
 export class ProgressHistoryComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private patientService = inject(PatientService);
+  private elementRef = inject(ElementRef);
 
   history = input.required<any[]>();
   patient = input<any>(null);
@@ -100,6 +101,11 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     this.selectedRecordForDetail.set(null);
     this.isEditing.set(false);
     this.editableRecord.set(null);
+
+    // Scroll host element into view after DOM has updated to show the list and sibling forms
+    setTimeout(() => {
+      this.elementRef.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   async saveEdit() {
