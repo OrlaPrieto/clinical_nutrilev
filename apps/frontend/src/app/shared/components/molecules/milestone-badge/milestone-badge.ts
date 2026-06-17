@@ -1,17 +1,15 @@
-import { Component, input, inject, signal, HostListener } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ThemeService } from '../../../services/theme.service';
-import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-m-milestone-badge',
   standalone: true,
   imports: [CommonModule, IconComponent],
   template: `
-    <div class="flex flex-row sm:flex-col items-center gap-5 sm:gap-4 transition-all duration-500 group relative w-full sm:w-auto cursor-pointer"
-         [ngClass]="unlocked() ? 'opacity-100' : 'opacity-40'"
-         (click)="toggleTooltip($event)">
+    <div class="flex flex-row sm:flex-col items-center gap-5 sm:gap-4 transition-all duration-500 group relative w-full sm:w-auto"
+         [ngClass]="unlocked() ? 'opacity-100 cursor-pointer' : 'opacity-40 cursor-not-allowed select-none'">
       
       <!-- Premium White Medal (Clean & High Visibility) -->
       <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center border transition-all duration-700 relative bg-white dark:bg-[#121212] shadow-sm md:group-hover:scale-110 md:group-hover:rotate-[5deg] shrink-0"
@@ -19,65 +17,95 @@ import confetti from 'canvas-confetti';
         
         <!-- Glow Effect behind unlocked medals -->
         @if (unlocked()) {
-          <div class="absolute inset-2 rounded-full blur-md opacity-30 animate-glow-pulse"
+          <div class="absolute -inset-1 rounded-full blur-lg opacity-40 animate-glow-pulse"
                [ngClass]="{
-                 'bg-[#CD7F32]': id() === '25-percent',
-                 'bg-[#F5B041]': id() === 'halfway',
-                 'bg-[#4FACFE]': id() === 'goal-reached'
+                 'bg-gradient-to-tr from-orange-400 to-amber-200': id() === '25-percent',
+                 'bg-gradient-to-tr from-yellow-500 to-amber-300': id() === 'halfway',
+                 'bg-gradient-to-tr from-sky-400 to-indigo-300': id() === 'goal-reached'
                }"></div>
         }
 
         <!-- Vector Medals -->
         <div class="relative z-10 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center transition-transform duration-700 group-hover:scale-110">
           @if (id() === '25-percent') {
-            <!-- Bronze Star -->
-            <svg viewBox="0 0 64 64" class="w-full h-full">
+            <!-- Bronze Star Badge -->
+            <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(156,93,48,0.2)]">
               <defs>
                 <linearGradient id="bronzeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#E5A97C" />
-                  <stop offset="50%" stop-color="#C58351" />
-                  <stop offset="100%" stop-color="#9C5D30" />
+                  <stop offset="0%" stop-color="#FFCDA3" />
+                  <stop offset="30%" stop-color="#D98A53" />
+                  <stop offset="70%" stop-color="#B26C3B" />
+                  <stop offset="100%" stop-color="#80441C" />
+                </linearGradient>
+                <linearGradient id="bronzeBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FCF6F0" />
+                  <stop offset="100%" stop-color="#EBE0D5" />
                 </linearGradient>
               </defs>
-              <circle cx="32" cy="32" r="28" fill="none" stroke="url(#bronzeGrad)" stroke-width="1.5" stroke-dasharray="2 2" />
-              <circle cx="32" cy="32" r="24" fill="url(#bronzeGrad)" fill-opacity="0.12" />
-              <polygon points="32,15 36,25 47,25 38,32 41,43 32,36 23,43 26,32 17,25 28,25" fill="url(#bronzeGrad)" />
+              <circle cx="32" cy="32" r="28" fill="url(#bronzeBg)" stroke="url(#bronzeGrad)" stroke-width="2" />
+              <circle cx="32" cy="32" r="24" fill="none" stroke="url(#bronzeGrad)" stroke-width="0.75" stroke-dasharray="3 2" />
+              <circle cx="32" cy="32" r="20" fill="url(#bronzeGrad)" fill-opacity="0.1" stroke="url(#bronzeGrad)" stroke-width="1.25" />
+              <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGrad)" />
+              <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" />
             </svg>
           } @else if (id() === 'halfway') {
-            <!-- Gold Medal -->
-            <svg viewBox="0 0 64 64" class="w-full h-full">
+            <!-- Gold Medal with ribbons -->
+            <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_5px_8px_rgba(192,57,43,0.15)]">
               <defs>
                 <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FCE068" />
-                  <stop offset="50%" stop-color="#F5B041" />
-                  <stop offset="100%" stop-color="#C0392B" />
+                  <stop offset="0%" stop-color="#FFF3B0" />
+                  <stop offset="35%" stop-color="#F9D423" />
+                  <stop offset="70%" stop-color="#E67E22" />
+                  <stop offset="100%" stop-color="#935116" />
+                </linearGradient>
+                <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#C0392B" />
+                  <stop offset="50%" stop-color="#E74C3C" />
+                  <stop offset="100%" stop-color="#962D22" />
+                </linearGradient>
+                <linearGradient id="goldBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFFDF0" />
+                  <stop offset="100%" stop-color="#FFF5D6" />
                 </linearGradient>
               </defs>
-              <circle cx="32" cy="32" r="28" fill="none" stroke="url(#goldGrad)" stroke-width="2" />
-              <circle cx="32" cy="32" r="22" fill="url(#goldGrad)" fill-opacity="0.15" />
-              <path d="M 22,25 C 22,35 32,41 32,41 C 32,41 42,35 42,25" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" />
-              <polygon points="32,20 34,26 40,26 35,30 37,36 32,32 27,36 29,30 24,26 30,26" fill="url(#goldGrad)" />
+              <path d="M 24,24 L 16,48 L 25,43 L 32,48 L 39,43 L 48,48 L 40,24 Z" fill="url(#ribbonGrad)" />
+              <path d="M 28,24 L 32,48 L 36,24 Z" fill="#FFFFFF" fill-opacity="0.1" />
+              <circle cx="32" cy="28" r="22" fill="url(#goldBg)" stroke="url(#goldGrad)" stroke-width="2.5" />
+              <circle cx="32" cy="28" r="18" fill="url(#goldGrad)" fill-opacity="0.08" stroke="url(#goldGrad)" stroke-width="0.75" stroke-dasharray="2 2" />
+              <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGrad)" />
+              <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" />
             </svg>
           } @else if (id() === 'goal-reached') {
-            <!-- Diamond Jewel -->
-            <svg viewBox="0 0 64 64" class="w-full h-full">
+            <!-- Diamond Gemstone Badge -->
+            <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_6px_10px_rgba(79,172,254,0.25)]">
               <defs>
                 <linearGradient id="diamondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#00F2FE" />
-                  <stop offset="100%" stop-color="#4FACFE" />
+                  <stop offset="0%" stop-color="#BFF0FA" />
+                  <stop offset="35%" stop-color="#4FACFE" />
+                  <stop offset="70%" stop-color="#0052D4" />
+                  <stop offset="100%" stop-color="#4364F7" />
                 </linearGradient>
-                <linearGradient id="diamondGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#E0C3FC" />
-                  <stop offset="100%" stop-color="#8EC5FC" />
+                <linearGradient id="diamondBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#F2FBFC" />
+                  <stop offset="100%" stop-color="#E1F3F7" />
+                </linearGradient>
+                <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00F2FE" />
+                  <stop offset="50%" stop-color="#4FACFE" />
+                  <stop offset="100%" stop-color="#8E2DE2" />
                 </linearGradient>
               </defs>
-              <circle cx="32" cy="32" r="28" fill="none" stroke="url(#diamondGlow)" stroke-width="1.5" />
-              <g fill="url(#diamondGrad)" fill-opacity="0.9">
-                <polygon points="22,26 32,26 32,16 25,18" opacity="0.6"/>
-                <polygon points="32,26 42,26 39,18 32,16" opacity="0.75"/>
-                <polygon points="32,26 22,26 32,48" opacity="0.85"/>
-                <polygon points="32,26 42,26 32,48" opacity="0.95"/>
-                <polygon points="25,18 32,16 39,18 42,26 32,26 22,26" fill="url(#diamondGlow)"/>
+              <polygon points="32,6 54,22 54,48 32,58 10,48 10,22" fill="url(#diamondBg)" stroke="url(#diamondGrad)" stroke-width="2.5" stroke-linejoin="round" />
+              <polygon points="32,9 50,23 50,45 32,54 14,45 14,23" fill="none" stroke="url(#diamondGrad)" stroke-width="0.75" stroke-dasharray="3 3" stroke-linejoin="round" />
+              <g transform="translate(0, -1)">
+                <polygon points="20,22 44,22 38,15 26,15" fill="url(#gemGrad)" opacity="0.85" stroke="url(#diamondBg)" stroke-width="0.5" />
+                <polygon points="12,22 20,22 26,15" fill="url(#gemGrad)" opacity="0.75" stroke="url(#diamondBg)" stroke-width="0.5" />
+                <polygon points="44,22 52,22 38,15" fill="url(#gemGrad)" opacity="0.7" stroke="url(#diamondBg)" stroke-width="0.5" />
+                <polygon points="12,22 32,45 20,22" fill="url(#gemGrad)" opacity="0.9" stroke="url(#diamondBg)" stroke-width="0.5" />
+                <polygon points="20,22 32,45 44,22" fill="url(#gemGrad)" stroke="url(#diamondBg)" stroke-width="0.5" />
+                <polygon points="44,22 32,45 52,22" fill="url(#gemGrad)" opacity="0.8" stroke="url(#diamondBg)" stroke-width="0.5" />
+                <polygon points="20,22 32,45 32,22" fill="#FFFFFF" fill-opacity="0.18" />
+                <polygon points="26,15 32,22 20,22" fill="#FFFFFF" fill-opacity="0.1" />
               </g>
             </svg>
           }
@@ -105,30 +133,18 @@ import confetti from 'canvas-confetti';
           {{ title() }}
         </h4>
         <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 font-medium leading-tight max-w-[200px] sm:max-w-[120px] text-left sm:text-center">{{ description() }}</p>
+        
+        <!-- Desktop Action Indicator (Pill Button) -->
+        @if (unlocked()) {
+          <span class="hidden sm:inline-block text-[7.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 text-slate-400 group-hover:text-nutri-rose group-hover:bg-nutri-rose/10 group-hover:border-nutri-rose/25 transition-all mt-1.5 duration-300">
+            Detalles ↗
+          </span>
+        }
       </div>
 
-      <!-- Tooltip Content (Glassmorphic Card) -->
-      @if (showTooltip()) {
-        <div class="absolute bottom-full left-1/2 mb-4 w-60 p-4 rounded-2xl bg-white/95 dark:bg-black/95 backdrop-blur-md border border-slate-200/60 dark:border-white/10 shadow-2xl z-30 text-center animate-tooltip-in pointer-events-auto space-y-2"
-             (click)="$event.stopPropagation()">
-          
-          <!-- Decorative Arrow -->
-          <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white/95 dark:border-t-black/95"></div>
-          
-          <div class="flex items-center gap-2 justify-center mb-1">
-            <span class="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
-                  [ngClass]="unlocked() ? 'bg-nutri-rose/10 text-nutri-rose' : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500'">
-              {{ unlocked() ? '🏆 Desbloqueado' : '🔒 Por Desbloquear' }}
-            </span>
-          </div>
-          
-          <h5 class="text-[10px] font-black uppercase tracking-widest serif text-nutri-text dark:text-slate-200">{{ title() }}</h5>
-          <p class="text-[9px] text-nutri-text/60 dark:text-slate-400 leading-normal font-medium max-w-[220px] mx-auto">
-            {{ getTooltipMessage() }}
-          </p>
-          
-          <span class="text-[8px] font-bold text-nutri-rose/60 uppercase tracking-widest pt-1 block">Toca fuera para cerrar</span>
-        </div>
+      <!-- Mobile Chevron (Pushed to the far right on mobile row layout) -->
+      @if (unlocked()) {
+        <app-a-icon name="chevron_right" size="16px" class="text-slate-300 dark:text-slate-600 group-hover:text-nutri-rose sm:hidden transition-colors shrink-0 ml-auto mr-1"></app-a-icon>
       }
     </div>
   `,
@@ -148,13 +164,6 @@ import confetti from 'canvas-confetti';
     .animate-pop-in {
       animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    @keyframes tooltipIn {
-      from { opacity: 0; transform: translate(-50%, 8px) scale(0.95); }
-      to { opacity: 1; transform: translate(-50%, 0) scale(1); }
-    }
-    .animate-tooltip-in {
-      animation: tooltipIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
     @keyframes glowPulse {
       0%, 100% { opacity: 0.25; transform: scale(0.95); filter: blur(8px); }
       50% { opacity: 0.45; transform: scale(1.1); filter: blur(12px); }
@@ -170,56 +179,4 @@ export class MilestoneBadgeComponent {
   title = input.required<string>();
   description = input.required<string>();
   unlocked = input<boolean>(false);
-
-  showTooltip = signal<boolean>(false);
-
-  toggleTooltip(event: Event) {
-    event.stopPropagation();
-    const willShow = !this.showTooltip();
-    this.showTooltip.set(willShow);
-
-    // If unlocked and opening, trigger confetti!
-    if (willShow && this.unlocked()) {
-      this.triggerConfetti();
-    }
-  }
-
-  @HostListener('document:click')
-  onDocumentClick() {
-    this.showTooltip.set(false);
-  }
-
-  triggerConfetti() {
-    let colors = ['#D81B60', '#F5B041', '#4FACFE'];
-    if (this.id() === '25-percent') colors = ['#CD7F32', '#E5A97C', '#9C5D30'];
-    else if (this.id() === 'halfway') colors = ['#F5B041', '#FCE068', '#C0392B'];
-    else if (this.id() === 'goal-reached') colors = ['#00F2FE', '#4FACFE', '#E0C3FC'];
-
-    confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.7 },
-      colors: colors
-    });
-  }
-
-  getTooltipMessage(): string {
-    const isUnlocked = this.unlocked();
-    switch (this.id()) {
-      case '25-percent':
-        return isUnlocked 
-          ? '¡Excelente inicio! Has alcanzado el primer cuarto de tu camino. Tus hábitos están cambiando positivamente y vas con paso firme hacia tu meta.'
-          : 'Logra completar el 25% de tu meta total de peso, grasa o músculo. ¡Sigue tu plan para desbloquear tu primera insignia!';
-      case 'halfway':
-        return isUnlocked
-          ? '¡Hito increíble! Estás a la mitad del camino de tu meta de bienestar. Tu perseverancia y constancia están dando frutos extraordinarios.'
-          : 'Llega al 50% de tu objetivo de consulta para desbloquear este logro. ¡El esfuerzo de hoy es tu resultado del mañana!';
-      case 'goal-reached':
-        return isUnlocked
-          ? '¡META CUMPLIDA! Has alcanzado el 100% de tu objetivo. Tu disciplina es admirable y has transformado por completo tu calidad de vida. ¡Muchísimas felicidades!'
-          : 'Alcanza el 100% de tu objetivo personalizado. La meta definitiva de tu plan nutricional te espera al final de este camino.';
-      default:
-        return 'Sigue sumando logros en tu plan nutricional para ver tu progreso.';
-    }
-  }
 }

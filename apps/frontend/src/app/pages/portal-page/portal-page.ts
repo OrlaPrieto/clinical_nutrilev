@@ -17,6 +17,7 @@ import { MilestoneBadgeComponent } from '../../shared/components/molecules/miles
 import { environment } from '../../../environments/environment';
 import { ProgressAnalyticCardComponent } from '../../shared/components/organisms/progress-analytic-card/progress-analytic-card';
 import { ProgressHistoryComponent } from '../../shared/components/organisms/progress-history/progress-history';
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-portal-page',
@@ -66,6 +67,7 @@ export class PortalPage implements OnInit, OnDestroy {
   showThemeMenu = signal<boolean>(false);
   showHabitsFloatingModal = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
+  activeCelebration = signal<any | null>(null);
   activeMetrics = signal<{ weight: boolean; fat: boolean; muscle: boolean }>({
     weight: false,
     fat: false,
@@ -809,9 +811,97 @@ export class PortalPage implements OnInit, OnDestroy {
 
         // Cargar hábitos diarios
         this.loadDailyHabits();
+
+        // Verificar si hay nuevos logros para celebrar
+        setTimeout(() => {
+          this.checkNewMilestones();
+        }, 1000);
       }
     } catch (err) {
       console.error('Error loading portal data', err);
+    }
+  }
+
+  checkNewMilestones() {
+    const list = this.milestones();
+    if (list.length === 0) return;
+
+    // Cargar logros ya celebrados de localStorage
+    let celebrated: string[] = [];
+    try {
+      const stored = localStorage.getItem('celebrated_milestones');
+      if (stored) {
+        celebrated = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error('Error parsing celebrated_milestones', e);
+    }
+
+    // Buscar el primer logro desbloqueado que no haya sido celebrado
+    const toCelebrate = list.find(ms => ms.unlocked && !celebrated.includes(ms.id));
+    if (toCelebrate) {
+      // Lanzar celebración modal
+      this.activeCelebration.set(toCelebrate);
+      
+      // Guardar inmediatamente en celebrados para no volver a repetirse
+      celebrated.push(toCelebrate.id);
+      localStorage.setItem('celebrated_milestones', JSON.stringify(celebrated));
+      
+      // Detonar confeti premium
+      this.triggerCelebrationConfetti(toCelebrate.id);
+    }
+  }
+
+  triggerCelebrationConfetti(id: string) {
+    let colors = ['#D81B60', '#F5B041', '#4FACFE'];
+    if (id === '25-percent') colors = ['#CD7F32', '#E5A97C', '#9C5D30'];
+    else if (id === 'halfway') colors = ['#F5B041', '#FCE068', '#C0392B'];
+    else if (id === 'goal-reached') colors = ['#00F2FE', '#4FACFE', '#E0C3FC'];
+
+    const duration = 2.5 * 1000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 6,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: colors,
+        zIndex: 9999
+      });
+      confetti({
+        particleCount: 6,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: colors,
+        zIndex: 9999
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+  }
+
+  openMilestoneModal(ms: any) {
+    if (!ms.unlocked) return;
+    this.activeCelebration.set(ms);
+    this.triggerCelebrationConfetti(ms.id);
+  }
+
+  getCelebrationMessage(id: string): string {
+    switch (id) {
+      case '25-percent':
+        return '¡Excelente inicio! Has alcanzado el primer cuarto de tu camino. Tus hábitos están cambiando positivamente y vas con paso firme hacia tu meta de bienestar.';
+      case 'halfway':
+        return '¡Hito increíble! Estás a la mitad del camino de tu meta. Tu perseverancia y constancia están dando frutos extraordinarios. ¡Sigue así!';
+      case 'goal-reached':
+        return '¡META CUMPLIDA! Has alcanzado el 100% de tu objetivo. Tu disciplina es admirable y has transformado tu calidad de vida. ¡Muchísimas felicidades!';
+      default:
+        return 'Sigue sumando logros en tu plan nutricional para alcanzar tus objetivos.';
     }
   }
 
