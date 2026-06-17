@@ -1,79 +1,132 @@
-# Clinical Nutrilev - Arquitectura Híbrida 🚀
+# Nutrilev - Plataforma Clínica de Nutrición de Élite 🍏🚀
 
-Este repositorio contiene la plataforma Clinical Nutrilev, organizada como un **Monorepo** con tres servicios principales que trabajan en conjunto.
-
-## 🏗️ Estructura del Proyecto
-
-- **`apps/frontend`**: Aplicación Angular (Interfaz de usuario).
-- **`apps/api-main`**: Backend NestJS (TypeScript). Es el gateway principal que maneja Autenticación, Pacientes y actúa como puente.
-- **`apps/api-python`**: Microservicio Flask (Python). Se encarga exclusivamente del procesamiento de IA (Gemini) y generación de documentos `.docx`.
+Nutrilev es una plataforma web y clínica diseñada para optimizar el control de expedientes de pacientes, monitorear el progreso antropométrico mediante gráficos analíticos y automatizar el diseño de planes nutricionales personalizados empleando modelos avanzados de Inteligencia Artificial (Google Gemini).
 
 ---
 
-## 🛠️ Configuración Paso a Paso
+## 🏗️ Arquitectura del Proyecto
 
-### 1. Requisitos Previos
-- **Node.js**: v18 o superior.
-- **Python**: v3.9 o superior.
-- **Supabase**: Proyecto configurado con las tablas `patients` y `patient_progress`.
+La plataforma está construida como un **Monorepo** con una arquitectura de microservicios híbrida:
 
-### 2. Variables de Entorno
-Crea un archivo `.env` en la **raíz** del proyecto (fuera de la carpeta `apps`) con el siguiente contenido:
-
-```env
-# Supabase (Frontend & NestJS)
-VITE_SUPABASE_URL=tu_url_de_supabase
-VITE_SUPABASE_ANON_KEY=tu_anon_key
-SUPABASE_JWT_SECRET=tu_jwt_secret
-
-# AI & Email (Python)
-GEMINI_API_KEY=tu_api_key_de_gemini
-OPENAI_API_KEY=tu_api_key_de_openai
-RESEND_API_KEY=tu_api_key_de_resend
-EMAIL_FROM=tu_correo_configurado
+```mermaid
+graph TD
+    A[Frontend App - Angular 21] -->|REST / JWT Auth| B[Gateway Backend - NestJS 11]
+    B -->|Bypass RLS w/ Service Role| C[Supabase Database & Storage]
+    B -->|Proxy AI w/ x-internal-key| D[AI Microservice - Flask]
+    D -->|GenAI SDK| E[Google Gemini API]
+    D -->|Docx Templates & Extraction| F[DOCX/PDF Document Processor]
+    D -.->|Download Menu File| C
 ```
 
-### 3. Instalación de Dependencias
-Ejecuta los siguientes comandos desde la **raíz** del proyecto:
+### Servicios Principales
+*   **`apps/frontend`**: Aplicación web de alto rendimiento desarrollada en **Angular 21** con **Tailwind CSS**. Implementa una arquitectura PWA, manejo de estados reactivos con Signals, layouts responsivos y un gestor dinámico de temas (Light, Dark, Organic Sage, Lavender Zen).
+*   **`apps/api-main`**: Gateway del backend desarrollado con **NestJS 11**. Administra la autenticación con Supabase, la lógica de negocio clínica (CRUD de pacientes, citas y progreso), y expone servicios de notificaciones push y envíos transaccionales de correo electrónico mediante **Resend**.
+*   **`apps/api-python`**: Microservicio en **Flask** encargado del procesamiento inteligente de datos. Utiliza la librería de Google GenAI SDK (Gemini) para generar y extraer dietas en formato `.docx` y `.pdf`, así como parsear de forma automática listas de súper.
+*   **`libs/shared`**: Biblioteca compartida en TypeScript que define interfaces de datos y tipos unificados para mantener la integridad de modelos entre el frontend y el backend de NestJS.
 
-#### Dependencias de Node (Frontend y NestJS)
+---
+
+## ✨ Funcionalidades Destacadas
+
+### 1. Plan de Pago de Citas ("Paquetes de Citas")
+*   Permite a la nutrióloga configurar paquetes de sesiones (2, 3 o 4 consultas) y registrar visitas asociadas a los registros de progreso.
+*   En el portal de pacientes, se renderiza un indicador circular dinámico (glowing progress ring) y una línea de tiempo (stepper) que detalla el progreso actual del plan de citas, con estados interactivos y alertas de renovación.
+*   Acción de reinicio con un solo clic ("Iniciar Nuevo Plan") para restablecer y reiniciar el ciclo del paquete del paciente.
+
+### 2. Generador Clínico de Menús por IA
+*   El asistente de IA lee el contexto metabólico y físico del paciente (peso habitual, grasa, músculo, alergias, padecimientos, gustos) y genera una guía alimentaria personalizada de alta precisión ajustada a las calorías objetivo del paciente.
+*   Los menús se compilan y descargan directamente en archivos descargables Word (.docx) premium con estilos consistentes.
+
+### 3. Registro e Historial de Evolución Física
+*   Permite registrar peso, porcentaje de grasa, masa muscular, circunferencias e indicadores clínicos específicos.
+*   Los registros anteriores e históricos se muestran en un panel inline a pantalla completa con navegación interna fluida y opciones para comparar variaciones y borrar registros anteriores de la base de datos de manera segura.
+
+### 4. Lector Inteligente de Lista de Súper
+*   Descarga el plan nutricional activo en formato `.docx` o `.pdf` desde Supabase Storage y utiliza Gemini para estructurar, clasificar y devolver un JSON con la lista de compras del súper ordenada por departamentos (frutas, proteínas, lácteos, etc.).
+
+---
+
+## 🛠️ Configuración y Requisitos Locales
+
+### 1. Requisitos Previos
+*   **Node.js**: v18.0.0 o superior.
+*   **Python**: v3.9.0 o superior.
+*   **Supabase**: Cuenta activa con base de datos Postgres configurada con las tablas `patients` y `patient_progress`.
+
+### 2. Variables de Entorno
+Crea un archivo `.env` en la **raíz** del proyecto con la siguiente estructura de variables:
+
+| Variable | Descripción | Utilizado por |
+| :--- | :--- | :--- |
+| `VITE_SUPABASE_URL` | Endpoint URL del proyecto de Supabase. | Frontend / NestJS |
+| `VITE_SUPABASE_ANON_KEY` | Llave anónima pública de Supabase. | Frontend |
+| `SUPABASE_SERVICE_ROLE_KEY` | Llave administrativa de backend para omitir RLS. | NestJS |
+| `SUPABASE_JWT_SECRET` | Secreto para verificar la autenticación del usuario. | NestJS |
+| `GEMINI_API_KEY` | API Key para acceder al motor de Google Gemini AI. | Flask |
+| `RESEND_API_KEY` | API Key de Resend para el envío automatizado de correos. | NestJS |
+| `EMAIL_FROM` | Dirección de correo configurada para remitir mensajes. | NestJS |
+| `FLASK_API_URL` | Endpoint del microservicio local de Flask (default `http://localhost:8000`). | NestJS |
+| `INTERNAL_API_KEY` | Firma secreta interna de autorización interservicios. | NestJS / Flask |
+
+---
+
+## 🚀 Instalación y Despliegue Local
+
+### Paso 1: Instalar dependencias de Node
+Desde la raíz del proyecto, ejecuta:
 ```bash
 npm install
 ```
-*Este comando instalará `concurrently` en la raíz y configurará los enlaces de los workspaces.*
+*Este comando inicializa el monorepo y vincula las dependencias de los workspaces de frontend y api-main de manera global.*
 
-#### Dependencias de Python
+### Paso 2: Configurar entorno virtual y dependencias de Python
+Instala las dependencias del microservicio de inteligencia artificial:
 ```bash
 cd apps/api-python
 python3 -m venv venv
-source venv/bin/activate  # (En Windows: venv\Scripts\activate)
+source venv/bin/activate     # En Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cd ../..
 ```
 
----
+### Paso 3: Arrancar la aplicación
 
-## 🚀 Ejecución del Proyecto
-
-### Opción A: Arranque Unificado (Recomendado)
-Desde la raíz del proyecto, ejecuta:
+#### Opción A: Ejecución en Paralelo (Recomendado)
+Para iniciar los tres servicios en un solo flujo de terminal, ejecuta en la raíz:
 ```bash
 npm start
 ```
-Este comando iniciará simultáneamente:
-- **Frontend**: `http://localhost:4200`
-- **NestJS Gateway**: `http://localhost:3000`
-- **Python Flask**: `http://localhost:8000`
+Esto levantará:
+*   **Frontend**: `http://localhost:4200`
+*   **NestJS Gateway**: `http://localhost:3000`
+*   **Python Flask**: `http://localhost:8000`
 
-### Opción B: Arranque Individual
-Si prefieres ver los logs por separado, puedes abrir 3 terminales:
-1. **Frontend**: `npm start --workspace=apps/frontend`
-2. **NestJS**: `npm run start:dev --workspace=apps/api-main`
-3. **Python**: `cd apps/api-python && source venv/bin/activate && python3 app.py`
+#### Opción B: Ejecución Individual
+Abre tres terminales independientes si necesitas separar la lectura de logs:
+1.  **Frontend (Angular)**:
+    ```bash
+    npm start --workspace=apps/frontend
+    ```
+2.  **Gateway (NestJS)**:
+    ```bash
+    npm run start:dev --workspace=apps/api-main
+    ```
+3.  **IA Microservice (Python)**:
+    ```bash
+    cd apps/api-python && source venv/bin/activate && python3 app.py
+    ```
 
 ---
 
-## 📝 Notas Adicionales
-- La aplicación de Angular se comunica con NestJS (Puerto 3000).
-- NestJS redirige las peticiones de IA a Python (Puerto 8000).
-- Asegúrate de tener el bucket `patient_menus` creado en Supabase Storage para la subida de archivos.
+## 🧪 Pruebas y Modo de Desarrollo (Bypass)
+
+Para facilitar el desarrollo y evitar la necesidad de configurar Google OAuth o autenticación de producción localmente, puedes activar el **Modo Desarrollador** a través de parámetros de URL:
+
+*   **Portal de Paciente (Bypass)**: Accede a [http://localhost:4200/?dev=true&role=patient](http://localhost:4200/?dev=true&role=patient) para iniciar sesión automáticamente simulando la vista del dashboard del paciente.
+*   **Portal de Nutrióloga (Bypass)**: Accede a [http://localhost:4200/?dev=true&role=admin](http://localhost:4200/?dev=true&role=admin) para entrar directamente a la gestión de expedientes y visualización de tablas.
+
+---
+
+## 📝 Notas de Producción
+*   Asegúrate de crear y configurar un bucket de Supabase Storage público/privado llamado `patient_menus` para posibilitar la subida y almacenamiento de los archivos `.docx` generados por el sistema de IA.
+*   La comunicación directa del frontend es siempre con NestJS Gateway (Puerto 3000). NestJS canaliza y valida las solicitudes antes de consultar al microservicio de Python (Puerto 8000).
