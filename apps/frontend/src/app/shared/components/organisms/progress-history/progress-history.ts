@@ -47,6 +47,35 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     this.visibleCount.update(c => c + 6);
   }
 
+  async deleteRecord(record: any, event: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    const confirmDelete = confirm(`¿Estás seguro de que deseas eliminar permanentemente este registro de progreso del ${new Date(record.date).toLocaleDateString()}?`);
+    if (!confirmDelete) return;
+
+    try {
+      await this.patientService.deleteProgressEntry(record.id);
+      this.toast.set({ message: 'Registro eliminado con éxito', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      
+      // If we are currently viewing this record, close the detail view
+      if (this.selectedRecordForDetail()?.id === record.id) {
+        this.closeModal();
+      }
+      
+      this.progressUpdated.emit();
+    } catch (err) {
+      console.error('Error deleting progress entry:', err);
+      this.toast.set({ message: 'Error al eliminar el registro', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+    }
+  }
+
+  async deleteRecordFromDetail(record: any) {
+    await this.deleteRecord(record, null as any);
+  }
+
   startEdit(record: any) {
     this.editableRecord.set({ ...record });
     this.isEditing.set(true);

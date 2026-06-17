@@ -228,6 +228,16 @@ export class PatientService {
     return data as PatientProgress;
   }
 
+  async removeProgress(id: string): Promise<{ success: boolean }> {
+    const { error } = await this.supabaseService
+      .getClient()
+      .from('patient_progress')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { success: true };
+  }
 
   async remove(identifier: string): Promise<{ success: boolean }> {
     let email: string | null = null;

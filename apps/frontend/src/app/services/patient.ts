@@ -140,6 +140,24 @@ export class PatientService {
     return result;
   }
 
+  async deleteProgressEntry(id: string): Promise<any> {
+    let result;
+    if (this.authService.isDevMode()) {
+      const index = MOCK_PROGRESS.findIndex(p => p.id === id);
+      if (index !== -1) {
+        const removed = MOCK_PROGRESS.splice(index, 1);
+        result = await new Promise(resolve => setTimeout(() => resolve(removed[0]), 500));
+      } else {
+        throw new Error('Progress entry not found in mock data');
+      }
+    } else {
+      result = await firstValueFrom(this.http.delete<any>(`${this.apiUrl}/progress/${id}`));
+    }
+
+    this.invalidateCache();
+    return result;
+  }
+
   async getShoppingList(menuUrl: string): Promise<ShoppingCategory[]> {
     return firstValueFrom(this.http.post<ShoppingCategory[]>(`${this.apiUrl}/shopping-list`, { menu_url: menuUrl }));
   }

@@ -66,6 +66,13 @@ export class PatientController {
     return this.patientService.updateProgress(id, progressData);
   }
 
+  @Delete('progress/:id')
+  @UseGuards(AdminGuard)
+  async removeProgress(
+    @Param('id') id: string,
+  ): Promise<{ success: boolean }> {
+    return this.patientService.removeProgress(id);
+  }
 
   @Delete(':identifier')
   @UseGuards(AdminGuard)
