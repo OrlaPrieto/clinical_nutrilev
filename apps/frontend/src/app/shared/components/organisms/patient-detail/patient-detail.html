@@ -1068,6 +1068,14 @@
                             <label class="text-[8px] font-bold text-nutri-rose uppercase tracking-widest ml-1">Notas del avance</label>
                             <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg dark:bg-white/5 dark:text-slate-200 rounded-2xl px-4 py-3 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Anotaciones adicionales sobre la evolución del paciente..."></textarea>
                         </div>
+
+                        <!-- Botón de guardar secundario al final del formulario -->
+                        <div class="flex justify-end pt-2">
+                            <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
+                                        label="Guardar Registro" variant="primary" size="md"
+                                        customClass="!px-8 !rounded-2xl !text-[10px] !font-black !uppercase !tracking-[0.1em] !shadow-lg !shadow-nutri-rose/25">
+                            </app-a-button>
+                        </div>
                     </div>
                 </div>
 
