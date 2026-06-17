@@ -106,7 +106,8 @@ export class PatientDetailComponent implements OnInit {
     pierna_izq_grasa: null, pierna_izq_musculo: null, pierna_izq_cm: null,
     icc: null, gv: null, abdomen: null, cintura: null, cadera: null,
     edad_metabolica: null, presion_arterial: '', pulso: null, pliegue_cutaneo: null,
-    notes: '' 
+    notes: '',
+    numero_cita: null
   });
   addingProgress = signal<boolean>(false);
   isUploadingMenu = signal<boolean>(false);
@@ -247,7 +248,8 @@ export class PatientDetailComponent implements OnInit {
       pierna_izq_grasa: null, pierna_izq_musculo: null, pierna_izq_cm: null,
       icc: null, gv: null, abdomen: null, cintura: null, cadera: null,
       edad_metabolica: null, presion_arterial: '', pulso: null, pliegue_cutaneo: null,
-      notes: '' 
+      notes: '',
+      numero_cita: null
     });
     this.changedFields.set({});
   }
@@ -297,13 +299,34 @@ export class PatientDetailComponent implements OnInit {
     
     this.addingProgress.set(true);
     try {
-      const progressData = this.newProgress();
+      const progressData = { ...this.newProgress() };
+      
+      // Automatización del plan de citas
+      if (p.plan_citas) {
+        const nextCita = (p.plan_citas_completadas || 0) + 1;
+        if (nextCita <= p.plan_citas) {
+          progressData.numero_cita = nextCita;
+          
+          // Actualizar localmente y en el backend
+          p.plan_citas_completadas = nextCita;
+          await this.patientService.addPatientEntry({
+            email: p.email,
+            plan_citas_completadas: nextCita,
+            action: "update"
+          });
+        }
+      }
+
       await this.patientService.addProgressEntry({
         patient_email: p.email,
         ...progressData
       });
+
       this.resetNewProgress();
       await this.loadProgress();
+      
+      this.saved.emit(); // Actualizar panel de expediente principal
+
       this.showSuccess.set(true);
       setTimeout(() => this.showSuccess.set(false), 3000);
     } catch (err) {
@@ -311,6 +334,30 @@ export class PatientDetailComponent implements OnInit {
       alert('Error al agregar el registro de progreso');
     } finally {
       this.addingProgress.set(false);
+    }
+  }
+
+  toNumber(val: any): number {
+    return Number(val);
+  }
+
+  onPlanCitasChange(val: any) {
+    const planValue = val ? Number(val) : null;
+    const p = this.patient();
+    if (p) {
+      p.plan_citas = planValue;
+      if (!planValue) {
+        p.plan_citas_completadas = 0;
+      }
+    }
+  }
+
+  resetPaymentPlanProgress() {
+    const p = this.patient();
+    if (p) {
+      p.plan_citas_completadas = 0;
+      this.toast.set({ message: 'Contador de citas completadas reiniciado a 0', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
     }
   }
 

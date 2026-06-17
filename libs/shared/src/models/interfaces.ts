@@ -55,6 +55,8 @@ export interface Patient {
   created_at: string;
   ultima_actualizacion?: string | null;
   foto_url?: string | null;
+  plan_citas?: number | null;
+  plan_citas_completadas?: number | null;
 }
 
 export interface AiResponse<T = unknown> {
@@ -130,6 +132,7 @@ export interface PatientProgress {
   pliegue_cutaneo?: number | string | null;
   notes?: string | null;
   date?: string;
+  numero_cita?: number | string | null;
 }
 
 export interface PatientProgressInsert extends Omit<PatientProgress, 'id'> {

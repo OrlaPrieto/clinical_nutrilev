@@ -230,6 +230,10 @@ export class PortalPage implements OnInit, OnDestroy {
     return p.nombre.split(' ')[0];
   });
 
+  toNumber(val: any): number {
+    return Number(val);
+  }
+
   welcomeMessage = computed(() => {
     const hours = new Date().getHours();
     const name = this.firstName();

@@ -147,6 +147,10 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     document.body.classList.remove('modal-open');
   }
 
+  toNumber(val: any): number {
+    return Number(val);
+  }
+
   calculateDelta(current: any, previous: any, field: string): number | null {
     if (current === null || current === undefined || previous === null || previous === undefined) return null;
     

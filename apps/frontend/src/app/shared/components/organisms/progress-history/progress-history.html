@@ -47,9 +47,18 @@
                         <!-- Desktop & Tablet Layout -->
                         <div class="hidden md:flex items-center justify-between gap-4 w-full">
                             <!-- Left: Date Badge -->
-                            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-black shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5 dark:border-white/10 transition-colors shrink-0">
-                                <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ record.date | date:'dd' }}</span>
-                                <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="w-12 h-12 rounded-2xl bg-white dark:bg-black shadow-sm flex flex-col items-center justify-center border border-nutri-rose/5 dark:border-white/10 transition-colors shrink-0">
+                                    <span class="text-[10px] font-bold text-nutri-rose leading-none">{{ record.date | date:'dd' }}</span>
+                                    <span class="text-[8px] font-black uppercase text-nutri-text/50 dark:text-slate-500 leading-none mt-1">{{ record.date | date:'MMM' }}</span>
+                                </div>
+                                @if (record.numero_cita) {
+                                    <div class="flex flex-col shrink-0">
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-nutri-rose/10 text-nutri-rose border border-nutri-rose/20 uppercase tracking-wider">
+                                            Cita {{ record.numero_cita }}
+                                        </span>
+                                    </div>
+                                }
                             </div>
                             
                             <!-- Metrics Grid (Desktop: 6 columns, Tablet: 3 columns) -->
@@ -170,7 +179,9 @@
                                     <span class="text-[7.5px] font-black uppercase text-nutri-text/40 dark:text-slate-500 leading-none mt-0.5">{{ record.date | date:'MMM' }}</span>
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-nutri-rose/85">Consulta</span>
+                                    <span class="text-[9px] font-black uppercase tracking-wider text-nutri-rose/85">
+                                        {{ record.numero_cita ? 'Cita ' + record.numero_cita : 'Consulta' }}
+                                    </span>
                                     <span class="text-[7.5px] font-bold text-nutri-text/30 dark:text-slate-600">{{ record.date | date:'yyyy' }}</span>
                                 </div>
                             </div>
@@ -251,7 +262,14 @@
                                 <tr class="hover:bg-nutri-bg/10 dark:hover:bg-white/[0.02] transition-colors group">
                                     <td class="p-2 sm:p-4">
                                         <div class="flex flex-col">
-                                            <span class="text-[10px] sm:text-xs font-black dark:text-slate-200">{{ record.date | date:'dd MMM' }}</span>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="text-[10px] sm:text-xs font-black dark:text-slate-200">{{ record.date | date:'dd MMM' }}</span>
+                                                @if (record.numero_cita) {
+                                                    <span class="px-1.5 py-0.2 text-[7px] font-black rounded-full bg-nutri-rose/10 text-nutri-rose border border-nutri-rose/20 uppercase tracking-wider scale-[0.9] origin-left">
+                                                        Cita {{ record.numero_cita }}
+                                                    </span>
+                                                }
+                                            </div>
                                             <span class="text-[7px] sm:text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ record.date | date:'yyyy' }}</span>
                                         </div>
                                     </td>
@@ -314,7 +332,9 @@
                                                         title="Copiar reporte como imagen">
                                                     <app-a-icon name="content_copy" [size]="'16px'"></app-a-icon>
                                                 </button>
-                                                <button class="p-1.5 sm:p-2 rounded-xl bg-nutri-rose/5 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all">
+                                                <button (click)="selectedRecordForDetail.set(record); startEdit(record)"
+                                                        class="p-1.5 sm:p-2 rounded-xl bg-nutri-rose/5 text-nutri-rose hover:bg-nutri-rose hover:text-white transition-all"
+                                                        title="Editar registro">
                                                     <app-a-icon name="edit" [size]="'16px'"></app-a-icon>
                                                 </button>
                                             }
@@ -598,6 +618,44 @@
                             </div>
                         }
  
+                        <!-- Plan de Citas de Seguimiento (Solo si el paciente tiene plan activo) -->
+                        @if (patient()?.plan_citas) {
+                            <div class="bg-slate-50 dark:bg-white/[0.02] rounded-2xl border border-slate-100 dark:border-white/5 p-5 space-y-3 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">Plan de Pagos</span>
+                                    <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500">
+                                        Plan activo: {{ patient()?.plan_citas }} citas
+                                    </span>
+                                </div>
+                                @if (isEditing()) {
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        @for (num of [1, 2, 3, 4].slice(0, toNumber(patient()?.plan_citas)); track num) {
+                                            <button type="button"
+                                                    (click)="updateEditableField('numero_cita', num)"
+                                                    class="w-10 h-10 rounded-full border-2 transition-all font-bold flex items-center justify-center text-xs"
+                                                    [ngClass]="toNumber(editableRecord()?.numero_cita) === num
+                                                        ? 'bg-nutri-rose border-nutri-rose text-white shadow-md'
+                                                        : 'border-nutri-text/10 text-nutri-text hover:bg-nutri-rose/5 dark:border-white/10 dark:text-slate-300'">
+                                                {{ num }}
+                                            </button>
+                                        }
+                                        <button type="button"
+                                                (click)="updateEditableField('numero_cita', null)"
+                                                class="px-3 h-10 rounded-full border-2 transition-all font-bold flex items-center justify-center text-2xs"
+                                                [ngClass]="!editableRecord()?.numero_cita
+                                                    ? 'bg-amber-500 border-amber-500 text-white shadow-md'
+                                                    : 'border-nutri-text/10 text-nutri-text hover:bg-amber-500/5 dark:border-white/10 dark:text-slate-300'">
+                                            No asociar
+                                        </button>
+                                    </div>
+                                } @else {
+                                    <div class="text-sm font-extrabold text-nutri-text dark:text-slate-200">
+                                        {{ record.numero_cita ? 'Cita ' + record.numero_cita + ' de ' + patient()?.plan_citas : 'No asociada a plan de citas' }}
+                                    </div>
+                                }
+                            </div>
+                        }
+
                         <!-- Notas Destacadas -->
                         @if (isEditing() || record.notes) {
                             <div class="bg-nutri-rose/[0.02] dark:bg-white/5 rounded-[1.75rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 p-5 sm:p-8 space-y-4">

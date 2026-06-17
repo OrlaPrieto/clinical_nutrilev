@@ -19,7 +19,9 @@ export const MOCK_PATIENTS: Patient[] = [
     ultima_actualizacion: new Date().toISOString(),
     current_menus: [
       { name: 'Menú Etapa 1', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', uploaded_at: new Date().toISOString() }
-    ]
+    ],
+    plan_citas: 3,
+    plan_citas_completadas: 1
   },
   {
     id: '2',
@@ -36,7 +38,9 @@ export const MOCK_PATIENTS: Patient[] = [
     acceso_portal: true,
     dado_de_baja: false,
     created_at: new Date().toISOString(),
-    ultima_actualizacion: new Date().toISOString()
+    ultima_actualizacion: new Date().toISOString(),
+    plan_citas: null,
+    plan_citas_completadas: 0
   },
   {
     id: '3',
@@ -53,7 +57,9 @@ export const MOCK_PATIENTS: Patient[] = [
     acceso_portal: false,
     dado_de_baja: false,
     created_at: new Date().toISOString(),
-    ultima_actualizacion: new Date().toISOString()
+    ultima_actualizacion: new Date().toISOString(),
+    plan_citas: 2,
+    plan_citas_completadas: 0
   }
 ];
 
@@ -66,7 +72,8 @@ export const MOCK_PROGRESS: PatientProgress[] = [
     muscle_mass: 45,
     imc: 25.2,
     date: new Date().toISOString(),
-    notes: 'Ha seguido la dieta al 90%. Se siente con más energía.'
+    notes: 'Ha seguido la dieta al 90%. Se siente con más energía.',
+    numero_cita: 1
   },
   {
     id: 'p2',
@@ -76,6 +83,7 @@ export const MOCK_PROGRESS: PatientProgress[] = [
     muscle_mass: 44,
     imc: 25.8,
     date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    notes: 'Inicio del tratamiento.'
+    notes: 'Inicio del tratamiento.',
+    numero_cita: null
   }
 ];

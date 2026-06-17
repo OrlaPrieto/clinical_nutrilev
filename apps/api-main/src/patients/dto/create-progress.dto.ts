@@ -183,4 +183,9 @@ export class CreateProgressDto {
   @IsString()
   @IsOptional()
   date?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  numero_cita?: number;
 }

@@ -257,6 +257,91 @@
                         </app-m-detail-field>
                     </div>
                 </div>
+
+                <!-- Plan de Pago de Citas Card -->
+                <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
+                    <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
+                        <div class="flex items-center gap-3">
+                            <app-a-icon name="payments" customClass="text-nutri-rose text-xl"></app-a-icon>
+                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Plan de Pago de Citas</h4>
+                        </div>
+                        @if (isEditing()) {
+                            <app-a-badge label="Modo Edición" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
+                        }
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Selector de Plan -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Plan de Citas del Paciente</label>
+                            @if (isEditing()) {
+                                <select [ngModel]="patient()?.plan_citas" 
+                                        (ngModelChange)="onPlanCitasChange($event)"
+                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
+                                    <option [value]="null">Cita única (Sin plan)</option>
+                                    <option [value]="2">Plan de 2 citas</option>
+                                    <option [value]="3">Plan de 3 citas</option>
+                                    <option [value]="4">Plan de 4 citas</option>
+                                </select>
+                            } @else {
+                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
+                                    {{ patient()?.plan_citas ? 'Plan de ' + patient()?.plan_citas + ' citas' : 'Cita única (Sin plan)' }}
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Citas Completadas -->
+                        @if (patient()?.plan_citas) {
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Citas Tomadas en Plan Actual</label>
+                                <div class="flex flex-col gap-3">
+                                    @if (isEditing()) {
+                                        <div class="flex items-center gap-2">
+                                            <select [ngModel]="patient()?.plan_citas_completadas" 
+                                                    (ngModelChange)="patient().plan_citas_completadas = toNumber($event)"
+                                                    class="flex-1 bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
+                                                @for (i of [0, 1, 2, 3, 4].slice(0, toNumber(patient()?.plan_citas) + 1); track i) {
+                                                    <option [value]="i">{{ i }} citas</option>
+                                                }
+                                            </select>
+                                            
+                                            <button type="button" 
+                                                    (click)="resetPaymentPlanProgress()"
+                                                    class="px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl font-bold text-xs transition-colors shrink-0">
+                                                Reiniciar a 0
+                                            </button>
+                                        </div>
+                                    } @else {
+                                        <div class="flex flex-col gap-2">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-base font-extrabold text-nutri-text dark:text-slate-200">
+                                                    {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} citas tomadas
+                                                </span>
+                                                <span class="text-xs font-bold text-emerald-500">
+                                                    (Quedan {{ (patient()?.plan_citas || 0) - (patient()?.plan_citas_completadas || 0) }})
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="w-full h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                                <div class="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                                                     [style.width.%]="((patient()?.plan_citas_completadas || 0) / (patient()?.plan_citas || 1)) * 100">
+                                                </div>
+                                            </div>
+                                            
+                                            @if (patient()?.plan_citas_completadas === patient()?.plan_citas) {
+                                                <button type="button"
+                                                        (click)="resetPaymentPlanProgress(); saveChanges()"
+                                                        class="w-full mt-2 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl font-bold text-xs tracking-wider uppercase transition-colors">
+                                                    Iniciar Nuevo Plan (Reiniciar)
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         }
 
@@ -1062,6 +1147,40 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Plan de Citas de Seguimiento (Solo si tiene plan de pago activo) -->
+                        @if (patient()?.plan_citas) {
+                            <div class="bg-nutri-bg/25 dark:bg-white/[0.02] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 space-y-3 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest font-black">Plan de Pagos Activo</span>
+                                    <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500">
+                                        Plan de {{ patient()?.plan_citas }} citas
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-nutri-rose/10 flex items-center justify-center text-nutri-rose font-bold text-sm select-none">
+                                        @if ((patient()?.plan_citas_completadas || 0) < patient()?.plan_citas) {
+                                            {{ (patient()?.plan_citas_completadas || 0) + 1 }}
+                                        } @else {
+                                            <app-a-icon name="check" size="18px" customClass="text-nutri-rose"></app-a-icon>
+                                        }
+                                    </div>
+                                    <div class="flex-1 space-y-0.5">
+                                        @if ((patient()?.plan_citas_completadas || 0) < patient()?.plan_citas) {
+                                            <p class="text-[11px] font-bold text-nutri-text dark:text-slate-200">Asociación Automática</p>
+                                            <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-medium leading-relaxed">
+                                                Este registro se guardará automáticamente como la <strong>Cita {{ (patient()?.plan_citas_completadas || 0) + 1 }}</strong> de su plan (actualmente {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} completadas).
+                                            </p>
+                                        } @else {
+                                            <p class="text-[11px] font-bold text-amber-500">Plan Completado</p>
+                                            <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-medium leading-relaxed">
+                                                El plan actual ya está completado ({{ patient()?.plan_citas_completadas }} de {{ patient()?.plan_citas }} citas). Este registro se guardará sin número de cita.
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
 
                         <!-- Notas -->
                         <div class="space-y-1">

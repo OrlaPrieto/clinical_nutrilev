@@ -259,6 +259,16 @@ export class UpdatePatientDto {
   @IsOptional()
   current_menus?: any[];
 
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  plan_citas?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  plan_citas_completadas?: number;
+
   // Control fields
   @IsString()
   @IsOptional()

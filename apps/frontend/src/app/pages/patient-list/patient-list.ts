@@ -135,10 +135,10 @@ export class PatientListPage implements OnInit {
     this.loadPatients();
   }
 
-  async loadPatients() {
+  async loadPatients(forceRefresh = false) {
     this.loading.set(true);
     try {
-      const data = await this.patientService.getPatients();
+      const data = await this.patientService.getPatients(forceRefresh);
       this.processPatients(data);
     } catch (err) {
       console.error('Error loading patients', err);

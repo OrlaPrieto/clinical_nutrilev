@@ -61,6 +61,8 @@ export type Database = {
           acceso_portal: boolean;
           created_at: string;
           ultima_actualizacion: string | null;
+          plan_citas: number | null;
+          plan_citas_completadas: number | null;
         };
         Insert: {
           id?: string;
@@ -113,6 +115,8 @@ export type Database = {
           acceso_portal?: boolean;
           created_at?: string;
           ultima_actualizacion?: string | null;
+          plan_citas?: number | null;
+          plan_citas_completadas?: number | null;
         };
         Update: {
           id?: string;
@@ -165,6 +169,8 @@ export type Database = {
           acceso_portal?: boolean;
           created_at?: string;
           ultima_actualizacion?: string | null;
+          plan_citas?: number | null;
+          plan_citas_completadas?: number | null;
         };
       };
       patient_progress: {
@@ -176,6 +182,7 @@ export type Database = {
           muscle_mass: string | null;
           notes: string | null;
           date: string;
+          numero_cita: number | null;
         };
         Insert: {
           id?: string;
@@ -185,6 +192,7 @@ export type Database = {
           muscle_mass?: string | null;
           notes?: string | null;
           date?: string;
+          numero_cita?: number | null;
         };
         Update: {
           id?: string;
@@ -194,6 +202,7 @@ export type Database = {
           muscle_mass?: string | null;
           notes?: string | null;
           date?: string;
+          numero_cita?: number | null;
         };
       };
     };

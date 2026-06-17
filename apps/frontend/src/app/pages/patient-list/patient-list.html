@@ -3,7 +3,7 @@
         [loading]="loading()" 
         [searchTerm]="searchTerm()"
         (search)="searchTerm.set($event); onSearch()"
-        (sync)="loadPatients()"
+        (sync)="loadPatients(true)"
         (logout)="authService.logout()"
         (openAi)="navigateToAutomation()">
     </app-o-dashboard-header>
