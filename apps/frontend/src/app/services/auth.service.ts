@@ -59,6 +59,17 @@ export class AuthService {
     this.initializeAuth();
     this.pingServer();
     this.checkDevMode();
+
+    // Guard against stuck loading state (e.g. Supabase deadlocks or Zone.js microtask queue hangs)
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        if (this.isInitialLoading()) {
+          console.warn('Auth: Loading state safeguard triggered from constructor');
+          this.isInitialLoading.set(false);
+          this.resolveReady();
+        }
+      }, 3000);
+    }
   }
 
   private checkDevMode() {
