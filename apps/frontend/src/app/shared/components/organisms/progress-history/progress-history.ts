@@ -170,8 +170,13 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
 
   constructor() {
     effect(() => {
-      if (this.selectedRecordForDetail()) {
+      const selected = this.selectedRecordForDetail();
+      if (selected) {
         document.body.classList.add('modal-open');
+        // Scroll host element into view so the detail starts at the top
+        setTimeout(() => {
+          this.elementRef.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
       } else {
         document.body.classList.remove('modal-open');
       }
