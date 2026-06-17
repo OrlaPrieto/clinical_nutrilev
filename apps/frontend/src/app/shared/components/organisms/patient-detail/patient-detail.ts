@@ -29,6 +29,7 @@ export class PatientDetailComponent implements OnInit {
   isEditing = signal<boolean>(false);
   headerCollapsed = signal<boolean>(false);
   saved = output<void>();
+  closed = output<void>();
   
   fruitImages = [
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34d/512.png', // Pineapple
@@ -55,7 +56,6 @@ export class PatientDetailComponent implements OnInit {
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f952/512.png', // Cucumber
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f96c/512.png', // Leafy Green
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f9c4/512.png', // Garlic
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f9c5/512.png', // Onion
   ];
   
   randomFruit = signal(this.fruitImages[0]);

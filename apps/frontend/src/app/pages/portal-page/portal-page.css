@@ -14,7 +14,7 @@
 }
 
 .serif {
-    font-family: 'Playfair Display', serif; /* Falling back to browser serif if not loaded */
+    font-family: 'Inter', sans-serif;
 }
 
 .scrollbar-hide::-webkit-scrollbar {

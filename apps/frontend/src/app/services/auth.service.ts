@@ -88,7 +88,10 @@ export class AuthService {
       email: 'dev@nutrilev.com',
       user_metadata: { full_name: 'Developer Mode' }
     } as any);
-    this.userRole.set('admin');
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const roleParam = params?.get('role');
+    const role = (roleParam === 'patient' || roleParam === 'admin') ? roleParam : 'admin';
+    this.userRole.set(role);
     this.roleReady.set(true);
     this.isInitialLoading.set(false);
   }

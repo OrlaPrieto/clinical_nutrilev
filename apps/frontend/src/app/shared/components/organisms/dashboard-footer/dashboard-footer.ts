@@ -13,7 +13,7 @@ import { LegalModalComponent } from '../legal-modal/legal-modal';
                 <div class="flex items-center gap-4">
                     <span class="text-[9px] font-black uppercase tracking-[0.4em] text-nutri-text/60 dark:text-white/60">v{{ version() }}</span>
                     <div class="w-1 h-1 rounded-full bg-nutri-rose/30"></div>
-                    <span class="text-[9px] font-black uppercase tracking-[0.4em] text-nutri-text/60 dark:text-white/60">Clínica Nutrilev</span>
+                    <span class="text-[9px] font-black uppercase tracking-[0.4em] text-nutri-text/60 dark:text-white/60">Nutrilev</span>
                 </div>
 
                 <div class="hidden md:flex items-center gap-4 border-l border-nutri-rose/10 dark:border-white/10 pl-6">
@@ -23,7 +23,7 @@ import { LegalModalComponent } from '../legal-modal/legal-modal';
             </div>
             
             <p class="text-[8px] text-right text-nutri-text/40 dark:text-white/20 font-bold uppercase tracking-[0.2em] leading-relaxed hidden sm:block">
-                Sistema Clínico Confidencial · Nutrilev Premium Health &copy; 2026
+                Sistema Clínico Confidencial · Nutrilev &copy; 2026
             </p>
         </div>
     </footer>

@@ -131,7 +131,7 @@ export class PatientListPage implements OnInit {
   bajaCount = computed(() => this.uniquePatients().filter(p => p.dado_de_baja).length);
 
   ngOnInit() {
-    this.titleService.setTitle('Panel de Pacientes - Clinical Nutrilev');
+    this.titleService.setTitle('Panel de Pacientes - Nutrilev');
     this.loadPatients();
   }
 

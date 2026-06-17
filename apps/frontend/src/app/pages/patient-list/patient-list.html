@@ -133,10 +133,7 @@
 <div class="fixed inset-0 z-[100] bg-white dark:bg-[#080808] flex flex-col pointer-events-auto animate-fade-in">
     <div class="w-full h-full flex flex-col relative"
         (click)="$event.stopPropagation()">
-        <app-o-patient-detail [patient]="selectedPatient()" (saved)="loadPatients()" class="flex-1 min-h-0"></app-o-patient-detail>
-        <app-a-button (onClick)="displayDetail.set(false)" variant="ghost" size="md" icon="close"
-                    customClass="!absolute !top-4 !right-4 md:!top-8 md:!right-8 !w-10 !h-10 md:!w-12 md:!h-12 !rounded-2xl !bg-white/80 dark:!bg-black/40 !backdrop-blur-md !shadow-xl !z-[110] !border !border-nutri-rose/10 dark:!border-white/10 dark:!text-slate-400">
-        </app-a-button>
+        <app-o-patient-detail [patient]="selectedPatient()" (saved)="loadPatients()" (closed)="displayDetail.set(false)" class="flex-1 min-h-0"></app-o-patient-detail>
     </div>
 </div>
 }

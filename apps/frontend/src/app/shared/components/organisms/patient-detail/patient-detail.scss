@@ -41,3 +41,14 @@
         @apply bg-nutri-rose/10 rounded-full hover:bg-nutri-rose/20 transition-colors;
     }
 }
+
+/* Enlarge textbox labels in tracking tab (Seguimiento) for better legibility */
+.grid {
+    [class*="text-[7px]"] {
+        font-size: 9.5px !important;
+    }
+    [class*="text-[5px]"] {
+        font-size: 7.5px !important;
+    }
+}
+

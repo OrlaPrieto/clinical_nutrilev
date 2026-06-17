@@ -627,13 +627,13 @@
                             </div>
                         }
  
-                        <!-- Plan de Citas de Seguimiento (Solo si el paciente tiene plan activo) -->
+                        <!-- Paquete de Citas de Seguimiento (Solo si el paciente tiene paquete activo) -->
                         @if (patient()?.plan_citas) {
                             <div class="bg-slate-50 dark:bg-white/[0.02] rounded-2xl border border-slate-100 dark:border-white/5 p-5 space-y-3 transition-colors">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">Plan de Pagos</span>
+                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest">Paquete de Citas</span>
                                     <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500">
-                                        Plan activo: {{ patient()?.plan_citas }} citas
+                                        Paquete activo: {{ patient()?.plan_citas }} citas
                                     </span>
                                 </div>
                                 @if (isEditing()) {
@@ -659,7 +659,7 @@
                                     </div>
                                 } @else {
                                     <div class="text-sm font-extrabold text-nutri-text dark:text-slate-200">
-                                        {{ record.numero_cita ? 'Cita ' + record.numero_cita + ' de ' + patient()?.plan_citas : 'No asociada a plan de citas' }}
+                                        {{ record.numero_cita ? 'Cita ' + record.numero_cita + ' de ' + patient()?.plan_citas : 'No asociada a paquete de citas' }}
                                     </div>
                                 }
                             </div>
@@ -692,7 +692,7 @@
             <!-- Modal Footer -->
             <div class="hidden md:flex px-12 py-6 bg-white dark:bg-[#0d0d0d] border-t border-nutri-rose/5 dark:border-white/5 items-center justify-between shrink-0">
                 <div class="flex items-center gap-4">
-                    <p class="text-[9px] font-black text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.4em]">Nutrilev Intelligence System</p>
+                    <p class="text-[9px] font-black text-nutri-text/20 dark:text-white/10 uppercase tracking-[0.4em]">Nutrilev</p>
                 </div>
             </div>
 

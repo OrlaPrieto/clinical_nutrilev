@@ -782,7 +782,7 @@ export class PortalPage implements OnInit, OnDestroy {
         );
 
         this.patient.set(currentPatient);
-        this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Clinical Nutrilev`);
+        this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Nutrilev`);
         this.progress.set(history || []);
 
         if (apt && apt.hasAppointment) {

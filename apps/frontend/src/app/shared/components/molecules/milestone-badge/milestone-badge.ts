@@ -45,8 +45,8 @@ import { ThemeService } from '../../../services/theme.service';
               <circle cx="32" cy="32" r="28" fill="url(#bronzeBg)" stroke="url(#bronzeGrad)" stroke-width="2" />
               <circle cx="32" cy="32" r="24" fill="none" stroke="url(#bronzeGrad)" stroke-width="0.75" stroke-dasharray="3 2" />
               <circle cx="32" cy="32" r="20" fill="url(#bronzeGrad)" fill-opacity="0.1" stroke="url(#bronzeGrad)" stroke-width="1.25" />
-              <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGrad)" />
-              <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" />
+              <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGrad)" transform="scale(1.35)" transform-origin="32 32" />
+              <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" transform="scale(1.35)" transform-origin="32 32" />
             </svg>
           } @else if (id() === 'halfway') {
             <!-- Gold Medal with ribbons -->
@@ -72,8 +72,8 @@ import { ThemeService } from '../../../services/theme.service';
               <path d="M 28,24 L 32,48 L 36,24 Z" fill="#FFFFFF" fill-opacity="0.1" />
               <circle cx="32" cy="28" r="22" fill="url(#goldBg)" stroke="url(#goldGrad)" stroke-width="2.5" />
               <circle cx="32" cy="28" r="18" fill="url(#goldGrad)" fill-opacity="0.08" stroke="url(#goldGrad)" stroke-width="0.75" stroke-dasharray="2 2" />
-              <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGrad)" />
-              <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" />
+              <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGrad)" transform="scale(1.35)" transform-origin="32 28" />
+              <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" transform="scale(1.35)" transform-origin="32 28" />
             </svg>
           } @else if (id() === 'goal-reached') {
             <!-- Diamond Gemstone Badge -->

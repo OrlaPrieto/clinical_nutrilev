@@ -47,7 +47,7 @@ export class LoginPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.titleService.setTitle('Iniciar Sesión - Clinical Nutrilev');
+    this.titleService.setTitle('Iniciar Sesión - Nutrilev');
     console.log('Test log');
     
     await this.authService.ready;

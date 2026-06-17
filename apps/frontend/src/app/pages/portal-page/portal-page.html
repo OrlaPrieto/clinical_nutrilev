@@ -629,13 +629,13 @@
                                                     <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                                                         <app-a-icon name="payments" size="14px" customClass="text-emerald-500 dark:text-emerald-400"></app-a-icon>
                                                     </div>
-                                                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Plan de Pagos</span>
+                                                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Paquete de Citas</span>
                                                 </div>
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider transition-all"
                                                       [ngClass]="toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas)
                                                           ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/30'
                                                           : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200/50 dark:border-blue-500/30'">
-                                                    {{ toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas) ? 'Plan completado 🎉' : 'Plan Activo' }}
+                                                    {{ toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas) ? 'Paquete completado 🎉' : 'Paquete Activo' }}
                                                 </span>
                                             </div>
 
@@ -715,7 +715,7 @@
                                                         </div>
                                                         <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300">
                                                             @if (toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas)) {
-                                                                ¡Plan completado!
+                                                                ¡Paquete completado!
                                                             } @else {
                                                                 <strong class="font-extrabold text-slate-800 dark:text-white">{{ toNumber(patient()?.plan_citas) - toNumber(patient()?.plan_citas_completadas || 0) }}</strong> restantes
                                                             }
@@ -1598,7 +1598,7 @@
                     </div>
                     <div>
                         <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-white leading-none">Lista de Súper</h3>
-                        <p class="text-[9px] sm:text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-1">Nutrilev AI Intelligence</p>
+                        <p class="text-[9px] sm:text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-1">Nutrilev</p>
                     </div>
                 </div>
                 <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose">
@@ -1783,8 +1783,8 @@
                             <circle cx="32" cy="32" r="28" fill="url(#bronzeBgCel)" stroke="url(#bronzeGradCel)" stroke-width="2" />
                             <circle cx="32" cy="32" r="24" fill="none" stroke="url(#bronzeGradCel)" stroke-width="0.75" stroke-dasharray="3 2" />
                             <circle cx="32" cy="32" r="20" fill="url(#bronzeGradCel)" fill-opacity="0.1" stroke="url(#bronzeGradCel)" stroke-width="1.25" />
-                            <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGradCel)" />
-                            <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" />
+                            <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGradCel)" transform="scale(1.35)" transform-origin="32 32" />
+                            <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" transform="scale(1.35)" transform-origin="32 32" />
                         </svg>
                     } @else if (activeCelebration().id === 'halfway') {
                         <!-- Gold Medal -->
@@ -1810,8 +1810,8 @@
                             <path d="M 28,24 L 32,48 L 36,24 Z" fill="#FFFFFF" fill-opacity="0.1" />
                             <circle cx="32" cy="28" r="22" fill="url(#goldBgCel)" stroke="url(#goldGradCel)" stroke-width="2.5" />
                             <circle cx="32" cy="28" r="18" fill="url(#goldGradCel)" fill-opacity="0.08" stroke="url(#goldGradCel)" stroke-width="0.75" stroke-dasharray="2 2" />
-                            <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGradCel)" />
-                            <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" />
+                            <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGradCel)" transform="scale(1.35)" transform-origin="32 28" />
+                            <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" transform="scale(1.35)" transform-origin="32 28" />
                         </svg>
                     } @else if (activeCelebration().id === 'goal-reached') {
                         <!-- Diamond Jewel -->

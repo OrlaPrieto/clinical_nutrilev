@@ -18,7 +18,7 @@ import { ButtonComponent } from '../../atoms/button/button';
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-nutri-text dark:text-slate-200 serif">{{ type() === 'privacy' ? 'Aviso de Privacidad' : 'Soporte Técnico' }}</h2>
-                        <p class="text-[10px] font-black text-nutri-rose/50 uppercase tracking-widest">Clinical Nutrilev Intelligence</p>
+                        <p class="text-[10px] font-black text-nutri-rose/50 uppercase tracking-widest">Nutrilev</p>
                     </div>
                 </div>
                 <app-a-button (onClick)="close.emit()" variant="ghost" icon="close" size="sm" customClass="!rounded-xl"></app-a-button>
@@ -31,7 +31,7 @@ import { ButtonComponent } from '../../atoms/button/button';
                         <div class="space-y-6 text-sm text-nutri-text/70 dark:text-slate-400 leading-relaxed">
                             <section>
                                 <h3 class="text-nutri-rose font-bold uppercase tracking-widest text-xs mb-2">Responsable del Tratamiento</h3>
-                                <p>Clinical Nutrilev, con domicilio en Ciudad de México, es el responsable del tratamiento de sus datos personales, garantizando su seguridad y confidencialidad bajo los más altos estándares de protección.</p>
+                                <p>Nutrilev, con domicilio en Chihuahua, Chihuahua, es el responsable del tratamiento de sus datos personales, garantizando su seguridad y confidencialidad bajo los más altos estándares de protección.</p>
                             </section>
 
                             <section>

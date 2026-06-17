@@ -26,7 +26,7 @@
 }
 
 .serif {
-    font-family: 'Inter Tight', serif;
+    font-family: 'Inter', sans-serif;
     letter-spacing: -0.02em;
 }
 
@@ -190,7 +190,7 @@ pre { white-space: pre-wrap; word-wrap: break-word; }
 .metric-card.primary .value {
     font-size: 1.5rem;
     font-weight: 800;
-    font-family: 'Inter Tight', serif;
+    font-family: 'Inter', sans-serif;
     color: var(--nutri-text);
 }
 .dark .metric-card.primary .value { color: #f1f5f9; }

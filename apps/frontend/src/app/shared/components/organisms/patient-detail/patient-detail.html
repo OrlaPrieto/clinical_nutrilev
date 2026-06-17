@@ -168,6 +168,11 @@
                     }
                 </div>
             </div>
+
+            <!-- Absolute Centered Close Button inside Banner -->
+            <app-a-button (onClick)="closed.emit()" variant="ghost" size="md" icon="close"
+                        customClass="!absolute !right-4 md:!right-8 !top-1/2 !-translate-y-1/2 !w-10 !h-10 md:!w-12 md:!h-12 !rounded-2xl !bg-white/80 dark:!bg-black/40 !backdrop-blur-md !shadow-xl !z-[110] !border !border-nutri-rose/10 dark:!border-white/10 dark:!text-slate-400">
+            </app-a-button>
         </div>
 
 
@@ -293,12 +298,12 @@
                     </div>
                 </div>
 
-                <!-- Plan de Pago de Citas Card -->
+                <!-- Paquete de Citas Card -->
                 <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
                     <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
                         <div class="flex items-center gap-3">
                             <app-a-icon name="payments" customClass="text-nutri-rose text-xl"></app-a-icon>
-                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Plan de Pago de Citas</h4>
+                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Paquete de Citas</h4>
                         </div>
                         @if (isEditing()) {
                             <app-a-badge label="Modo Edición" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
@@ -306,21 +311,21 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Selector de Plan -->
+                        <!-- Selector de Paquete -->
                         <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Plan de Citas del Paciente</label>
+                            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Paquete de Citas del Paciente</label>
                             @if (isEditing()) {
                                 <select [ngModel]="patient()?.plan_citas" 
                                         (ngModelChange)="onPlanCitasChange($event)"
                                         class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
-                                    <option [value]="null">Cita única (Sin plan)</option>
-                                    <option [value]="2">Plan de 2 citas</option>
-                                    <option [value]="3">Plan de 3 citas</option>
-                                    <option [value]="4">Plan de 4 citas</option>
+                                    <option [value]="null">Cita única (Sin paquete)</option>
+                                    <option [value]="2">Paquete de 2 citas</option>
+                                    <option [value]="3">Paquete de 3 citas</option>
+                                    <option [value]="4">Paquete de 4 citas</option>
                                 </select>
                             } @else {
                                 <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
-                                    {{ patient()?.plan_citas ? 'Plan de ' + patient()?.plan_citas + ' citas' : 'Cita única (Sin plan)' }}
+                                    {{ patient()?.plan_citas ? 'Paquete de ' + patient()?.plan_citas + ' citas' : 'Cita única (Sin paquete)' }}
                                 </div>
                             }
                         </div>
@@ -328,7 +333,7 @@
                         <!-- Citas Completadas -->
                         @if (patient()?.plan_citas) {
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Citas Tomadas en Plan Actual</label>
+                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Citas Tomadas en Paquete Actual</label>
                                 <div class="flex flex-col gap-3">
                                     @if (isEditing()) {
                                         <div class="flex items-center gap-2">
@@ -367,7 +372,7 @@
                                                 <button type="button"
                                                         (click)="resetPaymentPlanProgress(); saveChanges()"
                                                         class="w-full mt-2 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl font-bold text-xs tracking-wider uppercase transition-colors">
-                                                    Iniciar Nuevo Plan (Reiniciar)
+                                                    Iniciar Nuevo Paquete (Reiniciar)
                                                 </button>
                                             }
                                         </div>
@@ -1183,13 +1188,13 @@
                             </div>
                         </div>
 
-                        <!-- Plan de Citas de Seguimiento (Solo si tiene plan de pago activo) -->
+                        <!-- Paquete de Citas de Seguimiento (Solo si tiene paquete de pago activo) -->
                         @if (patient()?.plan_citas) {
                             <div class="bg-nutri-bg/25 dark:bg-white/[0.02] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 space-y-3 transition-colors">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest font-black">Plan de Pagos Activo</span>
+                                    <span class="text-[10px] font-black text-nutri-rose uppercase tracking-widest font-black">Paquete de Citas Activo</span>
                                     <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500">
-                                        Plan de {{ patient()?.plan_citas }} citas
+                                        Paquete de {{ patient()?.plan_citas }} citas
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-3">
@@ -1204,12 +1209,12 @@
                                         @if ((patient()?.plan_citas_completadas || 0) < patient()?.plan_citas) {
                                             <p class="text-[11px] font-bold text-nutri-text dark:text-slate-200">Asociación Automática</p>
                                             <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-medium leading-relaxed">
-                                                Este registro se guardará automáticamente como la <strong>Cita {{ (patient()?.plan_citas_completadas || 0) + 1 }}</strong> de su plan (actualmente {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} completadas).
+                                                Este registro se guardará automáticamente como la <strong>Cita {{ (patient()?.plan_citas_completadas || 0) + 1 }}</strong> de su paquete (actualmente {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} completadas).
                                             </p>
                                         } @else {
-                                            <p class="text-[11px] font-bold text-amber-500">Plan Completado</p>
+                                            <p class="text-[11px] font-bold text-amber-500">Paquete Completado</p>
                                             <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-medium leading-relaxed">
-                                                El plan actual ya está completado ({{ patient()?.plan_citas_completadas }} de {{ patient()?.plan_citas }} citas). Este registro se guardará sin número de cita.
+                                                El paquete actual ya está completado ({{ patient()?.plan_citas_completadas }} de {{ patient()?.plan_citas }} citas). Este registro se guardará sin número de cita.
                                             </p>
                                         }
                                     </div>
