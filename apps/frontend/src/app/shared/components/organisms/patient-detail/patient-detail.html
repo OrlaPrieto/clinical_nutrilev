@@ -18,8 +18,8 @@
                 </div>
             }
 
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 relative pr-12 md:pr-16">
-                <div class="flex items-center gap-3 md:gap-6 min-w-0 w-full md:w-auto">
+            <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6 relative pr-12 md:pr-16">
+                <div class="flex items-center gap-3 lg:gap-6 min-w-0 w-full lg:w-auto">
                     <!-- Fruit Icon (Instead of Initial) -->
                     <div class="rounded-2xl bg-nutri-rose/5 border border-nutri-rose/10 flex items-center justify-center shadow-sm overflow-hidden group shrink-0 transition-all duration-300 relative"
                          [class.w-16]="!headerCollapsed()"
@@ -61,7 +61,7 @@
                         </div>
                         
                         @if (!headerCollapsed()) {
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1">
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-1.5">
                                 <!-- Expediente Badge + Status dynamic badge -->
                                 <div class="flex items-center gap-2 shrink-0">
                                     <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose font-black tracking-widest uppercase text-[8px] rounded-md">Expediente</span>
@@ -74,9 +74,6 @@
                                                      [customClass]="!patient()?.acceso_portal ? '!bg-amber-500/10 !text-amber-600 !border-amber-500/20' : ''"></app-a-badge>
                                     }
                                 </div>
-                                
-                                <!-- Dot divider -->
-                                <span class="text-nutri-rose/20 dark:text-white/10 hidden md:inline select-none">•</span>
 
                                 <!-- Email section -->
                                 <div class="flex items-center gap-2 text-[10px] text-nutri-text/50 dark:text-slate-400 font-medium truncate shrink-0">
@@ -93,9 +90,6 @@
 
                                 <!-- Update date section -->
                                 @if (patient()?.ultima_actualizacion) {
-                                    <!-- Dot divider -->
-                                    <span class="text-nutri-rose/20 dark:text-white/10 hidden md:inline select-none">•</span>
-                                    
                                     <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest shrink-0 mt-0.5">
                                         Actualizado: {{ patient()?.ultima_actualizacion | date:'dd/MM/yy' }}
                                     </span>
@@ -106,25 +100,25 @@
                 </div>
 
                 <!-- Header Actions -->
-                <div class="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto" [class.hidden]="headerCollapsed() && !isEditing()">
+                <div class="grid grid-cols-2 gap-2 w-full lg:w-auto shrink-0" [class.hidden]="headerCollapsed() && !isEditing()">
                     @if (isEditing()) {
                         <app-a-button (onClick)="saveChanges()" 
                                     [disabled]="saving()" [loading]="saving()"
                                     variant="primary" 
                                     icon="check"
                                     label="Guardar" [size]="headerCollapsed() ? 'sm' : 'md'"
-                                    customClass="!rounded-xl !bg-emerald-500 !shadow-lg !shadow-emerald-500/20">
+                                    customClass="!rounded-xl !bg-emerald-500 !shadow-lg !shadow-emerald-500/20 !w-full">
                         </app-a-button>
 
                         <app-a-button (onClick)="toggleEdit()" variant="ghost" icon="close" [size]="headerCollapsed() ? 'sm' : 'md'"
-                                    customClass="!rounded-xl !text-rose-500 hover:!bg-rose-50">
+                                    customClass="!rounded-xl !text-rose-500 hover:!bg-rose-50 !w-full">
                         </app-a-button>
                     } @else {
                         <!-- Files Button -->
                         <app-a-button (onClick)="showMenuModal.set(true); highlightCopy.set(false)" 
                                     [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
                                     label="Archivos" icon="folder_open" variant="outline" size="md"
-                                    customClass="!rounded-xl !border-nutri-rose/20 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white active:scale-95 transition-all">
+                                    customClass="!rounded-xl !border-nutri-rose/20 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white active:scale-95 transition-all !w-full">
                         </app-a-button>
 
                         <!-- Edit Button (Accent solid for hierarchy) -->
@@ -132,16 +126,18 @@
                                     variant="primary" 
                                     icon="edit"
                                     label="Editar" size="md"
-                                    customClass="!rounded-xl !bg-nutri-rose hover:!bg-nutri-rose/90 !text-white !shadow-lg !shadow-nutri-rose/15 active:scale-95 transition-all">
+                                    customClass="!rounded-xl !bg-nutri-rose hover:!bg-nutri-rose/90 !text-white !shadow-lg !shadow-nutri-rose/15 active:scale-95 transition-all !w-full">
                         </app-a-button>
 
                         <!-- Portal Access Switch (Custom sliding toggle) -->
-                        <label class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border transition-all duration-300 cursor-pointer select-none h-11"
+                        <label class="flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border transition-all duration-300 cursor-pointer select-none h-11 w-full"
                                [ngClass]="patient()?.acceso_portal 
                                           ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400' 
                                           : 'border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500'">
-                            <app-a-icon [name]="patient()?.acceso_portal ? 'vpn_key' : 'lock'" size="14px"></app-a-icon>
-                            <span class="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Portal</span>
+                            <div class="flex items-center gap-2">
+                                <app-a-icon [name]="patient()?.acceso_portal ? 'vpn_key' : 'lock'" size="14px"></app-a-icon>
+                                <span class="text-[9px] font-black uppercase tracking-widest">Portal</span>
+                            </div>
                             
                             <div class="relative w-7 h-4 bg-slate-200 dark:bg-white/10 rounded-full transition-colors duration-300 shrink-0"
                                  [class.bg-emerald-500]="patient()?.acceso_portal">
@@ -152,12 +148,14 @@
                         </label>
 
                         <!-- Active/Inactive Switch (Custom sliding toggle) -->
-                        <label class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border transition-all duration-300 cursor-pointer select-none h-11"
+                        <label class="flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border transition-all duration-300 cursor-pointer select-none h-11 w-full"
                                [ngClass]="!patient()?.dado_de_baja 
                                           ? 'border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400' 
                                           : 'border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-400'">
-                            <app-a-icon [name]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'" size="14px"></app-a-icon>
-                            <span class="text-[9px] font-black uppercase tracking-widest hidden sm:inline">{{ patient()?.dado_de_baja ? 'Inactivo' : 'Activo' }}</span>
+                            <div class="flex items-center gap-2">
+                                <app-a-icon [name]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'" size="14px"></app-a-icon>
+                                <span class="text-[9px] font-black uppercase tracking-widest">{{ patient()?.dado_de_baja ? 'Inactivo' : 'Activo' }}</span>
+                            </div>
                             
                             <div class="relative w-7 h-4 bg-rose-400 dark:bg-rose-500/80 rounded-full transition-colors duration-300 shrink-0"
                                  [class.bg-blue-500]="!patient()?.dado_de_baja"
