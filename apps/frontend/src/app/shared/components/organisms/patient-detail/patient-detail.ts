@@ -1,4 +1,4 @@
-import { Component, OnInit, input, signal, computed, output } from '@angular/core';
+import { Component, OnInit, input, signal, computed, output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -86,9 +86,12 @@ export class PatientDetailComponent implements OnInit {
     const index = Math.abs(hash) % this.fruitImages.length;
     this.randomFruit.set(this.fruitImages[index]);
   }
+  @ViewChild(ProgressHistoryComponent) progressHistoryComp!: ProgressHistoryComponent;
   showMenuModal = signal<boolean>(false);
   toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
   highlightCopy = signal<boolean>(false);
+  showDeleteProgressConfirm = signal<boolean>(false);
+  progressRecordToDelete = signal<any | null>(null);
 
   
   // Progress signals
@@ -186,6 +189,45 @@ export class PatientDetailComponent implements OnInit {
       { label: '100%', achieved: p >= 100 }
     ];
   });
+
+  onDeleteProgressRequested(record: any) {
+    this.progressRecordToDelete.set(record);
+    this.showDeleteProgressConfirm.set(true);
+  }
+
+  cancelDeleteProgress() {
+    this.showDeleteProgressConfirm.set(false);
+    this.progressRecordToDelete.set(null);
+  }
+
+  async confirmDeleteProgress() {
+    const record = this.progressRecordToDelete();
+    if (!record) return;
+
+    this.showDeleteProgressConfirm.set(false);
+    this.progressRecordToDelete.set(null);
+
+    try {
+      this.saving.set(true);
+      await this.patientService.deleteProgressEntry(record.id);
+      
+      this.toast.set({ message: 'Registro de progreso eliminado con éxito', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      
+      // If we are currently viewing this record inside the history component, close it
+      if (this.progressHistoryComp?.selectedRecordForDetail()?.id === record.id) {
+        this.progressHistoryComp.closeModal();
+      }
+      
+      await this.loadProgress();
+    } catch (err) {
+      console.error('Error deleting progress entry:', err);
+      this.toast.set({ message: 'Error al eliminar el registro', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+    } finally {
+      this.saving.set(false);
+    }
+  }
 
   async loadProgress() {
     const p = this.patient();

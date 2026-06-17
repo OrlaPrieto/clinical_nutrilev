@@ -41,11 +41,9 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
   isEditing = signal<boolean>(false);
   editableRecord = signal<any | null>(null);
   progressUpdated = output<void>();
+  deleteRequested = output<any>();
 
   visibleCount = signal<number>(6);
-
-  showDeleteConfirm = signal<boolean>(false);
-  recordToDelete = signal<any | null>(null);
 
   loadMore() {
     this.visibleCount.update(c => c + 6);
@@ -55,42 +53,11 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     if (event) {
       event.stopPropagation();
     }
-    this.recordToDelete.set(record);
-    this.showDeleteConfirm.set(true);
+    this.deleteRequested.emit(record);
   }
 
   deleteRecordFromDetail(record: any) {
     this.deleteRecord(record, null as any);
-  }
-
-  cancelDelete() {
-    this.showDeleteConfirm.set(false);
-    this.recordToDelete.set(null);
-  }
-
-  async confirmDelete() {
-    const record = this.recordToDelete();
-    if (!record) return;
-
-    this.showDeleteConfirm.set(false);
-    this.recordToDelete.set(null);
-
-    try {
-      await this.patientService.deleteProgressEntry(record.id);
-      this.toast.set({ message: 'Registro eliminado con éxito', type: 'success' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
-      
-      // If we are currently viewing this record, close the detail view
-      if (this.selectedRecordForDetail()?.id === record.id) {
-        this.closeModal();
-      }
-      
-      this.progressUpdated.emit();
-    } catch (err) {
-      console.error('Error deleting progress entry:', err);
-      this.toast.set({ message: 'Error al eliminar el registro', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
-    }
   }
 
   startEdit(record: any) {

@@ -1368,7 +1368,7 @@
                 }
 
                 <!-- HISTORIAL DE AVANCES -->
-                <app-progress-history #historyComp [history]="progressHistory()" [patient]="patient()" [showActions]="true" (progressUpdated)="loadProgress()"></app-progress-history>
+                <app-progress-history #historyComp [history]="progressHistory()" [patient]="patient()" [showActions]="true" (progressUpdated)="loadProgress()" (deleteRequested)="onDeleteProgressRequested($event)"></app-progress-history>
             </div>
         }
 
@@ -1498,6 +1498,34 @@
             </div>
         </div>
     }
+
+    <!-- Modal de Confirmación de Borrado de Progreso -->
+    @if (showDeleteProgressConfirm()) {
+        <div class="fixed inset-0 z-[250] flex flex-col justify-end md:items-center md:justify-center p-0 md:p-4 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
+             (click)="cancelDeleteProgress()">
+            
+            <div class="bg-white dark:bg-[#111111] w-full max-w-sm rounded-t-[3rem] md:rounded-[3rem] p-8 md:p-10 pb-12 shadow-2xl border border-nutri-rose/10 dark:border-white/5 pointer-events-auto animate-scale-up text-center space-y-8"
+                 (click)="$event.stopPropagation()">
+                
+                <div class="w-20 h-20 rounded-[2.5rem] bg-rose-50 dark:bg-rose-900/10 flex items-center justify-center text-rose-500 mx-auto shadow-sm">
+                    <app-a-icon name="warning" customClass="text-3xl text-rose-500"></app-a-icon>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-2xl font-bold text-nutri-text dark:text-slate-200 serif">¿Eliminar registro?</h3>
+                    <p class="text-sm text-nutri-text/60 dark:text-slate-500 font-medium leading-relaxed">
+                        Esta acción eliminará permanentemente el registro de progreso del <span class="text-nutri-rose font-bold">{{ progressRecordToDelete()?.date | date:'dd/MM/yyyy' }}</span>.
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <app-a-button variant="danger" label="ELIMINAR AHORA" size="lg" (onClick)="confirmDeleteProgress()"></app-a-button>
+                    <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="cancelDeleteProgress()"></app-a-button>
+                </div>
+            </div>
+        </div>
+    }
+
     <!-- Floating Success Toast -->
     @if (showSuccess()) {
         <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 animate-fade-up transition-colors">
