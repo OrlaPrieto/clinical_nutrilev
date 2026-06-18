@@ -1108,15 +1108,15 @@
                                         <app-a-input type="number" [showSpinner]="false" [value]="newProgress().gv" (valueChange)="updateProgressField('gv', $event)" placeholder="GV" inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['gv']"></app-a-input>
                                     </div>
 
-                                    <!-- Abdomen -->
+                                    <!-- Edad Met. -->
                                     <div class="space-y-1">
                                         <div class="flex items-center justify-between text-[7px] font-bold text-purple-400/80 px-1">
-                                            <span>Abdomen</span>
+                                            <span>Edad Met.</span>
                                             @if (hasHistory()) {
-                                                <span class="text-[5px] font-black uppercase" [ngClass]="!changedFields()['abdomen'] ? 'text-indigo-500' : 'text-emerald-500'">{{ !changedFields()['abdomen'] ? 'Ant.' : 'Mod.' }}</span>
+                                                <span class="text-[5px] font-black uppercase" [ngClass]="!changedFields()['edad_metabolica'] ? 'text-indigo-500' : 'text-emerald-500'">{{ !changedFields()['edad_metabolica'] ? 'Ant.' : 'Mod.' }}</span>
                                             }
                                         </div>
-                                        <app-a-input type="number" [showSpinner]="false" [value]="newProgress().abdomen" (valueChange)="updateProgressField('abdomen', $event)" placeholder="Abdomen" inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['abdomen']"></app-a-input>
+                                        <app-a-input type="number" [showSpinner]="false" [value]="newProgress().edad_metabolica" (valueChange)="updateProgressField('edad_metabolica', $event)" placeholder="Edad Met." inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['edad_metabolica']"></app-a-input>
                                     </div>
 
                                     <!-- Cintura -->
@@ -1130,6 +1130,17 @@
                                         <app-a-input type="number" [showSpinner]="false" [value]="newProgress().cintura" (valueChange)="updateProgressField('cintura', $event)" placeholder="Cintura" inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['cintura']"></app-a-input>
                                     </div>
 
+                                    <!-- Abdomen -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-[7px] font-bold text-purple-400/80 px-1">
+                                            <span>Abdomen</span>
+                                            @if (hasHistory()) {
+                                                <span class="text-[5px] font-black uppercase" [ngClass]="!changedFields()['abdomen'] ? 'text-indigo-500' : 'text-emerald-500'">{{ !changedFields()['abdomen'] ? 'Ant.' : 'Mod.' }}</span>
+                                            }
+                                        </div>
+                                        <app-a-input type="number" [showSpinner]="false" [value]="newProgress().abdomen" (valueChange)="updateProgressField('abdomen', $event)" placeholder="Abdomen" inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['abdomen']"></app-a-input>
+                                    </div>
+
                                     <!-- Cadera -->
                                     <div class="space-y-1">
                                         <div class="flex items-center justify-between text-[7px] font-bold text-purple-400/80 px-1">
@@ -1139,17 +1150,6 @@
                                             }
                                         </div>
                                         <app-a-input type="number" [showSpinner]="false" [value]="newProgress().cadera" (valueChange)="updateProgressField('cadera', $event)" placeholder="Cadera" inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['cadera']"></app-a-input>
-                                    </div>
-                                    
-                                    <!-- Edad Met. -->
-                                    <div class="space-y-1">
-                                        <div class="flex items-center justify-between text-[7px] font-bold text-purple-400/80 px-1">
-                                            <span>Edad Met.</span>
-                                            @if (hasHistory()) {
-                                                <span class="text-[5px] font-black uppercase" [ngClass]="!changedFields()['edad_metabolica'] ? 'text-indigo-500' : 'text-emerald-500'">{{ !changedFields()['edad_metabolica'] ? 'Ant.' : 'Mod.' }}</span>
-                                            }
-                                        </div>
-                                        <app-a-input type="number" [showSpinner]="false" [value]="newProgress().edad_metabolica" (valueChange)="updateProgressField('edad_metabolica', $event)" placeholder="Edad Met." inputClass="!h-9 !bg-white dark:!bg-white/5 !rounded-lg !text-[10px] !font-bold" [dimmed]="hasHistory() && !changedFields()['edad_metabolica']"></app-a-input>
                                     </div>
 
                                     <!-- Presión Art. -->
