@@ -560,12 +560,13 @@
                                                     @for (field of group.fields; track field.key) {
                                                         @if (isEditing() || hasValue(record[field.key])) {
                                                             <div class="p-2.5 sm:p-3.5 rounded-xl bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all flex flex-col justify-between min-h-[72px]">
-                                                                <div class="flex flex-col gap-0.5">
-                                                                    <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate">{{ field.label }}</span>
+                                                                <div class="flex items-start justify-between gap-1 w-full">
+                                                                    <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate mt-0.5">{{ field.label }}</span>
                                                                     @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                                         @if (calculateDelta(record, prev, field.key); as delta) {
-                                                                            <span class="text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-2xs w-max shrink-0 mt-1 border border-black/[0.03] dark:border-white/[0.03] transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
-                                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                                                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-2xs w-max shrink-0 border border-black/[0.03] dark:border-white/[0.03] flex items-center gap-0.5 transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
+                                                                                <span>{{ delta > 0 ? '↑' : '↓' }}</span>
+                                                                                <span>{{ (delta < 0 ? -delta : delta) | number:'1.1-1' }}</span>
                                                                              </span>
                                                                         }
                                                                     }
@@ -671,12 +672,13 @@
                                                     @for (field of group.fields; track field.key) {
                                                         @if (isEditing() || hasValue(record[field.key])) {
                                                             <div class="p-2.5 sm:p-3.5 rounded-xl bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all flex flex-col justify-between min-h-[72px]">
-                                                                <div class="flex flex-col gap-0.5">
-                                                                    <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate">{{ field.label }}</span>
+                                                                <div class="flex items-start justify-between gap-1 w-full">
+                                                                    <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate mt-0.5">{{ field.label }}</span>
                                                                     @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                                         @if (calculateDelta(record, prev, field.key); as delta) {
-                                                                            <span class="text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-2xs w-max shrink-0 mt-1 border border-black/[0.03] dark:border-white/[0.03] transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
-                                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                                                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-2xs w-max shrink-0 border border-black/[0.03] dark:border-white/[0.03] flex items-center gap-0.5 transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
+                                                                                <span>{{ delta > 0 ? '↑' : '↓' }}</span>
+                                                                                <span>{{ (delta < 0 ? -delta : delta) | number:'1.1-1' }}</span>
                                                                              </span>
                                                                         }
                                                                     }
