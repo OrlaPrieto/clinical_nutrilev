@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-8">
         <div>
             <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">Composición Física Analítica</h3>
-            <p class="text-[9px] font-bold text-nutri-text/70 dark:text-slate-400 uppercase tracking-widest mt-1">Detalle biomecánico de la medición</p>
+            <p class="text-[9px] font-bold text-nutri-text/70 dark:text-slate-400 uppercase tracking-widest mt-1">{{ patient()?.nombre || 'Detalle biomecánico de la medición' }}</p>
         </div>
         <div class="text-right">
             <span class="text-[8px] font-black uppercase text-nutri-rose dark:text-nutri-rose-soft/60 block">Fecha Medición</span>
@@ -241,15 +241,15 @@
         <!-- Tabla Derecha: Información y Otros Índices -->
         <div class="space-y-6">
             <div class="bg-nutri-rose/10 dark:bg-white/10 p-5 rounded-3xl border border-nutri-rose/20 dark:border-white/10 shadow-sm">
-                <span class="text-[8px] font-black uppercase tracking-widest text-nutri-rose block mb-3">Tu Nutriólogo</span>
+                <span class="text-[8px] font-black uppercase tracking-widest text-nutri-rose block mb-3">Le atiende:</span>
                 <h4 class="text-sm font-black serif flex items-center gap-2 dark:text-slate-200">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-[18px] h-[18px] text-nutri-rose inline-block select-none" style="font-size: 18px; width: 18px; height: 18px;">
                         <path d="M19 6h-3V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-9-2h4v2h-4V4zm9 15H5V8h14v11z"/>
                         <path d="M11 10h2v3h3v2h-3v3h-2v-3H8v-2h3z"/>
                     </svg>
-                    L.N. Velvet De la Cruz
+                    Velvet De la Cruz
                 </h4>
-                <p class="text-[9px] font-bold text-nutri-text/70 dark:text-slate-500 uppercase tracking-widest mt-1">Ced. Prof 10622381</p>
+                <p class="text-[9px] font-bold text-nutri-text/70 dark:text-slate-500 uppercase tracking-widest mt-1">Nutrióloga y Máster en psicoterapia clínica</p>
             </div>
 
             <div class="bg-white/80 dark:bg-slate-800 rounded-3xl border border-nutri-rose/20 dark:border-white/10 overflow-hidden shadow-sm">
