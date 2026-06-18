@@ -483,29 +483,36 @@
                     <div class="space-y-8 md:space-y-10">
                         @for (section of [
                             { 
-                                title: 'Composición Corporal', 
+                                title: 'Composición Corporal General', 
                                 icon: 'analytics',
                                 color: 'text-nutri-rose',
                                 bg: 'bg-nutri-rose/5',
                                 fields: [
+                                    { key: 'agua_corporal', label: 'Agua', unit: 'L' },
+                                    { key: 'proteinas', label: 'Proteínas', unit: 'kg' },
+                                    { key: 'minerales', label: 'Minerales', unit: 'kg' },
+                                    { key: 'masa_grasa', label: 'Masa Grasa', unit: 'kg' },
                                     { key: 'weight', label: 'Peso Corporal', unit: 'kg' },
-                                    { key: 'body_fat', label: 'Grasa Corporal', unit: '%' },
                                     { key: 'muscle_mass', label: 'Músculo Esquelético', unit: 'kg' },
+                                    { key: 'masa_magra', label: 'Masa Magra', unit: 'kg' },
                                     { key: 'imc', label: 'IMC', unit: '' },
-                                    { key: 'gv', label: 'Grasa Visceral', unit: '' },
+                                    { key: 'body_fat', label: 'Grasa Corporal', unit: '%' }
                                 ] 
                             },
                             {
-                                title: 'Signos Vitales y Metabólicos',
-                                icon: 'monitor_heart',
-                                color: 'text-blue-500',
-                                bg: 'bg-blue-500/5',
+                                title: 'Tren Superior (Brazos y Tronco)',
+                                icon: 'fitness_center',
+                                color: 'text-amber-500',
+                                bg: 'bg-amber-500/5',
                                 fields: [
-                                    { key: 'presion_arterial', label: 'Presión Arterial', unit: 'mmHg' },
-                                    { key: 'pulso', label: 'Pulso Cardiaco', unit: 'bpm' },
-                                    { key: 'edad_metabolica', label: 'Edad Metabólica', unit: 'años' },
-                                    { key: 'proteinas', label: 'Proteínas', unit: 'kg' },
-                                    { key: 'minerales', label: 'Minerales', unit: 'kg' }
+                                    { key: 'brazo_der_grasa', label: 'Brazo Der. Grasa', unit: 'kg' },
+                                    { key: 'brazo_der_musculo', label: 'Brazo Der. Músculo', unit: 'kg' },
+                                    { key: 'brazo_der_cm', label: 'Brazo Der. cm', unit: 'cm' },
+                                    { key: 'brazo_izq_grasa', label: 'Brazo Izq. Grasa', unit: 'kg' },
+                                    { key: 'brazo_izq_musculo', label: 'Brazo Izq. Músculo', unit: 'kg' },
+                                    { key: 'brazo_izq_cm', label: 'Brazo Izq. cm', unit: 'cm' },
+                                    { key: 'tronco_grasa', label: 'Tronco Grasa', unit: 'kg' },
+                                    { key: 'tronco_musculo', label: 'Tronco Músculo', unit: 'kg' }
                                 ]
                             }
                         ]; track section.title) {
@@ -558,27 +565,34 @@
                     <div class="space-y-8 md:space-y-10">
                         @for (section of [
                             {
-                                title: 'Medidas Antropométricas',
+                                title: 'Tren Inferior (Piernas)',
+                                icon: 'directions_walk',
+                                color: 'text-blue-500',
+                                bg: 'bg-blue-500/5',
+                                fields: [
+                                    { key: 'pierna_der_grasa', label: 'Pierna Der. Grasa', unit: 'kg' },
+                                    { key: 'pierna_der_musculo', label: 'Pierna Der. Músculo', unit: 'kg' },
+                                    { key: 'pierna_der_cm', label: 'Pierna Der. cm', unit: 'cm' },
+                                    { key: 'pierna_izq_grasa', label: 'Pierna Izq. Grasa', unit: 'kg' },
+                                    { key: 'pierna_izq_musculo', label: 'Pierna Izq. Músculo', unit: 'kg' },
+                                    { key: 'pierna_izq_cm', label: 'Pierna Izq. cm', unit: 'cm' }
+                                ]
+                            },
+                            {
+                                title: 'Circunferencias, Índices y Signos',
                                 icon: 'straighten',
                                 color: 'text-emerald-500',
                                 bg: 'bg-emerald-500/5',
                                 fields: [
-                                    { key: 'abdomen', label: 'Abdomen', unit: 'cm' },
+                                    { key: 'icc', label: 'ICC', unit: '' },
+                                    { key: 'gv', label: 'Grasa Visceral', unit: '' },
+                                    { key: 'edad_metabolica', label: 'Edad Metabólica', unit: 'años' },
                                     { key: 'cintura', label: 'Cintura', unit: 'cm' },
+                                    { key: 'abdomen', label: 'Abdomen', unit: 'cm' },
                                     { key: 'cadera', label: 'Cadera', unit: 'cm' },
+                                    { key: 'presion_arterial', label: 'Presión Arterial', unit: 'mmHg' },
+                                    { key: 'pulso', label: 'Pulso Cardiaco', unit: 'bpm' },
                                     { key: 'pliegue_cutaneo', label: 'Pliegue Cutáneo', unit: 'mm' }
-                                ]
-                            },
-                            {
-                                title: 'Análisis Segmental',
-                                icon: 'accessibility_new',
-                                color: 'text-amber-500',
-                                bg: 'bg-amber-500/5',
-                                fields: [
-                                    { key: 'brazo_der_cm', label: 'Brazo Derecho', unit: 'cm' },
-                                    { key: 'brazo_izq_cm', label: 'Brazo Izquierdo', unit: 'cm' },
-                                    { key: 'pierna_der_cm', label: 'Pierna Derecha', unit: 'cm' },
-                                    { key: 'pierna_izq_cm', label: 'Pierna Izquierda', unit: 'cm' }
                                 ]
                             }
                         ]; track section.title) {
