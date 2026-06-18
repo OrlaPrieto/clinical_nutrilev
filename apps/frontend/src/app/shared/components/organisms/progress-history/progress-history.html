@@ -564,7 +564,7 @@
                                                                     <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate">{{ field.label }}</span>
                                                                     @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                                         @if (calculateDelta(record, prev, field.key); as delta) {
-                                                                            <span class="text-[8px] font-black px-1.5 py-0.2 rounded bg-white dark:bg-black/40 shadow-sm w-max shrink-0 mt-0.5" [ngClass]="getDeltaColor(delta, field.key)">
+                                                                            <span class="text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-2xs w-max shrink-0 mt-1 border border-black/[0.03] dark:border-white/[0.03] transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
                                                                                 {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
                                                                              </span>
                                                                         }
@@ -675,7 +675,7 @@
                                                                     <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate">{{ field.label }}</span>
                                                                     @if (!isEditing() && getPreviousRecord(record); as prev) {
                                                                         @if (calculateDelta(record, prev, field.key); as delta) {
-                                                                            <span class="text-[8px] font-black px-1.5 py-0.2 rounded bg-white dark:bg-black/40 shadow-sm w-max shrink-0 mt-0.5" [ngClass]="getDeltaColor(delta, field.key)">
+                                                                            <span class="text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-2xs w-max shrink-0 mt-1 border border-black/[0.03] dark:border-white/[0.03] transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
                                                                                 {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
                                                                              </span>
                                                                         }
