@@ -102,13 +102,26 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const payload = { ...record };
-      const recordId = payload.id;
+      const whitelistedKeys = [
+        'patient_email', 'date', 'weight', 'body_fat', 'muscle_mass',
+        'agua_corporal', 'proteinas', 'minerales', 'masa_grasa', 'masa_magra', 'imc',
+        'brazo_der_grasa', 'brazo_der_musculo', 'brazo_der_cm',
+        'brazo_izq_grasa', 'brazo_izq_musculo', 'brazo_izq_cm',
+        'tronco_grasa', 'tronco_musculo',
+        'pierna_der_grasa', 'pierna_der_musculo', 'pierna_der_cm',
+        'pierna_izq_grasa', 'pierna_izq_musculo', 'pierna_izq_cm',
+        'icc', 'gv', 'abdomen', 'cintura', 'cadera', 'edad_metabolica',
+        'presion_arterial', 'pulso', 'pliegue_cutaneo', 'notes', 'numero_cita'
+      ];
       
-      // Remove non-whitelisted metadata fields
-      delete payload.id;
-      delete payload.created_at;
-      delete payload.updated_at;
+      const payload: any = {};
+      whitelistedKeys.forEach(key => {
+        if (record[key] !== undefined) {
+          payload[key] = record[key];
+        }
+      });
+
+      const recordId = record.id;
 
       // Clean up fields: convert empty strings to null, and make sure numbers are numbers
       Object.keys(payload).forEach(key => {
@@ -136,10 +149,18 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
       this.selectedRecordForDetail.set(payload);
 
       this.progressUpdated.emit();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving progress update:', err);
-      this.toast.set({ message: 'Error al guardar los cambios', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      let errMsg = 'Error al guardar los cambios';
+      if (err && err.error && err.error.message) {
+        if (Array.isArray(err.error.message)) {
+          errMsg = err.error.message.join(', ');
+        } else if (typeof err.error.message === 'string') {
+          errMsg = err.error.message;
+        }
+      }
+      this.toast.set({ message: errMsg, type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 4000);
     }
   }
 
