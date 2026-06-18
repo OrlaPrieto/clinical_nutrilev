@@ -1402,15 +1402,6 @@
         <div class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-black/80 backdrop-blur-md animate-fade-in"
              (click)="showMenuModal.set(false)">
             
-            <!-- Toast Notification Inside Modal -->
-            @if (toast().type) {
-                <div class="fixed top-10 left-1/2 -translate-x-1/2 z-[300] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl animate-bounce-in"
-                     [ngClass]="toast().type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
-                    <app-a-icon [name]="toast().type === 'success' ? 'check_circle' : 'error'" size="20px"></app-a-icon>
-                    <span class="text-sm font-bold">{{ toast().message }}</span>
-                </div>
-            }
-
             <div class="bg-white dark:bg-[#111111] w-full max-w-2xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-nutri-rose/10 dark:border-white/10 pointer-events-auto animate-scale-up space-y-10"
                  (click)="$event.stopPropagation()">
                 
@@ -1527,6 +1518,15 @@
                 <p class="font-bold text-nutri-text dark:text-slate-200 text-sm">Cambios Guardados</p>
                 <p class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest">Sincronizado con Supabase</p>
             </div>
+        </div>
+    }
+
+    <!-- Floating Dynamic Toast -->
+    @if (toast().type) {
+        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[10000] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border border-white/10 animate-fade-up transition-all"
+             [ngClass]="toast().type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
+            <app-a-icon [name]="toast().type === 'success' ? 'check_circle' : 'error'" size="20px"></app-a-icon>
+            <span class="text-sm font-bold">{{ toast().message }}</span>
         </div>
     }
     </div> <!-- Root Wrapper (2) -->

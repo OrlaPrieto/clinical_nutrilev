@@ -369,11 +369,20 @@ export class PatientDetailComponent implements OnInit {
       
       this.saved.emit(); // Actualizar panel de expediente principal
 
-      this.showSuccess.set(true);
-      setTimeout(() => this.showSuccess.set(false), 3000);
-    } catch (err) {
+      this.toast.set({ message: 'Registro de progreso guardado con éxito', type: 'success' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+    } catch (err: any) {
       console.error('Error adding progress entry', err);
-      alert('Error al agregar el registro de progreso');
+      let errMsg = 'Error al agregar el registro de progreso';
+      if (err && err.error && err.error.message) {
+        if (Array.isArray(err.error.message)) {
+          errMsg = err.error.message.join(', ');
+        } else if (typeof err.error.message === 'string') {
+          errMsg = err.error.message;
+        }
+      }
+      this.toast.set({ message: errMsg, type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
     } finally {
       this.addingProgress.set(false);
     }
@@ -651,7 +660,15 @@ export class PatientDetailComponent implements OnInit {
     navigator.clipboard.writeText(message).then(() => {
       this.copied.set(true);
       this.highlightCopy.set(false); // Reset highlight when copied
-      setTimeout(() => this.copied.set(false), 2000);
+      this.toast.set({ message: '¡Mensaje de menús copiado al portapapeles!', type: 'success' });
+      setTimeout(() => {
+        this.copied.set(false);
+        this.toast.set({ message: '', type: null });
+      }, 3000);
+    }).catch(err => {
+      console.error('Error copying text to clipboard', err);
+      this.toast.set({ message: 'Error al copiar al portapapeles', type: 'error' });
+      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
     });
   }
 }
