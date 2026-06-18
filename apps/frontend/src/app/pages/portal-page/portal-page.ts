@@ -11,6 +11,7 @@ import { ThemeService } from '../../shared/services/theme.service';
 import { StorageService } from '../../shared/services/storage.service';
 import { PushNotificationService } from '../../shared/services/push-notification.service';
 import { AppointmentService, Appointment } from '../../services/appointment.service';
+import { AnalyticsService } from '../../shared/services/analytics.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -57,6 +58,7 @@ export class PortalPage implements OnInit, OnDestroy {
   private pushService = inject(PushNotificationService);
   private appointmentService = inject(AppointmentService);
   private titleService = inject(Title);
+  private analytics = inject(AnalyticsService);
 
   patient = signal<Patient | null>(null);
   nextAppointment = signal<Appointment | null>(null);
@@ -406,6 +408,14 @@ export class PortalPage implements OnInit, OnDestroy {
     };
     this.dailyHabits.set(updated);
     this.storageService.setItem(key, updated);
+
+    const user = this.authService.user;
+    this.analytics.logEvent('toggle_habit', {
+      patient_email: user?.email,
+      habit_key: habitKey,
+      completed: updated[habitKey]
+    });
+
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
       navigator.vibrate(30);
     }
@@ -1139,6 +1149,13 @@ export class PortalPage implements OnInit, OnDestroy {
       clearInterval(progressInterval);
       this.shoppingListProgress.set(100);
       this.shoppingListLoadingMessage.set('¡Lista generada con éxito!');
+
+      // Analytics
+      this.analytics.logEvent('generate_shopping_list', {
+        patient_email: p.email,
+        patient_name: p.nombre,
+        items_count: list.reduce((acc: number, c: any) => acc + (c.items ? c.items.length : 0), 0)
+      });
       
       // Persistencia: Guardar marcados vinculados al email y fecha del menú
       const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;

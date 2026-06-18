@@ -11,6 +11,7 @@ import { PatientService } from '../../../../services/patient';
 import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
 import { environment } from '../../../../../environments/environment';
+import { AnalyticsService } from '../../../../shared/services/analytics.service';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 import { ProgressHistoryComponent } from '../progress-history/progress-history';
 
@@ -121,7 +122,11 @@ export class PatientDetailComponent implements OnInit {
   copied = signal<boolean>(false);
   originalEmail = '';
 
-  constructor(private patientService: PatientService, private authService: AuthService) {}
+  constructor(
+    private patientService: PatientService,
+    private authService: AuthService,
+    private analytics: AnalyticsService
+  ) {}
 
 
   currentGoal = computed(() => this.patient()?.meta_objetivo || null);
@@ -211,6 +216,11 @@ export class PatientDetailComponent implements OnInit {
       this.saving.set(true);
       await this.patientService.deleteProgressEntry(record.id);
       
+      this.analytics.logEvent('delete_progress_entry', {
+        patient_email: record.patient_email || record.patientEmail,
+        record_date: record.date
+      });
+
       this.toast.set({ message: 'Registro de progreso eliminado con éxito', type: 'success' });
       setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
       
@@ -369,6 +379,14 @@ export class PatientDetailComponent implements OnInit {
       
       this.saved.emit(); // Actualizar panel de expediente principal
 
+      this.analytics.logEvent('add_progress_entry', {
+        patient_email: p.email,
+        weight: progressData.weight,
+        body_fat: progressData.body_fat,
+        muscle_mass: progressData.muscle_mass,
+        appointment_number: progressData.numero_cita
+      });
+
       this.toast.set({ message: 'Registro de progreso guardado con éxito', type: 'success' });
       setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
     } catch (err: any) {
@@ -484,6 +502,12 @@ export class PatientDetailComponent implements OnInit {
       this.saved.emit();
       
       const isFileUpdate = payload.action === "update" && payload.current_menus;
+      this.analytics.logEvent('update_patient_profile', {
+        patient_email: payload.email,
+        action: payload.action,
+        is_file_update: !!isFileUpdate
+      });
+
       this.toast.set({ 
         message: isFileUpdate ? 'Archivos subidos y paciente notificado' : 'Cambios guardados correctamente', 
         type: 'success' 
@@ -621,6 +645,11 @@ export class PatientDetailComponent implements OnInit {
       
       this.toast.set({ message: 'Archivos subidos y paciente notificado correctamente', type: 'success' });
       this.highlightCopy.set(true);
+
+      this.analytics.logEvent('upload_patient_menus', {
+        patient_email: p.email,
+        menus_count: uploadedMenus.length
+      });
       setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
       
       // Reset upload slots
@@ -660,6 +689,11 @@ export class PatientDetailComponent implements OnInit {
     navigator.clipboard.writeText(message).then(() => {
       this.copied.set(true);
       this.highlightCopy.set(false); // Reset highlight when copied
+      
+      this.analytics.logEvent('copy_menu_message', {
+        patient_email: p?.email
+      });
+
       this.toast.set({ message: '¡Mensaje de menús copiado al portapapeles!', type: 'success' });
       setTimeout(() => {
         this.copied.set(false);

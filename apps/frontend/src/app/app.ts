@@ -9,6 +9,7 @@ import { PwaBannerComponent } from './shared/components/molecules/pwa-banner/pwa
 import { PwaUpdateBannerComponent } from './shared/components/molecules/pwa-update-banner/pwa-update-banner';
 import { APP_VERSION } from './version';
 import { PortalModule } from '@angular/cdk/portal';
+import { AnalyticsService } from './shared/services/analytics.service';
 
 @Component({
   selector: 'app-root',
@@ -45,6 +46,7 @@ export class App implements OnInit {
   title = 'clinical-nutrilev';
   public authService = inject(AuthService);
   private themeService = inject(ThemeService);
+  private analytics = inject(AnalyticsService);
   public isOffline = signal<boolean>(typeof window !== 'undefined' ? !navigator.onLine : false);
 
   ngOnInit(): void {
