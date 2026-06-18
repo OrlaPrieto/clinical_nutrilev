@@ -889,20 +889,6 @@
                                     <app-a-input type="number" [showSpinner]="false" [value]="newProgress().imc" (valueChange)="updateProgressField('imc', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['imc']"></app-a-input>
                                 </div>
 
-                                <!-- PGC -->
-                                <div class="space-y-0.5 md:space-y-1">
-                                    <div class="flex items-center justify-between ml-1">
-                                        <label class="text-[8px] font-bold text-nutri-text/40 uppercase">PGC</label>
-                                        @if (hasHistory()) {
-                                            <span class="text-[6px] font-black uppercase tracking-wider px-1 py-0.2 rounded"
-                                                  [ngClass]="!changedFields()['pgc'] ? 'text-indigo-500 bg-indigo-500/10 dark:bg-indigo-500/20' : 'text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20'">
-                                                {{ !changedFields()['pgc'] ? 'Ant.' : 'Mod.' }}
-                                            </span>
-                                        }
-                                    </div>
-                                    <app-a-input type="number" [showSpinner]="false" [value]="newProgress().pgc" (valueChange)="updateProgressField('pgc', $event)" placeholder="00.0" inputClass="!h-9 md:!h-10 !bg-nutri-bg dark:!bg-white/5 !rounded-xl !text-xs !font-bold" [dimmed]="hasHistory() && !changedFields()['pgc']"></app-a-input>
-                                </div>
-
                                 <!-- Grasa (%) -->
                                 <div class="space-y-0.5 md:space-y-1">
                                     <div class="flex items-center justify-between ml-1">

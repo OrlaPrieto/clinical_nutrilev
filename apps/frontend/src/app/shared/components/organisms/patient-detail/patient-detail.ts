@@ -101,7 +101,7 @@ export class PatientDetailComponent implements OnInit {
   newProgress = signal<any>({ 
     weight: null, body_fat: null, muscle_mass: null, 
     agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
-    masa_magra: null, imc: null, pgc: null,
+    masa_magra: null, imc: null,
     brazo_der_grasa: null, brazo_der_musculo: null, brazo_der_cm: null,
     brazo_izq_grasa: null, brazo_izq_musculo: null, brazo_izq_cm: null,
     tronco_grasa: null, tronco_musculo: null,
@@ -250,7 +250,7 @@ export class PatientDetailComponent implements OnInit {
       const fields = [
         'weight', 'body_fat', 'muscle_mass', 
         'agua_corporal', 'proteinas', 'minerales', 'masa_grasa', 
-        'masa_magra', 'imc', 'pgc',
+        'masa_magra', 'imc',
         'brazo_der_grasa', 'brazo_der_musculo', 'brazo_der_cm',
         'brazo_izq_grasa', 'brazo_izq_musculo', 'brazo_izq_cm',
         'tronco_grasa', 'tronco_musculo',
@@ -282,7 +282,7 @@ export class PatientDetailComponent implements OnInit {
     this.newProgress.set({ 
       weight: null, body_fat: null, muscle_mass: null,
       agua_corporal: null, proteinas: null, minerales: null, masa_grasa: null, 
-      masa_magra: null, imc: null, pgc: null,
+      masa_magra: null, imc: null,
       brazo_der_grasa: null, brazo_der_musculo: null, brazo_der_cm: null,
       brazo_izq_grasa: null, brazo_izq_musculo: null, brazo_izq_cm: null,
       tronco_grasa: null, tronco_musculo: null,

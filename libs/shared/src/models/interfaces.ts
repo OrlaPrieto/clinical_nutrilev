@@ -106,7 +106,6 @@ export interface PatientProgress {
   masa_grasa?: number | string | null;
   masa_magra?: number | string | null;
   imc?: number | string | null;
-  pgc?: number | string | null;
   brazo_der_grasa?: number | string | null;
   brazo_der_musculo?: number | string | null;
   brazo_der_cm?: number | string | null;

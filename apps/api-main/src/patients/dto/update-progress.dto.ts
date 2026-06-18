@@ -71,11 +71,6 @@ export class UpdateProgressDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
-  pgc?: number;
-
-  @IsNumber()
-  @IsOptional()
-  @Type(() => Number)
   brazo_der_grasa?: number;
 
   @IsNumber()

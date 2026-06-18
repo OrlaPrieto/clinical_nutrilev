@@ -193,7 +193,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
       'brazo_der_musculo', 'brazo_izq_musculo', 'tronco_musculo', 'pierna_der_musculo', 'pierna_izq_musculo'
     ];
     const negativeIsGoodFields = [
-      'weight', 'body_fat', 'pgc', 'gv', 'masa_grasa', 'imc', 'cintura', 'abdomen', 'cadera',
+      'weight', 'body_fat', 'gv', 'masa_grasa', 'imc', 'cintura', 'abdomen', 'cadera',
       'brazo_der_grasa', 'brazo_izq_grasa', 'tronco_grasa', 'pierna_der_grasa', 'pierna_izq_grasa',
       'icc', 'edad_metabolica', 'pliegue_cutaneo'
     ];
