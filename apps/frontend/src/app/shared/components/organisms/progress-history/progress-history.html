@@ -479,7 +479,6 @@
             <div class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8 md:p-12 space-y-6 sm:space-y-10 scroll-premium slide-over-content">
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
-                    <!-- Left Column: Primary Metrics -->
                     <div class="space-y-8 md:space-y-10">
                         @for (section of [
                             { 
@@ -487,32 +486,56 @@
                                 icon: 'analytics',
                                 color: 'text-nutri-rose',
                                 bg: 'bg-nutri-rose/5',
-                                fields: [
-                                    { key: 'agua_corporal', label: 'Agua', unit: 'L' },
-                                    { key: 'proteinas', label: 'Proteínas', unit: 'kg' },
-                                    { key: 'minerales', label: 'Minerales', unit: 'kg' },
-                                    { key: 'masa_grasa', label: 'Masa Grasa', unit: 'kg' },
-                                    { key: 'weight', label: 'Peso Corporal', unit: 'kg' },
-                                    { key: 'muscle_mass', label: 'Músculo Esquelético', unit: 'kg' },
-                                    { key: 'masa_magra', label: 'Masa Magra', unit: 'kg' },
-                                    { key: 'imc', label: 'IMC', unit: '' },
-                                    { key: 'body_fat', label: 'Grasa Corporal', unit: '%' }
-                                ] 
+                                groups: [
+                                    {
+                                        title: '',
+                                        cols: 3,
+                                        fields: [
+                                            { key: 'agua_corporal', label: 'Agua', unit: 'L' },
+                                            { key: 'proteinas', label: 'Proteínas', unit: 'kg' },
+                                            { key: 'minerales', label: 'Minerales', unit: 'kg' },
+                                            { key: 'masa_grasa', label: 'Masa Grasa', unit: 'kg' },
+                                            { key: 'weight', label: 'Peso Corporal', unit: 'kg' },
+                                            { key: 'muscle_mass', label: 'Músculo', unit: 'kg' },
+                                            { key: 'masa_magra', label: 'Masa Magra', unit: 'kg' },
+                                            { key: 'imc', label: 'IMC', unit: '' },
+                                            { key: 'body_fat', label: 'Grasa Corp.', unit: '%' }
+                                        ]
+                                    }
+                                ]
                             },
                             {
                                 title: 'Tren Superior (Brazos y Tronco)',
                                 icon: 'fitness_center',
                                 color: 'text-amber-500',
                                 bg: 'bg-amber-500/5',
-                                fields: [
-                                    { key: 'brazo_der_grasa', label: 'Brazo Der. Grasa', unit: 'kg' },
-                                    { key: 'brazo_der_musculo', label: 'Brazo Der. Músculo', unit: 'kg' },
-                                    { key: 'brazo_der_cm', label: 'Brazo Der. cm', unit: 'cm' },
-                                    { key: 'brazo_izq_grasa', label: 'Brazo Izq. Grasa', unit: 'kg' },
-                                    { key: 'brazo_izq_musculo', label: 'Brazo Izq. Músculo', unit: 'kg' },
-                                    { key: 'brazo_izq_cm', label: 'Brazo Izq. cm', unit: 'cm' },
-                                    { key: 'tronco_grasa', label: 'Tronco Grasa', unit: 'kg' },
-                                    { key: 'tronco_musculo', label: 'Tronco Músculo', unit: 'kg' }
+                                groups: [
+                                    {
+                                        title: 'Brazo Derecho',
+                                        cols: 3,
+                                        fields: [
+                                            { key: 'brazo_der_grasa', label: 'Grasa', unit: 'kg' },
+                                            { key: 'brazo_der_musculo', label: 'Músculo', unit: 'kg' },
+                                            { key: 'brazo_der_cm', label: 'Medida', unit: 'cm' }
+                                        ]
+                                    },
+                                    {
+                                        title: 'Brazo Izquierdo',
+                                        cols: 3,
+                                        fields: [
+                                            { key: 'brazo_izq_grasa', label: 'Grasa', unit: 'kg' },
+                                            { key: 'brazo_izq_musculo', label: 'Músculo', unit: 'kg' },
+                                            { key: 'brazo_izq_cm', label: 'Medida', unit: 'cm' }
+                                        ]
+                                    },
+                                    {
+                                        title: 'Tronco',
+                                        cols: 2,
+                                        fields: [
+                                            { key: 'tronco_grasa', label: 'Grasa', unit: 'kg' },
+                                            { key: 'tronco_musculo', label: 'Músculo', unit: 'kg' }
+                                        ]
+                                    }
                                 ]
                             }
                         ]; track section.title) {
@@ -524,35 +547,48 @@
                                     <h4 class="text-xs font-black uppercase tracking-[0.2em]" [ngClass]="section.color">{{ section.title }}</h4>
                                 </div>
  
-                                <div class="grid grid-cols-2 gap-3 sm:gap-4">
-                                    @for (field of section.fields; track field.key) {
-                                        @if (isEditing() || record[field.key]) {
-                                            <div class="p-3 xs:p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
-                                                <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-1 mb-2">
-                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate xs:whitespace-normal">{{ field.label }}</span>
-                                                    @if (!isEditing() && getPreviousRecord(record); as prev) {
-                                                        @if (calculateDelta(record, prev, field.key); as delta) {
-                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm w-max shrink-0" [ngClass]="getDeltaColor(delta, field.key)">
-                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                                             </span>
+                                <div class="space-y-5">
+                                    @for (group of section.groups; track group.title) {
+                                        @if (isEditing() || hasGroupFields(record, group.fields)) {
+                                            <div class="space-y-2">
+                                                @if (group.title) {
+                                                    <div class="text-[8px] font-black uppercase tracking-widest pl-1 opacity-60" [ngClass]="section.color">
+                                                        {{ group.title }}
+                                                    </div>
+                                                }
+                                                <div class="grid gap-2 sm:gap-3" [ngClass]="group.cols === 3 ? 'grid-cols-3' : 'grid-cols-2'">
+                                                    @for (field of group.fields; track field.key) {
+                                                        @if (isEditing() || hasValue(record[field.key])) {
+                                                            <div class="p-2.5 sm:p-3.5 rounded-xl bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all flex flex-col justify-between min-h-[72px]">
+                                                                <div class="flex flex-col gap-0.5">
+                                                                    <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate">{{ field.label }}</span>
+                                                                    @if (!isEditing() && getPreviousRecord(record); as prev) {
+                                                                        @if (calculateDelta(record, prev, field.key); as delta) {
+                                                                            <span class="text-[8px] font-black px-1.5 py-0.2 rounded bg-white dark:bg-black/40 shadow-sm w-max shrink-0 mt-0.5" [ngClass]="getDeltaColor(delta, field.key)">
+                                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                                                             </span>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                                @if (isEditing()) {
+                                                                    <div class="flex items-center gap-1 w-full mt-1.5">
+                                                                        <input [type]="field.key === 'presion_arterial' ? 'text' : 'number'"
+                                                                               [ngModel]="editableRecord()?.[field.key]"
+                                                                               (ngModelChange)="updateEditableField(field.key, $event)"
+                                                                               class="w-full bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-lg px-2 py-1 text-xs font-bold text-nutri-text dark:text-slate-200 outline-none transition-all"
+                                                                               placeholder="--">
+                                                                        <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
+                                                                    </div>
+                                                                } @else {
+                                                                    <div class="flex items-baseline gap-1 mt-1">
+                                                                        <span class="text-sm sm:text-base font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                                        <span class="text-[8px] sm:text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                                    </div>
+                                                                }
+                                                            </div>
                                                         }
                                                     }
                                                 </div>
-                                                @if (isEditing()) {
-                                                    <div class="flex items-center gap-1.5 w-full mt-1">
-                                                        <input [type]="field.key === 'presion_arterial' ? 'text' : 'number'"
-                                                               [ngModel]="editableRecord()?.[field.key]"
-                                                               (ngModelChange)="updateEditableField(field.key, $event)"
-                                                               class="w-full bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-sm font-bold text-nutri-text dark:text-slate-200 outline-none transition-all"
-                                                               placeholder="--">
-                                                        <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
-                                                    </div>
-                                                } @else {
-                                                    <div class="flex items-baseline gap-1.5">
-                                                        <span class="text-2xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
-                                                        <span class="text-[10px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
-                                                    </div>
-                                                }
                                             </div>
                                         }
                                     }
@@ -569,13 +605,25 @@
                                 icon: 'directions_walk',
                                 color: 'text-blue-500',
                                 bg: 'bg-blue-500/5',
-                                fields: [
-                                    { key: 'pierna_der_grasa', label: 'Pierna Der. Grasa', unit: 'kg' },
-                                    { key: 'pierna_der_musculo', label: 'Pierna Der. Músculo', unit: 'kg' },
-                                    { key: 'pierna_der_cm', label: 'Pierna Der. cm', unit: 'cm' },
-                                    { key: 'pierna_izq_grasa', label: 'Pierna Izq. Grasa', unit: 'kg' },
-                                    { key: 'pierna_izq_musculo', label: 'Pierna Izq. Músculo', unit: 'kg' },
-                                    { key: 'pierna_izq_cm', label: 'Pierna Izq. cm', unit: 'cm' }
+                                groups: [
+                                    {
+                                        title: 'Pierna Derecha',
+                                        cols: 3,
+                                        fields: [
+                                            { key: 'pierna_der_grasa', label: 'Grasa', unit: 'kg' },
+                                            { key: 'pierna_der_musculo', label: 'Músculo', unit: 'kg' },
+                                            { key: 'pierna_der_cm', label: 'Medida', unit: 'cm' }
+                                        ]
+                                    },
+                                    {
+                                        title: 'Pierna Izquierda',
+                                        cols: 3,
+                                        fields: [
+                                            { key: 'pierna_izq_grasa', label: 'Grasa', unit: 'kg' },
+                                            { key: 'pierna_izq_musculo', label: 'Músculo', unit: 'kg' },
+                                            { key: 'pierna_izq_cm', label: 'Medida', unit: 'cm' }
+                                        ]
+                                    }
                                 ]
                             },
                             {
@@ -583,16 +631,22 @@
                                 icon: 'straighten',
                                 color: 'text-emerald-500',
                                 bg: 'bg-emerald-500/5',
-                                fields: [
-                                    { key: 'icc', label: 'ICC', unit: '' },
-                                    { key: 'gv', label: 'Grasa Visceral', unit: '' },
-                                    { key: 'edad_metabolica', label: 'Edad Metabólica', unit: 'años' },
-                                    { key: 'cintura', label: 'Cintura', unit: 'cm' },
-                                    { key: 'abdomen', label: 'Abdomen', unit: 'cm' },
-                                    { key: 'cadera', label: 'Cadera', unit: 'cm' },
-                                    { key: 'presion_arterial', label: 'Presión Arterial', unit: 'mmHg' },
-                                    { key: 'pulso', label: 'Pulso Cardiaco', unit: 'bpm' },
-                                    { key: 'pliegue_cutaneo', label: 'Pliegue Cutáneo', unit: 'mm' }
+                                groups: [
+                                    {
+                                        title: '',
+                                        cols: 3,
+                                        fields: [
+                                            { key: 'icc', label: 'ICC', unit: '' },
+                                            { key: 'gv', label: 'Grasa Visceral', unit: '' },
+                                            { key: 'edad_metabolica', label: 'Edad Met.', unit: 'años' },
+                                            { key: 'cintura', label: 'Cintura', unit: 'cm' },
+                                            { key: 'abdomen', label: 'Abdomen', unit: 'cm' },
+                                            { key: 'cadera', label: 'Cadera', unit: 'cm' },
+                                            { key: 'presion_arterial', label: 'Presión Art.', unit: 'mmHg' },
+                                            { key: 'pulso', label: 'Pulso', unit: 'bpm' },
+                                            { key: 'pliegue_cutaneo', label: 'Pliegue Cut.', unit: 'mm' }
+                                        ]
+                                    }
                                 ]
                             }
                         ]; track section.title) {
@@ -604,35 +658,48 @@
                                     <h4 class="text-xs font-black uppercase tracking-[0.2em]" [ngClass]="section.color">{{ section.title }}</h4>
                                 </div>
  
-                                <div class="grid grid-cols-2 gap-3 sm:gap-4">
-                                    @for (field of section.fields; track field.key) {
-                                        @if (isEditing() || record[field.key]) {
-                                            <div class="p-3 xs:p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all">
-                                                <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-1 mb-2">
-                                                    <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate xs:whitespace-normal">{{ field.label }}</span>
-                                                    @if (!isEditing() && getPreviousRecord(record); as prev) {
-                                                        @if (calculateDelta(record, prev, field.key); as delta) {
-                                                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-white dark:bg-black/40 shadow-sm w-max shrink-0" [ngClass]="getDeltaColor(delta, field.key)">
-                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
-                                                            </span>
+                                <div class="space-y-5">
+                                    @for (group of section.groups; track group.title) {
+                                        @if (isEditing() || hasGroupFields(record, group.fields)) {
+                                            <div class="space-y-2">
+                                                @if (group.title) {
+                                                    <div class="text-[8px] font-black uppercase tracking-widest pl-1 opacity-60" [ngClass]="section.color">
+                                                        {{ group.title }}
+                                                    </div>
+                                                }
+                                                <div class="grid gap-2 sm:gap-3" [ngClass]="group.cols === 3 ? 'grid-cols-3' : 'grid-cols-2'">
+                                                    @for (field of group.fields; track field.key) {
+                                                        @if (isEditing() || hasValue(record[field.key])) {
+                                                            <div class="p-2.5 sm:p-3.5 rounded-xl bg-white dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 shadow-sm group hover:border-nutri-rose/20 transition-all flex flex-col justify-between min-h-[72px]">
+                                                                <div class="flex flex-col gap-0.5">
+                                                                    <span class="text-[8px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest truncate">{{ field.label }}</span>
+                                                                    @if (!isEditing() && getPreviousRecord(record); as prev) {
+                                                                        @if (calculateDelta(record, prev, field.key); as delta) {
+                                                                            <span class="text-[8px] font-black px-1.5 py-0.2 rounded bg-white dark:bg-black/40 shadow-sm w-max shrink-0 mt-0.5" [ngClass]="getDeltaColor(delta, field.key)">
+                                                                                {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.1-1' }}
+                                                                             </span>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                                @if (isEditing()) {
+                                                                    <div class="flex items-center gap-1 w-full mt-1.5">
+                                                                        <input [type]="field.key === 'presion_arterial' ? 'text' : 'number'"
+                                                                               [ngModel]="editableRecord()?.[field.key]"
+                                                                               (ngModelChange)="updateEditableField(field.key, $event)"
+                                                                               class="w-full bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-lg px-2 py-1 text-xs font-bold text-nutri-text dark:text-slate-200 outline-none transition-all"
+                                                                               placeholder="--">
+                                                                        <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
+                                                                    </div>
+                                                                } @else {
+                                                                    <div class="flex items-baseline gap-1 mt-1">
+                                                                        <span class="text-sm sm:text-base font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                                        <span class="text-[8px] sm:text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                                    </div>
+                                                                }
+                                                            </div>
                                                         }
                                                     }
                                                 </div>
-                                                @if (isEditing()) {
-                                                    <div class="flex items-center gap-1.5 w-full mt-1">
-                                                        <input type="number"
-                                                               [ngModel]="editableRecord()?.[field.key]"
-                                                               (ngModelChange)="updateEditableField(field.key, $event)"
-                                                               class="w-full bg-nutri-bg dark:bg-black border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-sm font-bold text-nutri-text dark:text-slate-200 outline-none transition-all"
-                                                               placeholder="--">
-                                                        <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
-                                                    </div>
-                                                } @else {
-                                                    <div class="flex items-baseline gap-1.5">
-                                                        <span class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
-                                                        <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
-                                                    </div>
-                                                }
                                             </div>
                                         }
                                     }

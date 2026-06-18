@@ -214,6 +214,15 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  hasValue(val: any): boolean {
+    return val !== null && val !== undefined && val !== '';
+  }
+
+  hasGroupFields(record: any, fields: any[]): boolean {
+    if (!record) return false;
+    return fields.some(f => record[f.key] !== null && record[f.key] !== undefined && record[f.key] !== '');
+  }
+
   getPreviousRecord(record: any): any | null {
     const history = this.history();
     const index = history.findIndex(r => r.id === record.id || (r.date === record.date && r.weight === record.weight));
