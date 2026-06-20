@@ -122,12 +122,15 @@ export class PatientDetailComponent implements OnInit {
   ]);
   copied = signal<boolean>(false);
   originalEmail = '';
+  showLinkCitaConfirm = signal<boolean>(false);
+  originalPlanCitas: number | null = null;
 
   constructor(
     private patientService: PatientService,
     private authService: AuthService,
     private analytics: AnalyticsService
   ) {}
+
 
 
   currentGoal = computed(() => this.patient()?.meta_objetivo || null);
@@ -429,6 +432,7 @@ export class PatientDetailComponent implements OnInit {
   toggleEdit() {
     if (!this.isEditing()) {
       this.originalEmail = this.patient()?.email;
+      this.originalPlanCitas = this.patient()?.plan_citas || null;
     }
     this.isEditing.update(val => !val);
   }
@@ -436,10 +440,40 @@ export class PatientDetailComponent implements OnInit {
   saveChanges() {
     const currentPatient = this.patient();
     if (!currentPatient) return;
+
+    // Check if package was activated and there is a recent unassigned consultation
+    const planActivated = !this.originalPlanCitas && currentPatient.plan_citas;
+    const lastRecord = this.progressHistory()[0];
+    const todayStr = new Date().toLocaleDateString('sv');
+    const hasRecentUnassigned = lastRecord && !lastRecord.numero_cita && lastRecord.date === todayStr;
+
+    if (planActivated && hasRecentUnassigned) {
+      this.showLinkCitaConfirm.set(true);
+      return; // Wait for user decision
+    }
+
+    this.executeSave(false);
+  }
+
+  async executeSave(linkCita: boolean) {
+    const currentPatient = this.patient();
+    if (!currentPatient) return;
+
     this.saving.set(true);
-    
-    // Update last update date
     currentPatient.ultima_actualizacion = new Date().toISOString();
+
+    if (linkCita) {
+      const lastRecord = this.progressHistory()[0];
+      if (lastRecord) {
+        try {
+          await this.patientService.updateProgressEntry(lastRecord.id, { numero_cita: 1 });
+          lastRecord.numero_cita = 1;
+        } catch (err) {
+          console.error('Error linking progress entry:', err);
+        }
+      }
+      currentPatient.plan_citas_completadas = 1;
+    }
 
     const updatePayload = {
       ...currentPatient,
@@ -447,8 +481,18 @@ export class PatientDetailComponent implements OnInit {
       action: "update"
     };
 
-    this.sendUpdate(updatePayload, true, 'Datos del paciente actualizados correctamente');
+    const msg = linkCita 
+      ? 'Datos del expediente actualizados y consulta vinculada correctamente'
+      : 'Datos del paciente actualizados correctamente';
+
+    await this.sendUpdate(updatePayload, true, msg);
+    this.showLinkCitaConfirm.set(false);
+
+    if (linkCita) {
+      await this.loadProgress();
+    }
   }
+
 
   toggleDeactivation() {
     const currentPatient = this.patient();

@@ -1508,6 +1508,36 @@
         </div>
     }
 
+    <!-- Modal de Vinculación de Cita -->
+    @if (showLinkCitaConfirm()) {
+        <div class="fixed inset-0 z-[1000] flex flex-col justify-end md:items-center md:justify-center p-0 md:p-4 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
+            (click)="showLinkCitaConfirm.set(false)">
+            <div class="bg-white dark:bg-[#111111] w-full max-w-sm rounded-t-[3rem] md:rounded-[3rem] p-8 md:p-10 pb-12 shadow-2xl border border-nutri-rose/10 dark:border-white/5 pointer-events-auto animate-scale-up text-center space-y-6"
+                (click)="$event.stopPropagation()">
+
+                <div class="w-16 h-16 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose mx-auto shadow-inner">
+                    <app-a-icon name="link" customClass="text-2xl text-nutri-rose"></app-a-icon>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold text-nutri-text dark:text-slate-200 serif">¿Vincular consulta reciente?</h3>
+                    <p class="text-xs text-nutri-text/60 dark:text-slate-500 font-medium leading-relaxed">
+                        Hemos detectado una consulta registrada hoy que no está asociada a ningún paquete. ¿Deseas vincularla como la <strong>Cita 1</strong> de este nuevo paquete?
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-2.5">
+                    <app-a-button variant="primary" label="SÍ, VINCULAR COMO CITA 1" size="md" (onClick)="executeSave(true)"
+                                  customClass="!rounded-2xl !font-bold !text-[9px] !uppercase !tracking-wider"></app-a-button>
+                    <app-a-button variant="secondary" label="NO, COMENZAR DESDE 0" size="md" (onClick)="executeSave(false)"
+                                  customClass="!rounded-2xl !font-bold !text-[9px] !uppercase !tracking-wider"></app-a-button>
+                    <app-a-button variant="ghost" label="CANCELAR GUARDADO" size="sm" (onClick)="showLinkCitaConfirm.set(false)"
+                                  customClass="!font-bold !text-[9px] !uppercase !tracking-wider"></app-a-button>
+                </div>
+            </div>
+        </div>
+    }
+
     <!-- Floating Success Toast -->
     @if (showSuccess()) {
         <div class="fixed top-6 left-1/2 -translate-x-1/2 w-max max-w-[90vw] z-[200] flex items-center gap-4 px-8 py-4 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 animate-fade-in transition-colors">
