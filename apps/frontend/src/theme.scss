@@ -28,13 +28,18 @@
 }
 
 .dark {
-  --nutri-bg-rgb: 8 8 8;
-  --nutri-text-rgb: 226 232 240;
-  --nutri-rose-extra-rgb: 26 26 26;
+  --nutri-bg-rgb: 15 15 17; // Softer carbon background (preventing OLED glare/halation)
+  --nutri-text-rgb: 241 245 249; // High readability slate-100 text
+  --nutri-rose-extra-rgb: 30 30 36;
+  
+  // Accessible brand pink accent colors for dark mode (WCAG AA 4.5:1+ contrast)
+  --nutri-rose-rgb: 244 143 177; // #F48FB1 (vibrant pastel pink)
+  --nutri-rose-light-rgb: 244 143 177;
+  --nutri-rose-soft-rgb: 252 228 236;
   
   // Material 3 Palette Overrides for Dark Mode
-  --mat-sys-surface: #111111;
-  --mat-sys-on-surface: #e2e8f0;
+  --mat-sys-surface: #1C1C1E; // Softer elevated cards background
+  --mat-sys-on-surface: #f1f5f9;
 }
 
 // Nutri-Sage Organic Theme (Verde Salvia)

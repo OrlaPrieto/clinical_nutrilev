@@ -169,3 +169,84 @@ input, textarea, [contenteditable="true"], .selectable-text {
   user-select: text;
 }
 
+/* --- Global Dark Mode Accent & Layout Accessibility Adjustments --- */
+.dark {
+  // Elevate cards slightly more to differentiate from the new bg
+  .card-nutri {
+    background-color: #1C1C1E !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    &:hover {
+      border-color: rgba(244, 143, 177, 0.3) !important;
+    }
+  }
+
+  // Improve resources list item ghost buttons accessibility (Amber & Emerald)
+  .text-amber-600 {
+    color: #fbbf24 !important; // amber-400
+  }
+  .bg-amber-500\/5 {
+    background-color: rgba(251, 191, 36, 0.08) !important;
+  }
+  .border-amber-500\/10 {
+    border-color: rgba(251, 191, 36, 0.2) !important;
+  }
+  .hover\:border-amber-500\/20:hover {
+    border-color: rgba(251, 191, 36, 0.4) !important;
+  }
+
+  .text-emerald-600 {
+    color: #34d399 !important; // emerald-400
+  }
+  .bg-emerald-500\/5 {
+    background-color: rgba(52, 211, 153, 0.08) !important;
+  }
+  .border-emerald-500\/10 {
+    border-color: rgba(52, 211, 153, 0.2) !important;
+  }
+  .hover\:border-emerald-500\/20:hover {
+    border-color: rgba(52, 211, 153, 0.4) !important;
+  }
+
+  // Support secondary buttons (ghost / outline)
+  .btn-secondary {
+    background-color: rgba(244, 143, 177, 0.06) !important;
+    border-color: rgba(244, 143, 177, 0.3) !important;
+    color: #f48fb1 !important;
+    &:hover {
+      background-color: rgba(244, 143, 177, 0.12) !important;
+    }
+  }
+
+  // Increase body silhouette visibility in progress analysis
+  svg path {
+    &.dark\:fill-slate-700 {
+      fill: #64748b !important; // slate-500
+      opacity: 0.55 !important;
+    }
+  }
+
+  // Custom password and text input focus styling in dark mode
+  input:focus {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(244, 143, 177, 0.4) !important;
+  }
+}
+
+/* Chrome/Safari Autofill background & text override for premium Dark Mode look */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--nutri-text) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  box-shadow: inset 0 0 20px 20px rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover, 
+.dark input:-webkit-autofill:focus, 
+.dark input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f1f5f9 !important;
+  box-shadow: inset 0 0 20px 20px rgba(255, 255, 255, 0.04) !important;
+}
