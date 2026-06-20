@@ -1510,7 +1510,7 @@
 
     <!-- Floating Success Toast -->
     @if (showSuccess()) {
-        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-4 px-8 py-4 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 animate-fade-up transition-colors">
+        <div class="fixed top-6 left-1/2 -translate-x-1/2 w-max max-w-[90vw] z-[200] flex items-center gap-4 px-8 py-4 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 animate-fade-in transition-colors">
             <div class="w-10 h-10 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 shadow-inner">
                 <app-a-icon name="check"></app-a-icon>
             </div>
@@ -1521,13 +1521,5 @@
         </div>
     }
 
-    <!-- Floating Dynamic Toast -->
-    @if (toast().type) {
-        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[10000] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border border-white/10 animate-fade-up transition-all"
-             [ngClass]="toast().type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
-            <app-a-icon [name]="toast().type === 'success' ? 'check_circle' : 'error'" size="20px"></app-a-icon>
-            <span class="text-sm font-bold">{{ toast().message }}</span>
-        </div>
-    }
     </div> <!-- Root Wrapper (2) -->
 }

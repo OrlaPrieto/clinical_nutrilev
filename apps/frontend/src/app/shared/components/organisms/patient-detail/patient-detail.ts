@@ -1,4 +1,4 @@
-import { Component, OnInit, input, signal, computed, output, ViewChild } from '@angular/core';
+import { Component, OnInit, input, signal, computed, output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -12,6 +12,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { supabase } from '../../../../supabase';
 import { environment } from '../../../../../environments/environment';
 import { AnalyticsService } from '../../../../shared/services/analytics.service';
+import { ToastService } from '../../../../shared/services/toast.service';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 import { ProgressHistoryComponent } from '../progress-history/progress-history';
 
@@ -89,7 +90,7 @@ export class PatientDetailComponent implements OnInit {
   }
   @ViewChild(ProgressHistoryComponent) progressHistoryComp!: ProgressHistoryComponent;
   showMenuModal = signal<boolean>(false);
-  toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
+  toastService = inject(ToastService);
   highlightCopy = signal<boolean>(false);
   showDeleteProgressConfirm = signal<boolean>(false);
   progressRecordToDelete = signal<any | null>(null);
@@ -221,8 +222,7 @@ export class PatientDetailComponent implements OnInit {
         record_date: record.date
       });
 
-      this.toast.set({ message: 'Registro de progreso eliminado con éxito', type: 'success' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Registro de progreso eliminado con éxito', 'success');
       
       // If we are currently viewing this record inside the history component, close it
       if (this.progressHistoryComp?.selectedRecordForDetail()?.id === record.id) {
@@ -232,8 +232,7 @@ export class PatientDetailComponent implements OnInit {
       await this.loadProgress();
     } catch (err) {
       console.error('Error deleting progress entry:', err);
-      this.toast.set({ message: 'Error al eliminar el registro', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Error al eliminar el registro', 'error');
     } finally {
       this.saving.set(false);
     }
@@ -387,8 +386,7 @@ export class PatientDetailComponent implements OnInit {
         appointment_number: progressData.numero_cita
       });
 
-      this.toast.set({ message: 'Registro de progreso guardado con éxito', type: 'success' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Registro de progreso guardado con éxito', 'success');
     } catch (err: any) {
       console.error('Error adding progress entry', err);
       let errMsg = 'Error al agregar el registro de progreso';
@@ -399,8 +397,7 @@ export class PatientDetailComponent implements OnInit {
           errMsg = err.error.message;
         }
       }
-      this.toast.set({ message: errMsg, type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
+      this.toastService.show(errMsg, 'error', 5000);
     } finally {
       this.addingProgress.set(false);
     }
@@ -425,8 +422,7 @@ export class PatientDetailComponent implements OnInit {
     const p = this.patient();
     if (p) {
       p.plan_citas_completadas = 0;
-      this.toast.set({ message: 'Contador de citas completadas reiniciado a 0', type: 'success' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Contador de citas completadas reiniciado a 0', 'success');
     }
   }
 
@@ -451,7 +447,7 @@ export class PatientDetailComponent implements OnInit {
       action: "update"
     };
 
-    this.sendUpdate(updatePayload, true);
+    this.sendUpdate(updatePayload, true, 'Datos del paciente actualizados correctamente');
   }
 
   toggleDeactivation() {
@@ -473,7 +469,11 @@ export class PatientDetailComponent implements OnInit {
       currentPatient.acceso_portal = false;
     }
 
-    this.sendUpdate(updatePayload, false);
+    const msg = currentPatient.dado_de_baja 
+      ? 'Paciente dado de baja correctamente' 
+      : 'Paciente reactivado correctamente';
+
+    this.sendUpdate(updatePayload, false, msg);
   }
 
   togglePortalAccess() {
@@ -490,10 +490,14 @@ export class PatientDetailComponent implements OnInit {
       action: "update"
     };
 
-    this.sendUpdate(updatePayload, false);
+    const msg = currentPatient.acceso_portal 
+      ? 'Acceso al portal habilitado correctamente' 
+      : 'Acceso al portal deshabilitado correctamente';
+
+    this.sendUpdate(updatePayload, false, msg);
   }
 
-  private async sendUpdate(payload: any, exitEditMode: boolean) {
+  private async sendUpdate(payload: any, exitEditMode: boolean, successMessage: string = 'Cambios guardados correctamente') {
     try {
       await this.patientService.addPatientEntry(payload);
       this.saving.set(false);
@@ -508,18 +512,13 @@ export class PatientDetailComponent implements OnInit {
         is_file_update: !!isFileUpdate
       });
 
-      this.toast.set({ 
-        message: isFileUpdate ? 'Archivos subidos y paciente notificado' : 'Cambios guardados correctamente', 
-        type: 'success' 
-      });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
+      this.toastService.show(successMessage, 'success', 5000);
       
     } catch (error) {
       console.error('Error in sendUpdate:', error);
       this.saving.set(false);
       this.isUploadingMenu.set(false);
-      this.toast.set({ message: 'Error al procesar la solicitud', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
+      this.toastService.show('Error al procesar la solicitud', 'error', 5000);
     }
   }
 
@@ -643,21 +642,19 @@ export class PatientDetailComponent implements OnInit {
         console.error('Error sending email notification', e);
       }
       
-      this.toast.set({ message: 'Archivos subidos y paciente notificado correctamente', type: 'success' });
+      this.toastService.show('Archivos subidos y paciente notificado correctamente', 'success', 5000);
       this.highlightCopy.set(true);
 
       this.analytics.logEvent('upload_patient_menus', {
         patient_email: p.email,
         menus_count: uploadedMenus.length
       });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
       
       // Reset upload slots
       this.menuFilesToUpload.set([{ id: 'initial-slot', file: null, name: 'Menú Principal' }]);
     } catch (err) {
       console.error('Error uploading menus', err);
-      this.toast.set({ message: 'Error al subir los archivos. Por favor intenta de nuevo.', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 5000);
+      this.toastService.show('Error al subir los archivos. Por favor intenta de nuevo.', 'error', 5000);
     } finally {
       this.isUploadingMenu.set(false);
     }
@@ -694,15 +691,13 @@ export class PatientDetailComponent implements OnInit {
         patient_email: p?.email
       });
 
-      this.toast.set({ message: '¡Mensaje de menús copiado al portapapeles!', type: 'success' });
+      this.toastService.show('¡Mensaje de menús copiado al portapapeles!', 'success');
       setTimeout(() => {
         this.copied.set(false);
-        this.toast.set({ message: '', type: null });
       }, 3000);
     }).catch(err => {
       console.error('Error copying text to clipboard', err);
-      this.toast.set({ message: 'Error al copiar al portapapeles', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Error al copiar al portapapeles', 'error');
     });
   }
 }

@@ -791,11 +791,4 @@
         </div>
 }
 
-<!-- Global Toast Notification (unconstrained at template root) -->
-@if (toast().type) {
-    <div class="fixed bottom-6 right-6 z-[10000] flex items-center gap-3 px-6 py-4 rounded-[1.5rem] shadow-xl border border-white/10 animate-fade-up transition-all"
-         [ngClass]="toast().type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
-        <app-a-icon [name]="toast().type === 'success' ? 'check_circle' : 'error'" size="20px"></app-a-icon>
-        <span class="text-sm font-bold">{{ toast().message }}</span>
-    </div>
-}
+

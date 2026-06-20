@@ -1,4 +1,5 @@
 import { Component, Input, computed, signal, input, output, effect, OnDestroy, OnInit, inject, ElementRef } from '@angular/core';
+import { ToastService } from '../../../../shared/services/toast.service';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -36,7 +37,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
   viewMode = signal<'cards' | 'table'>('table');
   selectedRecordForDetail = signal<any | null>(null);
   copyingRecordId = signal<string | null>(null);
-  toast = signal<{ message: string; type: 'success' | 'error' | null }>({ message: '', type: null });
+  toastService = inject(ToastService);
 
   isEditing = signal<boolean>(false);
   editableRecord = signal<any | null>(null);
@@ -96,8 +97,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     if (!record || !record.id) return;
 
     if (!record.weight || isNaN(Number(record.weight))) {
-      this.toast.set({ message: 'El peso es requerido y debe ser un número', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('El peso es requerido y debe ser un número', 'error');
       return;
     }
 
@@ -138,8 +138,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
       // Call service to update progress entry on DB or Mock
       await this.patientService.updateProgressEntry(recordId, payload);
 
-      this.toast.set({ message: 'Registro actualizado con éxito', type: 'success' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Registro actualizado con éxito', 'success');
 
       this.isEditing.set(false);
       this.editableRecord.set(null);
@@ -159,8 +158,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
           errMsg = err.error.message;
         }
       }
-      this.toast.set({ message: errMsg, type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 4000);
+      this.toastService.show(errMsg, 'error', 4000);
     }
   }
 
@@ -292,13 +290,11 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
         })
       ]);
       
-      this.toast.set({ message: '¡Copiado con éxito!', type: 'success' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('¡Copiado con éxito!', 'success');
       
     } catch (err) {
       console.error('Error copying image:', err);
-      this.toast.set({ message: 'Error al copiar la imagen', type: 'error' });
-      setTimeout(() => this.toast.set({ message: '', type: null }), 3000);
+      this.toastService.show('Error al copiar la imagen', 'error');
     } finally {
       if (targetElement) {
         targetElement.classList.remove('is-copying-image');
