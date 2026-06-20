@@ -223,7 +223,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     } else if (negativeIsGoodFields.includes(field)) {
       isGood = delta < 0;
     } else {
-      return type === 'text' ? 'text-nutri-rose' : 'bg-nutri-rose/5';
+      return type === 'text' ? 'text-slate-500 dark:text-slate-400' : 'bg-slate-100 dark:bg-white/5';
     }
     
     if (type === 'text') {

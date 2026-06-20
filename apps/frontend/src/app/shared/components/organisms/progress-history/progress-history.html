@@ -573,14 +573,14 @@
                                                                         <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
                                                                     </div>
                                                                 } @else {
-                                                                    <div class="flex items-center justify-between w-full mt-1">
-                                                                        <div class="flex items-baseline gap-1">
-                                                                            <span class="text-sm sm:text-base font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
-                                                                            <span class="text-[8px] sm:text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-1.5 w-full mt-1">
+                                                                        <div class="flex items-baseline gap-0.5 sm:gap-1 flex-wrap min-w-0">
+                                                                            <span class="text-xs sm:text-sm md:text-base font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                                            <span class="text-[7.5px] sm:text-[8px] md:text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
                                                                         </div>
                                                                         @if (getPreviousRecord(record); as prev) {
                                                                             @if (calculateDelta(record, prev, field.key); as delta) {
-                                                                                <span class="text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-2xs w-max shrink-0 border border-black/[0.03] dark:border-white/[0.03] flex items-center gap-0.5 transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
+                                                                                <span class="text-[7.5px] sm:text-[9px] md:text-[10px] font-black px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded-md shadow-2xs w-max shrink-0 border border-black/[0.03] dark:border-white/[0.03] flex items-center gap-0.5 transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
                                                                                     <span>{{ delta > 0 ? '↑' : '↓' }}</span>
                                                                                     <span>{{ (delta < 0 ? -delta : delta) | number:'1.1-1' }}</span>
                                                                                 </span>
@@ -687,14 +687,14 @@
                                                                         <span class="text-[8px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase shrink-0">{{ field.unit }}</span>
                                                                     </div>
                                                                 } @else {
-                                                                    <div class="flex items-center justify-between w-full mt-1">
-                                                                        <div class="flex items-baseline gap-1">
-                                                                            <span class="text-sm sm:text-base font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
-                                                                            <span class="text-[8px] sm:text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
+                                                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-1.5 w-full mt-1">
+                                                                        <div class="flex items-baseline gap-0.5 sm:gap-1 flex-wrap min-w-0">
+                                                                            <span class="text-xs sm:text-sm md:text-base font-bold serif text-nutri-text dark:text-slate-200">{{ record[field.key] }}</span>
+                                                                            <span class="text-[7.5px] sm:text-[8px] md:text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">{{ field.unit }}</span>
                                                                         </div>
                                                                         @if (getPreviousRecord(record); as prev) {
                                                                             @if (calculateDelta(record, prev, field.key); as delta) {
-                                                                                <span class="text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-2xs w-max shrink-0 border border-black/[0.03] dark:border-white/[0.03] flex items-center gap-0.5 transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
+                                                                                <span class="text-[7.5px] sm:text-[9px] md:text-[10px] font-black px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded-md shadow-2xs w-max shrink-0 border border-black/[0.03] dark:border-white/[0.03] flex items-center gap-0.5 transition-all" [ngClass]="getDeltaColor(delta, field.key) + ' ' + getDeltaColor(delta, field.key, 'bg')">
                                                                                     <span>{{ delta > 0 ? '↑' : '↓' }}</span>
                                                                                     <span>{{ (delta < 0 ? -delta : delta) | number:'1.1-1' }}</span>
                                                                                 </span>
