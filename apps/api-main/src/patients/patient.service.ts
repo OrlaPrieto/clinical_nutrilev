@@ -38,7 +38,7 @@ export class PatientService {
       .getClient()
       .from('patients')
       .select('*')
-      .eq('email', email)
+      .ilike('email', email)
       .single();
 
     if (error) throw error;
@@ -58,10 +58,21 @@ export class PatientService {
       originalEmail.toLowerCase() !== cleanData.email.toLowerCase();
 
     if (emailChanged) {
-      const oldEmailClean = originalEmail.toLowerCase();
       const newEmailClean = cleanData.email!.toLowerCase();
       const tempEmail = `temp_cascade_${Date.now()}_${Math.random().toString(36).substring(2, 7)}@clinical-nutrilev.com`;
       const client = this.supabaseService.getClient() as any;
+
+      // Query current patient from DB to get the exact casing of the existing email
+      let getQuery = client.from('patients').select('email');
+      if (id.includes('@')) {
+        getQuery = getQuery.eq('email', id);
+      } else {
+        getQuery = getQuery.eq('id', id);
+      }
+      const { data: currentPatient, error: currentPatientErr } = await getQuery.single();
+
+      if (currentPatientErr) throw currentPatientErr;
+      const exactOldEmail = currentPatient.email;
 
       // 1. Create a temporary patient
       const { data: tempPatient, error: createTempErr } = await client
@@ -80,7 +91,7 @@ export class PatientService {
         const { error: updateProgressToTempErr } = await client
           .from('patient_progress')
           .update({ patient_email: tempEmail })
-          .eq('patient_email', oldEmailClean);
+          .eq('patient_email', exactOldEmail);
 
         if (updateProgressToTempErr) throw updateProgressToTempErr;
 
@@ -111,6 +122,14 @@ export class PatientService {
 
         if (updateProgressToNewErr) throw updateProgressToNewErr;
 
+        // 4.5. Update push subscriptions to the new email
+        const { error: updatePushErr } = await client
+          .from('push_subscriptions')
+          .update({ email: newEmailClean })
+          .eq('email', exactOldEmail.toLowerCase());
+
+        if (updatePushErr) throw updatePushErr;
+
         // 5. Clean up: Delete the temporary patient
         await client
           .from('patients')
@@ -120,12 +139,17 @@ export class PatientService {
         return updatedPatient as Patient;
 
       } catch (err) {
-        // Rollback progress records to oldEmail if anything failed, and delete temp patient
+        // Rollback progress records to exactOldEmail if anything failed, and delete temp patient
         try {
           await client
             .from('patient_progress')
-            .update({ patient_email: oldEmailClean })
+            .update({ patient_email: exactOldEmail })
             .eq('patient_email', tempEmail);
+          
+          await client
+            .from('push_subscriptions')
+            .update({ email: exactOldEmail.toLowerCase() })
+            .eq('email', newEmailClean);
           
           await client
             .from('patients')
@@ -165,7 +189,7 @@ export class PatientService {
       .getClient()
       .from('patient_progress')
       .select('*')
-      .eq('patient_email', patientEmail)
+      .ilike('patient_email', patientEmail)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

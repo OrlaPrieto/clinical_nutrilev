@@ -27,10 +27,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = typeof resContent === 'object' ? resContent.message || resContent.error : resContent;
     } else {
       // It's a non-HTTP exception (e.g. database error, python connection error, generic runtime error)
-      const errorMsg = exception instanceof Error ? exception.message : String(exception);
+      const errorMsg = exception instanceof Error 
+        ? exception.message 
+        : (exception && typeof exception === 'object' 
+            ? (exception.message || JSON.stringify(exception)) 
+            : String(exception));
       this.logger.error(
         `Unhandled Exception on ${request.method} ${request.url}: ${errorMsg}`,
-        exception?.stack
+        exception?.stack || (exception && typeof exception === 'object' ? JSON.stringify(exception) : undefined)
       );
 
       // Check if it's an Axios/HttpService request error
