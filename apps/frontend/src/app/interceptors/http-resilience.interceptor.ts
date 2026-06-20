@@ -1,8 +1,15 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { ToastService } from '../shared/services/toast.service';
+import { environment } from '../../environments/environment';
 import { retry, timer, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 export const httpResilienceInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const toastService = inject(ToastService);
+
   return next(req).pipe(
     retry({
       count: 2,
@@ -18,8 +25,14 @@ export const httpResilienceInterceptor: HttpInterceptorFn = (req, next) => {
       }
     }),
     catchError((error: HttpErrorResponse) => {
-      // Global error handling can be expanded here
+      const isApiRequest = req.url.startsWith('/api') || req.url.startsWith(environment.apiUrl);
+      if (error.status === 401 && isApiRequest) {
+        console.warn('Auth: Unauthorized request detected (expired or invalid token). Logging out...');
+        toastService.show('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.', 'error', 4000);
+        authService.logout();
+      }
       return throwError(() => error);
     })
   );
 };
+
