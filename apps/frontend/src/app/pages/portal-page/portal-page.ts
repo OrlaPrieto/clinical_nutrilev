@@ -228,6 +228,16 @@ export class PortalPage implements OnInit, OnDestroy {
     return this.shoppingList().some(cat => cat.category.includes('ERROR'));
   });
 
+  getActiveMenu = computed(() => {
+    const p = this.patient();
+    if (!p) return null;
+    const currentMenu = p.current_menus && p.current_menus.length > 0 ? p.current_menus[0] : null;
+    return {
+      url: currentMenu ? currentMenu.url : p.menu_url,
+      created_at: currentMenu ? currentMenu.uploaded_at : p.menu_created_at
+    };
+  });
+
   firstName = computed(() => {
     const p = this.patient();
     if (!p || !p.nombre) return 'Usuario';
@@ -336,19 +346,19 @@ export class PortalPage implements OnInit, OnDestroy {
 
 
   isMenuValid = computed(() => {
-    const p = this.patient();
-    if (!p || !p.menu_url || !p.menu_created_at) return false;
-    const createdAt = new Date(p.menu_created_at).getTime();
+    const menu = this.getActiveMenu();
+    if (!menu || !menu.url || !menu.created_at) return false;
+    const createdAt = new Date(menu.created_at).getTime();
     const now = Date.now();
     const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
     return diffDays <= environment.menuDurationDays;
   });
 
   expirationMessage = computed(() => {
-    const p = this.patient();
-    if (!p || !p.menu_url || !p.menu_created_at) return '';
+    const menu = this.getActiveMenu();
+    if (!menu || !menu.url || !menu.created_at) return '';
     
-    const createdAt = new Date(p.menu_created_at).getTime();
+    const createdAt = new Date(menu.created_at).getTime();
     const durationMs = environment.menuDurationDays * 24 * 60 * 60 * 1000;
     const expiresAt = createdAt + durationMs;
     const now = Date.now();
@@ -373,7 +383,7 @@ export class PortalPage implements OnInit, OnDestroy {
   menuDurationDays = environment.menuDurationDays;
 
   openMenu(url?: string) {
-    const targetUrl = url || this.patient()?.menu_url;
+    const targetUrl = url || this.getActiveMenu()?.url;
     if (targetUrl) {
       window.open(targetUrl, '_blank', 'noopener');
     }
@@ -1091,7 +1101,9 @@ export class PortalPage implements OnInit, OnDestroy {
   }
 
   loadShoppingListFromCache(p: Patient) {
-    const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+    const menu = this.getActiveMenu();
+    if (!menu || !menu.created_at) return;
+    const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
     const cached = this.storageService.getItem<ShoppingCategory[]>(cacheKey);
     // Solo cargamos la caché si no es una lista que represente un error
     if (cached && !cached.some(cat => cat.category.includes('ERROR'))) {
@@ -1102,7 +1114,8 @@ export class PortalPage implements OnInit, OnDestroy {
 
   async fetchShoppingList() {
     const p = this.patient();
-    if (!p || !p.menu_url) return;
+    const menu = this.getActiveMenu();
+    if (!p || !menu || !menu.url) return;
     
     this.loadingShoppingList.set(true);
     this.shoppingListProgress.set(0);
@@ -1143,7 +1156,7 @@ export class PortalPage implements OnInit, OnDestroy {
     }, 1000);
 
     try {
-      const list = await this.patientService.getShoppingList(p.menu_url);
+      const list = await this.patientService.getShoppingList(menu.url);
       
       // Stop simulator, set immediately to 100%
       clearInterval(progressInterval);
@@ -1158,7 +1171,7 @@ export class PortalPage implements OnInit, OnDestroy {
       });
       
       // Persistencia: Guardar marcados vinculados al email y fecha del menú
-      const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
+      const storageKey = `nutri_shop_${p.email}_${menu.created_at}`;
       const savedChecked = this.storageService.getItem<string[]>(storageKey) || [];
       
       const enrichedList: ShoppingCategory[] = list.map((cat: any) => ({
@@ -1177,17 +1190,26 @@ export class PortalPage implements OnInit, OnDestroy {
       // Guardar lista completa en caché únicamente si no contiene errores
       const hasError = enrichedList.some(cat => cat.category.includes('ERROR'));
       if (!hasError) {
-        const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+        const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
         this.storageService.setItem(cacheKey, enrichedList);
       }
     } catch (err) {
-      console.error('Error fetching shopping list', err);
       clearInterval(progressInterval);
+      console.error('Error fetching shopping list', err);
       this.shoppingListProgress.set(0);
       this.shoppingList.set([
         {
-          category: '⚠️ ERROR AL GENERAR',
-          items: [{ icon: '❌', name: 'No se pudo conectar con Gemini', amount: '-', tip: 'El límite de cuotas de la API Key se ha agotado o hay problemas de red. Intenta de nuevo.', brand: '-' }]
+          category: '⚠️ ERROR AL PROCESAR',
+          items: [
+            {
+              icon: '❌',
+              name: 'El servicio de IA de Nutrilev no responde',
+              amount: '-',
+              tip: 'Por favor, intenta de nuevo en unos momentos.',
+              brand: '-',
+              checked: false
+            }
+          ]
         }
       ]);
     } finally {
@@ -1202,7 +1224,8 @@ export class PortalPage implements OnInit, OnDestroy {
 
   toggleShoppingItem(category: string, item: ShoppingItem) {
     const p = this.patient();
-    if (!p) return;
+    const menu = this.getActiveMenu();
+    if (!p || !menu || !menu.created_at) return;
 
     const current = this.shoppingList();
     const updated = current.map(cat => {
@@ -1217,14 +1240,14 @@ export class PortalPage implements OnInit, OnDestroy {
     this.shoppingList.set(updated);
     
     // Save checked state
-    const storageKey = `nutri_shop_${p.email}_${p.menu_created_at}`;
+    const storageKey = `nutri_shop_${p.email}_${menu.created_at}`;
     const allChecked = updated.flatMap(cat => 
       cat.items.filter((i: ShoppingItem) => i.checked).map((i: ShoppingItem) => `${cat.category}-${i.name}`)
     );
     this.storageService.setItem(storageKey, allChecked);
 
     // Update full list cache
-    const cacheKey = `nutri_shop_list_${p.email}_${p.menu_created_at}`;
+    const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
     this.storageService.setItem(cacheKey, updated);
   }
 

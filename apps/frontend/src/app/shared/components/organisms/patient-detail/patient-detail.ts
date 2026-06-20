@@ -686,6 +686,10 @@ export class PatientDetailComponent implements OnInit {
       
       // Update local state
       p.current_menus = uploadedMenus;
+      if (uploadedMenus.length > 0) {
+        p.menu_url = uploadedMenus[0].url;
+        p.menu_created_at = uploadedMenus[0].uploaded_at;
+      }
       
       try {
         const apiUrl = `${environment.apiUrl}/notify-menu`;
