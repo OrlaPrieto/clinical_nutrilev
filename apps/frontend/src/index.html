@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="no-transitions">
   <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTM431SENR"></script>
@@ -40,6 +40,23 @@
         } catch (e) {}
       })();
     </script>
+    <style>
+      .no-transitions, .no-transitions * {
+        transition: none !important;
+      }
+      html, body {
+        background-color: #faf9f6; /* Light theme bg */
+      }
+      html.theme-purple, html.theme-purple body {
+        background-color: #faf9fc; /* Lavender theme bg */
+      }
+      html.theme-vibrant, html.theme-vibrant body {
+        background-color: #f8faf8; /* Sage theme bg */
+      }
+      html.dark, html.dark body {
+        background-color: #080808; /* Dark theme bg */
+      }
+    </style>
     <link rel="icon" type="image/png" href="images/nutrition-icon.png" />
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
     
