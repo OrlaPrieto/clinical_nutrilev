@@ -8,6 +8,7 @@ import { IconComponent } from '../../shared/components/atoms/icon/icon';
 import { Router } from '@angular/router';
 import { LegalModalComponent } from '../../shared/components/organisms/legal-modal/legal-modal';
 import { Title } from '@angular/platform-browser';
+import { APP_VERSION } from '../../version';
 
 @Component({
   selector: 'app-login-page',
@@ -22,6 +23,7 @@ export class LoginPage implements OnInit {
   private router = inject(Router);
   public themeService = inject(ThemeService);
   private titleService = inject(Title);
+  public version = APP_VERSION;
   errorMessage: string | null = null;
   isLoggingIn = false;
   showLegalModal = signal<'privacy' | 'support' | null>(null);
