@@ -444,8 +444,28 @@ export class PatientDetailComponent implements OnInit {
     // Check if package was activated and there is a recent unassigned consultation
     const planActivated = !this.originalPlanCitas && currentPatient.plan_citas;
     const lastRecord = this.progressHistory()[0];
-    const todayStr = new Date().toLocaleDateString('sv');
-    const hasRecentUnassigned = lastRecord && !lastRecord.numero_cita && lastRecord.date === todayStr;
+    
+    let hasRecentUnassigned = false;
+    if (lastRecord && !lastRecord.numero_cita) {
+      // Parse record date or created_at
+      const recordTime = new Date(lastRecord.created_at || lastRecord.date).getTime();
+      const nowTime = Date.now();
+      const diffHours = Math.abs(nowTime - recordTime) / (1000 * 60 * 60);
+      
+      // If it is within 24 hours, consider it recent
+      if (diffHours <= 24) {
+        hasRecentUnassigned = true;
+      }
+    }
+
+    console.log('Retroactive Linking Check:', {
+      originalPlanCitas: this.originalPlanCitas,
+      currentPlanCitas: currentPatient.plan_citas,
+      planActivated,
+      lastRecordDate: lastRecord?.date,
+      lastRecordCreatedAt: lastRecord?.created_at,
+      hasRecentUnassigned
+    });
 
     if (planActivated && hasRecentUnassigned) {
       this.showLinkCitaConfirm.set(true);
@@ -454,6 +474,7 @@ export class PatientDetailComponent implements OnInit {
 
     this.executeSave(false);
   }
+
 
   async executeSave(linkCita: boolean) {
     const currentPatient = this.patient();
