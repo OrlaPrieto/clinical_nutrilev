@@ -58,7 +58,7 @@
 }
 
 /* Oscurecer el sombreado en modo oscuro */
-html.dark .dashboard-card:hover {
+:host-context(.dark) .dashboard-card:hover {
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.5);
 }
@@ -90,7 +90,7 @@ aside, .flex-1 {
   border: 1px solid rgba(216, 27, 96, 0.05);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-html.dark .shopping-item-card {
+:host-context(.dark) .shopping-item-card {
   background-color: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
 }
@@ -101,7 +101,7 @@ html.dark .shopping-item-card {
   border-color: rgba(216, 27, 96, 0.2) !important;
   box-shadow: 0 4px 12px -2px rgba(216, 27, 96, 0.08);
 }
-html.dark .shopping-item-card:not(.checked):hover {
+:host-context(.dark) .shopping-item-card:not(.checked):hover {
   background-color: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -111,11 +111,12 @@ html.dark .shopping-item-card:not(.checked):hover {
 .shopping-item-card.checked {
   background-color: rgba(241, 245, 249, 0.4) !important;
   border-color: rgba(226, 232, 240, 0.3) !important;
-  opacity: 0.45;
+  opacity: 0.7; /* Increased opacity from 0.45 to 0.7 for high contrast */
 }
-html.dark .shopping-item-card.checked {
+:host-context(.dark) .shopping-item-card.checked {
   background-color: rgba(255, 255, 255, 0.01) !important;
   border-color: rgba(255, 255, 255, 0.03) !important;
+  opacity: 0.65; /* Increased opacity from 0.45 to 0.65 for high contrast in dark mode */
 }
 
 /* Item details styling */
@@ -126,7 +127,7 @@ html.dark .shopping-item-card.checked {
   word-break: break-word;
   color: var(--nutri-text);
 }
-html.dark .shopping-item-card .item-name {
+:host-context(.dark) .shopping-item-card .item-name {
   color: #e2e8f0;
 }
 @media (min-width: 640px) {
@@ -136,12 +137,13 @@ html.dark .shopping-item-card .item-name {
 }
 .shopping-item-card.checked .item-name {
   text-decoration: line-through;
-  color: #94a3b8 !important;
-  text-decoration-color: #cbd5e1;
+  color: #64748b !important; /* Lighter gray for better visibility */
+  text-decoration-color: #94a3b8;
 }
-html.dark .shopping-item-card.checked .item-name {
-  color: #475569 !important;
-  text-decoration-color: #334155;
+:host-context(.dark) .shopping-item-card.checked .item-name {
+  text-decoration: line-through;
+  color: #94a3b8 !important; /* Much lighter gray (#94a3b8 instead of #475569) for excellent contrast */
+  text-decoration-color: #475569;
 }
 
 /* Item quantity badge */
@@ -164,11 +166,11 @@ html.dark .shopping-item-card.checked .item-name {
 }
 .shopping-item-card.checked .item-amount {
   background-color: rgba(148, 163, 184, 0.15) !important;
-  color: #94a3b8 !important;
-}
-html.dark .shopping-item-card.checked .item-amount {
-  background-color: rgba(255, 255, 255, 0.04) !important;
   color: #64748b !important;
+}
+:host-context(.dark) .shopping-item-card.checked .item-amount {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: #94a3b8 !important;
 }
 
 /* Item selection tips */
@@ -180,7 +182,7 @@ html.dark .shopping-item-card.checked .item-amount {
   color: rgba(var(--nutri-text-rgb), 0.5);
   margin-top: 2px;
 }
-html.dark .shopping-item-card .item-tip {
+:host-context(.dark) .shopping-item-card .item-tip {
   color: #94a3b8;
   opacity: 0.65;
 }
@@ -191,11 +193,11 @@ html.dark .shopping-item-card .item-tip {
 }
 .shopping-item-card.checked .item-tip {
   color: #94a3b8 !important;
-  opacity: 0.4;
+  opacity: 0.55;
 }
-html.dark .shopping-item-card.checked .item-tip {
-  color: #475569 !important;
-  opacity: 0.7;
+:host-context(.dark) .shopping-item-card.checked .item-tip {
+  color: #64748b !important;
+  opacity: 0.85;
 }
 
 /* Badge de icono de categoría */
@@ -229,7 +231,7 @@ html.dark .shopping-item-card.checked .item-tip {
   background-color: #f1f5f9;
   color: #94a3b8;
 }
-html.dark .shopping-cat-progress-badge.completed {
+:host-context(.dark) .shopping-cat-progress-badge.completed {
   background-color: rgba(255, 255, 255, 0.05);
   color: #64748b;
 }
