@@ -225,6 +225,7 @@ export class PortalPage implements OnInit, OnDestroy {
   showShoppingModal = signal<boolean>(false);
   shoppingListProgress = signal<number>(0);
   shoppingListLoadingMessage = signal<string>('Detectando ingredientes...');
+  collapsedCategories = signal<Record<string, boolean>>({});
 
   hasShoppingError = computed(() => {
     return this.shoppingList().some(cat => cat.category.includes('ERROR'));
@@ -1109,7 +1110,9 @@ export class PortalPage implements OnInit, OnDestroy {
     const cached = this.storageService.getItem<ShoppingCategory[]>(cacheKey);
     // Solo cargamos la caché si no es una lista que represente un error
     if (cached && !cached.some(cat => cat.category.includes('ERROR'))) {
-      this.shoppingList.set(cached);
+      const sorted = this.sortShoppingCategoryItems(cached);
+      this.shoppingList.set(sorted);
+      this.initializeCollapsedCategories(sorted);
       console.log('Shopping list loaded from cache');
     }
   }
@@ -1187,13 +1190,15 @@ export class PortalPage implements OnInit, OnDestroy {
       // Wait briefly (600ms) for the user to see the 100% completion before rendering
       await new Promise(resolve => setTimeout(resolve, 600));
       
-      this.shoppingList.set(enrichedList);
+      const sorted = this.sortShoppingCategoryItems(enrichedList);
+      this.shoppingList.set(sorted);
+      this.initializeCollapsedCategories(sorted);
       
       // Guardar lista completa en caché únicamente si no contiene errores
       const hasError = enrichedList.some(cat => cat.category.includes('ERROR'));
       if (!hasError) {
         const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
-        this.storageService.setItem(cacheKey, enrichedList);
+        this.storageService.setItem(cacheKey, sorted);
       }
     } catch (err) {
       clearInterval(progressInterval);
@@ -1234,7 +1239,7 @@ export class PortalPage implements OnInit, OnDestroy {
       if (cat.category === category) {
         return {
           ...cat,
-          items: cat.items.map((i: ShoppingItem) => i === item ? { ...i, checked: !i.checked } : i)
+          items: cat.items.map((i: ShoppingItem) => i.name === item.name ? { ...i, checked: !i.checked } : i)
         };
       }
       return cat;
@@ -1251,6 +1256,76 @@ export class PortalPage implements OnInit, OnDestroy {
     // Update full list cache
     const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
     this.storageService.setItem(cacheKey, updated);
+
+    // Wait 350ms for premium transition visualization before sorting and potentially auto-collapsing
+    setTimeout(() => {
+      const latest = this.shoppingList();
+      const sorted = this.sortShoppingCategoryItems(latest);
+      this.shoppingList.set(sorted);
+      this.storageService.setItem(cacheKey, sorted);
+
+      // Auto-collapse if category is newly completed
+      const cat = sorted.find(c => c.category === category);
+      if (cat && this.isCategoryCompleted(cat)) {
+        this.collapsedCategories.update(prev => ({
+          ...prev,
+          [category]: true
+        }));
+      }
+    }, 350);
+  }
+
+  sortShoppingCategoryItems(list: ShoppingCategory[]): ShoppingCategory[] {
+    return list.map(cat => ({
+      ...cat,
+      items: [
+        ...cat.items.filter(i => !i.checked),
+        ...cat.items.filter(i => i.checked)
+      ]
+    }));
+  }
+
+  initializeCollapsedCategories(list: ShoppingCategory[]) {
+    const collapsed: Record<string, boolean> = { ...this.collapsedCategories() };
+    list.forEach(cat => {
+      if (this.isCategoryCompleted(cat)) {
+        collapsed[cat.category] = true;
+      }
+    });
+    this.collapsedCategories.set(collapsed);
+  }
+
+  toggleCategory(categoryName: string) {
+    this.collapsedCategories.update(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }));
+  }
+
+  isCategoryCompleted(cat: ShoppingCategory): boolean {
+    return cat.items.length > 0 && cat.items.every(i => i.checked);
+  }
+
+  getCategoryProgress(cat: ShoppingCategory): string {
+    const total = cat.items.length;
+    const checked = cat.items.filter(i => i.checked).length;
+    return `${checked}/${total}`;
+  }
+
+  getCategoryEmoji(catName: string): string {
+    const parts = catName.trim().split(/\s+/);
+    if (parts.length > 1 && parts[0].length <= 4) {
+      return parts[0];
+    }
+    return '🛒';
+  }
+
+  getCategoryTitle(catName: string): string {
+    const parts = catName.trim().split(/\s+/);
+    if (parts.length > 1 && parts[0].length <= 4) {
+      return parts.slice(1).join(' ');
+    }
+    return catName;
   }
 
   closeShoppingModal() {
