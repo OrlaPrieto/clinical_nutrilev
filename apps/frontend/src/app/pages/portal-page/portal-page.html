@@ -1699,6 +1699,12 @@
                                 customClass="!rounded-2xl flex-1 !shadow-xl !shadow-nutri-rose/20 active:scale-95 transition-all">
                     </app-a-button>
                 }
+                @if (!loadingShoppingList() && !hasShoppingError() && shoppingList().length > 0) {
+                    <app-a-button (onClick)="printShoppingList()" label="Imprimir / PDF" variant="outline" size="lg"
+                                 icon="print"
+                                 customClass="!rounded-2xl flex-1 !border-nutri-rose/20 !text-nutri-rose active:scale-95 transition-all">
+                    </app-a-button>
+                }
                 <app-a-button (onClick)="closeShoppingModal()" [label]="hasShoppingError() ? 'Cerrar' : '¡Listo, a comprar!'" [variant]="hasShoppingError() ? 'outline' : 'primary'" size="lg"
                             customClass="!rounded-2xl flex-1 active:scale-95 transition-all">
                 </app-a-button>
