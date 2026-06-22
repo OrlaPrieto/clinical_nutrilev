@@ -1601,9 +1601,18 @@
                         <p class="text-[9px] sm:text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-1">Nutrilev</p>
                     </div>
                 </div>
-                <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose">
-                    <app-a-icon name="close"></app-a-icon>
-                </button>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    @if (!loadingShoppingList() && shoppingList().length > 0 && !hasShoppingError()) {
+                        <button (click)="toggleAllCategories()" 
+                                class="text-[10px] sm:text-xs font-bold text-nutri-rose hover:text-nutri-rose/80 dark:text-rose-400 dark:hover:text-rose-300 transition-colors uppercase tracking-widest bg-nutri-rose/5 dark:bg-white/5 px-2.5 py-1.5 rounded-xl border border-nutri-rose/10 dark:border-white/5 flex items-center gap-1">
+                            <app-a-icon [name]="isAllCategoriesCollapsed() ? 'unfold_more' : 'unfold_less'" size="16px"></app-a-icon>
+                            <span>{{ isAllCategoriesCollapsed() ? 'Expandir todo' : 'Colapsar todo' }}</span>
+                        </button>
+                    }
+                    <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose shrink-0">
+                        <app-a-icon name="close"></app-a-icon>
+                    </button>
+                </div>
             </div>
       
             <!-- Content -->

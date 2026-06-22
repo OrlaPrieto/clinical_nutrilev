@@ -227,6 +227,13 @@ export class PortalPage implements OnInit, OnDestroy {
   shoppingListLoadingMessage = signal<string>('Detectando ingredientes...');
   collapsedCategories = signal<Record<string, boolean>>({});
 
+  isAllCategoriesCollapsed = computed(() => {
+    const list = this.shoppingList();
+    if (list.length === 0) return true;
+    const collapsedMap = this.collapsedCategories();
+    return list.every(cat => collapsedMap[cat.category] === true);
+  });
+
   hasShoppingError = computed(() => {
     return this.shoppingList().some(cat => cat.category.includes('ERROR'));
   });
@@ -1286,11 +1293,9 @@ export class PortalPage implements OnInit, OnDestroy {
   }
 
   initializeCollapsedCategories(list: ShoppingCategory[]) {
-    const collapsed: Record<string, boolean> = { ...this.collapsedCategories() };
+    const collapsed: Record<string, boolean> = {};
     list.forEach(cat => {
-      if (this.isCategoryCompleted(cat)) {
-        collapsed[cat.category] = true;
-      }
+      collapsed[cat.category] = true;
     });
     this.collapsedCategories.set(collapsed);
   }
@@ -1300,6 +1305,16 @@ export class PortalPage implements OnInit, OnDestroy {
       ...prev,
       [categoryName]: !prev[categoryName]
     }));
+  }
+
+  toggleAllCategories() {
+    const list = this.shoppingList();
+    const currentAllCollapsed = this.isAllCategoriesCollapsed();
+    const newCollapsed: Record<string, boolean> = {};
+    list.forEach(cat => {
+      newCollapsed[cat.category] = !currentAllCollapsed;
+    });
+    this.collapsedCategories.set(newCollapsed);
   }
 
   isCategoryCompleted(cat: ShoppingCategory): boolean {
