@@ -85,28 +85,43 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
     import json
     from google import genai
     from google.genai import types
+    from pydantic import BaseModel, Field
+    from typing import List, Optional
+
+    class ShoppingItem(BaseModel):
+        icon: str = Field(description="Un único emoji que represente de forma exacta el alimento (ej. 🥬 para lechuga, 🍗 para pollo, 🥛 para leche, 🍚 para arroz). Si es genérico, usar 🛒.")
+        name: str = Field(description="Nombre del ingrediente (ej. Pechuga de pollo, Jamón de pavo, Atún en agua, Queso panela, Brócoli, Espinacas).")
+        amount: str = Field(description="Cantidad consolidada total necesaria para toda la semana. Suma las porciones repetidas a lo largo de los 7 días y conviértelas a una unidad de compra realista y de supermercado (ej. 1.2 kg, 8 rebanadas, 2 latas grandes, 3 piezas).")
+        tip: Optional[str] = Field(description="Consejo clínico o de compra sumamente práctico (ej. 'Elegir jamón bajo en sodio', 'Comprar en paquete familiar y congelar', 'Yogur sin azúcar añadida', 'Buscar hojas firmes y sin manchas').")
+
+    class ShoppingCategoryGroup(BaseModel):
+        category: str = Field(description="Categoría principal exacta con su emoji respectivo. Debe ser una de las siguientes opciones: 🥩 PROTEÍNAS, 🥛 LÁCTEOS Y SUSTITUTOS, 🥦 VERDURAS Y HORTALIZAS, 🍎 FRUTAS FRESCAS, 🍞 CEREALES Y TUBÉRCULOS, 🥜 GRASAS Y SEMILLAS, 🧂 DESPENSA Y CONDIMENTOS, 🍵 BEBIDAS.")
+        items: List[ShoppingItem] = Field(description="Lista de ingredientes agrupados bajo esta categoría.")
+
+    class ShoppingListResponse(BaseModel):
+        categories: List[ShoppingCategoryGroup] = Field(description="Agrupación de categorías principales de compras.")
 
     todos_ingredientes = menu_data.get("todos_ingredientes", [])
     ingredientes_str = "\n".join(todos_ingredientes)
     
-    system_prompt = "Eres un asistente de nutrición que devuelve listas de compras en formato JSON estricto. NUNCA respondas con texto fuera del JSON."
+    system_prompt = (
+        "Eres un asistente experto en nutrición clínica y compras de supermercado inteligentes. "
+        "Tu tarea es analizar los ingredientes semanales del plan alimenticio de un paciente y "
+        "devolver una lista consolidada, optimizada y agrupada en formato JSON estricto."
+    )
     
     prompt = f"""
-Analiza los siguientes ingredientes extraídos del plan de alimentación de 7 días de un paciente. Consolida y agrupa los ingredientes en categorías lógicas (por ejemplo, lácteos, verduras, proteínas, cereales, etc.) y calcula las cantidades consolidadas necesarias para la semana entera.
+Analiza los siguientes ingredientes extraídos del plan de alimentación de 7 días del paciente:
 
-Ingredientes a analizar:
 {ingredientes_str}
 
-Responde ÚNICAMENTE con un objeto JSON válido (array de objetos) con la siguiente estructura exacta:
-[
-  {{
-    "category": "🥦 VERDURAS Y HORTALIZAS",
-    "items": [
-      {{ "icon": "🥬", "name": "Lechuga romana", "amount": "1 pieza", "tip": "Buscar hojas firmes y sin manchas cafés", "brand": "Local" }}
-    ]
-  }}
-]
-No incluyas markdown, solo el JSON puro.
+Instrucciones de consolidación:
+1. **Suma matemática precisa**: Agrupa y unifica los ingredientes repetidos. Por ejemplo, si el plan pide espinacas el lunes, miércoles y viernes, súmalas en un único ingrediente "Espinacas" consolidando sus porciones en una unidad de supermercado (ej. '2 manojos' o '500g').
+2. **Unidades de compra realistas**: Si la suma de proteínas da '1400g', conviértela a una unidad de compra lógica como '1.4 kg'.
+3. **Clasificación estricta**: Clasifica cada ingrediente en la categoría correcta de la lista proporcionada en la descripción de 'category'.
+4. **Consejos prácticos (`tip`)**: Agrega recomendaciones de selección fresca o de perfil saludable (ej. 'Elegir jamón bajo en sodio', 'Yogur griego sin endulzantes artificiales').
+
+Genera el JSON usando el esquema definido.
 """
     
     client = genai.Client(api_key=gemini_key)
@@ -117,18 +132,21 @@ No incluyas markdown, solo el JSON puro.
             response = client.models.generate_content(
                 model=model,
                 contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
-                config=types.GenerateContentConfig(temperature=0.1, response_mime_type="application/json"),
+                config=types.GenerateContentConfig(
+                    temperature=0.1,
+                    response_mime_type="application/json",
+                    response_schema=ShoppingListResponse
+                ),
             )
             text = response.text.strip()
-            text = re.sub(r"^```json\s*", "", text)
-            text = re.sub(r"\s*```$", "", text)
-            return json.loads(text)
+            data = json.loads(text)
+            return data.get("categories", [])
         except Exception as e:
             print(f"[Gemini JSON Shopping List] Error with {model}: {e}")
             
     return [
         {
             "category": "⚠️ ERROR AL GENERAR",
-            "items": [{"icon": "❌", "name": "No se pudo conectar con Gemini", "amount": "-", "tip": "Reintente más tarde", "brand": "-"}]
+            "items": [{"icon": "❌", "name": "No se pudo conectar con Gemini", "amount": "-", "tip": "Reintente más tarde"}]
         }
     ]
