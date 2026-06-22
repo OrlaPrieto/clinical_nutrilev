@@ -1657,21 +1657,21 @@
                                         </div>
             
                                         <div class="flex-1 min-w-0">
-                                            <div class="flex items-center justify-between gap-3 mb-1">
-                                                <span class="font-bold text-sm text-nutri-text dark:text-white transition-all truncate serif" [class.line-through]="item.checked">
+                                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 mb-1.5">
+                                                <span class="font-bold text-sm sm:text-base text-nutri-text dark:text-white transition-all break-words serif" [class.line-through]="item.checked">
                                                     {{ item.icon }} {{ item.name }}
                                                 </span>
                                                 <!-- Meta Column: Amount & Brand -->
-                                                <div class="flex flex-col items-end shrink-0 gap-1">
+                                                <div class="flex flex-row sm:flex-col items-center sm:items-end shrink-0 gap-1 w-max">
                                                     @if (item.amount) {
-                                                        <span class="text-[9px] font-black px-2 py-0.5 rounded-lg bg-nutri-rose/10 text-nutri-rose uppercase tracking-tighter">
+                                                        <span class="text-[8.5px] sm:text-[9px] font-black px-2 py-0.5 rounded-lg bg-nutri-rose/10 text-nutri-rose uppercase tracking-tighter whitespace-nowrap">
                                                             {{ item.amount }}
                                                         </span>
                                                     }
                                                 </div>
                                             </div>
                                             @if (item.tip) {
-                                                <p class="text-[11px] text-nutri-text/40 dark:text-slate-500 italic leading-snug">
+                                                <p class="text-[10px] sm:text-[11px] text-nutri-text/40 dark:text-slate-500 italic leading-snug">
                                                     {{ item.tip }}
                                                 </p>
                                             }
