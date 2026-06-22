@@ -1637,11 +1637,8 @@
                             <button (click)="toggleCategory(cat.category)"
                                     class="w-full flex items-center justify-between py-1 group transition-all text-left outline-none">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300"
-                                         [class.bg-nutri-rose/10]="!isCategoryCompleted(cat)"
-                                         [class.text-nutri-rose]="!isCategoryCompleted(cat)"
-                                         [class.bg-emerald-500/10]="isCategoryCompleted(cat)"
-                                         [class.text-emerald-500]="isCategoryCompleted(cat)">
+                                    <div class="shopping-cat-header-icon"
+                                         [class.completed]="isCategoryCompleted(cat)">
                                         @if (isCategoryCompleted(cat)) {
                                             <app-a-icon name="check_circle" size="small"></app-a-icon>
                                         } @else {
@@ -1660,13 +1657,8 @@
                                             {{ getCategoryTitle(cat.category) }}
                                         </h4>
                                         <div class="flex items-center gap-1.5 mt-0.5 select-none">
-                                            <span class="text-[8.5px] font-bold px-1.5 py-0.2 rounded-md transition-all duration-300"
-                                                  [class.bg-nutri-rose/5]="!isCategoryCompleted(cat)"
-                                                  [class.text-nutri-rose/60]="!isCategoryCompleted(cat)"
-                                                  [class.bg-slate-100]="isCategoryCompleted(cat)"
-                                                  [class.text-slate-400]="isCategoryCompleted(cat)"
-                                                  [class.dark:bg-white/5]="isCategoryCompleted(cat)"
-                                                  [class.dark:text-slate-500]="isCategoryCompleted(cat)">
+                                            <span class="shopping-cat-progress-badge"
+                                                  [class.completed]="isCategoryCompleted(cat)">
                                                 {{ getCategoryProgress(cat) }}
                                             </span>
                                             @if (isCategoryCompleted(cat)) {
@@ -1688,22 +1680,8 @@
                                 <div class="grid grid-cols-1 gap-2.5 animate-slide-down">
                                     @for (item of cat.items; track item.name) {
                                         <div (click)="toggleShoppingItem(cat.category, item)"
-                                             class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl cursor-pointer transition-all duration-500 border"
-                                             [class.bg-slate-50\/40]="item.checked"
-                                             [class.dark:bg-white\/2]="item.checked"
-                                             [class.border-slate-200\/20]="item.checked"
-                                             [class.dark:border-white\/5]="item.checked"
-                                             [class.opacity-45]="item.checked"
-                                             
-                                             [class.bg-nutri-bg\/40]="!item.checked"
-                                             [class.dark:bg-white\/5]="!item.checked"
-                                             [class.border-nutri-rose\/5]="!item.checked"
-                                             [class.dark:border-white\/10]="!item.checked"
-                                             [class.hover:bg-white]="!item.checked"
-                                             [class.dark:hover:bg-white\/10]="!item.checked"
-                                             [class.hover:border-nutri-rose\/20]="!item.checked"
-                                             [class.dark:hover:border-white\/20]="!item.checked"
-                                             [class.hover:shadow-xs]="!item.checked">
+                                             class="shopping-item-card flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl cursor-pointer transition-all duration-500 border"
+                                             [class.checked]="item.checked">
                                             
                                             <!-- Custom Checkbox -->
                                             <div class="w-5 h-5 rounded-lg border flex items-center justify-center transition-all duration-300 shrink-0 mt-0.5"
@@ -1720,36 +1698,20 @@
                 
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 mb-1.5">
-                                                    <span class="font-bold text-sm sm:text-base transition-all duration-500 break-words serif"
-                                                          [class.line-through]="item.checked"
-                                                          [class.text-slate-400]="item.checked"
-                                                          [class.dark:text-slate-500]="item.checked"
-                                                          [class.decoration-slate-300]="item.checked"
-                                                          [class.dark:decoration-slate-600]="item.checked"
-                                                          [class.text-nutri-text]="!item.checked"
-                                                          [class.dark:text-white]="!item.checked">
+                                                    <span class="item-name serif">
                                                         {{ item.icon }} {{ item.name }}
                                                     </span>
                                                     <!-- Meta Column: Amount -->
                                                     <div class="flex flex-row sm:flex-col items-center sm:items-end shrink-0 gap-1 w-max">
                                                         @if (item.amount) {
-                                                            <span class="text-[8.5px] sm:text-[9px] font-black px-2 py-0.5 rounded-lg transition-all duration-500 uppercase tracking-tighter whitespace-nowrap"
-                                                                  [class.bg-slate-200\/40]="item.checked"
-                                                                  [class.text-slate-400]="item.checked"
-                                                                  [class.dark:bg-white\/5]="item.checked"
-                                                                  [class.bg-nutri-rose\/10]="!item.checked"
-                                                                  [class.text-nutri-rose]="!item.checked">
+                                                            <span class="item-amount">
                                                                 {{ item.amount }}
                                                             </span>
                                                         }
                                                     </div>
                                                 </div>
                                                 @if (item.tip) {
-                                                    <p class="text-[10px] sm:text-[11px] transition-all duration-500 italic leading-snug"
-                                                       [class.text-slate-400\/60]="item.checked"
-                                                       [class.dark:text-slate-600]="item.checked"
-                                                       [class.text-nutri-text\/40]="!item.checked"
-                                                       [class.dark:text-slate-500]="!item.checked">
+                                                    <p class="item-tip">
                                                         {{ item.tip }}
                                                     </p>
                                                 }
