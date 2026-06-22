@@ -83,26 +83,61 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
     """
     import re
     import json
+    import traceback
     from google import genai
     from google.genai import types
-    from pydantic import BaseModel, Field
-    from typing import List, Optional
-
-    class ShoppingItem(BaseModel):
-        icon: str = Field(description="Un único emoji que represente de forma exacta el alimento (ej. 🥬 para lechuga, 🍗 para pollo, 🥛 para leche, 🍚 para arroz). Si es genérico, usar 🛒.")
-        name: str = Field(description="Nombre del ingrediente (ej. Pechuga de pollo, Jamón de pavo, Atún en agua, Queso panela, Brócoli, Espinacas).")
-        amount: str = Field(description="Cantidad consolidada total necesaria para toda la semana. Suma las porciones repetidas a lo largo de los 7 días y conviértelas a una unidad de compra realista y de supermercado (ej. 1.2 kg, 8 rebanadas, 2 latas grandes, 3 piezas).")
-        tip: Optional[str] = Field(description="Consejo clínico o de compra sumamente práctico (ej. 'Elegir jamón bajo en sodio', 'Comprar en paquete familiar y congelar', 'Yogur sin azúcar añadida', 'Buscar hojas firmes y sin manchas').")
-
-    class ShoppingCategoryGroup(BaseModel):
-        category: str = Field(description="Categoría principal exacta con su emoji respectivo. Debe ser una de las siguientes opciones: 🥩 PROTEÍNAS, 🥛 LÁCTEOS Y SUSTITUTOS, 🥦 VERDURAS Y HORTALIZAS, 🍎 FRUTAS FRESCAS, 🍞 CEREALES Y TUBÉRCULOS, 🥜 GRASAS Y SEMILLAS, 🧂 DESPENSA Y CONDIMENTOS, 🍵 BEBIDAS.")
-        items: List[ShoppingItem] = Field(description="Lista de ingredientes agrupados bajo esta categoría.")
-
-    class ShoppingListResponse(BaseModel):
-        categories: List[ShoppingCategoryGroup] = Field(description="Agrupación de categorías principales de compras.")
 
     todos_ingredientes = menu_data.get("todos_ingredientes", [])
+    print(f"[ShoppingList AI] Input ingredients count: {len(todos_ingredientes)}")
     ingredientes_str = "\n".join(todos_ingredientes)
+
+    # Define schema as a raw dict to ensure absolute compatibility across Pydantic/Python versions
+    shopping_schema = {
+        "type": "OBJECT",
+        "properties": {
+            "categories": {
+                "type": "ARRAY",
+                "description": "Lista de categorías principales de compras.",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "category": {
+                            "type": "STRING",
+                            "description": "Categoría con su emoji respectivo (ej. 🥩 PROTEÍNAS, 🥛 LÁCTEOS Y SUSTITUTOS, 🥦 VERDURAS Y HORTALIZAS, 🍎 FRUTAS FRESCAS, 🍞 CEREALES Y TUBÉRCULOS, 🥜 GRASAS Y SEMILLAS, 🧂 DESPENSA Y CONDIMENTOS, 🍵 BEBIDAS)."
+                        },
+                        "items": {
+                            "type": "ARRAY",
+                            "description": "Lista de ingredientes de esta categoría.",
+                            "items": {
+                                "type": "OBJECT",
+                                "properties": {
+                                    "icon": {
+                                        "type": "STRING",
+                                        "description": "Un único emoji del alimento (ej. 🥬, 🍗, 🥛, 🍚)."
+                                    },
+                                    "name": {
+                                        "type": "STRING",
+                                        "description": "Nombre del ingrediente (ej. Pechuga de pollo, Brócoli)."
+                                    },
+                                    "amount": {
+                                        "type": "STRING",
+                                        "description": "Cantidad consolidada total (ej. 1.2 kg, 8 rebanadas)."
+                                    },
+                                    "tip": {
+                                        "type": "STRING",
+                                        "description": "Consejo clínico o de compra práctico."
+                                    }
+                                },
+                                "required": ["icon", "name", "amount", "tip"]
+                            }
+                        }
+                    },
+                    "required": ["category", "items"]
+                }
+            }
+        },
+        "required": ["categories"]
+    }
     
     system_prompt = (
         "Eres un asistente experto en nutrición clínica y compras de supermercado inteligentes. "
@@ -129,21 +164,25 @@ Genera el JSON usando el esquema definido.
 
     for model in models_to_try:
         try:
+            print(f"[ShoppingList AI] Calling Gemini using model: {model}...")
             response = client.models.generate_content(
                 model=model,
                 contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
                 config=types.GenerateContentConfig(
                     temperature=0.1,
                     response_mime_type="application/json",
-                    response_schema=ShoppingListResponse
+                    response_schema=shopping_schema
                 ),
             )
             text = response.text.strip()
+            print(f"[ShoppingList AI] Response text length: {len(text)}")
             data = json.loads(text)
             return data.get("categories", [])
         except Exception as e:
             print(f"[Gemini JSON Shopping List] Error with {model}: {e}")
+            traceback.print_exc()
             
+    print("[ShoppingList AI] ERROR: All models failed to generate content.")
     return [
         {
             "category": "⚠️ ERROR AL GENERAR",
