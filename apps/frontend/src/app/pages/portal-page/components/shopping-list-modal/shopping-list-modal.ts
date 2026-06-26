@@ -168,10 +168,53 @@ export class ShoppingListModalComponent {
     body {
       font-family: 'Inter', sans-serif;
       color: #334155;
-      padding: 40px;
+      padding: 80px 40px 40px 40px;
       background-color: #ffffff;
       font-size: 11px;
       line-height: 1.5;
+    }
+    .action-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 40px;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .action-bar-content {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
+    }
+    .download-btn {
+      background-color: #d11b60; /* nutri-rose */
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .download-btn:hover {
+      background-color: #b0134e;
     }
     .header {
       border-bottom: 2px solid #e2e8f0;
@@ -282,7 +325,10 @@ export class ShoppingListModalComponent {
     }
     @media print {
       body {
-        padding: 0;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
       }
       .footer {
         position: running(footer);
@@ -291,6 +337,16 @@ export class ShoppingListModalComponent {
   </style>
 </head>
 <body>
+  <div class="action-bar no-print">
+    <div class="action-bar-content">
+      <span>Vista previa de tu lista:</span>
+      <button onclick="window.print()" class="download-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Guardar o Imprimir
+      </button>
+    </div>
+  </div>
+
   <div class="header">
     <div>
       <div class="title">Lista de Súper</div>
@@ -309,14 +365,6 @@ export class ShoppingListModalComponent {
   <div class="footer">
     Plan de Alimentación de Élite · Generado de forma personalizada por IA
   </div>
-
-  <script>
-    window.onload = function() {
-      setTimeout(function() {
-        window.print();
-      }, 300);
-    };
-  </script>
 </body>
 </html>
     `;
