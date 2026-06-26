@@ -162,8 +162,8 @@
                     </app-a-button>
                 }
                 @if (!loadingShoppingList() && !hasShoppingError() && shoppingList().length > 0) {
-                    <app-a-button (onClick)="printShoppingList()" label="Imprimir / PDF" variant="outline" size="lg"
-                                 icon="print"
+                    <app-a-button (onClick)="printShoppingList()" label="Descargar PDF" variant="outline" size="lg"
+                                 icon="download"
                                  class="flex-1"
                                  customClass="!rounded-2xl !border-nutri-rose/20 !text-nutri-rose active:scale-95 transition-all">
                     </app-a-button>

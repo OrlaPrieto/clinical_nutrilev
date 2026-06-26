@@ -153,7 +153,7 @@ export class ShoppingListModalComponent {
 
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      this.toastService.show('Por favor, permite las ventanas emergentes (popups) para imprimir.', 'error');
+      this.toastService.show('Por favor, permite las ventanas emergentes (popups) para descargar el PDF.', 'error');
       return;
     }
 
@@ -314,7 +314,6 @@ export class ShoppingListModalComponent {
     window.onload = function() {
       setTimeout(function() {
         window.print();
-        window.close();
       }, 300);
     };
   </script>
