@@ -5,7 +5,7 @@ import { Patient } from '../models/patient.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { PatientProgress, ShoppingCategory, PatientUpdate, PatientProgressInsert } from '@shared/models/interfaces';
-import { MOCK_PATIENTS, MOCK_PROGRESS } from '../shared/mocks/mock-data';
+import { MOCK_PATIENTS, MOCK_PROGRESS, MOCK_SHOPPING_LIST } from '../shared/mocks/mock-data';
 
 interface CacheEntry<T> {
   data: T;
@@ -159,6 +159,9 @@ export class PatientService {
   }
 
   async getShoppingList(menuUrl: string): Promise<ShoppingCategory[]> {
+    if (this.authService.isDevMode()) {
+      return new Promise<ShoppingCategory[]>(resolve => setTimeout(() => resolve(JSON.parse(JSON.stringify(MOCK_SHOPPING_LIST))), 500));
+    }
     return firstValueFrom(this.http.post<ShoppingCategory[]>(`${this.apiUrl}/shopping-list`, { menu_url: menuUrl }));
   }
 }
