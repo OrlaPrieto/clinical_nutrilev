@@ -1018,66 +1018,66 @@
         </div>
 
         <!-- Barra de Navegación Inferior (Bottom Navigation Bar - Solo Móvil) -->
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pt-2.5 px-4 shadow-2xl flex justify-around items-center transition-all duration-300"
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pt-2.5 px-1 sm:px-4 shadow-2xl flex justify-around items-center transition-all duration-300"
              style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">
             <!-- Mi Plan -->
             <button (click)="setActiveTab('plan')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'plan'"
                     [class.text-slate-400]="activeTab() !== 'plan'"
                     [class.dark:text-slate-500]="activeTab() !== 'plan'">
                 <app-a-icon name="restaurant_menu" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Plan</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Plan</span>
             </button>
 
             <!-- Menú -->
             <button (click)="setActiveTab('menu-ia')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'menu-ia'"
                     [class.text-slate-400]="activeTab() !== 'menu-ia'"
                     [class.dark:text-slate-500]="activeTab() !== 'menu-ia'">
                 <app-a-icon name="auto_awesome" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Menú</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Menú</span>
             </button>
 
             <!-- Inicio -->
             <button (click)="setActiveTab('dashboard')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'dashboard'"
                     [class.text-slate-400]="activeTab() !== 'dashboard'"
                     [class.dark:text-slate-500]="activeTab() !== 'dashboard'">
                 <app-a-icon name="dashboard" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Progreso</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Progreso</span>
             </button>
 
             <!-- Recursos -->
             <button (click)="setActiveTab('resources')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'resources'"
                     [class.text-slate-400]="activeTab() !== 'resources'"
                     [class.dark:text-slate-500]="activeTab() !== 'resources'">
                 <app-a-icon name="folder_open" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Recursos</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Recursos</span>
             </button>
 
             <!-- Análisis -->
             <button (click)="setActiveTab('analysis')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'analysis'"
                     [class.text-slate-400]="activeTab() !== 'analysis'"
                     [class.dark:text-slate-500]="activeTab() !== 'analysis'">
                 <app-a-icon name="insights" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Análisis</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Análisis</span>
             </button>
 
             <!-- Historial -->
             <button (click)="setActiveTab('history')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'history'"
                     [class.text-slate-400]="activeTab() !== 'history'"
                     [class.dark:text-slate-500]="activeTab() !== 'history'">
                 <app-a-icon name="history" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Registros</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Registros</span>
             </button>
         </nav>
 
