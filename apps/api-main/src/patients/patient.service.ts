@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { SupabaseService } from '../common/supabase.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +15,7 @@ import { UpdateProgressDto } from './dto/update-progress.dto';
 @Injectable()
 export class PatientService {
   private shoppingListCache = new Map<string, any>();
+  private parsedMenuCache = new Map<string, any>();
 
   constructor(
     private supabaseService: SupabaseService,
@@ -364,6 +365,62 @@ export class PatientService {
         'Error calling Python AI service (Shopping List):',
         error instanceof Error ? error.message : error,
       );
+      throw error;
+    }
+  }
+
+  async getParsedMenu(menuUrl: string, clientIp?: string): Promise<any> {
+    if (this.parsedMenuCache.has(menuUrl)) {
+      return this.parsedMenuCache.get(menuUrl);
+    }
+
+    const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
+    if (!flaskApiUrl) {
+      throw new Error('FLASK_API_URL is not defined in environment variables');
+    }
+
+    const headers: Record<string, string> = {
+      'x-internal-key': this.configService.get<string>('INTERNAL_API_KEY') || '',
+    };
+
+    if (clientIp) {
+      headers['x-forwarded-for'] = clientIp;
+    }
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${flaskApiUrl.replace(/\/$/, '')}/api/parsed-menu`,
+          {
+            menu_url: menuUrl,
+          },
+          {
+            headers,
+            timeout: 120000,
+          }, // 120 second timeout
+        ),
+      );
+      
+      const result = response.data;
+      if (result && !result.error) {
+        this.parsedMenuCache.set(menuUrl, result);
+      }
+      return result;
+    } catch (error: any) {
+      console.error(
+        'Error calling Python AI service (Parsed Menu):',
+        error instanceof Error ? error.message : error,
+      );
+      if (error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+        if (data && data.error && data.message) {
+          throw new HttpException(
+            { error: data.error, message: data.message },
+            status,
+          );
+        }
+      }
       throw error;
     }
   }

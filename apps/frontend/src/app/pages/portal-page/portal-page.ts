@@ -25,6 +25,7 @@ import { AppointmentCardComponent } from './components/appointment-card/appointm
 import { ProgressChartSvgComponent } from './components/progress-chart-svg/progress-chart-svg';
 import { HabitsTrackerComponent } from './components/habits-tracker/habits-tracker';
 import { ShoppingListModalComponent } from './components/shopping-list-modal/shopping-list-modal';
+import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
 
 @Component({
   selector: 'app-portal-page',
@@ -42,7 +43,8 @@ import { ShoppingListModalComponent } from './components/shopping-list-modal/sho
     AppointmentCardComponent,
     ProgressChartSvgComponent,
     HabitsTrackerComponent,
-    ShoppingListModalComponent
+    ShoppingListModalComponent,
+    PortalPlanOrganism
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -79,7 +81,7 @@ export class PortalPage implements OnInit, OnDestroy {
   showThemeMenu = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
-  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history' | 'resources'>('plan');
+  activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
 
   dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
@@ -146,7 +148,7 @@ export class PortalPage implements OnInit, OnDestroy {
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
 
     if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
-      const tabs: ('dashboard' | 'plan' | 'analysis' | 'history' | 'resources')[] = ['plan', 'dashboard', 'resources', 'analysis', 'history'];
+      const tabs: ('dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources')[] = ['plan', 'menu-ia', 'dashboard', 'resources', 'analysis', 'history'];
       const currentIdx = tabs.indexOf(this.activeTab());
       
       if (diffX > 0 && currentIdx > 0) {
@@ -186,7 +188,7 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history' | 'resources') {
+  setActiveTab(tab: 'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

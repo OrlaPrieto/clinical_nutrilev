@@ -91,4 +91,14 @@ export class PatientController {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     return this.patientService.getShoppingList(menuUrl, clientIp);
   }
+
+  @Post('parsed-menu')
+  @UseGuards(PatientAuthGuard)
+  async getParsedMenu(
+    @Body('menu_url') menuUrl: string,
+    @Req() req: any,
+  ): Promise<any> {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    return this.patientService.getParsedMenu(menuUrl, clientIp);
+  }
 }

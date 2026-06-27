@@ -78,6 +78,21 @@
                         }
                     </button>
                     
+                    <button (click)="setActiveTab('menu-ia')"
+                            role="tab"
+                            [attr.aria-selected]="activeTab() === 'menu-ia' ? 'true' : 'false'"
+                            aria-label="Menú"
+                            [title]="sidebarCollapsed() ? 'Menú' : ''"
+                            [class]="(activeTab() === 'menu-ia'
+                                     ? 'w-full flex items-center rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm '
+                                     : 'w-full flex items-center rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 ') +
+                                     (sidebarCollapsed() ? 'justify-center p-3 gap-0' : 'gap-3 px-4 py-3')">
+                        <app-a-icon name="auto_awesome" size="18px"></app-a-icon>
+                        @if (!sidebarCollapsed()) {
+                            <span>Menú</span>
+                        }
+                    </button>
+                    
                     <button (click)="setActiveTab('dashboard')"
                             role="tab"
                             [attr.aria-selected]="activeTab() === 'dashboard' ? 'true' : 'false'"
@@ -746,6 +761,13 @@
                         </div>
                     }
 
+                    <!-- Pestaña: Menú -->
+                    @if (activeTab() === 'menu-ia') {
+                        <div [@tabAnimation] class="space-y-6">
+                            <app-o-portal-plan [patient]="patient()"></app-o-portal-plan>
+                        </div>
+                    }
+
                     <!-- Pestaña: Recursos (Guías y Documentos de Apoyo) -->
                     @if (activeTab() === 'resources') {
                         <div [@tabAnimation] class="space-y-8 animate-fade-in">
@@ -907,6 +929,16 @@
                     [class.dark:text-slate-500]="activeTab() !== 'plan'">
                 <app-a-icon name="restaurant_menu" size="20px"></app-a-icon>
                 <span class="text-[9px] font-bold uppercase tracking-wider">Plan</span>
+            </button>
+
+            <!-- Menú -->
+            <button (click)="setActiveTab('menu-ia')"
+                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'menu-ia'"
+                    [class.text-slate-400]="activeTab() !== 'menu-ia'"
+                    [class.dark:text-slate-500]="activeTab() !== 'menu-ia'">
+                <app-a-icon name="auto_awesome" size="20px"></app-a-icon>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Menú</span>
             </button>
 
             <!-- Inicio -->
