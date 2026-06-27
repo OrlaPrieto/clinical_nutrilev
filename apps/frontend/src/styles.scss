@@ -250,3 +250,96 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #f1f5f9 !important;
   box-shadow: inset 0 0 20px 20px rgba(255, 255, 255, 0.04) !important;
 }
+
+/* =========================================================================
+   ♿ ACCESSIBILITY & LANDSCAPE STABILITY OVERRIDES
+   ========================================================================= */
+
+/* Accessibility Font Scale Overrides */
+html.accessibility-font-large {
+  font-size: 115% !important;
+}
+html.accessibility-font-xlarge {
+  font-size: 130% !important;
+}
+
+/* Accessibility Deuteranopia (Green Blindness) */
+html.accessibility-deuteranopia {
+  --nutri-rose: #d97706 !important; /* amber-600 */
+  --nutri-rose-soft: rgba(217, 119, 6, 0.1) !important;
+  --nutri-rose-light: #f59e0b !important; /* amber-500 */
+  --accent-emerald: #2563eb !important; /* blue-600 */
+  
+  .text-emerald-500, .text-emerald-400, .text-emerald-600 {
+    color: #2563eb !important;
+  }
+  .bg-emerald-500, .bg-emerald-600 {
+    background-color: #2563eb !important;
+  }
+}
+
+/* Accessibility Protanopia (Red Blindness) */
+html.accessibility-protanopia {
+  --nutri-rose: #2563eb !important; /* blue-600 */
+  --nutri-rose-soft: rgba(37, 99, 235, 0.1) !important;
+  --nutri-rose-light: #3b82f6 !important; /* blue-500 */
+  --accent-emerald: #d97706 !important; /* amber-600 */
+  
+  .text-emerald-500, .text-emerald-400, .text-emerald-600 {
+    color: #d97706 !important;
+  }
+  .bg-emerald-500, .bg-emerald-600 {
+    background-color: #d97706 !important;
+  }
+}
+
+/* Accessibility High Contrast */
+html.accessibility-high-contrast {
+  --nutri-bg: #000000 !important;
+  --nutri-text: #ffffff !important;
+  --nutri-rose: #ffff00 !important; /* high-visibility yellow */
+  --nutri-rose-soft: rgba(255, 255, 0, 0.2) !important;
+  --nutri-rose-light: #ffff00 !important;
+  --accent-emerald: #00ffff !important; /* cyan */
+
+  background-color: #000000 !important;
+  color: #ffffff !important;
+
+  .card-nutri {
+    background-color: #121212 !important;
+    border: 2px solid #ffffff !important;
+  }
+
+  .btn-primary {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+  }
+
+  .btn-secondary {
+    background-color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    color: #ffff00 !important;
+  }
+}
+
+/* Landscape responsiveness optimization for mobile */
+@media (max-width: 900px) and (orientation: landscape) {
+  body {
+    overflow-y: auto !important;
+  }
+  .modal-overlay {
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+  }
+  .modal-content {
+    max-height: none !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+  .portal-container {
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+}
+

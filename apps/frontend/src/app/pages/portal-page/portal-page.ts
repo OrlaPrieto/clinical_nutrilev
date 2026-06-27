@@ -13,6 +13,7 @@ import { PushNotificationService } from '../../shared/services/push-notification
 import { AppointmentService, Appointment } from '../../services/appointment.service';
 import { AnalyticsService } from '../../shared/services/analytics.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -66,6 +67,7 @@ export class PortalPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
+  public accessibilityService = inject(AccessibilityService);
   private storageService = inject(StorageService);
   private pushService = inject(PushNotificationService);
   private appointmentService = inject(AppointmentService);
@@ -79,6 +81,7 @@ export class PortalPage implements OnInit, OnDestroy {
   progress = signal<PatientProgress[]>([]);
   loading = signal<boolean>(true);
   showThemeMenu = signal<boolean>(false);
+  showAccessibilityMenu = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
   activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
@@ -104,6 +107,7 @@ export class PortalPage implements OnInit, OnDestroy {
   @HostListener('document:click')
   onDocumentClick() {
     this.showThemeMenu.set(false);
+    this.showAccessibilityMenu.set(false);
   }
 
   private swipeStartX = 0;
