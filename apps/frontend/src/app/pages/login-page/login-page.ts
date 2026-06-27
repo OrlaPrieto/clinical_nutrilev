@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, HostListener } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AuthService } from '../../services/auth.service';
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { LegalModalComponent } from '../../shared/components/organisms/legal-modal/legal-modal';
 import { Title } from '@angular/platform-browser';
 import { APP_VERSION } from '../../version';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 @Component({
   selector: 'app-login-page',
@@ -22,11 +23,18 @@ export class LoginPage implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   public themeService = inject(ThemeService);
+  public accessibilityService = inject(AccessibilityService);
   private titleService = inject(Title);
   public version = APP_VERSION;
   errorMessage: string | null = null;
   isLoggingIn = false;
   showLegalModal = signal<'privacy' | 'support' | null>(null);
+  showAccessibilityMenu = signal<boolean>(false);
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.showAccessibilityMenu.set(false);
+  }
 
   constructor() {
     this.socialAuthService.authState.subscribe(async (user) => {
