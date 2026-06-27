@@ -29,11 +29,15 @@ async function bootstrap() {
   const isDev = process.env.NODE_ENV !== 'production';
   
   if (frontendUrl) allowedOrigins.push(frontendUrl);
-
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow if no origin (like mobile apps or curl) or if in allowed list
-      if (!origin || allowedOrigins.includes(origin) || (isDev && origin.includes('localhost'))) {
+      // Allow if no origin (like mobile apps or curl), if in allowed list, or if it's a Vercel preview deployment for this project
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        (isDev && origin.includes('localhost')) ||
+        (origin.includes('vercel.app') && origin.includes('clinical-nutrilev'))
+      ) {
         callback(null, true);
       } else {
         console.warn(`CORS blocked for origin: ${origin}`);
