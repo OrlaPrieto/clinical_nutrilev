@@ -14,8 +14,7 @@ import { UpdateProgressDto } from './dto/update-progress.dto';
 
 @Injectable()
 export class PatientService {
-  private shoppingListCache = new Map<string, any>();
-  private parsedMenuCache = new Map<string, any>();
+
 
   constructor(
     private supabaseService: SupabaseService,
@@ -316,14 +315,22 @@ export class PatientService {
       .delete()
       .or(`email.eq.${identifier},nombre.eq.${identifier}`);
 
-    if (error) throw error;
+        if (error) throw error;
     return { success: true };
   }
 
   async getShoppingList(menuUrl: string, clientIp?: string): Promise<any> {
-    const cached = this.shoppingListCache.get(menuUrl);
-    if (cached) {
-      return cached;
+    const client: any = this.supabaseService.getClient();
+
+    // 1. Consultar si ya existe en la base de datos de caché
+    const { data: cached } = await client
+      .from('ai_menu_cache')
+      .select('shopping_list')
+      .eq('menu_url', menuUrl)
+      .single();
+
+    if (cached && cached.shopping_list) {
+      return cached.shopping_list;
     }
 
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
@@ -355,9 +362,12 @@ export class PatientService {
       );
       
       const result = response.data;
-      const hasError = Array.isArray(result) && result.some(cat => cat.category?.includes('ERROR'));
-      if (!hasError) {
-        this.shoppingListCache.set(menuUrl, result);
+      if (result && !result.error) {
+        // Upsert en la tabla de caché
+        await client.from('ai_menu_cache').upsert({
+          menu_url: menuUrl,
+          shopping_list: result,
+        });
       }
       return result;
     } catch (error) {
@@ -370,8 +380,17 @@ export class PatientService {
   }
 
   async getParsedMenu(menuUrl: string, clientIp?: string): Promise<any> {
-    if (this.parsedMenuCache.has(menuUrl)) {
-      return this.parsedMenuCache.get(menuUrl);
+    const client: any = this.supabaseService.getClient();
+
+    // 1. Consultar si ya existe en la base de datos de caché
+    const { data: cached } = await client
+      .from('ai_menu_cache')
+      .select('parsed_menu')
+      .eq('menu_url', menuUrl)
+      .single();
+
+    if (cached && cached.parsed_menu) {
+      return cached.parsed_menu;
     }
 
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
@@ -403,7 +422,11 @@ export class PatientService {
       
       const result = response.data;
       if (result && !result.error) {
-        this.parsedMenuCache.set(menuUrl, result);
+        // Upsert en la tabla de caché
+        await client.from('ai_menu_cache').upsert({
+          menu_url: menuUrl,
+          parsed_menu: result,
+        });
       }
       return result;
     } catch (error: any) {
@@ -427,7 +450,7 @@ export class PatientService {
 
   async cleanupOldStorageFiles(): Promise<{ deletedCount: number }> {
     try {
-      const client = this.supabaseService.getClient();
+      const client: any = this.supabaseService.getClient();
       if (!client || !client.storage) return { deletedCount: 0 };
 
       let allFiles: any[] = [];
@@ -462,6 +485,10 @@ export class PatientService {
           await client.storage.from('patient_menus').remove(chunk);
         }
       }
+
+      // Limpiar caché de IA obsoleto (> 8 días)
+      const cutoffIso = cutoffDate.toISOString();
+      await client.from('ai_menu_cache').delete().lt('created_at', cutoffIso);
 
       return { deletedCount: filesToDelete.length };
     } catch (err) {

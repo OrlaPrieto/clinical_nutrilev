@@ -205,6 +205,26 @@ export type Database = {
           numero_cita?: number | null;
         };
       };
+      ai_menu_cache: {
+        Row: {
+          menu_url: string;
+          parsed_menu: any | null;
+          shopping_list: any | null;
+          created_at: string;
+        };
+        Insert: {
+          menu_url: string;
+          parsed_menu?: any | null;
+          shopping_list?: any | null;
+          created_at?: string;
+        };
+        Update: {
+          menu_url?: string;
+          parsed_menu?: any | null;
+          shopping_list?: any | null;
+          created_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
