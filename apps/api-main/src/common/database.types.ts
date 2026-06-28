@@ -176,7 +176,7 @@ export type Database = {
       patient_progress: {
         Row: {
           id: string;
-          patient_email: string;
+          patient_id: string;
           weight: string;
           body_fat: string | null;
           muscle_mass: string | null;
@@ -186,7 +186,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          patient_email: string;
+          patient_id: string;
           weight: string;
           body_fat?: string | null;
           muscle_mass?: string | null;
@@ -196,7 +196,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          patient_email?: string;
+          patient_id?: string;
           weight?: string;
           body_fat?: string | null;
           muscle_mass?: string | null;

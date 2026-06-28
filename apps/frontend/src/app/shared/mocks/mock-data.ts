@@ -66,7 +66,7 @@ export const MOCK_PATIENTS: Patient[] = [
 export const MOCK_PROGRESS: PatientProgress[] = [
   {
     id: 'p1',
-    patient_email: 'ana@ejemplo.com',
+    patient_id: '1',
     weight: 68.5,
     body_fat: 28,
     muscle_mass: 45,
@@ -77,7 +77,7 @@ export const MOCK_PROGRESS: PatientProgress[] = [
   },
   {
     id: 'p2',
-    patient_email: 'ana@ejemplo.com',
+    patient_id: '1',
     weight: 70.2,
     body_fat: 30,
     muscle_mass: 44,

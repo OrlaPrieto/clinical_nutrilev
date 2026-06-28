@@ -103,7 +103,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
 
     try {
       const whitelistedKeys = [
-        'patient_email', 'date', 'weight', 'body_fat', 'muscle_mass',
+        'patient_id', 'date', 'weight', 'body_fat', 'muscle_mass',
         'agua_corporal', 'proteinas', 'minerales', 'masa_grasa', 'masa_magra', 'imc',
         'brazo_der_grasa', 'brazo_der_musculo', 'brazo_der_cm',
         'brazo_izq_grasa', 'brazo_izq_musculo', 'brazo_izq_cm',
@@ -127,7 +127,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
       Object.keys(payload).forEach(key => {
         if (payload[key] === '') {
           payload[key] = null;
-        } else if (key !== 'presion_arterial' && key !== 'notes' && key !== 'date' && key !== 'patient_email') {
+        } else if (key !== 'presion_arterial' && key !== 'notes' && key !== 'date' && key !== 'patient_id') {
           if (payload[key] !== null && payload[key] !== undefined) {
             const num = Number(payload[key]);
             payload[key] = isNaN(num) ? null : num;

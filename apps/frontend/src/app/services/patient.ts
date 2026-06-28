@@ -106,7 +106,9 @@ export class PatientService {
 
     const data = await (async () => {
       if (this.authService.isDevMode()) {
-        const prog = MOCK_PROGRESS.filter(p => p.patient_email === email);
+        const patient = MOCK_PATIENTS.find(p => p.email.toLowerCase() === email.toLowerCase());
+        const patientId = patient ? patient.id : '';
+        const prog = MOCK_PROGRESS.filter(p => p.patient_id === patientId);
         return new Promise<PatientProgress[]>(resolve => setTimeout(() => resolve(prog), 500));
       }
       return firstValueFrom(this.http.get<PatientProgress[]>(`${this.apiUrl}/${email}/progress`));
