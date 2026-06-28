@@ -96,7 +96,7 @@ export interface PatientUpdate extends Partial<Patient> {
 
 export interface PatientProgress {
   id: string;
-  patient_email: string;
+  patient_id: string;
   weight: number | string;
   body_fat?: number | string | null;
   muscle_mass?: number | string | null;

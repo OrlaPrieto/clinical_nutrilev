@@ -221,7 +221,7 @@ export class PatientDetailComponent implements OnInit {
       await this.patientService.deleteProgressEntry(record.id);
       
       this.analytics.logEvent('delete_progress_entry', {
-        patient_email: record.patient_email || record.patientEmail,
+        patient_email: this.patient()?.email,
         record_date: record.date
       });
 
@@ -372,7 +372,7 @@ export class PatientDetailComponent implements OnInit {
       }
 
       await this.patientService.addProgressEntry({
-        patient_email: p.email,
+        patient_id: p.id,
         ...progressData
       });
 

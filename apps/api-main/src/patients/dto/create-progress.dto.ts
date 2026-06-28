@@ -8,9 +8,9 @@ import {
 import { Type } from 'class-transformer';
 
 export class CreateProgressDto {
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
-  patient_email: string;
+  patient_id: string;
 
   @IsNumber()
   @IsNotEmpty()
