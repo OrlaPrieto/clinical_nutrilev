@@ -166,7 +166,7 @@
                 </div>
 
                 <!-- Etiquetas Flotantes: Tronco -->
-                <div class="absolute top-[34%] w-[82px] sm:w-[90px] flex flex-col items-center gap-1 sm:gap-1.5 pointer-events-auto cursor-pointer transition-all duration-300"
+                <div class="absolute top-[31%] w-[82px] sm:w-[90px] flex flex-col items-center gap-1 sm:gap-1.5 pointer-events-auto cursor-pointer transition-all duration-300"
                      [class.scale-105]="hoveredPart() === 'torso'"
                      (mouseenter)="hoveredPart.set('torso')"
                      (mouseleave)="hoveredPart.set(null)"
@@ -188,6 +188,21 @@
                          [class.bg-nutri-rose/5]="hoveredPart() === 'torso'">
                         <span class="text-[6.5px] sm:text-[7px] font-bold uppercase text-nutri-text/60">Cadera</span>
                         <span class="text-[9px] sm:text-[10px] font-black dark:text-slate-100">{{ progress().cadera || '--' }}<span class="text-[6.5px] sm:text-[7px] font-bold text-slate-500 ml-0.5">cm</span></span>
+                    </div>
+                    <div class="flex flex-col items-center bg-white dark:bg-slate-900 px-2 sm:px-3 py-1 rounded-xl border shadow-sm w-full transition-all"
+                         [class.border-nutri-rose]="hoveredPart() === 'torso'"
+                         [class.bg-nutri-rose/5]="hoveredPart() === 'torso'">
+                        <span class="text-[6.5px] sm:text-[7px] font-black uppercase text-nutri-rose truncate w-full text-center">Tronco</span>
+                        <div class="flex gap-1.5 sm:gap-2 mt-1">
+                            <div class="flex flex-col items-center">
+                                <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">G</span>
+                                <span class="text-[7.5px] sm:text-[8px] font-black dark:text-slate-100">{{ progress().tronco_grasa || '--' }}</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[5.5px] sm:text-[6px] uppercase text-nutri-text/70 font-bold">M</span>
+                                <span class="text-[7.5px] sm:text-[8px] font-black dark:text-slate-100">{{ progress().tronco_musculo || '--' }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
