@@ -86,26 +86,11 @@ export class AuthService {
     return data as AuthResponse;
   }
 
-  private roleCache = new Map<string, { role: string; expiry: number }>();
-  private readonly CACHE_TTL = 1000 * 60 * 5; // 5 minutes
-
   async getRole(email: string): Promise<{ role: string }> {
     const cleanEmail = email.toLowerCase();
-    const now = Date.now();
-
-    // Check cache
-    const cached = this.roleCache.get(cleanEmail);
-    if (cached && cached.expiry > now) {
-      return { role: cached.role };
-    }
 
     if (this.adminEmails.includes(cleanEmail)) {
-      const result = { role: 'admin' };
-      this.roleCache.set(cleanEmail, {
-        ...result,
-        expiry: now + this.CACHE_TTL,
-      });
-      return result;
+      return { role: 'admin' };
     }
 
     // Use select() to avoid .single() errors if multiple records exist
@@ -140,9 +125,7 @@ export class AuthService {
       }
     }
 
-    const result = { role };
-    this.roleCache.set(cleanEmail, { ...result, expiry: now + this.CACHE_TTL });
-    return result;
+    return { role };
   }
 
   async sendResetPassword(
