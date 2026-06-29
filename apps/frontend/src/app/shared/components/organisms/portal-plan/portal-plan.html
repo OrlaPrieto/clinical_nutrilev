@@ -167,13 +167,13 @@
               <div class="space-y-3">
                 <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 dark:text-white/20">Ingredientes y Porciones</p>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   @for (ing of meal.ingredientes; track ing.nombre) {
-                    <div class="bg-nutri-bg/25 dark:bg-white/[0.02] border-y border-r border-nutri-rose/[0.03] dark:border-white/[0.02] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 group/ing hover:bg-white dark:hover:bg-[#111111] hover:border-nutri-rose/10 dark:hover:border-white/5 transition-all duration-300 border-l-[4px]"
+                    <div class="bg-nutri-bg/25 dark:bg-white/[0.02] border-y border-r border-nutri-rose/[0.03] dark:border-white/[0.02] rounded-xl sm:rounded-2xl py-2 px-3 sm:py-3 sm:px-4 flex items-center justify-between gap-2.5 group/ing hover:bg-white dark:hover:bg-[#111111] hover:border-nutri-rose/10 dark:hover:border-white/5 transition-all duration-300 border-l-[4px]"
                          [class]="getIngredientIcon(ing.grupo, ing.nombre).borderClass">
-                      <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors" [class]="getIngredientIcon(ing.grupo, ing.nombre).bgClass">
-                          <app-a-icon [name]="getIngredientIcon(ing.grupo, ing.nombre).name" size="16px" [customClass]="getIngredientIcon(ing.grupo, ing.nombre).colorClass"></app-a-icon>
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors" [class]="getIngredientIcon(ing.grupo, ing.nombre).bgClass">
+                          <app-a-icon [name]="getIngredientIcon(ing.grupo, ing.nombre).name" size="14px" [customClass]="getIngredientIcon(ing.grupo, ing.nombre).colorClass"></app-a-icon>
                         </div>
                         <div class="min-w-0">
                           <p class="text-[10px] font-bold text-nutri-text dark:text-slate-300 truncate">{{ ing.nombre }}</p>
@@ -195,9 +195,9 @@
                       <!-- Sustitutos button -->
                       @if (ing.reemplazos && ing.reemplazos.length > 0) {
                         <button (click)="openReplacements(ing, $event)"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/10 active:scale-95 transition-all cursor-pointer shrink-0"
+                                class="w-7 h-7 rounded-md flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/10 active:scale-95 transition-all cursor-pointer shrink-0"
                                 title="Ver sustitutos autorizados">
-                          <app-a-icon name="swap_horiz" size="18px"></app-a-icon>
+                          <app-a-icon name="swap_horiz" size="16px"></app-a-icon>
                         </button>
                       }
                     </div>
