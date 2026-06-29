@@ -538,32 +538,9 @@
                                     </div>
                                 </div>
                             </div>
- 
+
                             <!-- Grid de Métricas Rápidas -->
-                            <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                <!-- BMI Card -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-2 text-nutri-rose/40">
-                                            <app-a-icon name="speed" size="16px"></app-a-icon>
-                                            <span class="text-[9px] font-black uppercase tracking-widest">IMC</span>
-                                        </div>
-                                        @if (bmiCategory()) {
-                                            <span class="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5" [class]="bmiColorClass()">
-                                                {{ bmiCategory() }}
-                                            </span>
-                                        }
-                                    </div>
-                                    <div class="flex items-baseline gap-1 mt-2">
-                                        <span class="text-3xl font-black font-sans tracking-tight text-nutri-text dark:text-slate-100">{{ bmi() || '--' }}</span>
-                                        <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
-                                    </div>
-                                    <!-- Medidor visual de rango IMC -->
-                                    <div class="w-full h-1.5 bg-gradient-to-r from-sky-400 via-emerald-400 via-amber-400 to-rose-400 rounded-full relative mt-3 overflow-visible">
-                                        <div class="absolute w-2.5 h-2.5 bg-slate-800 dark:bg-white border-2 border-white dark:border-slate-800 rounded-full top-1/2 -translate-y-1/2 shadow transition-all duration-700" [style.left.%]="bmiPosition()"></div>
-                                    </div>
-                                </div>
- 
+                            <div class="grid grid-cols-2 gap-4">
                                 <!-- Fat Card -->
                                 <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
                                     <div class="flex items-center gap-2 text-nutri-rose/40">
@@ -582,9 +559,9 @@
                                         }
                                     </span>
                                 </div>
- 
+
                                 <!-- Porcentaje de Avance General -->
-                                <div class="dashboard-card col-span-2 lg:col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
+                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2 text-nutri-rose/40">
                                             <app-a-icon name="flag" size="16px"></app-a-icon>
@@ -601,7 +578,6 @@
                                         {{ goalPercentage() >= 100 ? '¡Objetivo completado!' : 'En camino al 100%' }}
                                     </span>
                                 </div>
-
                             </div>
 
                             <!-- Sección de Logros (Estrellas de Logro) -->
