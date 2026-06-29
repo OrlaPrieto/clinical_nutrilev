@@ -120,6 +120,7 @@ export class PortalPlanOrganism implements OnInit {
 
       if (data && !data.error) {
         this.parsedMenu.set(data);
+        this.autoSelectDaySection();
         setTimeout(() => {
           this.scrollToCurrentMeal();
         }, 400);
@@ -292,6 +293,50 @@ export class PortalPlanOrganism implements OnInit {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+    }
+  }
+
+  autoSelectDaySection() {
+    const menu = this.parsedMenu();
+    if (!menu || !menu.secciones || menu.secciones.length === 0) return;
+
+    const weekdayIndex = new Date().getDay();
+    const daysMap = [
+      'domingo',
+      'lunes',
+      'martes',
+      'miercoles',
+      'jueves',
+      'viernes',
+      'sabado'
+    ];
+    const currentDayClean = daysMap[weekdayIndex];
+
+    const cleanString = (str: string) => 
+      str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // 1. Check if the menu is day-based or option-based
+    const isDayBased = menu.secciones.some((sec: any) => {
+      const secNameClean = cleanString(sec.nombre);
+      return daysMap.some(day => secNameClean.includes(day));
+    });
+
+    if (!isDayBased) {
+      console.log('PortalPlan: Menu is option-based, skipping auto day selection.');
+      return;
+    }
+
+    // 2. Find the section that matches today's day of week
+    const matchIdx = menu.secciones.findIndex((sec: any) => {
+      const secNameClean = cleanString(sec.nombre);
+      return secNameClean.includes(currentDayClean);
+    });
+
+    if (matchIdx !== -1) {
+      console.log(`PortalPlan: Auto selected day section index ${matchIdx} for today (${currentDayClean})`);
+      this.activeSectionIdx.set(matchIdx);
+    } else {
+      console.log(`PortalPlan: Today is ${currentDayClean} but no matching section was found.`);
     }
   }
 }
