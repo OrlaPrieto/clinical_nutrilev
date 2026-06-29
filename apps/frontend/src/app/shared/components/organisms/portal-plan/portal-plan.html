@@ -96,8 +96,8 @@
     <!-- 3. Timeline / Meal Cards -->
     <div class="relative pl-6 sm:pl-8 space-y-8 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-nutri-rose before:to-nutri-rose/20">
       
-      @for (meal of activeSection?.tiempos_comida; track meal.tiempo) {
-        <div class="relative group/timeline animate-fade-up">
+      @for (meal of activeSection?.tiempos_comida; track meal.tiempo; let idx = $index) {
+        <div [id]="'meal-card-' + idx" class="relative group/timeline animate-fade-up">
           
           <!-- Chronology Dot -->
           <div class="absolute -left-[23px] sm:-left-[33px] top-4 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white dark:bg-[#080808] border-4 border-nutri-rose flex items-center justify-center z-10 transition-transform group-hover/timeline:scale-125 duration-300">
@@ -139,6 +139,12 @@
                   <div class="flex items-center gap-2">
                     <span class="text-xl">{{ meal.emoji }}</span>
                     <span class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/50">{{ meal.tiempo }}</span>
+                    @if (isCurrentMeal(meal.tiempo)) {
+                      <span class="px-2 py-0.5 text-[8px] font-black uppercase tracking-wider rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                        <span class="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Ahora
+                      </span>
+                    }
                     @if (meal.hora_sugerida && !meal.platillo_imagen_url) {
                       <span class="px-2 py-0.5 text-[8px] font-bold rounded-lg bg-slate-100 dark:bg-white/5 text-slate-400 tracking-wider">
                         {{ meal.hora_sugerida }}
@@ -163,21 +169,27 @@
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   @for (ing of meal.ingredientes; track ing.nombre) {
-                    <div class="bg-nutri-bg/25 dark:bg-white/[0.02] border border-nutri-rose/[0.03] dark:border-white/[0.02] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 group/ing hover:bg-white dark:hover:bg-[#111111] hover:border-nutri-rose/10 dark:hover:border-white/5 transition-all duration-300">
-                      <div class="min-w-0">
-                        <p class="text-[10px] font-bold text-nutri-text dark:text-slate-300 truncate">{{ ing.nombre }}</p>
-                        <p class="text-[9px] font-bold text-nutri-rose/70 mt-0.5">{{ ing.cantidad }}</p>
-                        @if (ing.grupo) {
-                          <span class="inline-block text-[8px] font-black tracking-wider uppercase text-slate-400 dark:text-slate-600 mt-1 truncate max-w-full">
-                            {{ ing.grupo }}
-                          </span>
-                        }
-                        @if (ing.peso_cocido_crudo) {
-                          <p class="text-[8px] font-medium text-emerald-600/90 dark:text-emerald-400/90 mt-1 flex items-center gap-0.5">
-                            <app-a-icon name="restaurant" size="10px"></app-a-icon>
-                            {{ ing.peso_cocido_crudo }}
-                          </p>
-                        }
+                    <div class="bg-nutri-bg/25 dark:bg-white/[0.02] border-y border-r border-nutri-rose/[0.03] dark:border-white/[0.02] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 group/ing hover:bg-white dark:hover:bg-[#111111] hover:border-nutri-rose/10 dark:hover:border-white/5 transition-all duration-300 border-l-[4px]"
+                         [class]="getIngredientIcon(ing.grupo, ing.nombre).borderClass">
+                      <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors" [class]="getIngredientIcon(ing.grupo, ing.nombre).bgClass">
+                          <app-a-icon [name]="getIngredientIcon(ing.grupo, ing.nombre).name" size="16px" [customClass]="getIngredientIcon(ing.grupo, ing.nombre).colorClass"></app-a-icon>
+                        </div>
+                        <div class="min-w-0">
+                          <p class="text-[10px] font-bold text-nutri-text dark:text-slate-300 truncate">{{ ing.nombre }}</p>
+                          <p class="text-[9px] font-bold text-nutri-rose/70 mt-0.5">{{ ing.cantidad }}</p>
+                          @if (ing.grupo) {
+                            <span class="inline-block text-[8px] font-black tracking-wider uppercase text-slate-400 dark:text-slate-600 mt-1 truncate max-w-full">
+                              {{ ing.grupo }}
+                            </span>
+                          }
+                          @if (ing.peso_cocido_crudo) {
+                            <p class="text-[8px] font-medium text-emerald-600/90 dark:text-emerald-400/90 mt-1 flex items-center gap-0.5">
+                              <app-a-icon name="restaurant" size="10px"></app-a-icon>
+                              {{ ing.peso_cocido_crudo }}
+                            </p>
+                          }
+                        </div>
                       </div>
 
                       <!-- Sustitutos button -->
