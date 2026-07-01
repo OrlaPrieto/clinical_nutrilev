@@ -55,17 +55,17 @@
     <div class="day-selector-container sticky top-[64px] md:top-4 z-30 bg-nutri-bg/95 dark:bg-[#080808]/95 backdrop-blur-md pt-3 pb-2 px-1 transition-all !mt-2">
       
       <div class="relative w-full">
-        <!-- Dropdown trigger button -->
+        <!-- Dropdown trigger button (Vibrant Hero Gradient Card) -->
         <button (click)="toggleDayDropdown()" 
-                class="w-full flex items-center justify-between bg-white dark:bg-[#0c0c0c] border border-nutri-rose/10 dark:border-white/5 rounded-2xl px-5 py-4 text-xs font-bold tracking-wider uppercase transition-all shadow-sm hover:bg-slate-50 dark:hover:bg-white/5 active:scale-[0.99] cursor-pointer">
+                class="w-full flex items-center justify-between bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] text-white border-0 rounded-2xl px-5 py-4 text-xs font-bold tracking-wider uppercase transition-all shadow-lg shadow-nutri-rose/10 hover:shadow-xl hover:shadow-nutri-rose/20 active:scale-[0.99] cursor-pointer">
           <div class="flex items-center gap-3">
-            <app-a-icon name="calendar_today" customClass="text-nutri-rose text-lg"></app-a-icon>
+            <app-a-icon name="calendar_today" customClass="text-white text-lg"></app-a-icon>
             <div class="text-left">
-              <span class="block text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">Menú Activo</span>
-              <span class="text-slate-700 dark:text-slate-200">{{ activeSection?.nombre }}</span>
+              <span class="block text-[8px] font-black uppercase tracking-widest text-white/70 mb-0.5">Menú Activo</span>
+              <span class="text-white font-sans font-bold leading-tight">{{ activeSection?.nombre }}</span>
             </div>
           </div>
-          <app-a-icon [name]="showDayDropdown() ? 'expand_less' : 'expand_more'" customClass="text-slate-400 text-lg"></app-a-icon>
+          <app-a-icon [name]="showDayDropdown() ? 'expand_less' : 'expand_more'" customClass="text-white/80 text-lg"></app-a-icon>
         </button>
 
         <!-- Dropdown Options List -->
