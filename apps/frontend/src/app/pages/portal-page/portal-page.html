@@ -370,9 +370,31 @@
             <!-- Contenedor Principal Adaptable (Capa Principal de Páginas) -->
             <main class="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 mt-6 md:mt-8 mb-24 md:mb-8 pb-24 md:pb-20 space-y-8 flex-1 w-full min-w-0 transition-all duration-300">
                 <!-- Bienvenida y Objetivo (Solo Móvil) -->
-                <div class="md:hidden space-y-1 mb-2 mt-1 animate-fade-in">
-                    <h1 class="text-2xl sm:text-3xl font-bold serif text-nutri-text dark:text-white leading-tight">{{ welcomeMessage() }}</h1>
-                    <p class="text-[11px] uppercase tracking-widest font-black text-nutri-rose/85 dark:text-nutri-rose-soft/90">{{ goalSubtitle() }}</p>
+                <div class="md:hidden p-5 rounded-[2.25rem] bg-gradient-to-br from-white/70 to-white/30 dark:from-[#111111]/60 dark:to-[#080808]/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl shadow-nutri-rose/[0.02] flex items-center justify-between gap-4 mb-6 animate-fade-in relative overflow-hidden">
+                    <!-- Light effect background -->
+                    <div class="absolute -right-12 -bottom-12 w-28 h-28 bg-gradient-to-tr from-nutri-rose/10 to-[#ff7043]/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="space-y-1.5 min-w-0 flex-1 relative z-10">
+                        <span class="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
+                            {{ greetingPrefix() }}
+                        </span>
+                        <h1 class="text-xl font-black text-slate-800 dark:text-white leading-none tracking-tight">
+                            ¡Hola, <span [ngClass]="getHeroTextGradientClass()" class="font-black text-transparent bg-clip-text bg-gradient-to-r">{{ firstName() }}</span>!
+                        </h1>
+                        <div class="flex items-start gap-1.5 pt-1">
+                            <span class="relative flex h-1.5 w-1.5 shrink-0 mt-1">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-nutri-rose opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-nutri-rose"></span>
+                            </span>
+                            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-normal">
+                                {{ goalSubtitle() }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Icono dinámico premium -->
+                    <div class="w-11 h-11 rounded-full bg-white dark:bg-white/5 border border-white/30 dark:border-white/10 shadow-md flex items-center justify-center text-nutri-rose dark:text-nutri-rose-soft shrink-0 relative z-10">
+                        <app-a-icon [name]="greetingIcon()" size="16px" customClass="animate-pulse"></app-a-icon>
+                    </div>
                 </div>
                 @if (loading()) {
                     <!-- Shimmering Skeleton Screen Loader -->
@@ -454,10 +476,10 @@
                         <div [@tabAnimation] class="space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                 <!-- Meta de Progreso (Vibrant Gradient Card) -->
-                                <div class="dashboard-card bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] text-white p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border-0 shadow-lg shadow-nutri-rose/10 flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full group-hover:scale-110 transition-transform duration-500 blur-sm"></div>
-                                    <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-orange-500/10 rounded-full group-hover:scale-115 transition-transform duration-500 blur-md"></div>
-                                    <div>
+                                <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] flex flex-col justify-between overflow-hidden relative group">
+                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full group-hover:scale-110 transition-transform duration-500 blur-sm pointer-events-none"></div>
+                                    <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-white/5 rounded-full group-hover:scale-115 transition-transform duration-500 blur-md pointer-events-none"></div>
+                                    <div class="relative z-10">
                                         <span class="text-[9px] font-black uppercase tracking-widest text-white/80 mb-3 block">
                                             {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
                                                currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
@@ -480,8 +502,8 @@
  
                                 <!-- Último Registro Físico (Polished High Contrast Card) -->
                                 <div class="dashboard-card bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm text-slate-800 dark:text-slate-200 flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-50 dark:bg-white/[0.01] rounded-full group-hover:scale-110 transition-transform duration-500"></div>
-                                    <div>
+                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-50 dark:bg-white/[0.01] rounded-full group-hover:scale-110 transition-transform duration-500 pointer-events-none"></div>
+                                    <div class="relative z-10">
                                         <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 block">Último Registro Clínico</span>
                                         <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6">
                                             <!-- Peso -->
@@ -647,7 +669,7 @@
                                 <div class="space-y-6">
                                         
                                         <!-- 1. Banner de Bienvenida Glassmorphic (Vibrant Hero Gradient Card) -->
-                                        <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] text-white p-6 sm:p-8 shadow-lg shadow-nutri-rose/10 border-0">
+                                        <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8">
                                             <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                                             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div>
@@ -868,7 +890,7 @@
                     @if (activeTab() === 'resources') {
                         <div [@tabAnimation] class="space-y-8 animate-fade-in">
                             <!-- Hero Section del Recurso (Vibrant Hero Gradient Card) -->
-                            <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] text-white border-0 p-8 shadow-lg shadow-nutri-rose/10">
+                            <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8">
                                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="max-w-2xl relative z-10 space-y-3">
                                     <span class="text-[8px] font-black tracking-[0.3em] uppercase text-white/90 bg-white/15 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
@@ -999,15 +1021,9 @@
 
                     <!-- Pestaña 4: Historial Clínico Completo -->
                     @if (activeTab() === 'history') {
-                        @defer (on idle) {
-                            <div [@tabAnimation]>
-                                <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
-                            </div>
-                        } @placeholder {
-                            <div class="h-64 animate-pulse bg-slate-100 dark:bg-white/5 rounded-3xl border border-nutri-rose/10 flex items-center justify-center">
-                                <p class="text-xs text-nutri-text/40 dark:text-slate-500 font-medium">Cargando registros históricos...</p>
-                            </div>
-                        }
+                        <div [@tabAnimation]>
+                            <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
+                        </div>
                     }
                 }
             </main>

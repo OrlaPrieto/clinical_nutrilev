@@ -4,6 +4,7 @@ import { PatientService } from '../../../../services/patient';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
+import { ThemeService } from '../../../../shared/services/theme.service';
 import { Patient } from '@shared/models/interfaces';
 
 @Component({
@@ -20,6 +21,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   
   private patientService = inject(PatientService);
   private toastService = inject(ToastService);
+  public themeService = inject(ThemeService);
 
   parsedMenu = signal<any | null>(null);
   loading = signal<boolean>(false);
@@ -54,6 +56,21 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadPlan();
+  }
+
+  getHeroGradientClass(): string {
+    const activeTheme = this.themeService.theme();
+    switch (activeTheme) {
+      case 'dark':
+        return 'bg-gradient-to-tr from-nutri-rose via-[#ad1457] to-[#240011] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+      case 'purple':
+        return 'bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-800 shadow-lg shadow-purple-900/20 border-0';
+      case 'vibrant':
+        return 'bg-gradient-to-tr from-nutri-rose via-[#5a806f] to-[#8cbda8] shadow-lg shadow-[#4a6b5d]/10 border-0';
+      case 'light':
+      default:
+        return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/10 border-0';
+    }
   }
 
   ngOnDestroy() {

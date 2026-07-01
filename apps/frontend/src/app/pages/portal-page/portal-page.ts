@@ -105,6 +105,36 @@ export class PortalPage implements OnInit, OnDestroy {
     return Math.round((count / 4) * 100);
   });
 
+  getHeroGradientClass(): string {
+    const activeTheme = this.themeService.theme();
+    switch (activeTheme) {
+      case 'dark':
+        return 'bg-gradient-to-tr from-nutri-rose via-[#ad1457] to-[#240011] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+      case 'purple':
+        return 'bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-800 shadow-lg shadow-purple-900/20 border-0';
+      case 'vibrant':
+        return 'bg-gradient-to-tr from-nutri-rose via-[#5a806f] to-[#8cbda8] shadow-lg shadow-[#4a6b5d]/10 border-0';
+      case 'light':
+      default:
+        return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/10 border-0';
+    }
+  }
+
+  getHeroTextGradientClass(): string {
+    const activeTheme = this.themeService.theme();
+    switch (activeTheme) {
+      case 'dark':
+        return 'from-nutri-rose to-[#ff8a65]';
+      case 'purple':
+        return 'from-purple-500 to-[#d81b60]';
+      case 'vibrant':
+        return 'from-[#4a6b5d] to-[#8cbda8]';
+      case 'light':
+      default:
+        return 'from-nutri-rose to-[#ff7043]';
+    }
+  }
+
 
 
   @HostListener('document:click')
@@ -230,6 +260,20 @@ export class PortalPage implements OnInit, OnDestroy {
   toNumber(val: any): number {
     return Number(val);
   }
+
+  greetingPrefix = computed(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) return 'Buenos días';
+    if (hours < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  });
+
+  greetingIcon = computed(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) return 'wb_sunny';
+    if (hours < 19) return 'light_mode';
+    return 'nights_stay';
+  });
 
   welcomeMessage = computed(() => {
     const hours = new Date().getHours();
