@@ -1,4 +1,4 @@
-import { Component, input, signal, effect, inject, OnInit, HostListener } from '@angular/core';
+import { Component, input, signal, effect, inject, OnInit, OnDestroy, HostListener, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../../services/patient';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -13,8 +13,10 @@ import { Patient } from '@shared/models/interfaces';
   templateUrl: './portal-plan.html',
   styleUrl: './portal-plan.css'
 })
-export class PortalPlanOrganism implements OnInit {
+export class PortalPlanOrganism implements OnInit, OnDestroy {
   patient = input.required<Patient | null>();
+  
+  private progressInterval: any = null;
   
   private patientService = inject(PatientService);
   private toastService = inject(ToastService);
@@ -54,17 +56,31 @@ export class PortalPlanOrganism implements OnInit {
     this.loadPlan();
   }
 
+  ngOnDestroy() {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+  }
+
   constructor() {
     // Reload menu if patient or menu_url changes
     effect(() => {
       const p = this.patient();
       if (p) {
-        this.loadPlan();
+        untracked(() => {
+          this.loadPlan();
+        });
       }
     }, { allowSignalWrites: true });
   }
 
   async loadPlan() {
+    if (this.loading()) return;
+
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+
     const p = this.patient();
     const url = p?.menu_url || (p?.current_menus && p.current_menus.length > 0 ? p.current_menus[0].url : null);
     
@@ -93,7 +109,7 @@ export class PortalPlanOrganism implements OnInit {
       }
     };
 
-    const progressInterval = setInterval(() => {
+    this.progressInterval = setInterval(() => {
       if (currentProgress < 95) {
         let increment = 1.8;
         if (currentProgress >= 40 && currentProgress < 75) {
@@ -111,7 +127,7 @@ export class PortalPlanOrganism implements OnInit {
     try {
       const data = await this.patientService.getParsedMenu(url);
       
-      clearInterval(progressInterval);
+      clearInterval(this.progressInterval);
       this.menuProgress.set(100);
       this.menuLoadingMessage.set('¡Menú digitalizado con éxito!');
       
@@ -128,7 +144,7 @@ export class PortalPlanOrganism implements OnInit {
         this.error.set('No se pudo extraer la información del menú digital.');
       }
     } catch (err: any) {
-      clearInterval(progressInterval);
+      clearInterval(this.progressInterval);
       console.error('Error loading digital plan:', err);
       let msg = 'Error al conectar con el servidor para digitalizar tu menú.';
       if (err && err.error && err.error.message) {
@@ -184,8 +200,17 @@ export class PortalPlanOrganism implements OnInit {
     const cleanGroup = (grupo || '').toLowerCase();
     const cleanNombre = nombre.toLowerCase();
 
-    // 1. Bebidas / Líquidos (Bebida, agua, té, cafe, infusion, licuado)
-    if (cleanGroup.includes('bebida') || cleanGroup.includes('líquido') || cleanGroup.includes('liquido') || cleanNombre.includes('agua') || cleanNombre.includes('té') || cleanNombre.includes('te ') || cleanNombre.includes('infusión') || cleanNombre.includes('infusion') || cleanNombre.includes('licuado') || cleanNombre.includes('café') || cleanNombre.includes('cafe')) {
+    // Helper function to check if string contains any keyword from list
+    const containsAny = (str: string, keywords: string[]) => 
+      keywords.some(keyword => str.includes(keyword));
+
+    // 1. Bebidas / Líquidos (local_drink - Sky Blue)
+    const drinkKeywords = [
+      'bebida', 'líquido', 'liquido', 'agua', 'té', 'te ', 'infus', 'licuado', 'café', 'cafe', 
+      'jugo', 'refresco', 'soda', 'clight', 'zuko', 'suero', 'gatorade', 'powerade', 'jamaica', 
+      'horchata', 'tamarindo'
+    ];
+    if (cleanGroup.includes('bebida') || cleanGroup.includes('líquido') || cleanGroup.includes('liquido') || (containsAny(cleanNombre, drinkKeywords) && !cleanNombre.includes('aguacate'))) {
       return { 
         name: 'local_drink', 
         colorClass: 'text-sky-500 dark:text-sky-400', 
@@ -194,19 +219,45 @@ export class PortalPlanOrganism implements OnInit {
       };
     }
 
-    // 2. Verduras y Frutas (Fruta, verdura, espinaca, lechuga, etc)
-    if (cleanGroup.includes('verdura') || cleanGroup.includes('fruta') || cleanNombre.includes('espinac') || cleanNombre.includes('lechuga') || cleanNombre.includes('apio') || cleanNombre.includes('pepino') || cleanNombre.includes('jitomate') || cleanNombre.includes('tomate') || cleanNombre.includes('piña') || cleanNombre.includes('fresa') || cleanNombre.includes('papaya') || cleanNombre.includes('manzana') || cleanNombre.includes('plátano') || cleanNombre.includes('platano')) {
-      const isFruit = cleanGroup.includes('fruta') || cleanNombre.includes('piña') || cleanNombre.includes('fresa') || cleanNombre.includes('papaya') || cleanNombre.includes('manzana') || cleanNombre.includes('plátano') || cleanNombre.includes('platano');
+    // 2. Verduras y Frutas (spa / nutrition - Emerald Green)
+    const fruitKeywords = [
+      'fruta', 'piña', 'fresa', 'papaya', 'manzana', 'plátano', 'platano', 'banan', 'pera', 
+      'durazno', 'melón', 'melon', 'sandía', 'sandia', 'mango', 'uva', 'kiwi', 'naranja', 
+      'toronja', 'mandarina', 'guayaba', 'higo', 'tuna', 'ciruela', 'frambuesa', 'zarzamora', 
+      'arándano', 'arandano', 'moras', 'berries', 'chabacano', 'mamey', 'guanábana', 'guanabana', 
+      'tejocote'
+    ];
+    const vegKeywords = [
+      'verdura', 'espinac', 'lechuga', 'apio', 'pepino', 'jitomate', 'tomate', 'cebolla', 
+      'germinado', 'alfalfa', 'champig', 'seta', 'hongo', 'calabac', 'zanahori', 'chile', 
+      'ajo', 'pimiento', 'nopal', 'ejote', 'coliflor', 'brócoli', 'brocoli', 'esparrago', 
+      'betabel', 'acelga', 'coyote', 'chayote', 'jícama', 'jicama', 'cilantro', 'perejil', 
+      'epazote', 'huauzontle', 'verdolaga', 'portobello', 'puerro', 'cebollín', 'cebollin', 
+      'rábano', 'rabano', 'chícharo', 'chicharo', 'bambú', 'bambu', 'col de bruselas', 'repollo',
+      'cebolla morada'
+    ];
+
+    const hasFruitWord = cleanGroup.includes('fruta') || containsAny(cleanNombre, fruitKeywords);
+    const hasVegWord = cleanGroup.includes('verdura') || containsAny(cleanNombre, vegKeywords);
+
+    if (hasFruitWord || hasVegWord) {
       return { 
-        name: isFruit ? 'nutrition' : 'spa', 
+        name: hasFruitWord ? 'nutrition' : 'spa', 
         colorClass: 'text-emerald-500 dark:text-emerald-400', 
         bgClass: 'bg-emerald-500/10 dark:bg-emerald-500/20',
         borderClass: 'border-l-emerald-500 dark:border-l-emerald-400'
       };
     }
 
-    // 3. Cereales y Tubérculos (Cereal, pan, tortilla, avena, pasta, arroz, elote, papa)
-    if (cleanGroup.includes('cereal') || cleanGroup.includes('tubérculo') || cleanGroup.includes('tuberculo') || cleanNombre.includes('pan') || cleanNombre.includes('tortilla') || cleanNombre.includes('avena') || cleanNombre.includes('tostada') || cleanNombre.includes('pasta') || cleanNombre.includes('arroz') || cleanNombre.includes('elote') || cleanNombre.includes('papa')) {
+    // 3. Cereales y Tubérculos (bakery_dining - Orange)
+    const cerealKeywords = [
+      'cereal', 'tubérculo', 'tuberculo', 'pan', 'tortilla', 'avena', 'tostada', 'pasta', 
+      'arroz', 'elote', 'papa', 'camote', 'quinoa', 'salvado', 'linaza', 'galleta', 
+      'crutón', 'cruton', 'harina', 'maicena', 'muesli', 'granola', 'barrita', 'tarta', 
+      'crepa', 'bagel', 'croissant', 'bolillo', 'telera', 'salmas', 'susanitas', 'sanissimo', 
+      'totopos', 'tostado', 'trigo', 'centeno', 'cebada', 'milo'
+    ];
+    if (cleanGroup.includes('cereal') || cleanGroup.includes('tubérculo') || cleanGroup.includes('tuberculo') || containsAny(cleanNombre, cerealKeywords)) {
       return { 
         name: 'bakery_dining', 
         colorClass: 'text-orange-500 dark:text-orange-400', 
@@ -215,8 +266,15 @@ export class PortalPlanOrganism implements OnInit {
       };
     }
 
-    // 4. Carne y Proteínas de origen animal (Carne, pollo, res, pescado, atún, cerdo, huevo, queso)
-    if (cleanGroup.includes('animal') || cleanGroup.includes('proteína') || cleanNombre.includes('pollo') || cleanNombre.includes('carne') || cleanNombre.includes('res') || cleanNombre.includes('pescado') || cleanNombre.includes('atún') || cleanNombre.includes('atun') || cleanNombre.includes('cerdo') || cleanNombre.includes('huevo') || cleanNombre.includes('queso') || cleanNombre.includes('panela')) {
+    // 4. Carne, Proteínas y Leguminosas (restaurant - Rose/Red)
+    const proteinKeywords = [
+      'animal', 'proteína', 'proteina', 'pollo', 'carne', 'res', 'pescado', 'atún', 'atun', 
+      'cerdo', 'huevo', 'queso', 'panela', 'requesón', 'requeson', 'salmón', 'salmon', 'pavo', 
+      'jamón', 'jamon', 'pechuga', 'ternera', 'bistec', 'filete', 'milanesa', 'camarón', 
+      'camaron', 'marisco', 'pulpo', 'claras', 'yema', 'frijol', 'lenteja', 'garbanzo', 
+      'haba', 'soya', 'tofu', 'tempeh', 'leguminosa', 'atun', 'embutido', 'salchicha', 'tocino'
+    ];
+    if (cleanGroup.includes('animal') || cleanGroup.includes('proteína') || cleanGroup.includes('leguminosa') || containsAny(cleanNombre, proteinKeywords)) {
       return { 
         name: 'restaurant', 
         colorClass: 'text-rose-500 dark:text-rose-400', 
@@ -225,8 +283,11 @@ export class PortalPlanOrganism implements OnInit {
       };
     }
 
-    // 5. Lácteos (Leche, yogurt)
-    if (cleanGroup.includes('lácteo') || cleanGroup.includes('lacteo') || cleanNombre.includes('yogurt') || cleanNombre.includes('leche')) {
+    // 5. Lácteos (opacity - Cyan/Blue)
+    const dairyKeywords = [
+      'lácteo', 'lacteo', 'yogurt', 'yogur', 'leche', 'yakult', 'kefir', 'jocoque'
+    ];
+    if (cleanGroup.includes('lácteo') || cleanGroup.includes('lacteo') || containsAny(cleanNombre, dairyKeywords)) {
       return { 
         name: 'opacity', 
         colorClass: 'text-cyan-500 dark:text-cyan-400', 
@@ -235,8 +296,13 @@ export class PortalPlanOrganism implements OnInit {
       };
     }
 
-    // 6. Grasas (Aguacate, aceites, frutos secos, chía)
-    if (cleanGroup.includes('grasa') || cleanNombre.includes('aguacate') || cleanNombre.includes('aceite') || cleanNombre.includes('almendra') || cleanNombre.includes('nuez') || cleanNombre.includes('nueces') || cleanNombre.includes('chía') || cleanNombre.includes('chia') || cleanNombre.includes('semilla')) {
+    // 6. Grasas y Aceites (water_drop - Yellow)
+    const fatKeywords = [
+      'grasa', 'aguacate', 'aceite', 'almendra', 'nuez', 'nueces', 'chía', 'chia', 'semilla', 
+      'mantequilla', 'margarina', 'mayonesa', 'crema', 'cacahuate', 'pistache', 'girasol', 
+      'ajonjolí', 'ajonjoli', 'tahini', 'coco', 'aderezo', 'pepita'
+    ];
+    if (cleanGroup.includes('grasa') || containsAny(cleanNombre, fatKeywords)) {
       return { 
         name: 'water_drop', 
         colorClass: 'text-yellow-600 dark:text-yellow-500', 
@@ -245,7 +311,7 @@ export class PortalPlanOrganism implements OnInit {
       };
     }
 
-    // Default icon
+    // Default (Cubiertos cruzados - Gris)
     return { 
       name: 'restaurant_menu', 
       colorClass: 'text-slate-400 dark:text-slate-500', 

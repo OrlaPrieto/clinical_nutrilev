@@ -64,6 +64,7 @@ export class PortalPage implements OnInit, OnDestroy {
   private lastFocusTime = Date.now();
   private focusListener?: () => void;
   private visibilityListener?: () => void;
+  private shoppingListInterval: any = null;
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
@@ -103,6 +104,8 @@ export class PortalPage implements OnInit, OnDestroy {
     if (habits.sleep) count++;
     return Math.round((count / 4) * 100);
   });
+
+
 
   @HostListener('document:click')
   onDocumentClick() {
@@ -786,6 +789,9 @@ export class PortalPage implements OnInit, OnDestroy {
         document.removeEventListener('visibilitychange', this.visibilityListener);
       }
     }
+    if (this.shoppingListInterval) {
+      clearInterval(this.shoppingListInterval);
+    }
   }
 
   async handleUrlActions() {
@@ -925,6 +931,12 @@ export class PortalPage implements OnInit, OnDestroy {
   }
 
   async fetchShoppingList() {
+    if (this.loadingShoppingList()) return;
+
+    if (this.shoppingListInterval) {
+      clearInterval(this.shoppingListInterval);
+    }
+
     const p = this.patient();
     const menu = this.getActiveMenu();
     if (!p || !menu || !menu.url) return;
@@ -951,7 +963,7 @@ export class PortalPage implements OnInit, OnDestroy {
     };
 
     // Simulate smooth progress over time, decelerating as it approaches 95%
-    const progressInterval = setInterval(() => {
+    this.shoppingListInterval = setInterval(() => {
       if (currentProgress < 95) {
         let increment = 1.8; // Starts relatively fast
         if (currentProgress >= 40 && currentProgress < 75) {
@@ -971,7 +983,7 @@ export class PortalPage implements OnInit, OnDestroy {
       const list = await this.patientService.getShoppingList(menu.url);
       
       // Stop simulator, set immediately to 100%
-      clearInterval(progressInterval);
+      clearInterval(this.shoppingListInterval);
       this.shoppingListProgress.set(100);
       this.shoppingListLoadingMessage.set('¡Lista generada con éxito!');
 
@@ -1007,7 +1019,7 @@ export class PortalPage implements OnInit, OnDestroy {
         this.storageService.setItem(cacheKey, sorted);
       }
     } catch (err) {
-      clearInterval(progressInterval);
+      clearInterval(this.shoppingListInterval);
       console.error('Error fetching shopping list', err);
       this.shoppingListProgress.set(0);
       this.shoppingList.set([
