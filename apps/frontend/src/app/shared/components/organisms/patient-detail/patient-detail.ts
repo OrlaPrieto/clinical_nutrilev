@@ -657,7 +657,7 @@ export class PatientDetailComponent implements OnInit {
           .upload(fileName, item.file!, { 
             upsert: true,
             contentType: 'application/pdf',
-            cacheControl: '3600'
+            cacheControl: 'public, max-age=31536000, immutable'
           });
 
         if (error) throw error;
