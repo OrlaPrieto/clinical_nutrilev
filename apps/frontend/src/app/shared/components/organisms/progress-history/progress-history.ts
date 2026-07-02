@@ -34,7 +34,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     const activeTheme = this.themeService.theme();
     switch (activeTheme) {
       case 'dark':
-        return 'bg-gradient-to-tr from-nutri-rose via-[#ad1457] to-[#240011] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+        return 'bg-gradient-to-tr from-nutri-rose via-[#b80f4e] to-[#590b32] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
       case 'purple':
         return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
       case 'vibrant':
