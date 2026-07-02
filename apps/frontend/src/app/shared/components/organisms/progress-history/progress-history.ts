@@ -38,7 +38,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
       case 'purple':
         return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
       case 'vibrant':
-        return 'bg-gradient-to-tr from-nutri-rose via-[#5a806f] to-[#8cbda8] shadow-lg shadow-[#4a6b5d]/10 border-0';
+        return 'bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-400 shadow-lg shadow-emerald-900/20 border-0';
       case 'light':
       default:
         return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/10 border-0';
