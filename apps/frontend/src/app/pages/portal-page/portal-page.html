@@ -694,45 +694,52 @@
                                                 @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                                     @for (m of patient()?.current_menus; track m.url) {
                                                         <a [href]="m.url" target="_blank" rel="noopener noreferrer" 
-                                                           class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
+                                                           class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
                                                                 <app-a-icon name="description"></app-a-icon>
                                                             </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Archivo PDF</p>
-                                                                <p class="text-sm font-bold serif truncate">{{ m.name }}</p>
+                                                            <div class="flex-1 min-w-0 z-10">
+                                                                <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Archivo PDF</span>
+                                                                <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">{{ m.name }}</p>
                                                             </div>
-                                                            <div class="w-8 h-8 rounded-full bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text/20 group-hover:text-nutri-rose transition-colors shrink-0">
+                                                            <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
                                                                 <app-a-icon name="download" size="18px"></app-a-icon>
                                                             </div>
                                                         </a>
                                                     }
                                                 } @else if (patient()?.menu_url) {
                                                     <a [href]="patient()?.menu_url" target="_blank" rel="noopener noreferrer" 
-                                                       class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
+                                                       class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
                                                             <app-a-icon name="description"></app-a-icon>
                                                         </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Plan Principal</p>
-                                                            <p class="text-sm font-bold serif truncate">Ver Menú Digital</p>
+                                                        <div class="flex-1 min-w-0 z-10">
+                                                            <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Plan Principal</span>
+                                                            <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Ver Menú Digital</p>
+                                                        </div>
+                                                        <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
+                                                            <app-a-icon name="launch" size="16px"></app-a-icon>
                                                         </div>
                                                     </a>
                                                 }
-
+ 
                                                 <!-- Lista de Súper Card (Asistente IA) -->
                                                 <div (click)="openShoppingList()" 
-                                                     class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-5 rounded-[2rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0">
+                                                     class="group bg-gradient-to-br from-emerald-500/[0.06] via-white/50 to-emerald-500/[0.02] dark:from-emerald-950/20 dark:to-emerald-950/5 p-5 rounded-[2.25rem] border border-emerald-500/30 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0 border border-emerald-500/10">
                                                         <app-a-icon name="shopping_cart"></app-a-icon>
                                                     </div>
                                                     <div class="flex-1 min-w-0">
-                                                        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600/40 mb-0.5">Asistente</p>
-                                                        <p class="text-sm font-bold serif truncate">Lista de Súper</p>
+                                                        <span class="inline-block text-[8px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-md mb-1.5">Asistente IA</span>
+                                                        <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Lista de Súper</p>
                                                     </div>
                                                     @if (loadingShoppingList()) {
                                                         <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                                                    } @else {
+                                                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 dark:bg-white/5 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shrink-0">
+                                                            <app-a-icon name="chevron_right" size="18px"></app-a-icon>
+                                                        </div>
                                                     }
                                                 </div>
                                             </div>
