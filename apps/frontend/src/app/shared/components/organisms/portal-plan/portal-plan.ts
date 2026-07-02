@@ -64,7 +64,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       case 'dark':
         return 'bg-gradient-to-tr from-nutri-rose via-[#ad1457] to-[#240011] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
       case 'purple':
-        return 'bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-800 shadow-lg shadow-purple-900/20 border-0';
+        return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
       case 'vibrant':
         return 'bg-gradient-to-tr from-nutri-rose via-[#5a806f] to-[#8cbda8] shadow-lg shadow-[#4a6b5d]/10 border-0';
       case 'light':
