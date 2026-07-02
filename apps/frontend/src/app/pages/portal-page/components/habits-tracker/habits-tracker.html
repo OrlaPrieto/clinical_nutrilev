@@ -1,21 +1,25 @@
 <div class="fixed right-6 z-40 flex items-center justify-center select-none bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-8 md:right-8">
     <button (click)="toggleModal($event)"
-            class="relative w-16 h-16 rounded-full bg-white dark:bg-[#151515] border-2 border-nutri-rose/20 dark:border-white/10 shadow-[0_8px_30px_rgba(216,27,96,0.3)] dark:shadow-[0_8px_30px_rgba(216,27,96,0.15)] flex items-center justify-center cursor-pointer transition-all hover:scale-110 hover:shadow-[0_8px_30px_rgba(216,27,96,0.5)] active:scale-95 hover:opacity-100 group z-50"
+            [ngClass]="themeClasses().btnBorderShadow"
+            class="relative w-16 h-16 rounded-full bg-white dark:bg-[#151515] border-2 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 hover:opacity-100 group z-50"
             [class.opacity-70]="!showHabitsFloatingModal()"
             [class.opacity-100]="showHabitsFloatingModal()">
         <!-- Circular Progress Ring SVG -->
         <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
             <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="text-slate-100 dark:text-white/5" />
-            <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="text-nutri-rose transition-all duration-500"
+            <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="transition-all duration-500"
+                    [ngClass]="themeClasses().svgRing"
                     [attr.stroke-dasharray]="169.6"
                     [attr.stroke-dashoffset]="169.6 - (169.6 * habitsPercentage() / 100)" />
         </svg>
         <!-- Icono checklist -->
-        <div class="relative z-10 text-nutri-rose dark:text-nutri-rose-soft group-hover:animate-pulse">
+        <div class="relative z-10 group-hover:animate-pulse"
+             [ngClass]="themeClasses().icon">
             <app-a-icon name="playlist_add_check" size="26px"></app-a-icon>
         </div>
         <!-- Badge de avance -->
-        <span class="absolute -top-1 -right-1 bg-nutri-rose text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce">
+        <span class="absolute -top-1 -right-1 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce"
+              [ngClass]="themeClasses().badge">
             {{ habitsPercentage() }}%
         </span>
     </button>
@@ -37,11 +41,12 @@
             <!-- Progreso -->
             <div class="space-y-1.5">
                 <div class="flex justify-between items-center text-[10px]">
-                    <span class="font-bold text-nutri-rose uppercase tracking-wider">Avance de hoy</span>
+                    <span class="font-bold uppercase tracking-wider" [ngClass]="themeClasses().svgRing">Avance de hoy</span>
                     <span class="font-black text-nutri-text dark:text-slate-300">{{ habitsPercentage() }}%</span>
                 </div>
                 <div class="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div class="h-full bg-gradient-to-r from-nutri-rose to-pink-500 rounded-full transition-all duration-500 ease-out"
+                    <div class="h-full rounded-full transition-all duration-500 ease-out"
+                         [ngClass]="themeClasses().progressBg"
                          [style.width.%]="habitsPercentage()"></div>
                 </div>
             </div>
