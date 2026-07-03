@@ -173,5 +173,9 @@ export class PatientService {
     }
     return firstValueFrom(this.http.post<any>(`${this.apiUrl}/parsed-menu`, { menu_url: menuUrl }));
   }
+
+  async uploadMenuPdf(formData: FormData): Promise<{ url: string }> {
+    return firstValueFrom(this.http.post<{ url: string }>(`${this.apiUrl}/upload-menu`, formData));
+  }
 }
 

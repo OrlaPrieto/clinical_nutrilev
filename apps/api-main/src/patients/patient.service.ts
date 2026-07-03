@@ -413,4 +413,57 @@ export class PatientService {
       throw err;
     }
   }
+
+  async uploadMenuPdf(file: any, email: string, fileName: string): Promise<{ url: string }> {
+    try {
+      if (!file || !file.buffer) {
+        throw new HttpException('No file buffer provided', 400);
+      }
+
+      console.log(`[PdfUpload] Starting upload process for ${fileName} (${file.size} bytes)...`);
+
+      let pdfBuffer = file.buffer;
+      try {
+        const { PDFDocument } = require('pdf-lib');
+        const pdfDoc = await PDFDocument.load(file.buffer);
+        
+        // Apply compression settings
+        // useObjectStreams: true compresses the internal structures into binary object streams
+        pdfBuffer = Buffer.from(
+          await pdfDoc.save({
+            useObjectStreams: true,
+            addGlyphMapGroups: false,
+          })
+        );
+        console.log(`[PdfUpload] Structurally compressed PDF from ${file.size} to ${pdfBuffer.length} bytes.`);
+      } catch (pdfError) {
+        console.error('[PdfUpload] pdf-lib compression failed, uploading original buffer:', pdfError);
+      }
+
+      // Upload to Supabase Storage using the service client
+      const client = this.supabaseService.getClient();
+      const { data, error } = await client.storage
+        .from('patient_menus')
+        .upload(fileName, pdfBuffer, {
+          upsert: true,
+          contentType: 'application/pdf',
+          cacheControl: 'public, max-age=31536000, immutable'
+        });
+
+      if (error) {
+        console.error('[PdfUpload] Supabase upload failed:', error);
+        throw error;
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = client.storage
+        .from('patient_menus')
+        .getPublicUrl(fileName);
+
+      return { url: publicUrlData.publicUrl };
+    } catch (err) {
+      console.error('[PdfUpload] Error in uploadMenuPdf:', err);
+      throw new HttpException(err.message || 'Error uploading menu PDF', 500);
+    }
+  }
 }

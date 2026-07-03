@@ -652,23 +652,16 @@ export class PatientDetailComponent implements OnInit {
         const item = filesToUpload[i];
         const fileName = `menu_${p.email}_${Date.now()}_${i}.pdf`;
         
-        const { error } = await supabase.storage
-          .from('patient_menus')
-          .upload(fileName, item.file!, { 
-            upsert: true,
-            contentType: 'application/pdf',
-            cacheControl: 'public, max-age=31536000, immutable'
-          });
+        const formData = new FormData();
+        formData.append('file', item.file!);
+        formData.append('email', p.email);
+        formData.append('fileName', fileName);
 
-        if (error) throw error;
-
-        const { data: publicUrlData } = supabase.storage
-          .from('patient_menus')
-          .getPublicUrl(fileName);
+        const uploadResult = await this.patientService.uploadMenuPdf(formData);
 
         uploadedMenus.push({
           name: item.name,
-          url: publicUrlData.publicUrl,
+          url: uploadResult.url,
           uploaded_at: new Date().toISOString()
         });
       }
