@@ -601,6 +601,18 @@ export class PatientDetailComponent implements OnInit {
     const fileInput = event.target as HTMLInputElement;
     if (fileInput.files && fileInput.files.length > 0) {
       const file = fileInput.files[0];
+      
+      // Limitar a 2MB
+      if (file.size > 2 * 1024 * 1024) {
+        this.toastService.show(
+          `El archivo "${file.name}" es muy pesado (${(file.size / 1024 / 1024).toFixed(2)} MB). Por favor, descárgalo como "PDF Estándar" o comprímelo a menos de 2 MB para evitar consumo excesivo.`,
+          'error',
+          8000
+        );
+        fileInput.value = '';
+        return;
+      }
+
       this.menuFilesToUpload.update(files => {
         const newFiles = [...files];
         newFiles[index].file = file;
