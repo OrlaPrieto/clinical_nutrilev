@@ -53,3 +53,7 @@ patients_migration.json
 migration_*.json
 google-credentials.json
 
+# Private Local Documentation
+private_docs/
+
+
