@@ -3,6 +3,7 @@ import { SupabaseService } from '../common/supabase.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import * as crypto from 'crypto';
 import {
   Patient,
   PatientProgress,
@@ -507,6 +508,11 @@ export class PatientService {
         console.error('[PdfUpload] pdf-lib compression failed, uploading original buffer:', pdfError);
       }
 
+      // Generate a content-addressed filename to leverage DB cache (prevent duplicate parsing)
+      const fileHash = crypto.createHash('md5').update(pdfBuffer).digest('hex');
+      const cleanEmail = email.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const finalFileName = `menu_${cleanEmail}_${fileHash}.pdf`;
+
       const r2AccessKey = this.configService.get<string>('CLOUDFLARE_R2_ACCESS_KEY_ID');
       const r2SecretKey = this.configService.get<string>('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
       const r2Endpoint = this.configService.get<string>('CLOUDFLARE_R2_ENDPOINT');
@@ -516,7 +522,7 @@ export class PatientService {
       const isR2Configured = r2AccessKey && r2SecretKey && r2Endpoint && r2Bucket && r2PublicUrl;
 
       if (isR2Configured) {
-        console.log(`[PdfUpload] Uploading to Cloudflare R2 bucket: ${r2Bucket}...`);
+        console.log(`[PdfUpload] Uploading to Cloudflare R2 bucket: ${r2Bucket} as ${finalFileName}...`);
         const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
         const s3 = new S3Client({
           region: 'auto',
@@ -529,14 +535,14 @@ export class PatientService {
 
         const command = new PutObjectCommand({
           Bucket: r2Bucket,
-          Key: fileName,
+          Key: finalFileName,
           Body: pdfBuffer,
           ContentType: 'application/pdf',
           CacheControl: 'public, max-age=31536000, immutable',
         });
 
         await s3.send(command);
-        const publicUrl = `${r2PublicUrl.replace(/\/$/, '')}/${fileName}`;
+        const publicUrl = `${r2PublicUrl.replace(/\/$/, '')}/${finalFileName}`;
         console.log(`[PdfUpload] Uploaded to R2 successfully: ${publicUrl}`);
         return { url: publicUrl };
       } else {
@@ -546,7 +552,7 @@ export class PatientService {
         const client = this.supabaseService.getClient();
         const { data, error } = await client.storage
           .from('patient_menus')
-          .upload(fileName, pdfBuffer, {
+          .upload(finalFileName, pdfBuffer, {
             upsert: true,
             contentType: 'application/pdf',
             cacheControl: 'public, max-age=31536000, immutable'
@@ -560,7 +566,7 @@ export class PatientService {
         // Get public URL
         const { data: publicUrlData } = client.storage
           .from('patient_menus')
-          .getPublicUrl(fileName);
+          .getPublicUrl(finalFileName);
 
         return { url: publicUrlData.publicUrl };
       }
