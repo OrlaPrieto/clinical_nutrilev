@@ -744,145 +744,144 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                } @else {
+                                    <!-- Estado de plan inactivo -->
+                                    <div class="bg-white/50 dark:bg-[#111111]/50 p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-16 animate-fade-up">
+                                        <div class="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
+                                            <app-a-icon name="folder_off" customClass="text-2xl"></app-a-icon>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-bold serif text-nutri-text/60 dark:text-slate-500">No hay plan activo</h3>
+                                            <p class="text-xs text-nutri-text/60 dark:text-slate-600 mt-1 max-w-sm mx-auto">Tu menú nutricional aparecerá aquí cuando sea asignado, y estará disponible por {{ menuDurationDays }} días para su descarga.</p>
+                                        </div>
+                                    </div>
+                                }
 
-                                        <!-- Perfil de Alimentación Personalizado -->
-                                         @if (preferredFoods().length > 0 || dislikedFoods().length > 0 || allergies().length > 0 || supplements().length > 0) {
-                                             <div class="space-y-3 animate-fade-in">
-                                                 <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Mi Perfil de Alimentación</h3>
-                                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                     <!-- Alimentos y Preferencias -->
-                                                     @if (preferredFoods().length > 0 || dislikedFoods().length > 0 || allergies().length > 0) {
-                                                         <div class="bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm space-y-4 transition-colors">
-                                                             <div class="flex items-center gap-2 text-nutri-rose/60">
-                                                                 <app-a-icon name="favorite" size="18px"></app-a-icon>
-                                                                 <h4 class="font-bold text-xs uppercase tracking-wider">Gustos y Restricciones</h4>
+                                <!-- Perfil de Alimentación Personalizado (Aparece siempre si hay gustos/restricciones) -->
+                                 @if (preferredFoods().length > 0 || dislikedFoods().length > 0 || allergies().length > 0 || supplements().length > 0) {
+                                     <div class="space-y-3 animate-fade-in">
+                                         <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Mi Perfil de Alimentación</h3>
+                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                             <!-- Alimentos y Preferencias -->
+                                             @if (preferredFoods().length > 0 || dislikedFoods().length > 0 || allergies().length > 0) {
+                                                 <div class="bg-white dark:bg-[#111111] p-6 rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm space-y-4 transition-colors">
+                                                     <div class="flex items-center gap-2 text-nutri-rose/60">
+                                                         <app-a-icon name="favorite" size="18px"></app-a-icon>
+                                                         <h4 class="font-bold text-xs uppercase tracking-wider">Gustos y Restricciones</h4>
+                                                     </div>
+                                                     
+                                                     <!-- Alimentos Preferidos -->
+                                                     @if (preferredFoods().length > 0) {
+                                                         <div class="space-y-1.5">
+                                                             <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alimentos favoritos</p>
+                                                             <div class="flex flex-wrap gap-1.5">
+                                                                 @for (food of preferredFoods(); track food) {
+                                                                     <span class="px-2.5 py-1 text-[10px] rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium border border-emerald-500/10"># {{ food }}</span>
+                                                                 }
                                                              </div>
-                                                             
-                                                             <!-- Alimentos Preferidos -->
-                                                             @if (preferredFoods().length > 0) {
-                                                                 <div class="space-y-1.5">
-                                                                     <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alimentos favoritos</p>
+                                                         </div>
+                                                     }
+
+                                                     <!-- Alimentos que no Agradan / Alergias -->
+                                                     @if (dislikedFoods().length > 0 || allergies().length > 0) {
+                                                         <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-white/5">
+                                                             @if (allergies().length > 0) {
+                                                                 <div class="space-y-1">
+                                                                     <p class="text-[9px] font-black uppercase tracking-widest text-red-500 dark:text-red-400">Alergias Alimentarias</p>
                                                                      <div class="flex flex-wrap gap-1.5">
-                                                                         @for (food of preferredFoods(); track food) {
-                                                                             <span class="px-2.5 py-1 text-[10px] rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium border border-emerald-500/10"># {{ food }}</span>
+                                                                         @for (allergy of allergies(); track allergy) {
+                                                                             <span class="px-2.5 py-1 text-[10px] rounded-full bg-red-500/5 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20">⚠️ {{ allergy }}</span>
                                                                          }
                                                                      </div>
                                                                  </div>
                                                              }
-
-                                                             <!-- Alimentos que no Agradan / Alergias -->
-                                                             @if (dislikedFoods().length > 0 || allergies().length > 0) {
-                                                                 <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-white/5">
-                                                                     @if (allergies().length > 0) {
-                                                                         <div class="space-y-1">
-                                                                             <p class="text-[9px] font-black uppercase tracking-widest text-red-500 dark:text-red-400">Alergias Alimentarias</p>
-                                                                             <div class="flex flex-wrap gap-1.5">
-                                                                                 @for (allergy of allergies(); track allergy) {
-                                                                                     <span class="px-2.5 py-1 text-[10px] rounded-full bg-red-500/5 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20">⚠️ {{ allergy }}</span>
-                                                                                 }
-                                                                             </div>
-                                                                         </div>
-                                                                     }
-                                                                     @if (dislikedFoods().length > 0) {
-                                                                         <div class="space-y-1">
-                                                                             <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Alimentos que no me agradan</p>
-                                                                             <div class="flex flex-wrap gap-1.5">
-                                                                                 @for (food of dislikedFoods(); track food) {
-                                                                                     <span class="px-2.5 py-1 text-[10px] rounded-full bg-slate-500/5 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-white/10">❌ {{ food }}</span>
-                                                                                 }
-                                                                             </div>
-                                                                         </div>
-                                                                     }
+                                                             @if (dislikedFoods().length > 0) {
+                                                                 <div class="space-y-1">
+                                                                     <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Alimentos que no me agradan</p>
+                                                                     <div class="flex flex-wrap gap-1.5">
+                                                                         @for (food of dislikedFoods(); track food) {
+                                                                             <span class="px-2.5 py-1 text-[10px] rounded-full bg-slate-500/5 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-white/10">❌ {{ food }}</span>
+                                                                         }
+                                                                     </div>
                                                                  </div>
                                                              }
-
-                                                             <!-- Nota informativa de modificación -->
-                                                             <div class="pt-3 border-t border-slate-100 dark:border-white/5 text-left">
-                                                                 <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
-                                                                     <span class="font-bold text-nutri-rose/70">Nota:</span> Esta selección de preferencias y exclusiones constituye la base para la estructuración personalizada de tu menú. Si deseas realizar alguna modificación en este listado, por favor comunícate directamente con tu nutrióloga Velvet De la Cruz.
-                                                                 </p>
-                                                             </div>
                                                          </div>
                                                      }
 
-                                                     <!-- Suplementación Recomendada -->
-                                                     @if (supplements().length > 0) {
-                                                         <div class="bg-violet-500/5 dark:bg-violet-500/10 p-6 rounded-[2.5rem] border border-violet-500/10 dark:border-violet-500/25 shadow-sm space-y-4 flex flex-col justify-between transition-colors">
-                                                             <div class="space-y-4">
-                                                                 <div class="flex items-center gap-2 text-violet-600 dark:text-violet-400">
-                                                                     <app-a-icon name="medication" size="18px"></app-a-icon>
-                                                                     <h4 class="font-bold text-xs uppercase tracking-wider">Mi Suplementación</h4>
-                                                                 </div>
-                                                                 <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
-                                                                     Tu nutriólogo ha personalizado tu ingesta diaria con los siguientes suplementos:
-                                                                 </p>
-                                                                 <div class="flex flex-wrap gap-1.5">
-                                                                     @for (sup of supplements(); track sup) {
-                                                                         <span class="px-2.5 py-1 text-[10px] rounded-full bg-violet-500/10 text-violet-700 dark:text-violet-300 font-bold border border-violet-500/20">💊 {{ sup }}</span>
-                                                                     }
-                                                                 </div>
-                                                             </div>
-                                                             <p class="text-[9px] font-bold text-violet-500/60 dark:text-violet-400/50 uppercase tracking-widest italic pt-2 border-t border-violet-500/10">
-                                                                 * Recuerda tomarlos según las indicaciones.
-                                                             </p>
-                                                         </div>
-                                                     }
+                                                     <!-- Nota informativa de modificación -->
+                                                     <div class="pt-3 border-t border-slate-100 dark:border-white/5 text-left">
+                                                         <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
+                                                             <span class="font-bold text-nutri-rose/70">Nota:</span> Esta selección de preferencias y exclusiones constituye la base para la estructuración personalizada de tu menú. Si deseas realizar alguna modificación en este listado, por favor comunícate directamente con tu nutrióloga Velvet De la Cruz.
+                                                         </p>
+                                                     </div>
                                                  </div>
-                                             </div>
-                                         }
+                                             }
 
-                                        <!-- 3. Recomendaciones Clínicas -->
-                                        <div class="space-y-3">
-                                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Recomendaciones Clínicas</h3>
-                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                <!-- Hidratación -->
-                                                <div class="bg-sky-500/5 dark:bg-sky-500/10 p-5 rounded-[2rem] border border-sky-500/10 dark:border-sky-500/20 space-y-3">
-                                                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
-                                                        <app-a-icon name="water_drop" size="20px"></app-a-icon>
-                                                    </div>
-                                                    <h4 class="font-bold text-sm text-sky-700 dark:text-sky-400">Hidratación</h4>
-                                                    <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
-                                                        Tomar suficiente agua ayuda a metabolizar mejor las grasas y mantener la saciedad. Evita bebidas azucaradas.
-                                                    </p>
-                                                </div>
+                                             <!-- Suplementación Recomendada -->
+                                             @if (supplements().length > 0) {
+                                                 <div class="bg-violet-500/5 dark:bg-violet-500/10 p-6 rounded-[2.5rem] border border-violet-500/10 dark:border-violet-500/25 shadow-sm space-y-4 flex flex-col justify-between transition-colors">
+                                                     <div class="space-y-4">
+                                                         <div class="flex items-center gap-2 text-violet-600 dark:text-violet-400">
+                                                             <app-a-icon name="medication" size="18px"></app-a-icon>
+                                                             <h4 class="font-bold text-xs uppercase tracking-wider">Mi Suplementación</h4>
+                                                         </div>
+                                                         <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
+                                                             Tu nutriólogo ha personalizado tu ingesta diaria con los siguientes suplementos:
+                                                         </p>
+                                                         <div class="flex flex-wrap gap-1.5">
+                                                             @for (sup of supplements(); track sup) {
+                                                                 <span class="px-2.5 py-1 text-[10px] rounded-full bg-violet-500/10 text-violet-700 dark:text-violet-300 font-bold border border-violet-500/20">💊 {{ sup }}</span>
+                                                             }
+                                                         </div>
+                                                     </div>
+                                                     <p class="text-[9px] font-bold text-violet-500/60 dark:text-violet-400/50 uppercase tracking-widest italic pt-2 border-t border-violet-500/10">
+                                                         * Recuerda tomarlos según las indicaciones.
+                                                     </p>
+                                                 </div>
+                                             }
+                                         </div>
+                                     </div>
+                                 }
 
-                                                <!-- Porciones -->
-                                                <div class="bg-amber-500/5 dark:bg-amber-500/10 p-5 rounded-[2rem] border border-amber-500/10 dark:border-amber-500/20 space-y-3">
-                                                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
-                                                        <app-a-icon name="restaurant" size="20px"></app-a-icon>
-                                                    </div>
-                                                    <h4 class="font-bold text-sm text-amber-700 dark:text-amber-400">Porciones</h4>
-                                                    <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
-                                                        Mide tus porciones utilizando tazas medidoras o báscula de alimentos. El control de porciones es clave.
-                                                    </p>
-                                                </div>
-
-                                                <!-- Compras Inteligentes -->
-                                                <div class="bg-rose-500/5 dark:bg-rose-500/10 p-5 rounded-[2rem] border border-rose-500/10 dark:border-rose-500/20 space-y-3">
-                                                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
-                                                        <app-a-icon name="shopping_basket" size="20px"></app-a-icon>
-                                                    </div>
-                                                    <h4 class="font-bold text-sm text-rose-700 dark:text-rose-400">Compras</h4>
-                                                    <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
-                                                        Utiliza el Asistente IA de Lista de Súper para adquirir únicamente lo necesario y evitar tentaciones.
-                                                    </p>
-                                                </div>
+                                <!-- 3. Recomendaciones Clínicas -->
+                                <div class="space-y-3">
+                                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Recomendaciones Clínicas</h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <!-- Hidratación -->
+                                        <div class="bg-sky-500/5 dark:bg-sky-500/10 p-5 rounded-[2rem] border border-sky-500/10 dark:border-sky-500/20 space-y-3">
+                                            <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
+                                                <app-a-icon name="water_drop" size="20px"></app-a-icon>
                                             </div>
+                                            <h4 class="font-bold text-sm text-sky-700 dark:text-sky-400">Hidratación</h4>
+                                            <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
+                                                Tomar suficiente agua ayuda a metabolizar mejor las grasas y mantener la saciedad. Evita bebidas azucaradas.
+                                            </p>
                                         </div>
 
-                                </div>
-                            } @else {
-                                <!-- Estado de plan inactivo -->
-                                <div class="bg-white/50 dark:bg-[#111111]/50 p-8 rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-4 py-16 animate-fade-up">
-                                    <div class="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 shadow-inner flex items-center justify-center text-nutri-rose/30 text-2xl">
-                                        <app-a-icon name="folder_off" customClass="text-2xl"></app-a-icon>
+                                        <!-- Porciones -->
+                                        <div class="bg-amber-500/5 dark:bg-amber-500/10 p-5 rounded-[2rem] border border-amber-500/10 dark:border-amber-500/20 space-y-3">
+                                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                                                <app-a-icon name="restaurant" size="20px"></app-a-icon>
+                                            </div>
+                                            <h4 class="font-bold text-sm text-amber-700 dark:text-amber-400">Porciones</h4>
+                                            <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
+                                                Mide tus porciones utilizando tazas medidoras o báscula de alimentos. El control de porciones es clave.
+                                            </p>
+                                        </div>
+
+                                        <!-- Compras Inteligentes -->
+                                        <div class="bg-rose-500/5 dark:bg-rose-500/10 p-5 rounded-[2rem] border border-rose-500/10 dark:border-rose-500/20 space-y-3">
+                                            <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                                                <app-a-icon name="shopping_basket" size="20px"></app-a-icon>
+                                            </div>
+                                            <h4 class="font-bold text-sm text-rose-700 dark:text-rose-400">Compras</h4>
+                                            <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
+                                                Utiliza el Asistente IA de Lista de Súper para adquirir únicamente lo necesario y evitar tentaciones.
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 class="text-xl font-bold serif text-nutri-text/60 dark:text-slate-500">No hay plan activo</h3>
-                                        <p class="text-xs text-nutri-text/60 dark:text-slate-600 mt-1 max-w-sm mx-auto">Tu menú nutricional aparecerá aquí cuando sea asignado, y estará disponible por {{ menuDurationDays }} días para su descarga.</p>
-                                    </div>
                                 </div>
-                            }
                         </div>
                     }
 
