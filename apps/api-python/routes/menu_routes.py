@@ -71,7 +71,7 @@ def check_internal_key():
         return jsonify({"error": "Unauthorized inter-service request"}), 401
 
 @menu_bp.route('/generate-ai-menu', methods=['POST', 'OPTIONS'])
-@limiter.limit("10 per hour")
+# @limiter.limit("10 per hour")  # Removed to prevent rate limit blocks on Render
 def generate_ai_menu():
     if request.method == 'OPTIONS':
         return '', 200
@@ -147,7 +147,7 @@ def process_menu():
         return jsonify({"error": str(e)}), 500
 
 @menu_bp.route('/shopping-list', methods=['POST', 'OPTIONS'])
-@limiter.limit("10 per hour")
+# @limiter.limit("10 per hour")  # Removed to prevent rate limit blocks on Render
 def get_shopping_list():
     if request.method == 'OPTIONS':
         return '', 200
@@ -213,7 +213,7 @@ def get_shopping_list():
 
 
 @menu_bp.route('/parsed-menu', methods=['POST', 'OPTIONS'])
-@limiter.limit("10 per hour")
+# @limiter.limit("10 per hour")  # Removed to prevent rate limit blocks on Render
 def get_parsed_menu():
     if request.method == 'OPTIONS':
         return '', 200
