@@ -57,6 +57,7 @@ export interface Patient {
   foto_url?: string | null;
   plan_citas?: number | null;
   plan_citas_completadas?: number | null;
+  plan_duration_days?: number | null;
 }
 
 export interface AiResponse<T = unknown> {

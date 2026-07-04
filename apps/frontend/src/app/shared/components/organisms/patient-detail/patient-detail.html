@@ -303,7 +303,7 @@
                     <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
                         <div class="flex items-center gap-3">
                             <app-a-icon name="payments" customClass="text-nutri-rose text-xl"></app-a-icon>
-                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Paquete de Citas</h4>
+                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Configuración de Plan y Citas</h4>
                         </div>
                         @if (isEditing()) {
                             <app-a-badge label="Modo Edición" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
@@ -330,9 +330,28 @@
                             }
                         </div>
 
+                        <!-- Selector de Duración del Plan -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Vigencia del Menú (Expiración)</label>
+                            @if (isEditing()) {
+                                <select [ngModel]="patient()?.plan_duration_days || 7" 
+                                        (ngModelChange)="onPlanDurationChange($event)"
+                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
+                                    <option [value]="7">7 días (Semanal)</option>
+                                    <option [value]="15">15 días (Quincenal)</option>
+                                    <option [value]="30">30 días (Mensual)</option>
+                                    <option [value]="9999">Acceso Ilimitado</option>
+                                </select>
+                            } @else {
+                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
+                                    {{ getPlanDurationLabel(patient()?.plan_duration_days) }}
+                                </div>
+                            }
+                        </div>
+
                         <!-- Citas Completadas -->
                         @if (patient()?.plan_citas) {
-                            <div class="space-y-2">
+                            <div class="space-y-2 md:col-span-2">
                                 <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Citas Tomadas en Paquete Actual</label>
                                 <div class="flex flex-col gap-3">
                                     @if (isEditing()) {

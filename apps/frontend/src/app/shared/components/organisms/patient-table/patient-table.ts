@@ -49,7 +49,8 @@ export class PatientTableOrganism {
     const createdAt = new Date(patient.menu_created_at).getTime();
     const now = Date.now();
     const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
-    return diffDays <= environment.menuDurationDays ? 'active' : 'expired';
+    const limit = patient.plan_duration_days != null ? Number(patient.plan_duration_days) : environment.menuDurationDays;
+    return diffDays <= limit ? 'active' : 'expired';
   }
 
   openMenu(url: string, event: Event) {

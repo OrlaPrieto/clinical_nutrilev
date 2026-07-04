@@ -269,6 +269,11 @@ export class UpdatePatientDto {
   @Type(() => Number)
   plan_citas_completadas?: number;
 
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  plan_duration_days?: number;
+
   // Control fields
   @IsString()
   @IsOptional()

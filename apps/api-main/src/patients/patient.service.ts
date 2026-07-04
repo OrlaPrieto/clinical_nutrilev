@@ -378,8 +378,40 @@ export class PatientService {
       const isR2Configured = r2AccessKey && r2SecretKey && r2Endpoint && r2Bucket;
 
       const now = new Date();
-      const cutoffDate = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000);
       let deletedCount = 0;
+
+      // 1. Fetch patient durations to compute personalized expiry cutoffs
+      const { data: patients, error: pError } = await client
+        .from('patients')
+        .select('email, plan_duration_days');
+
+      const patientMap = new Map<string, number>();
+      if (!pError && patients) {
+        for (const p of patients) {
+          if (p.email) {
+            const clean = p.email.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_');
+            patientMap.set(clean, p.plan_duration_days != null ? Number(p.plan_duration_days) : 7);
+          }
+        }
+      }
+
+      // 2. Helper to check if file is expired based on patient-specific rules
+      const isFileExpired = (fileName: string, createdAtDate: Date): boolean => {
+        const nameLower = fileName.toLowerCase();
+        let durationDays = 7;
+
+        for (const [cleanEmail, days] of patientMap.entries()) {
+          if (nameLower.startsWith(`menu_${cleanEmail}_`)) {
+            durationDays = days;
+            break;
+          }
+        }
+
+        // Unlimited duration (9999) files are kept indefinitely (e.g. 10 years grace)
+        const fileLimitDays = durationDays >= 9999 ? 3650 : (durationDays + 1);
+        const fileCutoffDate = new Date(now.getTime() - fileLimitDays * 24 * 60 * 60 * 1000);
+        return createdAtDate < fileCutoffDate;
+      };
 
       if (isR2Configured) {
         console.log(`[StorageCleanup] Running automated cleanup on Cloudflare R2 bucket: ${r2Bucket}...`);
@@ -393,7 +425,7 @@ export class PatientService {
           },
         });
 
-        // 1. List objects from R2
+        // 3. List objects from R2
         let continuationToken: string | undefined = undefined;
         let filesToDelete: string[] = [];
 
@@ -407,7 +439,7 @@ export class PatientService {
 
           for (const item of contents) {
             if (item.Key && item.Key !== '.emptyFolderPlaceholder' && item.LastModified) {
-              if (new Date(item.LastModified) < cutoffDate) {
+              if (isFileExpired(item.Key, new Date(item.LastModified))) {
                 filesToDelete.push(item.Key);
               }
             }
@@ -415,7 +447,7 @@ export class PatientService {
           continuationToken = listResponse.NextContinuationToken;
         } while (continuationToken);
 
-        // 2. Delete objects in chunks of 1000
+        // 4. Delete objects in chunks of 1000
         if (filesToDelete.length > 0) {
           const chunkSize = 1000;
           for (let i = 0; i < filesToDelete.length; i += chunkSize) {
@@ -456,7 +488,7 @@ export class PatientService {
         }
 
         const filesToDelete = allFiles
-          .filter(f => f.name !== '.emptyFolderPlaceholder' && new Date(f.created_at) < cutoffDate)
+          .filter(f => f.name !== '.emptyFolderPlaceholder' && isFileExpired(f.name, new Date(f.created_at)))
           .map(f => f.name);
 
         if (filesToDelete.length > 0) {
@@ -469,10 +501,10 @@ export class PatientService {
         deletedCount = filesToDelete.length;
       }
 
-      // Limpiar caché de IA obsoleto (> 8 días)
-      const cutoffIso = cutoffDate.toISOString();
+      // 5. Clear obsolete AI cache older than 31 days globally
+      const globalCutoffIso = new Date(now.getTime() - 31 * 24 * 60 * 60 * 1000).toISOString();
       if (client && typeof client.from === 'function') {
-        await client.from('ai_menu_cache').delete().lt('created_at', cutoffIso);
+        await client.from('ai_menu_cache').delete().lt('created_at', globalCutoffIso);
       }
 
       return { deletedCount };
