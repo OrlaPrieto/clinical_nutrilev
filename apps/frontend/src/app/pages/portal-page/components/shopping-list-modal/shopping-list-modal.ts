@@ -372,4 +372,32 @@ export class ShoppingListModalComponent {
     printWindow.document.write(htmlContent);
     printWindow.document.close();
   }
+
+  sendToWhatsApp() {
+    const list = this.shoppingList();
+    if (!list || list.length === 0) return;
+
+    let text = `🛒 *MI LISTA DE COMPRAS - NUTRILEV* 🍏\n`;
+    text += `====================================\n\n`;
+
+    list.forEach(cat => {
+      text += `*${cat.category.toUpperCase()}*\n`;
+      cat.items.forEach(item => {
+        const checkbox = item.checked ? '✅' : '⬜';
+        const amount = item.amount ? ` (${item.amount})` : '';
+        text += `${checkbox} ${item.icon || ''} ${item.name}${amount}\n`;
+        if (item.tip) {
+          text += `   _Nota: ${item.tip}_\n`;
+        }
+      });
+      text += `\n`;
+    });
+
+    text += `====================================\n`;
+    text += `🥗 _Plan alimenticio personalizado de Nutrilev_`;
+
+    const encodedText = encodeURIComponent(text);
+    const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+    window.open(whatsappUrl, '_blank', 'noopener');
+  }
 }
