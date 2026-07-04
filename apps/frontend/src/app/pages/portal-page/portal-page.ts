@@ -339,15 +339,22 @@ export class PortalPage implements OnInit, OnDestroy {
     const createdAt = new Date(menu.created_at).getTime();
     const now = Date.now();
     const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
-    return diffDays <= environment.menuDurationDays;
+    const limit = this.patient()?.plan_duration_days != null ? Number(this.patient()!.plan_duration_days) : environment.menuDurationDays;
+    return diffDays <= limit;
   });
 
   expirationMessage = computed(() => {
     const menu = this.getActiveMenu();
     if (!menu || !menu.url || !menu.created_at) return '';
     
+    const limit = this.patient()?.plan_duration_days != null ? Number(this.patient()!.plan_duration_days) : environment.menuDurationDays;
+    
+    if (limit >= 9999) {
+      return 'Acceso permanente habilitado';
+    }
+
     const createdAt = new Date(menu.created_at).getTime();
-    const durationMs = environment.menuDurationDays * 24 * 60 * 60 * 1000;
+    const durationMs = limit * 24 * 60 * 60 * 1000;
     const expiresAt = createdAt + durationMs;
     const now = Date.now();
     const remainingMs = expiresAt - now;
@@ -368,7 +375,10 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   });
 
-  menuDurationDays = environment.menuDurationDays;
+  menuDurationDays = computed(() => {
+    const limit = this.patient()?.plan_duration_days;
+    return limit != null ? Number(limit) : environment.menuDurationDays;
+  });
 
   openMenu(url?: string) {
     const targetUrl = url || this.getActiveMenu()?.url;
