@@ -159,28 +159,41 @@ Instrucciones de consolidación:
 Genera el JSON usando el esquema definido.
 """
     
+    import time
+
     client = genai.Client(api_key=gemini_key)
     models_to_try = _resolve_model(client)
 
     for model in models_to_try:
-        try:
-            print(f"[ShoppingList AI] Calling Gemini using model: {model}...")
-            response = client.models.generate_content(
-                model=model,
-                contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
-                config=types.GenerateContentConfig(
-                    temperature=0.1,
-                    response_mime_type="application/json",
-                    response_schema=shopping_schema
-                ),
-            )
-            text = response.text.strip()
-            print(f"[ShoppingList AI] Response text length: {len(text)}")
-            data = json.loads(text)
-            return data.get("categories", [])
-        except Exception as e:
-            print(f"[Gemini JSON Shopping List] Error with {model}: {e}")
-            traceback.print_exc()
+        for attempt in range(3):
+            try:
+                print(f"[ShoppingList AI] Calling Gemini using model: {model} (attempt {attempt + 1})...")
+                response = client.models.generate_content(
+                    model=model,
+                    contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        response_mime_type="application/json",
+                        response_schema=shopping_schema
+                    ),
+                )
+                text = response.text.strip()
+                print(f"[ShoppingList AI] Response text length: {len(text)}")
+                data = json.loads(text)
+                return data.get("categories", [])
+            except Exception as e:
+                print(f"[Gemini JSON Shopping List] Error with model {model} on attempt {attempt + 1}: {e}")
+                err_str = str(e).lower()
+                
+                # If it's a rate limit error, sleep and retry
+                if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
+                    sleep_time = 4 * (attempt + 1)
+                    print(f"[ShoppingList AI] Rate limit hit. Sleeping for {sleep_time}s before retrying...")
+                    time.sleep(sleep_time)
+                    continue
+                
+                traceback.print_exc()
+                break
             
     print("[ShoppingList AI] ERROR: All models failed to generate content.")
     return [
@@ -339,33 +352,44 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     Genera el JSON usando el esquema definido.
     """
 
+    import time
+
     client = genai.Client(api_key=gemini_key)
     models_to_try = _resolve_model(client)
 
     last_exception = None
     rate_limit_exception = None
     for model in models_to_try:
-        try:
-            print(f"[MenuParser AI] Calling Gemini with model: {model}...")
-            response = client.models.generate_content(
-                model=model,
-                contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
-                config=types.GenerateContentConfig(
-                    temperature=0.1,
-                    response_mime_type="application/json",
-                    response_schema=menu_schema
-                ),
-            )
-            text = response.text.strip()
-            print(f"[MenuParser AI] Extracted JSON length: {len(text)}")
-            return json.loads(text)
-        except Exception as e:
-            print(f"[MenuParser AI] Error with model {model}: {e}")
-            traceback.print_exc()
-            last_exception = e
-            err_str = str(e).lower()
-            if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
-                rate_limit_exception = e
+        for attempt in range(3):
+            try:
+                print(f"[MenuParser AI] Calling Gemini with model: {model} (attempt {attempt + 1})...")
+                response = client.models.generate_content(
+                    model=model,
+                    contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        response_mime_type="application/json",
+                        response_schema=menu_schema
+                    ),
+                )
+                text = response.text.strip()
+                print(f"[MenuParser AI] Extracted JSON length: {len(text)}")
+                return json.loads(text)
+            except Exception as e:
+                print(f"[MenuParser AI] Error with model {model} on attempt {attempt + 1}: {e}")
+                last_exception = e
+                err_str = str(e).lower()
+                
+                # If it's a rate limit error, sleep and retry
+                if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
+                    rate_limit_exception = e
+                    sleep_time = 4 * (attempt + 1)
+                    print(f"[MenuParser AI] Gemini Rate Limit hit. Sleeping for {sleep_time}s before retrying...")
+                    time.sleep(sleep_time)
+                    continue
+                
+                traceback.print_exc()
+                break
 
     exception_to_raise = rate_limit_exception or last_exception
     if exception_to_raise:
