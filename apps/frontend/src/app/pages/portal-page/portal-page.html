@@ -1019,10 +1019,12 @@
                                 }
                             }
 
-                            <app-progress-chart-svg
-                                [progress]="progress()"
-                                [patient]="patient()">
-                            </app-progress-chart-svg>
+                            <div class="mt-8 sm:mt-12">
+                                <app-progress-chart-svg
+                                    [progress]="progress()"
+                                    [patient]="patient()">
+                                </app-progress-chart-svg>
+                            </div>
                         </div>
                     }
 
