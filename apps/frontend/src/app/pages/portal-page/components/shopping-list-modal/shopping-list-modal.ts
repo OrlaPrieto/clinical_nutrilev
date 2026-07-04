@@ -335,13 +335,20 @@ export class ShoppingListModalComponent {
     const list = this.shoppingList();
     if (!list || list.length === 0) return;
 
-    let text = `🛒 *MI LISTA DE COMPRAS - NUTRILEV* 🍏\n`;
+    // Emojis represented as escape sequences to prevent any file encoding or compilation corruption
+    const shoppingCart = '\u{1F6D2}';
+    const greenApple = '\u{1F34F}';
+    const checkedBox = '\u{2705}';
+    const emptyBox = '\u{2B1C}';
+    const salad = '\u{1F957}';
+
+    let text = `${shoppingCart} *MI LISTA DE COMPRAS - NUTRILEV* ${greenApple}\n`;
     text += `====================================\n\n`;
 
     list.forEach(cat => {
       text += `*${cat.category.toUpperCase()}*\n`;
       cat.items.forEach(item => {
-        const checkbox = item.checked ? '✅' : '⬜';
+        const checkbox = item.checked ? checkedBox : emptyBox;
         const amount = item.amount ? ` (${item.amount})` : '';
         text += `${checkbox} ${item.icon || ''} ${item.name}${amount}\n`;
         if (item.tip) {
@@ -352,10 +359,10 @@ export class ShoppingListModalComponent {
     });
 
     text += `====================================\n`;
-    text += `🥗 _Plan alimenticio personalizado de Nutrilev_`;
+    text += `${salad} _Plan alimenticio personalizado de Nutrilev_`;
 
     const encodedText = encodeURIComponent(text);
-    const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
     window.open(whatsappUrl, '_blank', 'noopener');
   }
 }
