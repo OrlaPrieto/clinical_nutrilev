@@ -433,6 +433,7 @@ export class PatientDetailComponent implements OnInit {
     const d = days ? Number(days) : 7;
     if (d === 7) return '7 días (Semanal)';
     if (d === 15) return '15 días (Quincenal)';
+    if (d === 21) return '21 días (Tres semanas)';
     if (d === 30) return '30 días (Mensual)';
     if (d >= 9999) return 'Acceso Ilimitado';
     return `${d} días`;
