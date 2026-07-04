@@ -24,6 +24,7 @@ import requests
 
 def is_safe_url(url: str) -> bool:
     try:
+        import os
         parsed = urlparse(url)
         if parsed.scheme not in ('http', 'https'):
             return False
@@ -36,6 +37,20 @@ def is_safe_url(url: str) -> bool:
         # Allow official Supabase domains
         if hostname_lower.endswith('.supabase.co'):
             return True
+        # Allow Cloudflare R2 domains
+        if hostname_lower.endswith('.r2.dev'):
+            return True
+
+        # Allow user's configured R2 Public URL custom domain if available
+        r2_public_url = os.getenv('CLOUDFLARE_R2_PUBLIC_URL')
+        if r2_public_url:
+            try:
+                r2_parsed = urlparse(r2_public_url)
+                if r2_parsed.hostname and hostname_lower == r2_parsed.hostname.lower():
+                    return True
+            except Exception:
+                pass
+
         # Allow local development hostnames
         if hostname_lower in ('localhost', '127.0.0.1', '::1'):
             return True
