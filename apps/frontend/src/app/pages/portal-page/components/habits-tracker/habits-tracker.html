@@ -1,0 +1,170 @@
+<div class="fixed right-6 z-40 flex items-center justify-center select-none bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-8 md:right-8">
+    <button (click)="toggleModal($event)"
+            [ngClass]="themeClasses().btnBorderShadow"
+            class="relative w-16 h-16 rounded-full bg-white dark:bg-[#151515] border-2 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 hover:opacity-100 group z-50"
+            [class.opacity-70]="!showHabitsFloatingModal()"
+            [class.opacity-100]="showHabitsFloatingModal()">
+        <!-- Circular Progress Ring SVG -->
+        <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="text-slate-100 dark:text-white/5" />
+            <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="transition-all duration-500"
+                    [ngClass]="themeClasses().svgRing"
+                    [attr.stroke-dasharray]="169.6"
+                    [attr.stroke-dashoffset]="169.6 - (169.6 * habitsPercentage() / 100)" />
+        </svg>
+        <!-- Icono checklist -->
+        <div class="relative z-10 group-hover:animate-pulse"
+             [ngClass]="themeClasses().icon">
+            <app-a-icon name="playlist_add_check" size="26px"></app-a-icon>
+        </div>
+        <!-- Badge de avance -->
+        <span class="absolute -top-1 -right-1 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce"
+              [ngClass]="themeClasses().badge">
+            {{ habitsPercentage() }}%
+        </span>
+    </button>
+
+    <!-- Tarjeta Flotante Contextual -->
+    @if (showHabitsFloatingModal()) {
+        <div (click)="$event.stopPropagation()"
+             class="absolute bottom-20 right-0 w-[calc(100vw-3rem)] sm:w-80 max-h-[75vh] overflow-y-auto bg-white/95 dark:bg-[#111111]/95 backdrop-blur-xl rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-2xl p-5 space-y-5 animate-fade-up pointer-events-auto transition-colors">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-sm serif text-nutri-text dark:text-slate-200">Hábitos de Hoy</h3>
+                    <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Mantén tu constancia diaria</p>
+                </div>
+                <button (click)="showHabitsFloatingModal.set(false)" class="w-7 h-7 rounded-full hover:bg-nutri-rose/5 dark:hover:bg-white/5 flex items-center justify-center text-nutri-text/40 dark:text-slate-500 transition-colors">
+                    <app-a-icon name="close" size="16px"></app-a-icon>
+                </button>
+            </div>
+
+            <!-- Progreso -->
+            <div class="space-y-1.5">
+                <div class="flex justify-between items-center text-[10px]">
+                    <span class="font-bold uppercase tracking-wider" [ngClass]="themeClasses().svgRing">Avance de hoy</span>
+                    <span class="font-black text-nutri-text dark:text-slate-300">{{ habitsPercentage() }}%</span>
+                </div>
+                <div class="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500 ease-out"
+                         [ngClass]="themeClasses().progressBg"
+                         [style.width.%]="habitsPercentage()"></div>
+                </div>
+            </div>
+
+            <!-- Checklist -->
+            <div class="space-y-2.5">
+                <!-- Agua -->
+                <div (click)="toggleHabit('water')"
+                     [class.bg-sky-500/5]="dailyHabits().water"
+                     [class.border-sky-500/20]="dailyHabits().water"
+                     class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                    <div [class.bg-sky-500]="dailyHabits().water"
+                         [class.text-white]="dailyHabits().water"
+                         [class.bg-slate-100]="!dailyHabits().water"
+                         [class.dark:bg-white/5]="!dailyHabits().water"
+                         [class.text-slate-400]="!dailyHabits().water"
+                         class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
+                        <app-a-icon name="water_drop" size="16px"></app-a-icon>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Tomar Agua</p>
+                        <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Meta: 2 Litros diarios</p>
+                    </div>
+                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                         [class.border-sky-500]="dailyHabits().water"
+                         [class.bg-sky-500]="dailyHabits().water"
+                         [class.border-slate-300]="!dailyHabits().water"
+                         [class.dark:border-white/20]="!dailyHabits().water">
+                        @if (dailyHabits().water) {
+                            <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
+                        }
+                    </div>
+                </div>
+
+                <!-- Ejercicio -->
+                <div (click)="toggleHabit('activity')"
+                     [class.bg-indigo-500/5]="dailyHabits().activity"
+                     [class.border-indigo-500/20]="dailyHabits().activity"
+                     class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                    <div [class.bg-indigo-500]="dailyHabits().activity"
+                         [class.text-white]="dailyHabits().activity"
+                         [class.bg-slate-100]="!dailyHabits().activity"
+                         [class.dark:bg-white/5]="!dailyHabits().activity"
+                         [class.text-slate-400]="!dailyHabits().activity"
+                         class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
+                        <app-a-icon name="fitness_center" size="16px"></app-a-icon>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Actividad Física</p>
+                        <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Mínimo 30 minutos</p>
+                    </div>
+                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                         [class.border-indigo-500]="dailyHabits().activity"
+                         [class.bg-indigo-500]="dailyHabits().activity"
+                         [class.border-slate-300]="!dailyHabits().activity"
+                         [class.dark:border-white/20]="!dailyHabits().activity">
+                        @if (dailyHabits().activity) {
+                            <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
+                        }
+                    </div>
+                </div>
+
+                <!-- Dieta -->
+                <div (click)="toggleHabit('diet')"
+                     [class.bg-nutri-rose/5]="dailyHabits().diet"
+                     [class.border-nutri-rose/20]="dailyHabits().diet"
+                     class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                    <div [class.bg-nutri-rose]="dailyHabits().diet"
+                         [class.text-white]="dailyHabits().diet"
+                         [class.bg-slate-100]="!dailyHabits().diet"
+                         [class.dark:bg-white/5]="!dailyHabits().diet"
+                         [class.text-slate-400]="!dailyHabits().diet"
+                         class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
+                        <app-a-icon name="restaurant" size="16px"></app-a-icon>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Seguir el Menú</p>
+                        <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Apegarse al plan del día</p>
+                    </div>
+                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                         [class.border-nutri-rose]="dailyHabits().diet"
+                         [class.bg-nutri-rose]="dailyHabits().diet"
+                         [class.border-slate-300]="!dailyHabits().diet"
+                         [class.dark:border-white/20]="!dailyHabits().diet">
+                        @if (dailyHabits().diet) {
+                            <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
+                        }
+                    </div>
+                </div>
+
+                <!-- Descanso -->
+                <div (click)="toggleHabit('sleep')"
+                     [class.bg-purple-500/5]="dailyHabits().sleep"
+                     [class.border-purple-500/20]="dailyHabits().sleep"
+                     class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
+                    <div [class.bg-purple-500]="dailyHabits().sleep"
+                         [class.text-white]="dailyHabits().sleep"
+                         [class.bg-slate-100]="!dailyHabits().sleep"
+                         [class.dark:bg-white/5]="!dailyHabits().sleep"
+                         [class.text-slate-400]="!dailyHabits().sleep"
+                         class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
+                        <app-a-icon name="bedtime" size="16px"></app-a-icon>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Buen Descanso</p>
+                        <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Dormir de 7 a 8 horas</p>
+                    </div>
+                    <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
+                         [class.border-purple-500]="dailyHabits().sleep"
+                         [class.bg-purple-500]="dailyHabits().sleep"
+                         [class.border-slate-300]="!dailyHabits().sleep"
+                         [class.dark:border-white/20]="!dailyHabits().sleep">
+                        @if (dailyHabits().sleep) {
+                            <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

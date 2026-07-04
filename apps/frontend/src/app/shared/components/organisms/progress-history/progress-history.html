@@ -1,34 +1,38 @@
 @if (!selectedRecordForDetail()) {
 <div class="space-y-6">
-    <!-- Header with Toggler -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
-        <div class="space-y-1">
-            <h3 class="text-xl font-bold serif italic text-nutri-rose">Evolución e Historial</h3>
-            <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-600 uppercase tracking-[0.2em]">Registro detallado de progresos</p>
+    <!-- Header with Toggler (Vibrant Hero Gradient Card) -->
+    <div [ngClass]="getHeroGradientClass()" class="flex flex-col md:flex-row md:items-center justify-between gap-4 text-white p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] transition-all relative overflow-hidden group">
+        <!-- Background light circle decoration -->
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="space-y-1 relative z-10">
+            <h3 class="text-xl font-bold serif italic text-white">Evolución e Historial</h3>
+            <p class="text-[9px] font-bold text-white/80 uppercase tracking-[0.2em]">Registro detallado de progresos</p>
         </div>
-        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
-            <div class="flex bg-nutri-bg dark:bg-white/5 p-1 rounded-xl">
+        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2 relative z-10">
+            <div class="hidden sm:flex bg-white/15 dark:bg-black/25 backdrop-blur-md p-1 rounded-xl border border-white/20">
                 <button (click)="viewMode.set('cards')" 
                         [class.bg-white]="viewMode() === 'cards'"
-                        [class.dark:bg-white/10]="viewMode() === 'cards'"
+                        [class.text-nutri-rose]="viewMode() === 'cards'"
                         [class.shadow-sm]="viewMode() === 'cards'"
-                        class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">
+                        [class.text-white]="viewMode() !== 'cards'"
+                        class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer">
                     Tarjetas
                 </button>
                 <button (click)="viewMode.set('table')" 
                         [class.bg-white]="viewMode() === 'table'"
-                        [class.dark:bg-white/10]="viewMode() === 'table'"
+                        [class.text-nutri-rose]="viewMode() === 'table'"
                         [class.shadow-sm]="viewMode() === 'table'"
-                        class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">
+                        [class.text-white]="viewMode() !== 'table'"
+                        class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer">
                     Tabla
                 </button>
             </div>
-            <span class="px-3 py-1 bg-nutri-bg dark:bg-white/5 rounded-full text-[9px] font-bold text-nutri-text/60 dark:text-slate-500 uppercase tracking-widest transition-colors">{{ history().length }} Reg.</span>
+            <span class="px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-[9px] font-bold text-white uppercase tracking-widest border border-white/15 transition-colors">{{ history().length }} Reg.</span>
         </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="overflow-y-auto max-h-[700px] pr-2 space-y-4 scroll-premium">
+    <div class="space-y-4">
         @if (viewMode() === 'cards') {
             @if (history().length === 0) {
                 <div class="h-full flex flex-col items-center justify-center opacity-20 py-20">

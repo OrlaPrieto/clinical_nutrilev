@@ -8,7 +8,10 @@ import {
   Param,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PatientService } from './patient.service';
 import { Patient, PatientProgress } from '@shared/index';
 import { UpdatePatientDto } from './dto/update-patient.dto';
@@ -90,5 +93,26 @@ export class PatientController {
   ): Promise<any> {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     return this.patientService.getShoppingList(menuUrl, clientIp);
+  }
+
+  @Post('parsed-menu')
+  @UseGuards(PatientAuthGuard)
+  async getParsedMenu(
+    @Body('menu_url') menuUrl: string,
+    @Req() req: any,
+  ): Promise<any> {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    return this.patientService.getParsedMenu(menuUrl, clientIp);
+  }
+
+  @Post('upload-menu')
+  @UseGuards(AdminGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMenu(
+    @UploadedFile() file: any,
+    @Body('email') email: string,
+    @Body('fileName') fileName: string,
+  ): Promise<{ url: string }> {
+    return this.patientService.uploadMenuPdf(file, email, fileName);
   }
 }

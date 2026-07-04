@@ -78,6 +78,21 @@
                         }
                     </button>
                     
+                    <button (click)="setActiveTab('menu-ia')"
+                            role="tab"
+                            [attr.aria-selected]="activeTab() === 'menu-ia' ? 'true' : 'false'"
+                            aria-label="Menú"
+                            [title]="sidebarCollapsed() ? 'Menú' : ''"
+                            [class]="(activeTab() === 'menu-ia'
+                                     ? 'w-full flex items-center rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose border-nutri-rose/25 shadow-sm '
+                                     : 'w-full flex items-center rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 ') +
+                                     (sidebarCollapsed() ? 'justify-center p-3 gap-0' : 'gap-3 px-4 py-3')">
+                        <app-a-icon name="auto_awesome" size="18px"></app-a-icon>
+                        @if (!sidebarCollapsed()) {
+                            <span>Menú</span>
+                        }
+                    </button>
+                    
                     <button (click)="setActiveTab('dashboard')"
                             role="tab"
                             [attr.aria-selected]="activeTab() === 'dashboard' ? 'true' : 'false'"
@@ -160,33 +175,99 @@
                             <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" aria-label="Tema lavanda zen" class="w-4 h-4 rounded-full bg-[#5C6BC0] transition-all hover:scale-125 ring-offset-2 ring-[#5C6BC0]/40 cursor-pointer outline-none focus:ring-2" [class.ring-2]="themeService.theme() === 'purple'" title="Lavanda"></button>
                         </div>
                     } @else {
-                        <!-- Botón de paleta para sidebar colapsado con dropdown lateral -->
-                        <button (click)="showThemeMenu.set(!showThemeMenu()); $event.stopPropagation()"
-                                class="w-10 h-10 rounded-xl border border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose hover:bg-nutri-rose/5 dark:hover:bg-white/5 transition-all flex items-center justify-center cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40"
-                                title="Cambiar Tema"
-                                aria-label="Cambiar Tema">
-                            <app-a-icon name="palette" size="18px"></app-a-icon>
-                        </button>
-                        <div class="absolute left-full bottom-0 ml-2 flex flex-col items-center gap-2 bg-white dark:bg-[#111111] p-2 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50 transition-all duration-300"
-                             [class.opacity-0]="!showThemeMenu()"
-                             [class.invisible]="!showThemeMenu()"
-                             [class.opacity-100]="showThemeMenu()"
-                             [class.visible]="showThemeMenu()">
-                            <button (click)="themeService.setTheme('light'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'light'" [class.dark:bg-white/10]="themeService.theme() === 'light'" title="Clásico" aria-label="Tema clásico (rosa)">
-                                <span class="w-5 h-5 rounded-full bg-[#D81B60]"></span>
+                        <!-- Botones colapsados: Temas y Accesibilidad -->
+                        <div class="flex flex-col gap-2">
+                            <!-- Botón de paleta para sidebar colapsado con dropdown lateral -->
+                            <button (click)="showThemeMenu.set(!showThemeMenu()); $event.stopPropagation()"
+                                    class="w-10 h-10 rounded-xl border border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose hover:bg-nutri-rose/5 dark:hover:bg-white/5 transition-all flex items-center justify-center cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40"
+                                    title="Cambiar Tema"
+                                    aria-label="Cambiar Tema">
+                                <app-a-icon name="palette" size="18px"></app-a-icon>
                             </button>
-                            <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'dark'" [class.dark:bg-white/10]="themeService.theme() === 'dark'" title="Oscuro" aria-label="Tema oscuro">
-                                <span class="w-5 h-5 rounded-full bg-[#111111] border border-white/10"></span>
+                            <div class="absolute left-full bottom-12 ml-2 flex flex-col items-center gap-2 bg-white dark:bg-[#111111] p-2 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50 transition-all duration-300"
+                                 [class.opacity-0]="!showThemeMenu()"
+                                 [class.invisible]="!showThemeMenu()"
+                                 [class.opacity-100]="showThemeMenu()"
+                                 [class.visible]="showThemeMenu()">
+                                <button (click)="themeService.setTheme('light'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'light'" [class.dark:bg-white/10]="themeService.theme() === 'light'" title="Clásico" aria-label="Tema clásico (rosa)">
+                                    <span class="w-5 h-5 rounded-full bg-[#D81B60]"></span>
+                                </button>
+                                <button (click)="themeService.setTheme('dark'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'dark'" [class.dark:bg-white/10]="themeService.theme() === 'dark'" title="Oscuro" aria-label="Tema oscuro">
+                                    <span class="w-5 h-5 rounded-full bg-[#111111] border border-white/10"></span>
+                                </button>
+                                <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'vibrant'" [class.dark:bg-white/10]="themeService.theme() === 'vibrant'" title="Salvia" aria-label="Tema salvia orgánico">
+                                    <span class="w-5 h-5 rounded-full bg-[#4A6B5D]"></span>
+                                </button>
+                                <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'purple'" [class.dark:bg-white/10]="themeService.theme() === 'purple'" title="Lavanda" aria-label="Tema lavanda zen">
+                                    <span class="w-5 h-5 rounded-full bg-[#5C6BC0]"></span>
+                                </button>
+                            </div>
+
+                            <!-- Botón de accesibilidad colapsado -->
+                            <button (click)="showAccessibilityMenu.set(!showAccessibilityMenu()); $event.stopPropagation()"
+                                    class="w-10 h-10 rounded-xl border border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose hover:bg-nutri-rose/5 dark:hover:bg-white/5 transition-all flex items-center justify-center cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40"
+                                    title="Accesibilidad"
+                                    aria-label="Ajustes de Accesibilidad">
+                                <app-a-icon name="accessibility" size="18px"></app-a-icon>
                             </button>
-                            <button (click)="themeService.setTheme('vibrant'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'vibrant'" [class.dark:bg-white/10]="themeService.theme() === 'vibrant'" title="Salvia" aria-label="Tema salvia orgánico">
-                                <span class="w-5 h-5 rounded-full bg-[#4A6B5D]"></span>
-                            </button>
-                            <button (click)="themeService.setTheme('purple'); $event.stopPropagation()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 cursor-pointer outline-none focus:ring-2 focus:ring-nutri-rose/40" [class.bg-slate-100]="themeService.theme() === 'purple'" [class.dark:bg-white/10]="themeService.theme() === 'purple'" title="Lavanda" aria-label="Tema lavanda zen">
-                                <span class="w-5 h-5 rounded-full bg-[#5C6BC0]"></span>
-                            </button>
+                            @if (showAccessibilityMenu()) {
+                                <div class="absolute left-full bottom-0 ml-2 w-48 bg-white dark:bg-[#111111] p-3 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50 flex flex-col gap-3" (click)="$event.stopPropagation()">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Tamaño de letra</span>
+                                        <div class="flex gap-1">
+                                            <button (click)="accessibilityService.setFontSize('normal')" class="flex-1 py-1 text-[9px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'normal'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'normal'">A</button>
+                                            <button (click)="accessibilityService.setFontSize('large')" class="flex-1 py-1 text-[11px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'large'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'large'">A+</button>
+                                            <button (click)="accessibilityService.setFontSize('extra-large')" class="flex-1 py-1 text-[13px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'extra-large'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'extra-large'">A++</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Filtro visual</span>
+                                        <select [value]="accessibilityService.getCurrentColorblindMode()" (change)="accessibilityService.setColorblindMode($any($event.target).value)" class="text-[10px] p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black text-slate-700 dark:text-slate-300 outline-none">
+                                            <option value="default">Normal</option>
+                                            <option value="high-contrast">Alto Contraste</option>
+                                            <option value="protanopia">Protanopía (Rojo)</option>
+                                            <option value="deuteranopia">Deuteranopía (Verde)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     }
                 </div>
+
+                <!-- Selector de Accesibilidad Horizontal (Expanded) -->
+                @if (!sidebarCollapsed()) {
+                    <div class="relative flex items-center justify-between p-2.5 bg-nutri-bg dark:bg-white/5 border border-nutri-rose/5 dark:border-white/5 rounded-2xl transition-all">
+                        <button (click)="showAccessibilityMenu.set(!showAccessibilityMenu()); $event.stopPropagation()" 
+                                class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 outline-none w-full hover:text-nutri-rose transition-colors cursor-pointer border-none bg-transparent">
+                            <app-a-icon name="accessibility" size="14px"></app-a-icon>
+                            <span>Accesibilidad</span>
+                        </button>
+                        
+                        <!-- Popover de Accesibilidad -->
+                        @if (showAccessibilityMenu()) {
+                            <div class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-[#111111] p-3 rounded-2xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50 flex flex-col gap-3" (click)="$event.stopPropagation()">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Tamaño de letra</span>
+                                    <div class="flex gap-1">
+                                        <button (click)="accessibilityService.setFontSize('normal')" class="flex-1 py-1 text-[9px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'normal'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'normal'">A</button>
+                                        <button (click)="accessibilityService.setFontSize('large')" class="flex-1 py-1 text-[11px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'large'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'large'">A+</button>
+                                        <button (click)="accessibilityService.setFontSize('extra-large')" class="flex-1 py-1 text-[13px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'extra-large'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'extra-large'">A++</button>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Filtro visual</span>
+                                    <select [value]="accessibilityService.getCurrentColorblindMode()" (change)="accessibilityService.setColorblindMode($any($event.target).value)" class="text-[10px] p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black text-slate-700 dark:text-slate-300 outline-none">
+                                        <option value="default">Normal</option>
+                                        <option value="high-contrast">Alto Contraste</option>
+                                        <option value="protanopia">Protanopía (Rojo)</option>
+                                        <option value="deuteranopia">Deuteranopía (Verde)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
                 
                 <button (click)="logout()"
                         [title]="sidebarCollapsed() ? 'Cerrar Sesión' : ''"
@@ -242,6 +323,39 @@
                             </div>
                         </button>
 
+                        <!-- Botón de Accesibilidad (Móvil) -->
+                        <button type="button" 
+                                aria-haspopup="true"
+                                aria-label="Ajustes de Accesibilidad"
+                                class="relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-300 hover:bg-nutri-rose/5 dark:hover:bg-white/5 cursor-pointer border-0 bg-transparent outline-none focus:ring-2 focus:ring-nutri-rose/40"
+                                (click)="showAccessibilityMenu.set(!showAccessibilityMenu()); $event.stopPropagation()">
+                            <div class="flex items-center justify-center text-nutri-text/40 dark:text-white/40 hover:text-nutri-rose transition-colors"
+                                 [class.text-nutri-rose]="showAccessibilityMenu()">
+                                <app-a-icon name="accessibility" size="18px"></app-a-icon>
+                            </div>
+                            @if (showAccessibilityMenu()) {
+                                <div class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#111111] p-3 rounded-xl shadow-xl border border-nutri-rose/10 dark:border-white/5 z-50 flex flex-col gap-3" (click)="$event.stopPropagation()">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Tamaño de letra</span>
+                                        <div class="flex gap-1">
+                                            <button (click)="accessibilityService.setFontSize('normal')" class="flex-1 py-1 text-[9px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'normal'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'normal'">A</button>
+                                            <button (click)="accessibilityService.setFontSize('large')" class="flex-1 py-1 text-[11px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'large'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'large'">A+</button>
+                                            <button (click)="accessibilityService.setFontSize('extra-large')" class="flex-1 py-1 text-[13px] font-bold rounded-lg border border-slate-200 dark:border-white/10 cursor-pointer" [class.bg-nutri-rose]="(accessibilityService.fontSize$ | async) === 'extra-large'" [class.text-white]="(accessibilityService.fontSize$ | async) === 'extra-large'">A++</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Filtro visual</span>
+                                        <select [value]="accessibilityService.getCurrentColorblindMode()" (change)="accessibilityService.setColorblindMode($any($event.target).value)" class="text-[10px] p-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-black text-slate-700 dark:text-slate-300 outline-none">
+                                            <option value="default">Normal</option>
+                                            <option value="high-contrast">Alto Contraste</option>
+                                            <option value="protanopia">Protanopía (Rojo)</option>
+                                            <option value="deuteranopia">Deuteranopía (Verde)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            }
+                        </button>
+
                         <!-- Botón de Salir (Icon-only en móvil para un diseño más premium y limpio) -->
                         <button (click)="logout()"
                                 class="w-10 h-10 rounded-xl border border-nutri-rose/10 dark:border-white/10 hover:border-nutri-rose/30 text-rose-500 dark:text-rose-400 hover:bg-rose-500/5 dark:hover:bg-white/5 transition-all flex items-center justify-center shrink-0 outline-none focus:ring-2 focus:ring-rose-500/40"
@@ -256,9 +370,31 @@
             <!-- Contenedor Principal Adaptable (Capa Principal de Páginas) -->
             <main class="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 mt-6 md:mt-8 mb-24 md:mb-8 pb-24 md:pb-20 space-y-8 flex-1 w-full min-w-0 transition-all duration-300">
                 <!-- Bienvenida y Objetivo (Solo Móvil) -->
-                <div class="md:hidden space-y-1 mb-2 mt-1 animate-fade-in">
-                    <h1 class="text-2xl sm:text-3xl font-bold serif text-nutri-text dark:text-white leading-tight">{{ welcomeMessage() }}</h1>
-                    <p class="text-[11px] uppercase tracking-widest font-black text-nutri-rose/85 dark:text-nutri-rose-soft/90">{{ goalSubtitle() }}</p>
+                <div class="md:hidden p-5 rounded-[2.25rem] bg-gradient-to-br from-white/70 to-white/30 dark:from-[#111111]/60 dark:to-[#080808]/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl shadow-nutri-rose/[0.02] flex items-center justify-between gap-4 mb-6 animate-fade-in relative overflow-hidden">
+                    <!-- Light effect background -->
+                    <div class="absolute -right-12 -bottom-12 w-28 h-28 bg-gradient-to-tr from-nutri-rose/10 to-[#ff7043]/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="space-y-1.5 min-w-0 flex-1 relative z-10">
+                        <span class="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
+                            {{ greetingPrefix() }}
+                        </span>
+                        <h1 class="text-xl font-black text-slate-800 dark:text-white leading-none tracking-tight">
+                            ¡Hola, <span [ngClass]="getHeroTextGradientClass()" class="font-black text-transparent bg-clip-text bg-gradient-to-r">{{ firstName() }}</span>!
+                        </h1>
+                        <div class="flex items-start gap-1.5 pt-1">
+                            <span class="relative flex h-1.5 w-1.5 shrink-0 mt-1">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-nutri-rose opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-nutri-rose"></span>
+                            </span>
+                            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-normal">
+                                {{ goalSubtitle() }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Icono dinámico premium -->
+                    <div class="w-11 h-11 rounded-full bg-white dark:bg-white/5 border border-white/30 dark:border-white/10 shadow-md flex items-center justify-center text-nutri-rose dark:text-nutri-rose-soft shrink-0 relative z-10">
+                        <app-a-icon [name]="greetingIcon()" size="16px" customClass="animate-pulse"></app-a-icon>
+                    </div>
                 </div>
                 @if (loading()) {
                     <!-- Shimmering Skeleton Screen Loader -->
@@ -338,75 +474,77 @@
                     <!-- Pestaña 1: Inicio (Dashboard) -->
                     @if (activeTab() === 'dashboard') {
                         <div [@tabAnimation] class="space-y-8">
-                            <!-- Fila de Metas Principales y Último Registro -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                                <!-- Meta de Progreso -->
-                                <div class="dashboard-card bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
-                                    <div>
-                                        <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose mb-3 block">
+                                <!-- Meta de Progreso (Vibrant Gradient Card) -->
+                                <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] flex flex-col justify-between overflow-hidden relative group">
+                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full group-hover:scale-110 transition-transform duration-500 blur-sm pointer-events-none"></div>
+                                    <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-white/5 rounded-full group-hover:scale-115 transition-transform duration-500 blur-md pointer-events-none"></div>
+                                    <div class="relative z-10">
+                                        <span class="text-[9px] font-black uppercase tracking-widest text-white/80 mb-3 block">
                                             {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
                                                currentGoal() === 'bajar_grasa' ? 'Meta de Grasa' : 
                                                currentGoal() === 'subir_musculo' ? 'Meta de Músculo' : 'Tu Objetivo' }}
                                         </span>
-                                        <h2 class="text-4xl sm:text-5xl font-black font-sans tracking-tight text-nutri-text dark:text-white">
+                                        <h2 class="text-4xl sm:text-5xl font-black font-sans tracking-tight text-white flex items-baseline">
                                             @if (currentGoal() === 'bajar_peso') {
-                                                {{ patient()?.peso_meta || '--' }}<span class="text-xl font-medium text-nutri-text/40 dark:text-slate-500 ml-1">kg</span>
+                                                {{ patient()?.peso_meta || '--' }}<span class="text-lg font-medium text-white/60 ml-1">kg</span>
                                             } @else if (currentGoal() === 'bajar_grasa') {
-                                                {{ patient()?.grasa_meta || '--' }}<span class="text-xl font-medium text-nutri-text/40 dark:text-slate-500 ml-1">%</span>
+                                                {{ patient()?.grasa_meta || '--' }}<span class="text-lg font-medium text-white/60 ml-1">%</span>
                                             } @else if (currentGoal() === 'subir_musculo') {
-                                                {{ patient()?.musculo_meta || '--' }}<span class="text-xl font-medium text-nutri-text/40 dark:text-slate-500 ml-1">kg</span>
+                                                {{ patient()?.musculo_meta || '--' }}<span class="text-lg font-medium text-white/60 ml-1">kg</span>
                                             } @else {
-                                                <span class="text-xl">Sin objetivo</span>
+                                                <span class="text-lg text-white/70">Sin objetivo</span>
                                             }
                                         </h2>
                                     </div>
-                                    <p class="text-xs text-nutri-text/40 dark:text-slate-500 mt-6 leading-relaxed italic border-l-2 border-nutri-rose/20 pl-3">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
+                                    <p class="text-xs text-white/95 mt-6 leading-relaxed italic border-l-2 border-white/30 pl-3">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
                                 </div>
  
-                                <!-- Último Registro Físico -->
-                                <div class="dashboard-card bg-nutri-rose-soft/20 dark:bg-nutri-rose-soft/5 p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm text-nutri-rose flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/5 dark:bg-white/5 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
-                                    <div>
-                                        <span class="text-[10px] font-black uppercase tracking-widest text-nutri-rose opacity-70 mb-3 block">Último Registro</span>
-                                        <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6 text-nutri-rose dark:text-nutri-rose-soft">
+                                <!-- Último Registro Físico (Polished High Contrast Card) -->
+                                <div class="dashboard-card bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm text-slate-800 dark:text-slate-200 flex flex-col justify-between overflow-hidden relative group">
+                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-50 dark:bg-white/[0.01] rounded-full group-hover:scale-110 transition-transform duration-500 pointer-events-none"></div>
+                                    <div class="relative z-10">
+                                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 block">Último Registro Clínico</span>
+                                        <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6">
                                             <!-- Peso -->
-                                            <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-40]="currentGoal() && currentGoal() !== 'bajar_peso'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider opacity-60">Peso</span>
+                                            <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() && currentGoal() !== 'bajar_peso'">
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Peso</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-3xl sm:text-4xl font-black font-sans leading-none tracking-tight">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
-                                                    <span class="text-xs font-bold opacity-60">kg</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-sky-600 dark:text-sky-400">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                                    <span class="text-[10px] font-bold text-sky-600/60 dark:text-sky-400/60 ml-0.5">kg</span>
                                                 </div>
                                                 @if (weightDiff()) {
-                                                    <span class="text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5"
+                                                    <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
                                                           [class]="weightDiff()?.isIncrease ? 'bg-rose-500/10 text-rose-500' : 'bg-emerald-500/10 text-emerald-500'">
                                                         {{ weightDiff()?.isIncrease ? '↑' : '↓' }} {{ weightDiff()?.value }} kg
                                                     </span>
                                                 }
                                             </div>
+                                            
                                             <!-- Grasa -->
-                                            <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'bajar_grasa'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider opacity-60">Grasa</span>
+                                            <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() !== 'bajar_grasa'">
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Grasa</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
-                                                    <span class="text-[10px] font-bold opacity-60">%</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                                    <span class="text-[10px] font-bold text-amber-500/60 dark:text-amber-400/60 ml-0.5">%</span>
                                                 </div>
                                                 @if (fatDiff()) {
-                                                    <span class="text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5"
+                                                    <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
                                                           [class]="fatDiff()?.isIncrease ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'">
                                                         {{ fatDiff()?.isIncrease ? '↑' : '↓' }} {{ fatDiff()?.value }}%
                                                     </span>
                                                 }
                                             </div>
+
                                             <!-- Músculo -->
-                                            <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-40]="currentGoal() !== 'subir_musculo'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider opacity-60">Músculo</span>
+                                            <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() !== 'subir_musculo'">
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Músculo</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
-                                                    <span class="text-[10px] font-bold opacity-60">kg</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                                    <span class="text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose-soft/60 ml-0.5">kg</span>
                                                 </div>
                                                 @if (muscleDiff()) {
-                                                    <span class="text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5"
+                                                    <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
                                                           [class]="muscleDiff()?.isIncrease ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
                                                         {{ muscleDiff()?.isIncrease ? '↑' : '↓' }} {{ muscleDiff()?.value }} kg
                                                     </span>
@@ -414,11 +552,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2 mt-4 text-nutri-rose/60">
-                                        <div class="w-7 h-7 rounded-full bg-nutri-rose/10 dark:bg-white/10 flex items-center justify-center text-xs">
-                                            <app-a-icon name="calendar_today" size="12px"></app-a-icon>
+                                    <div class="flex items-center gap-2 mt-6 text-slate-400 dark:text-slate-500">
+                                        <div class="w-6 h-6 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-xs">
+                                            <app-a-icon name="calendar_today" size="10px"></app-a-icon>
                                         </div>
-                                        <span class="text-[10px] font-black uppercase tracking-widest">
+                                        <span class="text-[9px] font-black uppercase tracking-widest">
                                             {{ progress().length > 0 ? (progress()[0].date | date:'dd MMM, yyyy') : 'Sin registros aún' }}
                                         </span>
                                     </div>
@@ -426,39 +564,16 @@
                             </div>
  
                             <!-- Grid de Métricas Rápidas -->
-                            <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                <!-- BMI Card -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-2 text-nutri-rose/40">
-                                            <app-a-icon name="speed" size="16px"></app-a-icon>
-                                            <span class="text-[9px] font-black uppercase tracking-widest">IMC</span>
-                                        </div>
-                                        @if (bmiCategory()) {
-                                            <span class="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5" [class]="bmiColorClass()">
-                                                {{ bmiCategory() }}
-                                            </span>
-                                        }
-                                    </div>
-                                    <div class="flex items-baseline gap-1 mt-2">
-                                        <span class="text-3xl font-black font-sans tracking-tight text-nutri-text dark:text-slate-100">{{ bmi() || '--' }}</span>
-                                        <span class="text-[9px] font-bold text-nutri-text/30 dark:text-slate-600 uppercase">Índice</span>
-                                    </div>
-                                    <!-- Medidor visual de rango IMC -->
-                                    <div class="w-full h-1.5 bg-gradient-to-r from-sky-400 via-emerald-400 via-amber-400 to-rose-400 rounded-full relative mt-3 overflow-visible">
-                                        <div class="absolute w-2.5 h-2.5 bg-slate-800 dark:bg-white border-2 border-white dark:border-slate-800 rounded-full top-1/2 -translate-y-1/2 shadow transition-all duration-700" [style.left.%]="bmiPosition()"></div>
-                                    </div>
-                                </div>
- 
+                            <div class="grid grid-cols-2 gap-4">
                                 <!-- Fat Card -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center gap-2 text-nutri-rose/40">
-                                        <app-a-icon name="percent" size="16px"></app-a-icon>
+                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
+                                    <div class="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                                        <app-a-icon name="percent" size="14px" class="text-amber-500"></app-a-icon>
                                         <span class="text-[9px] font-black uppercase tracking-widest">% Grasa</span>
                                     </div>
                                     <div class="flex items-baseline gap-1 mt-2">
-                                        <span class="text-3xl font-black font-sans tracking-tight text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
-                                        <span class="text-[9px] font-bold text-nutri-rose/30 uppercase">% corp.</span>
+                                        <span class="text-3xl font-black font-sans tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
+                                        <span class="text-[9px] font-bold text-amber-500/60 dark:text-amber-400/60 uppercase">% corp.</span>
                                     </div>
                                     <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-2 block truncate">
                                         @if (patient()?.grasa_meta) {
@@ -469,25 +584,36 @@
                                     </span>
                                 </div>
  
-                                <!-- Porcentaje de Avance General -->
-                                <div class="dashboard-card col-span-2 lg:col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-2 text-nutri-rose/40">
-                                            <app-a-icon name="flag" size="16px"></app-a-icon>
-                                            <span class="text-[9px] font-black uppercase tracking-widest">Avance Meta</span>
+                                <!-- Porcentaje de Avance General (Circular Gauge) -->
+                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex items-center justify-between transition-colors">
+                                    <div class="space-y-2 min-w-0 flex-1 pr-2">
+                                        <div class="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                                            <app-a-icon name="flag" size="14px" class="text-nutri-rose"></app-a-icon>
+                                            <span class="text-[9px] font-black uppercase tracking-widest truncate">Avance Meta</span>
                                         </div>
-                                        <span class="text-[10px] font-black text-nutri-rose bg-nutri-rose/5 px-2 py-0.5 rounded-full">{{ goalPercentage() | number:'1.0-0' }}%</span>
+                                        <div class="flex items-baseline gap-1 mt-2">
+                                            <span class="text-2xl sm:text-3xl font-black font-sans tracking-tight text-nutri-rose dark:text-nutri-rose-soft">{{ goalPercentage() | number:'1.0-0' }}%</span>
+                                        </div>
+                                        <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-2 block truncate">
+                                            {{ goalPercentage() >= 100 ? '¡Meta lograda!' : 'En camino al 100%' }}
+                                        </span>
                                     </div>
-                                    <div class="mt-4">
-                                        <div class="w-full h-2 bg-nutri-rose/5 dark:bg-white/5 rounded-full overflow-hidden relative">
-                                            <div class="h-full bg-gradient-to-r from-nutri-rose to-purple-600 rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(216,27,96,0.3)]" [style.width.%]="goalPercentage()"></div>
+                                    
+                                    <!-- Circular Progress Gauge (SVG) -->
+                                    <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+                                        <svg class="w-full h-full transform -rotate-90">
+                                            <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" class="text-slate-100 dark:text-white/5" fill="transparent"/>
+                                            <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" 
+                                                    class="text-nutri-rose transition-all duration-1000" 
+                                                    fill="transparent"
+                                                    [attr.stroke-dasharray]="163.36"
+                                                    [attr.stroke-dashoffset]="163.36 - (163.36 * goalPercentage() / 100)"/>
+                                        </svg>
+                                        <div class="absolute text-[10px] font-black text-nutri-text dark:text-white">
+                                            {{ goalPercentage() | number:'1.0-0' }}%
                                         </div>
                                     </div>
-                                    <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-2 block">
-                                        {{ goalPercentage() >= 100 ? '¡Objetivo completado!' : 'En camino al 100%' }}
-                                    </span>
                                 </div>
-
                             </div>
 
                             <!-- Sección de Logros (Estrellas de Logro) -->
@@ -528,223 +654,34 @@
                     @if (activeTab() === 'plan') {
                         <div [@tabAnimation] class="space-y-6">
                             
-                               <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                                <!-- Widget de Siguiente Cita (Estático) -->
-                                <div [class]="patient()?.plan_citas ? 'lg:col-span-2' : 'lg:col-span-3'">
-                                    @if (nextAppointment() && nextAppointment()?.hasAppointment) {
-                                        <div class="relative overflow-hidden rounded-[2rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 shadow-xl shadow-slate-200/20 dark:shadow-none transition-all duration-300 border-l-4 h-full"
-                                             [class.border-l-amber-500]="nextAppointment()?.status === 'pending'"
-                                             [class.border-l-emerald-500]="nextAppointment()?.status === 'confirmed'"
-                                             [class.border-l-rose-500]="nextAppointment()?.status === 'cancelled'">
-                                            <div class="absolute -right-10 -top-10 w-32 h-32 bg-nutri-rose/5 dark:bg-white/[0.01] rounded-full blur-xl"></div>
-                                            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 h-full">
-                                                <div class="flex items-center gap-4">
-                                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-nutri-rose/10 to-nutri-rose/5 dark:from-white/5 dark:to-white/[0.01] border border-nutri-rose/10 dark:border-white/5 flex items-center justify-center text-nutri-rose shrink-0 shadow-inner">
-                                                        <app-a-icon name="calendar_today" size="22px"></app-a-icon>
-                                                    </div>
-                                                    <div class="space-y-1">
-                                                        <div class="flex flex-wrap items-center gap-2">
-                                                            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Próxima Consulta</span>
-                                                            @if (nextAppointment()?.status === 'pending') {
-                                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200/50 dark:border-amber-500/20">Pendiente 🟡</span>
-                                                            } @else if (nextAppointment()?.status === 'confirmed') {
-                                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/20">Confirmada ✅</span>
-                                                            } @else if (nextAppointment()?.status === 'cancelled') {
-                                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200/50 dark:border-rose-500/20">Cancelada ❌</span>
-                                                            }
-                                                        </div>
-                                                        <h3 class="text-base sm:text-lg font-extrabold text-nutri-text dark:text-white leading-tight font-sans">
-                                                            {{ appointmentDateStr() }}
-                                                        </h3>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Acciones dinámicas de confirmación -->
-                                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
-                                                    @if (nextAppointment()?.status === 'pending') {
-                                                        @if (showConfirmButtons()) {
-                                                            <button (click)="confirmAppointment()" 
-                                                                    [disabled]="loadingAppointmentAction()"
-                                                                    class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/10 hover:shadow-xl hover:shadow-emerald-500/20 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
-                                                                @if (loadingAppointmentAction()) {
-                                                                    <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                                                } @else {
-                                                                    <app-a-icon name="check" size="14px"></app-a-icon>
-                                                                 }
-                                                                Confirmar cita
-                                                            </button>
-                                                            <button (click)="cancelAppointment()" 
-                                                                    [disabled]="loadingAppointmentAction()"
-                                                                    class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-white/5 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
-                                                                Cancelar
-                                                            </button>
-                                                        } @else {
-                                                            <div class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/40 dark:border-white/5 justify-center">
-                                                                <app-a-icon name="info" customClass="text-slate-400 dark:text-slate-500" size="14px"></app-a-icon>
-                                                                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                                                                    La confirmación se habilitará 1 día antes.
-                                                                </span>
-                                                            </div>
-                                                        }
-                                                    } @else if (nextAppointment()?.status === 'cancelled') {
-                                                        <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
-                                                           class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/15 hover:shadow-xl hover:shadow-[#25D366]/25 active:scale-[0.98] transition-all duration-200 h-11">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16">
-                                                              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93a7.9 7.9 0 0 0 1.08 3.851L0 16l4.25-1.116a7.89 7.89 0 0 0 3.74.935h.007c4.364 0 7.92-3.559 7.924-7.929a7.85 7.85 0 0 0-2.322-5.564H13.6zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.954c-.199-.1-.179-.176-.408-.505-.23-.329-1.248-1.233-1.428-1.329-.18-.098-.31-.147-.441.049-.13.197-.509.642-.624.774-.114.133-.23.148-.43.05-.2-.1-.843-.311-1.607-.991-.595-.53-1.002-1.185-1.119-1.385-.118-.2-.012-.307.088-.406.09-.089.199-.232.299-.348.1-.117.133-.198.199-.33.065-.133.033-.25-.017-.35-.05-.01-1.248-3.003-1.428-3.43-.175-.423-.348-.365-.48-.372-.124-.007-.267-.008-.41-.008a.78.78 0 0 0-.563.263c-.193.21-.737.72-.737 1.757s.754 2.04 1.868 2.529c1.114.49 2.188.89 3.09 1.127.461.12.83.18 1.14.226.347.05.663.023.91-.013.276-.04.843-.344 1.057-.83.214-.488.214-.907.15-1.026-.064-.118-.23-.197-.43-.297"/>
-                                                            </svg>
-                                                            Reagendar cita
-                                                        </a>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    } @else {
-                                        <div class="relative overflow-hidden rounded-[2rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 shadow-md transition-all duration-300 border-l-4 border-l-slate-300 dark:border-l-white/10 h-full">
-                                            <div class="relative z-10 flex items-center gap-4 h-full">
-                                                <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0 shadow-inner">
-                                                    <app-a-icon name="calendar_today" size="22px"></app-a-icon>
-                                                </div>
-                                                <div>
-                                                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Próxima Consulta</span>
-                                                    <h3 class="text-base font-bold text-slate-500 dark:text-slate-400 mt-1 font-sans">
-                                                        No se ha establecido una nueva cita.
-                                                    </h3>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                                
-                                <!-- Plan de Pagos -->
-                                @if (patient()?.plan_citas) {
-                                    <div class="lg:col-span-1">
-                                        <div class="bg-white dark:bg-[#111111] p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300 overflow-hidden relative group h-full flex flex-col justify-between">
-                                            <!-- Ambient light glow -->
-                                            <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-2xl transition-all group-hover:scale-125 duration-700"></div>
-                                            <div class="absolute -left-12 -top-12 w-24 h-24 bg-blue-500/5 rounded-full blur-xl transition-all group-hover:scale-110 duration-700"></div>
-                                            
-                                            <!-- Card Header -->
-                                            <div class="relative z-10 flex items-center justify-between mb-4">
-                                                <div class="flex items-center gap-2 text-emerald-500/70 dark:text-emerald-400/70">
-                                                    <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                                        <app-a-icon name="payments" size="14px" customClass="text-emerald-500 dark:text-emerald-400"></app-a-icon>
-                                                    </div>
-                                                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Paquete de Citas</span>
-                                                </div>
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider transition-all"
-                                                      [ngClass]="toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas)
-                                                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/30'
-                                                          : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200/50 dark:border-blue-500/30'">
-                                                    {{ toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas) ? 'Paquete completado 🎉' : 'Paquete Activo' }}
-                                                </span>
-                                            </div>
-
-                                            <!-- Card Body Split Layout -->
-                                            <div class="relative z-10 grid grid-cols-12 gap-5 items-center my-auto">
-                                                <!-- Left: Radial gauge -->
-                                                <div class="col-span-5 flex justify-center">
-                                                    <div class="relative w-20 h-20 sm:w-22 sm:h-22 flex items-center justify-center shrink-0">
-                                                        <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                                            <!-- Base circle -->
-                                                            <circle
-                                                                cx="50"
-                                                                cy="50"
-                                                                r="40"
-                                                                stroke="currentColor"
-                                                                stroke-width="8"
-                                                                class="text-slate-100 dark:text-white/5"
-                                                                fill="transparent"
-                                                            />
-                                                            <!-- Active arc -->
-                                                            <circle
-                                                                cx="50"
-                                                                cy="50"
-                                                                r="40"
-                                                                stroke="url(#progressGradient)"
-                                                                stroke-width="8"
-                                                                stroke-linecap="round"
-                                                                class="transition-all duration-1000 ease-out"
-                                                                fill="transparent"
-                                                                [attr.stroke-dasharray]="251.3"
-                                                                [attr.stroke-dashoffset]="251.3 * (1 - (toNumber(patient()?.plan_citas_completadas || 0) / toNumber(patient()?.plan_citas || 1)))"
-                                                            />
-                                                            <defs>
-                                                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                                    <stop offset="0%" stop-color="#34D399" />
-                                                                    <stop offset="100%" stop-color="#059669" />
-                                                                </linearGradient>
-                                                            </defs>
-                                                        </svg>
-                                                        <!-- Text inside circle -->
-                                                        <div class="flex flex-col items-center justify-center text-center">
-                                                            <span class="text-2xl font-black font-sans leading-none text-slate-800 dark:text-white">
-                                                                {{ patient()?.plan_citas_completadas || 0 }}
-                                                            </span>
-                                                            <span class="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                                                                / {{ patient()?.plan_citas }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Right: Stats detail -->
-                                                <div class="col-span-7 space-y-2.5">
-                                                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-tight">
-                                                        Sesiones
-                                                    </h3>
-                                                    
-                                                    <!-- Item Completadas -->
-                                                    <div class="flex items-center gap-2">
-                                                        <div class="w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                                            <app-a-icon name="check" size="9px" customClass="text-emerald-500"></app-a-icon>
-                                                        </div>
-                                                        <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                                                            <strong class="font-extrabold text-slate-800 dark:text-white">{{ patient()?.plan_citas_completadas || 0 }}</strong> completadas
-                                                        </span>
-                                                    </div>
-
-                                                    <!-- Item Restantes -->
-                                                    <div class="flex items-center gap-2">
-                                                        <div class="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                                                             [ngClass]="toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas)
-                                                                 ? 'bg-slate-100 dark:bg-white/5'
-                                                                 : 'bg-blue-500/10'">
-                                                            <app-a-icon [name]="toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas) ? 'done_all' : 'schedule'"
-                                                                        size="9px"
-                                                                        [customClass]="toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas) ? 'text-slate-400' : 'text-blue-500'"></app-a-icon>
-                                                        </div>
-                                                        <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                                                            @if (toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas)) {
-                                                                ¡Paquete completado!
-                                                            } @else {
-                                                                <strong class="font-extrabold text-slate-800 dark:text-white">{{ toNumber(patient()?.plan_citas) - toNumber(patient()?.plan_citas_completadas || 0) }}</strong> restantes
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+                            <app-appointment-card
+                                [nextAppointment]="nextAppointment()"
+                                [patient]="patient()"
+                                [showConfirmButtons]="showConfirmButtons()"
+                                [loadingAppointmentAction]="loadingAppointmentAction()"
+                                [appointmentDateStr]="appointmentDateStr()"
+                                [rescheduleWhatsappUrl]="rescheduleWhatsappUrl()"
+                                (confirm)="confirmAppointment()"
+                                (cancel)="cancelAppointment()">
+                            </app-appointment-card>
 
                             @if (isMenuValid()) {
                                 <div class="space-y-6">
                                         
-                                        <!-- 1. Banner de Bienvenida Glassmorphic -->
-                                        <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-nutri-rose/10 via-transparent to-nutri-rose/5 border border-nutri-rose/10 p-6 sm:p-8 shadow-sm">
-                                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-nutri-rose/10 rounded-full blur-2xl"></div>
+                                        <!-- 1. Banner de Bienvenida Glassmorphic (Vibrant Hero Gradient Card) -->
+                                        <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8">
+                                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                                             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div>
-                                                    <span class="text-xs font-black uppercase tracking-widest text-nutri-rose">Tu Plan Nutricional Activo</span>
-                                                    <h2 class="text-2xl sm:text-3xl font-bold serif text-nutri-text dark:text-white mt-1">¡Tu guía diaria, {{ firstName() }}!</h2>
-                                                    <p class="text-xs sm:text-sm text-nutri-text/60 dark:text-slate-400 mt-2 max-w-lg">
+                                                    <span class="text-xs font-black uppercase tracking-widest text-white/80">Tu Plan Nutricional Activo</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-bold serif text-white mt-1">¡Tu guía diaria, {{ firstName() }}!</h2>
+                                                    <p class="text-xs sm:text-sm text-white/80 mt-2 max-w-lg">
                                                         Aquí tienes acceso a tu plan de alimentación activo, tu lista de súper personalizada generada por IA y tu tracker diario de hábitos para mantenerte en el camino correcto.
                                                     </p>
                                                 </div>
-                                                <div class="flex items-center gap-2 bg-white/50 dark:bg-black/20 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 shrink-0 self-start sm:self-center">
-                                                    <app-a-icon name="schedule" customClass="text-nutri-rose text-lg"></app-a-icon>
-                                                    <span class="text-xs font-bold text-nutri-text/80 dark:text-slate-300">{{ expirationMessage() }}</span>
+                                                <div class="flex items-center gap-2 bg-white/15 dark:bg-black/25 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 shrink-0 self-start sm:self-center">
+                                                    <app-a-icon name="schedule" customClass="text-white text-lg"></app-a-icon>
+                                                    <span class="text-xs font-bold text-white/90">{{ expirationMessage() }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -757,45 +694,52 @@
                                                 @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                                     @for (m of patient()?.current_menus; track m.url) {
                                                         <a [href]="m.url" target="_blank" rel="noopener noreferrer" 
-                                                           class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
+                                                           class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
                                                                 <app-a-icon name="description"></app-a-icon>
                                                             </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Archivo PDF</p>
-                                                                <p class="text-sm font-bold serif truncate">{{ m.name }}</p>
+                                                            <div class="flex-1 min-w-0 z-10">
+                                                                <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Archivo PDF</span>
+                                                                <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">{{ m.name }}</p>
                                                             </div>
-                                                            <div class="w-8 h-8 rounded-full bg-nutri-bg dark:bg-white/5 flex items-center justify-center text-nutri-text/20 group-hover:text-nutri-rose transition-colors shrink-0">
+                                                            <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
                                                                 <app-a-icon name="download" size="18px"></app-a-icon>
                                                             </div>
                                                         </a>
                                                     }
                                                 } @else if (patient()?.menu_url) {
                                                     <a [href]="patient()?.menu_url" target="_blank" rel="noopener noreferrer" 
-                                                       class="group bg-white dark:bg-[#111111] p-5 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0">
+                                                       class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
                                                             <app-a-icon name="description"></app-a-icon>
                                                         </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <p class="text-[9px] font-black uppercase tracking-widest text-nutri-rose/40 mb-0.5">Plan Principal</p>
-                                                            <p class="text-sm font-bold serif truncate">Ver Menú Digital</p>
+                                                        <div class="flex-1 min-w-0 z-10">
+                                                            <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Plan Principal</span>
+                                                            <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Ver Menú Digital</p>
+                                                        </div>
+                                                        <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
+                                                            <app-a-icon name="launch" size="16px"></app-a-icon>
                                                         </div>
                                                     </a>
                                                 }
-
+ 
                                                 <!-- Lista de Súper Card (Asistente IA) -->
                                                 <div (click)="openShoppingList()" 
-                                                     class="group bg-emerald-500/5 dark:bg-emerald-500/10 p-5 rounded-[2rem] border border-emerald-500/10 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0">
+                                                     class="group bg-gradient-to-br from-emerald-500/[0.06] via-white/50 to-emerald-500/[0.02] dark:from-emerald-950/20 dark:to-emerald-950/5 p-5 rounded-[2.25rem] border border-emerald-500/30 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
+                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0 border border-emerald-500/10">
                                                         <app-a-icon name="shopping_cart"></app-a-icon>
                                                     </div>
                                                     <div class="flex-1 min-w-0">
-                                                        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600/40 mb-0.5">Asistente</p>
-                                                        <p class="text-sm font-bold serif truncate">Lista de Súper</p>
+                                                        <span class="inline-block text-[8px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-md mb-1.5">Asistente IA</span>
+                                                        <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Lista de Súper</p>
                                                     </div>
                                                     @if (loadingShoppingList()) {
                                                         <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                                                    } @else {
+                                                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 dark:bg-white/5 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shrink-0">
+                                                            <app-a-icon name="chevron_right" size="18px"></app-a-icon>
+                                                        </div>
                                                     }
                                                 </div>
                                             </div>
@@ -817,7 +761,7 @@
                                                              <!-- Alimentos Preferidos -->
                                                              @if (preferredFoods().length > 0) {
                                                                  <div class="space-y-1.5">
-                                                                     <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600/60 dark:text-emerald-400/50">Alimentos favoritos</p>
+                                                                     <p class="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alimentos favoritos</p>
                                                                      <div class="flex flex-wrap gap-1.5">
                                                                          @for (food of preferredFoods(); track food) {
                                                                              <span class="px-2.5 py-1 text-[10px] rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium border border-emerald-500/10"># {{ food }}</span>
@@ -831,7 +775,7 @@
                                                                  <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-white/5">
                                                                      @if (allergies().length > 0) {
                                                                          <div class="space-y-1">
-                                                                             <p class="text-[9px] font-black uppercase tracking-widest text-red-500/60 dark:text-red-400/50">Alergias Alimentarias</p>
+                                                                             <p class="text-[9px] font-black uppercase tracking-widest text-red-500 dark:text-red-400">Alergias Alimentarias</p>
                                                                              <div class="flex flex-wrap gap-1.5">
                                                                                  @for (allergy of allergies(); track allergy) {
                                                                                      <span class="px-2.5 py-1 text-[10px] rounded-full bg-red-500/5 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20">⚠️ {{ allergy }}</span>
@@ -841,7 +785,7 @@
                                                                      }
                                                                      @if (dislikedFoods().length > 0) {
                                                                          <div class="space-y-1">
-                                                                             <p class="text-[9px] font-black uppercase tracking-widest text-slate-500/60 dark:text-slate-400/50">Alimentos que no me agradan</p>
+                                                                             <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Alimentos que no me agradan</p>
                                                                              <div class="flex flex-wrap gap-1.5">
                                                                                  @for (food of dislikedFoods(); track food) {
                                                                                      <span class="px-2.5 py-1 text-[10px] rounded-full bg-slate-500/5 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-white/10">❌ {{ food }}</span>
@@ -851,6 +795,13 @@
                                                                      }
                                                                  </div>
                                                              }
+
+                                                             <!-- Nota informativa de modificación -->
+                                                             <div class="pt-3 border-t border-slate-100 dark:border-white/5 text-left">
+                                                                 <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
+                                                                     <span class="font-bold text-nutri-rose/70">Nota:</span> Esta selección de preferencias y exclusiones constituye la base para la estructuración personalizada de tu menú. Si deseas realizar alguna modificación en este listado, por favor comunícate directamente con tu nutrióloga Velvet De la Cruz.
+                                                                 </p>
+                                                             </div>
                                                          </div>
                                                      }
 
@@ -862,7 +813,7 @@
                                                                      <app-a-icon name="medication" size="18px"></app-a-icon>
                                                                      <h4 class="font-bold text-xs uppercase tracking-wider">Mi Suplementación</h4>
                                                                  </div>
-                                                                 <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                                 <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
                                                                      Tu nutriólogo ha personalizado tu ingesta diaria con los siguientes suplementos:
                                                                  </p>
                                                                  <div class="flex flex-wrap gap-1.5">
@@ -890,7 +841,7 @@
                                                         <app-a-icon name="water_drop" size="20px"></app-a-icon>
                                                     </div>
                                                     <h4 class="font-bold text-sm text-sky-700 dark:text-sky-400">Hidratación</h4>
-                                                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                    <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
                                                         Tomar suficiente agua ayuda a metabolizar mejor las grasas y mantener la saciedad. Evita bebidas azucaradas.
                                                     </p>
                                                 </div>
@@ -901,7 +852,7 @@
                                                         <app-a-icon name="restaurant" size="20px"></app-a-icon>
                                                     </div>
                                                     <h4 class="font-bold text-sm text-amber-700 dark:text-amber-400">Porciones</h4>
-                                                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                    <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
                                                         Mide tus porciones utilizando tazas medidoras o báscula de alimentos. El control de porciones es clave.
                                                     </p>
                                                 </div>
@@ -912,7 +863,7 @@
                                                         <app-a-icon name="shopping_basket" size="20px"></app-a-icon>
                                                     </div>
                                                     <h4 class="font-bold text-sm text-rose-700 dark:text-rose-400">Compras</h4>
-                                                    <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                                    <p class="text-xs text-nutri-text/70 dark:text-slate-300 leading-relaxed">
                                                         Utiliza el Asistente IA de Lista de Súper para adquirir únicamente lo necesario y evitar tentaciones.
                                                     </p>
                                                 </div>
@@ -935,16 +886,23 @@
                         </div>
                     }
 
+                    <!-- Pestaña: Menú -->
+                    @if (activeTab() === 'menu-ia') {
+                        <div [@tabAnimation] class="space-y-6">
+                            <app-o-portal-plan [patient]="patient()"></app-o-portal-plan>
+                        </div>
+                    }
+
                     <!-- Pestaña: Recursos (Guías y Documentos de Apoyo) -->
                     @if (activeTab() === 'resources') {
                         <div [@tabAnimation] class="space-y-8 animate-fade-in">
-                            <!-- Hero Section del Recurso -->
-                            <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-nutri-rose/10 via-nutri-rose-soft/20 to-orange-500/5 dark:from-nutri-rose/5 dark:to-transparent border border-nutri-rose/10 dark:border-white/5 p-8 shadow-sm">
-                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-nutri-rose/10 dark:bg-white/[0.01] rounded-full blur-2xl"></div>
+                            <!-- Hero Section del Recurso (Vibrant Hero Gradient Card) -->
+                            <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8">
+                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="max-w-2xl relative z-10 space-y-3">
-                                    <span class="text-[8px] font-black tracking-[0.3em] uppercase text-nutri-rose bg-nutri-rose/10 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
-                                    <h2 class="text-3xl sm:text-4xl font-medium serif text-nutri-text dark:text-white leading-tight">Documentos de Apoyo</h2>
-                                    <p class="text-xs sm:text-sm text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                                    <span class="text-[8px] font-black tracking-[0.3em] uppercase text-white/90 bg-white/15 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
+                                    <h2 class="text-3xl sm:text-4xl font-medium serif text-white leading-tight">Documentos de Apoyo</h2>
+                                    <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
                                         Accede a las guías generales, manuales de equivalentes y recomendaciones de marcas aprobadas para acompañar tu plan alimentario.
                                     </p>
                                 </div>
@@ -1023,8 +981,7 @@
                                             <div class="space-y-1.5">
                                                 <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Condimentos Libres</h3>
                                                 <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
-                                                    Lista de especias, aderezos y condimentos libres de calorías que puedes usar para darle sabor premium a todas tus comidas.
-                                                </p>
+                                                    Guía de especias y condimentos sin calorías, ideales para realzar el sabor de tus platillos de manera saludable.                                                </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
@@ -1062,510 +1019,93 @@
                                 }
                             }
 
-                            <!-- Gráfica de Tendencia SVG -->
-                            @if (progress().length >= 2) {
-                                <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-colors">
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                                        <div>
-                                            <h3 class="text-xl font-bold serif text-nutri-text dark:text-slate-200">
-                                                Tendencia de Progreso
-                                            </h3>
-                                            <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
-                                        </div>
-                                        
-                                        <!-- Selectores de Métricas -->
-                                        <div class="flex flex-wrap gap-2">
-                                            <!-- Peso Toggle -->
-                                            <button (click)="toggleMetric('weight'); $event.stopPropagation()"
-                                                    [class]="activeMetrics().weight 
-                                                             ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25 shadow-sm'
-                                                             : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" [class.animate-pulse]="activeMetrics().weight"></span>
-                                                Peso
-                                            </button>
-                                            
-                                            <!-- Grasa Toggle -->
-                                            <button (click)="toggleMetric('fat'); $event.stopPropagation()"
-                                                    [class]="activeMetrics().fat 
-                                                             ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 shadow-sm'
-                                                             : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500" [class.animate-pulse]="activeMetrics().fat"></span>
-                                                Grasa
-                                            </button>
-                                            
-                                            <!-- Músculo Toggle -->
-                                            <button (click)="toggleMetric('muscle'); $event.stopPropagation()"
-                                                    [class]="activeMetrics().muscle 
-                                                             ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose dark:text-nutri-rose-soft border-nutri-rose/25 shadow-sm'
-                                                             : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose" [class.animate-pulse]="activeMetrics().muscle"></span>
-                                                Músculo
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Barra de Filtros y Límites -->
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 mb-6 bg-nutri-bg/40 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 rounded-2xl animate-fade-in">
-                                        <!-- Selector de Meses -->
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Filtrar por Mes:</span>
-                                            <select [value]="filterMonth()" (change)="onMonthChange($event)"
-                                                    class="bg-white dark:bg-[#1a1a1a] border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-[9px] font-black text-nutri-text dark:text-slate-200 uppercase tracking-wider shadow-sm transition-all cursor-pointer outline-none">
-                                                <option value="all">Todos los meses</option>
-                                                @for (m of availableMonths(); track m.value) {
-                                                    <option [value]="m.value">{{ m.label }}</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        
-                                        <!-- Selector de Límite -->
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Registros Visibles:</span>
-                                            <div class="flex bg-nutri-bg dark:bg-white/5 p-1 rounded-xl border border-nutri-rose/5 dark:border-white/5">
-                                                <button (click)="limitRecords.set(5)" [class.bg-white]="limitRecords() === 5" [class.dark:bg-white/10]="limitRecords() === 5" [class.shadow-sm]="limitRecords() === 5" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">5</button>
-                                                <button (click)="limitRecords.set(8)" [class.bg-white]="limitRecords() === 8" [class.dark:bg-white/10]="limitRecords() === 8" [class.shadow-sm]="limitRecords() === 8" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">8</button>
-                                                <button (click)="limitRecords.set(10)" [class.bg-white]="limitRecords() === 10" [class.dark:bg-white/10]="limitRecords() === 10" [class.shadow-sm]="limitRecords() === 10" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">10</button>
-                                                <button (click)="limitRecords.set(13)" [class.bg-white]="limitRecords() === 13" [class.dark:bg-white/10]="limitRecords() === 13" [class.shadow-sm]="limitRecords() === 13" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">13</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    @if (filteredProgress().length === 0) {
-                                        <div class="h-48 flex flex-col items-center justify-center text-center opacity-30 gap-2 border border-dashed border-nutri-rose/10 rounded-2xl py-12 animate-fade-in">
-                                            <app-a-icon name="analytics" customClass="!text-3xl"></app-a-icon>
-                                            <p class="text-[10px] font-bold uppercase tracking-widest">Sin datos para este mes</p>
-                                        </div>
-                                    } @else {
-                                        <div class="w-full overflow-hidden mt-4">
-                                            <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
-                                                <defs>
-                                                    <!-- Gradiente Peso (Indigo) -->
-                                                    <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="0%" stop-color="#6366F1" stop-opacity="0.15" />
-                                                        <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
-                                                    </linearGradient>
-                                                    <!-- Gradiente Grasa (Amber) -->
-                                                    <linearGradient id="gradient-fat" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15" />
-                                                        <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
-                                                    </linearGradient>
-                                                    <!-- Gradiente Músculo (Rose) -->
-                                                    <linearGradient id="gradient-muscle" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="0%" stop-color="#D81B60" stop-opacity="0.15" />
-                                                        <stop offset="100%" stop-color="#D81B60" stop-opacity="0" />
-                                                    </linearGradient>
-                                                </defs>
-                                                
-                                                <!-- Area under path (Solo si hay exactamente 1 métrica seleccionada para evitar saturación) -->
-                                                @if (activeLines().length === 1) {
-                                                    <path [attr.d]="activeLines()[0].path + ' L 400 100 L 0 100 Z'" 
-                                                          [attr.fill]="'url(#gradient-' + activeLines()[0].key + ')'" 
-                                                          class="animate-fade-in" />
-                                                }
-                                                
-                                                <!-- Líneas Meta (Goal Target Lines) -->
-                                                @for (line of activeLines(); track line.key) {
-                                                    @if (line.targetY !== null) {
-                                                        <g class="opacity-70 transition-all duration-300">
-                                                            <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
-                                                                  [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
-                                                            <text x="402" [attr.y]="line.targetY + 3"
-                                                                  [attr.fill]="line.color"
-                                                                  class="text-[7.5px] font-black">
-                                                                META: {{ line.targetValue }}{{ line.unit }}
-                                                            </text>
-                                                        </g>
-                                                    }
-                                                }
-
-                                                <!-- Caminos Principales (Main Paths) -->
-                                                @for (line of activeLines(); track line.key) {
-                                                    <path [attr.d]="line.path" 
-                                                          fill="none" 
-                                                          [attr.stroke]="line.color" 
-                                                          stroke-width="3" 
-                                                          stroke-linecap="round" 
-                                                          stroke-linejoin="round"
-                                                          class="animate-draw-path transition-all duration-500" />
-                                                }
-
-                                                <!-- X-Axis Date Labels -->
-                                                @if (activeLines().length > 0) {
-                                                    @for (point of activeLines()[0].points; track point.date) {
-                                                        <text [attr.x]="point.x" [attr.y]="115" 
-                                                              text-anchor="middle" 
-                                                              class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
-                                                            {{ point.date | date:'dd MMM' }}
-                                                        </text>
-                                                    }
-                                                }
-
-                                                <!-- Puntos de Datos, Etiquetas y Tooltips -->
-                                                @for (line of activeLines(); track line.key) {
-                                                    @for (point of line.points; track point.date) {
-                                                        <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
-                                                            <!-- Etiqueta de valor -->
-                                                            @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
-                                                                <text [attr.x]="point.x" [attr.y]="point.y - 12" 
-                                                                      text-anchor="middle" 
-                                                                      class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                                                    {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
-                                                                </text>
-                                                            }
-                                                            
-                                                            <!-- Marcador de Punto -->
-                                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" 
-                                                                    [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
-                                                                    class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
-                                                                    [attr.stroke]="line.color"
-                                                                    [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
-                                                                    [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
-                                                            
-                                                            <!-- Línea Guía Vertical y Tooltip (hover) -->
-                                                            @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
-                                                                <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
-                                                                      stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
-
-                                                                <g class="transition-all duration-300 pointer-events-none z-50">
-                                                                    @if (point.y < 50) {
-                                                                        <!-- Puntero Triángulo (Abajo) -->
-                                                                        <polygon points="-5,8 0,3 5,8" 
-                                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y + 8) + ')'"
-                                                                                 [attr.fill]="line.color" />
-                                                                        
-                                                                        <!-- Cuerpo de la Tarjeta -->
-                                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
-                                                                              [attr.y]="point.y + 14" 
-                                                                              width="110" 
-                                                                              height="34" 
-                                                                              rx="8" 
-                                                                              fill="#0F172A"
-                                                                              [attr.stroke]="line.color"
-                                                                              stroke-width="1.5" />
-                                                                        
-                                                                        <!-- Fecha e Identificador -->
-                                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                                              [attr.y]="point.y + 25" 
-                                                                              text-anchor="middle" 
-                                                                              fill="#94A3B8" 
-                                                                              class="text-[7px] font-bold uppercase tracking-wider">
-                                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
-                                                                        </text>
-                                                                        
-                                                                        <!-- Valor e Indicador -->
-                                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                                              [attr.y]="point.y + 39" 
-                                                                              text-anchor="middle" 
-                                                                              fill="#ffffff" 
-                                                                              class="text-[9.5px] font-black">
-                                                                            {{ point.value }}{{ point.unit }}
-                                                                            @if (point.diff) {
-                                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
-                                                                                    ({{ point.diff }})
-                                                                                </tspan>
-                                                                            }
-                                                                        </text>
-                                                                    } @else {
-                                                                        <!-- Puntero Triángulo (Arriba) -->
-                                                                        <polygon points="-5,-8 0,-3 5,-8" 
-                                                                                 [attr.transform]="'translate(' + point.x + ',' + (point.y - 8) + ')'"
-                                                                                 [attr.fill]="line.color" />
-                                                                        
-                                                                        <!-- Cuerpo de la Tarjeta -->
-                                                                        <rect [attr.x]="point.x - 55 + point.tooltipShift" 
-                                                                              [attr.y]="point.y - 48" 
-                                                                              width="110" 
-                                                                              height="34" 
-                                                                              rx="8" 
-                                                                              fill="#0F172A"
-                                                                              [attr.stroke]="line.color"
-                                                                              stroke-width="1.5" />
-                                                                        
-                                                                        <!-- Fecha e Identificador -->
-                                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                                              [attr.y]="point.y - 37" 
-                                                                              text-anchor="middle" 
-                                                                              fill="#94A3B8" 
-                                                                              class="text-[7px] font-bold uppercase tracking-wider">
-                                                                            {{ point.date | date:'dd MMM' }} • {{ line.label }}
-                                                                        </text>
-                                                                        
-                                                                        <!-- Valor e Indicador -->
-                                                                        <text [attr.x]="point.x + point.tooltipShift" 
-                                                                              [attr.y]="point.y - 23" 
-                                                                              text-anchor="middle" 
-                                                                              fill="#ffffff" 
-                                                                              class="text-[9.5px] font-black">
-                                                                            {{ point.value }}{{ point.unit }}
-                                                                            @if (point.diff) {
-                                                                                <tspan [attr.fill]="point.isGood ? '#10B981' : '#EF4444'" class="text-[8px] font-black ml-1">
-                                                                                    ({{ point.diff }})
-                                                                                </tspan>
-                                                                            }
-                                                                        </text>
-                                                                    }
-                                                                </g>
-                                                            }
-
-                                                            <!-- Detección táctil y de cursor -->
-                                                            <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
-                                                                    fill="transparent" class="cursor-pointer"
-                                                                    (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
-                                                                    (mouseleave)="hoveredPoint.set(null)"
-                                                                    (click)="togglePoint($index, line.key); $event.stopPropagation()" />
-                                                        </g>
-                                                    }
-                                                }
-                                            </svg>
-                                        </div>
-                                    }
-                                </div>
-                            } @else {
-                                <div class="bg-white dark:bg-[#111111] p-8 rounded-[1.75rem] border border-nutri-rose/10 dark:border-white/5 text-center py-16">
-                                    <app-a-icon name="show_chart" customClass="text-4xl text-nutri-rose/30 mb-3"></app-a-icon>
-                                    <h4 class="text-base font-bold serif text-nutri-text dark:text-white">Gráfica de Tendencia</h4>
-                                    <p class="text-xs text-nutri-text/60 dark:text-slate-500 mt-1 max-w-xs mx-auto">Necesitas al menos 2 registros de consulta para generar la gráfica de progreso de tendencia.</p>
-                                </div>
-                            }
+                            <app-progress-chart-svg
+                                [progress]="progress()"
+                                [patient]="patient()">
+                            </app-progress-chart-svg>
                         </div>
                     }
 
                     <!-- Pestaña 4: Historial Clínico Completo -->
                     @if (activeTab() === 'history') {
-                        @defer (on idle) {
-                            <div [@tabAnimation]>
-                                <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
-                            </div>
-                        } @placeholder {
-                            <div class="h-64 animate-pulse bg-slate-100 dark:bg-white/5 rounded-3xl border border-nutri-rose/10 flex items-center justify-center">
-                                <p class="text-xs text-nutri-text/40 dark:text-slate-500 font-medium">Cargando registros históricos...</p>
-                            </div>
-                        }
+                        <div [@tabAnimation]>
+                            <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
+                        </div>
                     }
                 }
             </main>
         </div>
 
         <!-- Barra de Navegación Inferior (Bottom Navigation Bar - Solo Móvil) -->
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pt-2.5 px-4 shadow-2xl flex justify-around items-center transition-all duration-300"
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pt-2.5 px-1 sm:px-4 shadow-2xl flex justify-around items-center transition-all duration-300"
              style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">
             <!-- Mi Plan -->
             <button (click)="setActiveTab('plan')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'plan'"
                     [class.text-slate-400]="activeTab() !== 'plan'"
                     [class.dark:text-slate-500]="activeTab() !== 'plan'">
                 <app-a-icon name="restaurant_menu" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Plan</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Plan</span>
+            </button>
+
+            <!-- Menú -->
+            <button (click)="setActiveTab('menu-ia')"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'menu-ia'"
+                    [class.text-slate-400]="activeTab() !== 'menu-ia'"
+                    [class.dark:text-slate-500]="activeTab() !== 'menu-ia'">
+                <app-a-icon name="auto_awesome" size="20px"></app-a-icon>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Menú</span>
             </button>
 
             <!-- Inicio -->
             <button (click)="setActiveTab('dashboard')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'dashboard'"
                     [class.text-slate-400]="activeTab() !== 'dashboard'"
                     [class.dark:text-slate-500]="activeTab() !== 'dashboard'">
                 <app-a-icon name="dashboard" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Progreso</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Progreso</span>
             </button>
 
             <!-- Recursos -->
             <button (click)="setActiveTab('resources')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'resources'"
                     [class.text-slate-400]="activeTab() !== 'resources'"
                     [class.dark:text-slate-500]="activeTab() !== 'resources'">
                 <app-a-icon name="folder_open" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Recursos</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Recursos</span>
             </button>
 
             <!-- Análisis -->
             <button (click)="setActiveTab('analysis')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'analysis'"
                     [class.text-slate-400]="activeTab() !== 'analysis'"
                     [class.dark:text-slate-500]="activeTab() !== 'analysis'">
                 <app-a-icon name="insights" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Análisis</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Análisis</span>
             </button>
 
             <!-- Historial -->
             <button (click)="setActiveTab('history')"
-                    class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'history'"
                     [class.text-slate-400]="activeTab() !== 'history'"
                     [class.dark:text-slate-500]="activeTab() !== 'history'">
                 <app-a-icon name="history" size="20px"></app-a-icon>
-                <span class="text-[9px] font-bold uppercase tracking-wider">Registros</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Registros</span>
             </button>
         </nav>
 
         <!-- Botón de Acción Flotante (FAB) de Hábitos -->
-        <div class="fixed right-6 z-40 flex items-center justify-center select-none bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-8 md:right-8">
-            <button (click)="showHabitsFloatingModal.set(!showHabitsFloatingModal()); $event.stopPropagation()"
-                    class="relative w-16 h-16 rounded-full bg-white dark:bg-[#151515] border-2 border-nutri-rose/20 dark:border-white/10 shadow-[0_8px_30px_rgba(216,27,96,0.3)] dark:shadow-[0_8px_30px_rgba(216,27,96,0.15)] flex items-center justify-center cursor-pointer transition-all hover:scale-110 hover:shadow-[0_8px_30px_rgba(216,27,96,0.5)] active:scale-95 hover:opacity-100 group z-50"
-                    [class.opacity-70]="!showHabitsFloatingModal()"
-                    [class.opacity-100]="showHabitsFloatingModal()">
-                <!-- Circular Progress Ring SVG -->
-                <svg class="absolute inset-0 w-full h-full transform -rotate-90">
-                    <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="text-slate-100 dark:text-white/5" />
-                    <circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2.5" fill="transparent" class="text-nutri-rose transition-all duration-500"
-                            [attr.stroke-dasharray]="169.6"
-                            [attr.stroke-dashoffset]="169.6 - (169.6 * habitsPercentage() / 100)" />
-                </svg>
-                <!-- Icono checklist -->
-                <div class="relative z-10 text-nutri-rose dark:text-nutri-rose-soft group-hover:animate-pulse">
-                    <app-a-icon name="playlist_add_check" size="26px"></app-a-icon>
-                </div>
-                <!-- Badge de avance -->
-                <span class="absolute -top-1 -right-1 bg-nutri-rose text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce">
-                    {{ habitsPercentage() }}%
-                </span>
-            </button>
-
-            <!-- Tarjeta Flotante Contextual -->
-            @if (showHabitsFloatingModal()) {
-                <div (click)="$event.stopPropagation()"
-                     class="absolute bottom-20 right-0 w-80 bg-white/95 dark:bg-[#111111]/95 backdrop-blur-xl rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 shadow-2xl p-5 space-y-5 animate-fade-up pointer-events-auto transition-colors">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="font-bold text-sm serif text-nutri-text dark:text-slate-200">Hábitos de Hoy</h3>
-                            <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Mantén tu constancia diaria</p>
-                        </div>
-                        <button (click)="showHabitsFloatingModal.set(false)" class="w-7 h-7 rounded-full hover:bg-nutri-rose/5 dark:hover:bg-white/5 flex items-center justify-center text-nutri-text/40 dark:text-slate-500 transition-colors">
-                            <app-a-icon name="close" size="16px"></app-a-icon>
-                        </button>
-                    </div>
-
-                    <!-- Progreso -->
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-center text-[10px]">
-                            <span class="font-bold text-nutri-rose uppercase tracking-wider">Avance de hoy</span>
-                            <span class="font-black text-nutri-text dark:text-slate-300">{{ habitsPercentage() }}%</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-nutri-rose to-pink-500 rounded-full transition-all duration-500 ease-out"
-                                 [style.width.%]="habitsPercentage()"></div>
-                        </div>
-                    </div>
-
-                    <!-- Checklist -->
-                    <div class="space-y-2.5">
-                        <!-- Agua -->
-                        <div (click)="toggleHabit('water')"
-                             [class.bg-sky-500/5]="dailyHabits().water"
-                             [class.border-sky-500/20]="dailyHabits().water"
-                             class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
-                            <div [class.bg-sky-500]="dailyHabits().water"
-                                 [class.text-white]="dailyHabits().water"
-                                 [class.bg-slate-100]="!dailyHabits().water"
-                                 [class.dark:bg-white/5]="!dailyHabits().water"
-                                 [class.text-slate-400]="!dailyHabits().water"
-                                 class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
-                                <app-a-icon name="water_drop" size="16px"></app-a-icon>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Tomar Agua</p>
-                                <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Meta: 2 Litros diarios</p>
-                            </div>
-                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
-                                 [class.border-sky-500]="dailyHabits().water"
-                                 [class.bg-sky-500]="dailyHabits().water"
-                                 [class.border-slate-300]="!dailyHabits().water"
-                                 [class.dark:border-white/20]="!dailyHabits().water">
-                                @if (dailyHabits().water) {
-                                    <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Ejercicio -->
-                        <div (click)="toggleHabit('activity')"
-                             [class.bg-indigo-500/5]="dailyHabits().activity"
-                             [class.border-indigo-500/20]="dailyHabits().activity"
-                             class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
-                            <div [class.bg-indigo-500]="dailyHabits().activity"
-                                 [class.text-white]="dailyHabits().activity"
-                                 [class.bg-slate-100]="!dailyHabits().activity"
-                                 [class.dark:bg-white/5]="!dailyHabits().activity"
-                                 [class.text-slate-400]="!dailyHabits().activity"
-                                 class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
-                                <app-a-icon name="fitness_center" size="16px"></app-a-icon>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Actividad Física</p>
-                                <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Mínimo 30 minutos</p>
-                            </div>
-                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
-                                 [class.border-indigo-500]="dailyHabits().activity"
-                                 [class.bg-indigo-500]="dailyHabits().activity"
-                                 [class.border-slate-300]="!dailyHabits().activity"
-                                 [class.dark:border-white/20]="!dailyHabits().activity">
-                                @if (dailyHabits().activity) {
-                                    <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Dieta -->
-                        <div (click)="toggleHabit('diet')"
-                             [class.bg-nutri-rose/5]="dailyHabits().diet"
-                             [class.border-nutri-rose/20]="dailyHabits().diet"
-                             class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
-                            <div [class.bg-nutri-rose]="dailyHabits().diet"
-                                 [class.text-white]="dailyHabits().diet"
-                                 [class.bg-slate-100]="!dailyHabits().diet"
-                                 [class.dark:bg-white/5]="!dailyHabits().diet"
-                                 [class.text-slate-400]="!dailyHabits().diet"
-                                 class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
-                                <app-a-icon name="restaurant" size="16px"></app-a-icon>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Seguir el Menú</p>
-                                <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Apegarse al plan del día</p>
-                            </div>
-                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
-                                 [class.border-nutri-rose]="dailyHabits().diet"
-                                 [class.bg-nutri-rose]="dailyHabits().diet"
-                                 [class.border-slate-300]="!dailyHabits().diet"
-                                 [class.dark:border-white/20]="!dailyHabits().diet">
-                                @if (dailyHabits().diet) {
-                                    <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Descanso -->
-                        <div (click)="toggleHabit('sleep')"
-                             [class.bg-purple-500/5]="dailyHabits().sleep"
-                             [class.border-purple-500/20]="dailyHabits().sleep"
-                             class="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group">
-                            <div [class.bg-purple-500]="dailyHabits().sleep"
-                                 [class.text-white]="dailyHabits().sleep"
-                                 [class.bg-slate-100]="!dailyHabits().sleep"
-                                 [class.dark:bg-white/5]="!dailyHabits().sleep"
-                                 [class.text-slate-400]="!dailyHabits().sleep"
-                                 class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0">
-                                <app-a-icon name="bedtime" size="16px"></app-a-icon>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-bold text-nutri-text dark:text-slate-300">Buen Descanso</p>
-                                <p class="text-[9px] text-nutri-text/40 dark:text-slate-500 mt-0.5">Dormir de 7 a 8 horas</p>
-                            </div>
-                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0"
-                                 [class.border-purple-500]="dailyHabits().sleep"
-                                 [class.bg-purple-500]="dailyHabits().sleep"
-                                 [class.border-slate-300]="!dailyHabits().sleep"
-                                 [class.dark:border-white/20]="!dailyHabits().sleep">
-                                @if (dailyHabits().sleep) {
-                                    <app-a-icon name="check" size="12px" customClass="text-white"></app-a-icon>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+        <app-habits-tracker
+            [dailyHabits]="dailyHabits()"
+            [habitsPercentage]="habitsPercentage()"
+            (toggle)="toggleHabit($event)">
+        </app-habits-tracker>
     </div>
 } @else if (loading()) {
     <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] flex flex-col items-center justify-center gap-4 text-nutri-rose transition-colors">
@@ -1586,176 +1126,17 @@
     </div>
 }
 
-<!-- Modal de Lista de Compras (Asistente IA Compartido en DOM) -->
-@if (showShoppingModal()) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#151515] w-full max-w-lg max-h-[85vh] rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
-            <!-- Header -->
-            <div class="p-5 sm:p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
-                        <app-a-icon name="shopping_cart"></app-a-icon>
-                    </div>
-                    <div>
-                        <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-white leading-none">Lista de Súper</h3>
-                        <p class="text-[9px] sm:text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-1">Nutrilev</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 sm:gap-3">
-                    @if (!loadingShoppingList() && shoppingList().length > 0 && !hasShoppingError()) {
-                        <button (click)="toggleAllCategories()" 
-                                class="text-[10px] sm:text-xs font-bold text-nutri-rose hover:text-nutri-rose/80 dark:text-rose-400 dark:hover:text-rose-300 transition-colors uppercase tracking-widest bg-nutri-rose/5 dark:bg-white/5 px-2.5 py-1.5 rounded-xl border border-nutri-rose/10 dark:border-white/5 flex items-center gap-1">
-                            <app-a-icon [name]="isAllCategoriesCollapsed() ? 'unfold_more' : 'unfold_less'" size="16px"></app-a-icon>
-                            <span>{{ isAllCategoriesCollapsed() ? 'Expandir todo' : 'Colapsar todo' }}</span>
-                        </button>
-                    }
-                    <button (click)="closeShoppingModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose shrink-0">
-                        <app-a-icon name="close"></app-a-icon>
-                    </button>
-                </div>
-            </div>
-      
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6 sm:space-y-10 custom-scrollbar">
-                @if (loadingShoppingList()) {
-                    <div class="flex flex-col items-center justify-center py-12 px-4 space-y-6">
-                        <!-- Progress Circle / Spinner -->
-                        <div class="relative w-16 h-16">
-                            <!-- Circular background spinner -->
-                            <div class="absolute inset-0 border-4 border-nutri-rose/10 rounded-full"></div>
-                            <!-- Filling border spinner -->
-                            <div class="absolute inset-0 border-4 border-nutri-rose border-t-transparent rounded-full animate-spin"></div>
-                        </div>
-
-                        <!-- Progress Bar Container -->
-                        <div class="w-full max-w-xs space-y-3">
-                            <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-nutri-text/40 dark:text-slate-500 min-h-[14px]">
-                                <span>{{ shoppingListLoadingMessage() }}</span>
-                                <span class="text-nutri-rose">{{ shoppingListProgress() }}%</span>
-                            </div>
-                            <div class="w-full h-2 bg-nutri-rose/5 dark:bg-white/5 rounded-full overflow-hidden relative">
-                                <div class="h-full bg-gradient-to-r from-nutri-rose to-purple-600 rounded-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(216,27,96,0.3)]"
-                                     [style.width.%]="shoppingListProgress()"></div>
-                            </div>
-                        </div>
-                    </div>
-                } @else {
-                    @for (cat of shoppingList(); track cat.category) {
-                        <div class="space-y-3 bg-white/20 dark:bg-white/1 border border-nutri-rose/5 dark:border-white/5 p-4 rounded-3xl transition-all duration-300">
-                            <!-- Accordion Header Button -->
-                            <button (click)="toggleCategory(cat.category)"
-                                    class="w-full flex items-center justify-between py-1 group transition-all text-left outline-none">
-                                <div class="flex items-center gap-3">
-                                    <div class="shopping-cat-header-icon"
-                                         [class.completed]="isCategoryCompleted(cat)">
-                                        @if (isCategoryCompleted(cat)) {
-                                            <app-a-icon name="check_circle" size="small"></app-a-icon>
-                                        } @else {
-                                            <span class="text-base select-none leading-none">{{ getCategoryEmoji(cat.category) }}</span>
-                                        }
-                                    </div>
-                                    <div>
-                                        <h4 class="font-black text-xs sm:text-sm tracking-wide serif transition-all duration-300"
-                                            [class.text-nutri-text]="!isCategoryCompleted(cat)"
-                                            [class.dark:text-white]="!isCategoryCompleted(cat)"
-                                            [class.text-slate-400]="isCategoryCompleted(cat)"
-                                            [class.dark:text-slate-500]="isCategoryCompleted(cat)"
-                                            [class.line-through]="isCategoryCompleted(cat)"
-                                            [class.decoration-slate-300]="isCategoryCompleted(cat)"
-                                            [class.dark:decoration-slate-700]="isCategoryCompleted(cat)">
-                                            {{ getCategoryTitle(cat.category) }}
-                                        </h4>
-                                        <div class="flex items-center gap-1.5 mt-0.5 select-none">
-                                            <span class="shopping-cat-progress-badge"
-                                                  [class.completed]="isCategoryCompleted(cat)">
-                                                {{ getCategoryProgress(cat) }}
-                                            </span>
-                                            @if (isCategoryCompleted(cat)) {
-                                                <span class="text-[8px] text-emerald-500 dark:text-emerald-400 font-bold uppercase tracking-wider animate-pulse">¡Completado!</span>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w-7 h-7 rounded-lg bg-nutri-bg/60 dark:bg-white/5 flex items-center justify-center text-nutri-rose/60 group-hover:text-nutri-rose group-hover:bg-nutri-rose/5 transition-all">
-                                    <app-a-icon [name]="collapsedCategories()[cat.category] ? 'keyboard_arrow_down' : 'keyboard_arrow_up'"
-                                                size="small"
-                                                class="transition-transform duration-300">
-                                    </app-a-icon>
-                                </div>
-                            </button>
-                            
-                            <!-- Accordion Content -->
-                            @if (!collapsedCategories()[cat.category]) {
-                                <div class="grid grid-cols-1 gap-2.5 animate-slide-down">
-                                    @for (item of cat.items; track item.name) {
-                                        <div (click)="toggleShoppingItem(cat.category, item)"
-                                             class="shopping-item-card flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl cursor-pointer transition-all duration-500 border"
-                                             [class.checked]="item.checked">
-                                            
-                                            <!-- Custom Checkbox -->
-                                            <div class="w-5 h-5 rounded-lg border flex items-center justify-center transition-all duration-300 shrink-0 mt-0.5"
-                                                 [class.bg-nutri-rose]="item.checked"
-                                                 [class.border-nutri-rose]="item.checked"
-                                                 [class.text-white]="item.checked"
-                                                 [class.border-nutri-rose/10]="!item.checked"
-                                                 [class.dark:border-white/10]="!item.checked"
-                                                 [class.group-hover:border-nutri-rose/40]="!item.checked">
-                                                @if (item.checked) {
-                                                    <app-a-icon name="check" size="tiny"></app-a-icon>
-                                                }
-                                            </div>
-                
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 mb-1.5">
-                                                    <span class="item-name serif">
-                                                        {{ item.icon }} {{ item.name }}
-                                                    </span>
-                                                    <!-- Meta Column: Amount -->
-                                                    <div class="flex flex-row sm:flex-col items-center sm:items-end shrink-0 gap-1 w-max">
-                                                        @if (item.amount) {
-                                                            <span class="item-amount">
-                                                                {{ item.amount }}
-                                                            </span>
-                                                        }
-                                                    </div>
-                                                </div>
-                                                @if (item.tip) {
-                                                    <p class="item-tip">
-                                                        {{ item.tip }}
-                                                    </p>
-                                                }
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
-          
-                    @if (shoppingList().length === 0) {
-                        <div class="flex flex-col items-center justify-center py-16 text-center opacity-40">
-                            <app-a-icon name="inventory_2" class="mb-4" size="large"></app-a-icon>
-                            <h4 class="font-bold serif">Sin ingredientes detectados</h4>
-                            <p class="text-[10px] uppercase font-black tracking-widest mt-2">Revisa el formato de tu menú</p>
-                        </div>
-                    }
-                }
-            </div>
-        
-            <!-- Footer -->
-            <div class="p-5 sm:p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5 flex gap-3">
-                @if (hasShoppingError()) {
-                    <app-a-button (onClick)="retryShoppingList()" label="Reintentar Generar" variant="primary" size="lg"
-                                customClass="!rounded-2xl flex-1 !shadow-xl !shadow-nutri-rose/20 active:scale-95 transition-all">
-                    </app-a-button>
-                }
-                <app-a-button (onClick)="closeShoppingModal()" [label]="hasShoppingError() ? 'Cerrar' : '¡Listo, a comprar!'" [variant]="hasShoppingError() ? 'outline' : 'primary'" size="lg"
-                            customClass="!rounded-2xl flex-1 active:scale-95 transition-all">
-                </app-a-button>
-            </div>
-        </div>
-    </div>
-}
+<app-shopping-list-modal
+    [showShoppingModal]="showShoppingModal()"
+    [loadingShoppingList]="loadingShoppingList()"
+    [shoppingList]="shoppingList()"
+    [shoppingListLoadingMessage]="shoppingListLoadingMessage()"
+    [shoppingListProgress]="shoppingListProgress()"
+    [patient]="patient()"
+    (close)="closeShoppingModal()"
+    (retry)="retryShoppingList()"
+    (toggleItem)="toggleShoppingItem($event.category, $event.item)">
+</app-shopping-list-modal>
 
 <!-- Modal de Confirmación de Cancelación de Cita (Custom Premium) -->
 @if (showCancelConfirmModal()) {

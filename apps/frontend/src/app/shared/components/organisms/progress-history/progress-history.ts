@@ -26,15 +26,30 @@ import { PortalModule } from '@angular/cdk/portal';
   templateUrl: './progress-history.html'
 })
 export class ProgressHistoryComponent implements OnInit, OnDestroy {
-  private themeService = inject(ThemeService);
+  public themeService = inject(ThemeService);
   private patientService = inject(PatientService);
   private elementRef = inject(ElementRef);
+
+  getHeroGradientClass(): string {
+    const activeTheme = this.themeService.theme();
+    switch (activeTheme) {
+      case 'dark':
+        return 'bg-gradient-to-tr from-nutri-rose via-[#b80f4e] to-[#590b32] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+      case 'purple':
+        return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
+      case 'vibrant':
+        return 'bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-400 shadow-lg shadow-emerald-900/20 border-0';
+      case 'light':
+      default:
+        return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/10 border-0';
+    }
+  }
 
   history = input.required<any[]>();
   patient = input<any>(null);
   showActions = input<boolean>(false);
 
-  viewMode = signal<'cards' | 'table'>('table');
+  viewMode = signal<'cards' | 'table'>('cards');
   selectedRecordForDetail = signal<any | null>(null);
   copyingRecordId = signal<string | null>(null);
   toastService = inject(ToastService);

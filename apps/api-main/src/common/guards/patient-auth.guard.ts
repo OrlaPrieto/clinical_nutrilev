@@ -58,9 +58,9 @@ export class PatientAuthGuard implements CanActivate {
       return true;
     }
 
-    // Special case for shopping-list which might not have the email in the request if it only has menu_url
-    // For now, we allow any authenticated user to call shopping-list (risk is low since menu_url is a long signed URL)
-    if (request.path.includes('shopping-list')) {
+    // Special case for shopping-list and parsed-menu which might not have the email in the request if they only have menu_url
+    // For now, we allow any authenticated user to call these endpoints (risk is low since menu_url is a long signed URL)
+    if (request.path.includes('shopping-list') || request.path.includes('parsed-menu')) {
       return true;
     }
 

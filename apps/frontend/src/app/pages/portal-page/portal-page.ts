@@ -13,6 +13,7 @@ import { PushNotificationService } from '../../shared/services/push-notification
 import { AppointmentService, Appointment } from '../../services/appointment.service';
 import { AnalyticsService } from '../../shared/services/analytics.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 import { NutriImagePipe } from '../../shared/pipes/nutri-image.pipe';
 import { MilestoneBadgeComponent } from '../../shared/components/molecules/milestone-badge/milestone-badge';
@@ -20,6 +21,12 @@ import { environment } from '../../../environments/environment';
 import { ProgressAnalyticCardComponent } from '../../shared/components/organisms/progress-analytic-card/progress-analytic-card';
 import { ProgressHistoryComponent } from '../../shared/components/organisms/progress-history/progress-history';
 import confetti from 'canvas-confetti';
+
+import { AppointmentCardComponent } from './components/appointment-card/appointment-card';
+import { ProgressChartSvgComponent } from './components/progress-chart-svg/progress-chart-svg';
+import { HabitsTrackerComponent } from './components/habits-tracker/habits-tracker';
+import { ShoppingListModalComponent } from './components/shopping-list-modal/shopping-list-modal';
+import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
 
 @Component({
   selector: 'app-portal-page',
@@ -33,7 +40,12 @@ import confetti from 'canvas-confetti';
     NgOptimizedImage, 
     DatePipe, 
     ProgressAnalyticCardComponent, 
-    ProgressHistoryComponent
+    ProgressHistoryComponent,
+    AppointmentCardComponent,
+    ProgressChartSvgComponent,
+    HabitsTrackerComponent,
+    ShoppingListModalComponent,
+    PortalPlanOrganism
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -52,9 +64,11 @@ export class PortalPage implements OnInit, OnDestroy {
   private lastFocusTime = Date.now();
   private focusListener?: () => void;
   private visibilityListener?: () => void;
+  private shoppingListInterval: any = null;
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
+  public accessibilityService = inject(AccessibilityService);
   private storageService = inject(StorageService);
   private pushService = inject(PushNotificationService);
   private appointmentService = inject(AppointmentService);
@@ -67,20 +81,11 @@ export class PortalPage implements OnInit, OnDestroy {
   loadingAppointmentAction = signal<boolean>(false);
   progress = signal<PatientProgress[]>([]);
   loading = signal<boolean>(true);
-  hoveredPoint = signal<{ index: number; key: 'weight' | 'fat' | 'muscle' } | null>(null);
   showThemeMenu = signal<boolean>(false);
-  showHabitsFloatingModal = signal<boolean>(false);
+  showAccessibilityMenu = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
-  activeMetrics = signal<{ weight: boolean; fat: boolean; muscle: boolean }>({
-    weight: false,
-    fat: false,
-    muscle: false
-  });
-  activeTab = signal<'dashboard' | 'plan' | 'analysis' | 'history' | 'resources'>('plan');
-
-  limitRecords = signal<number>(5);
-  filterMonth = signal<string>('all');
+  activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
 
   dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
@@ -100,10 +105,42 @@ export class PortalPage implements OnInit, OnDestroy {
     return Math.round((count / 4) * 100);
   });
 
+  getHeroGradientClass(): string {
+    const activeTheme = this.themeService.theme();
+    switch (activeTheme) {
+      case 'dark':
+        return 'bg-gradient-to-tr from-nutri-rose via-[#b80f4e] to-[#590b32] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+      case 'purple':
+        return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
+      case 'vibrant':
+        return 'bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-400 shadow-lg shadow-emerald-900/20 border-0';
+      case 'light':
+      default:
+        return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/10 border-0';
+    }
+  }
+
+  getHeroTextGradientClass(): string {
+    const activeTheme = this.themeService.theme();
+    switch (activeTheme) {
+      case 'dark':
+        return 'from-nutri-rose to-[#ff8a65]';
+      case 'purple':
+        return 'from-blue-400 to-sky-400';
+      case 'vibrant':
+        return 'from-emerald-500 to-teal-400';
+      case 'light':
+      default:
+        return 'from-nutri-rose to-[#ff7043]';
+    }
+  }
+
+
+
   @HostListener('document:click')
   onDocumentClick() {
     this.showThemeMenu.set(false);
-    this.showHabitsFloatingModal.set(false);
+    this.showAccessibilityMenu.set(false);
   }
 
   private swipeStartX = 0;
@@ -148,7 +185,7 @@ export class PortalPage implements OnInit, OnDestroy {
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
 
     if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
-      const tabs: ('dashboard' | 'plan' | 'analysis' | 'history' | 'resources')[] = ['plan', 'dashboard', 'resources', 'analysis', 'history'];
+      const tabs: ('dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources')[] = ['plan', 'menu-ia', 'dashboard', 'resources', 'analysis', 'history'];
       const currentIdx = tabs.indexOf(this.activeTab());
       
       if (diffX > 0 && currentIdx > 0) {
@@ -188,36 +225,12 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'dashboard' | 'plan' | 'analysis' | 'history' | 'resources') {
+  setActiveTab(tab: 'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  togglePoint(index: number, key: 'weight' | 'fat' | 'muscle') {
-    const cur = this.hoveredPoint();
-    if (cur && cur.index === index && cur.key === key) {
-      this.hoveredPoint.set(null);
-    } else {
-      this.hoveredPoint.set({ index, key });
-    }
-  }
 
-  toggleMetric(key: 'weight' | 'fat' | 'muscle') {
-    const current = this.activeMetrics();
-    const activeCount = (current.weight ? 1 : 0) + (current.fat ? 1 : 0) + (current.muscle ? 1 : 0);
-    if (current[key] && activeCount === 1) {
-      return;
-    }
-    this.activeMetrics.set({
-      ...current,
-      [key]: !current[key]
-    });
-  }
-
-  onMonthChange(event: Event) {
-    const target = event.target as HTMLSelectElement;
-    this.filterMonth.set(target.value);
-  }
 
   
   shoppingList = signal<ShoppingCategory[]>([]);
@@ -225,18 +238,8 @@ export class PortalPage implements OnInit, OnDestroy {
   showShoppingModal = signal<boolean>(false);
   shoppingListProgress = signal<number>(0);
   shoppingListLoadingMessage = signal<string>('Detectando ingredientes...');
-  collapsedCategories = signal<Record<string, boolean>>({});
+  hasShoppingError = computed(() => this.shoppingList().some(cat => cat.category.includes('ERROR')));
 
-  isAllCategoriesCollapsed = computed(() => {
-    const list = this.shoppingList();
-    if (list.length === 0) return true;
-    const collapsedMap = this.collapsedCategories();
-    return list.every(cat => collapsedMap[cat.category] === true);
-  });
-
-  hasShoppingError = computed(() => {
-    return this.shoppingList().some(cat => cat.category.includes('ERROR'));
-  });
 
   getActiveMenu = computed(() => {
     const p = this.patient();
@@ -257,6 +260,20 @@ export class PortalPage implements OnInit, OnDestroy {
   toNumber(val: any): number {
     return Number(val);
   }
+
+  greetingPrefix = computed(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) return 'Buenos días';
+    if (hours < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  });
+
+  greetingIcon = computed(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) return 'wb_sunny';
+    if (hours < 19) return 'light_mode';
+    return 'nights_stay';
+  });
 
   welcomeMessage = computed(() => {
     const hours = new Date().getHours();
@@ -313,46 +330,7 @@ export class PortalPage implements OnInit, OnDestroy {
     return sups.split(',').map(s => s.trim()).filter(Boolean);
   });
 
-  weightChartData = computed(() => {
-    const p = this.progress();
-    if (p.length === 0) return [];
-    return [...p].reverse().map(entry => ({
-      value: Number(entry.weight),
-      label: entry.date ? new Date(entry.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }) : ''
-    }));
-  });
 
-  availableMonths = computed(() => {
-    const list = this.progress();
-    const months = new Set<string>();
-    list.forEach(entry => {
-      if (entry.date) {
-        const yyyymm = entry.date.substring(0, 7);
-        months.add(yyyymm);
-      }
-    });
-    return Array.from(months).sort().reverse().map(yyyymm => {
-      const [year, month] = yyyymm.split('-');
-      const date = new Date(Number(year), Number(month) - 1, 1);
-      const name = date.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
-      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
-      return {
-        value: yyyymm,
-        label: capitalized
-      };
-    });
-  });
-
-  filteredProgress = computed(() => {
-    let list = this.progress();
-    const selectedMonth = this.filterMonth();
-    if (selectedMonth !== 'all') {
-      list = list.filter(entry => entry.date && entry.date.startsWith(selectedMonth));
-    }
-    const limit = this.limitRecords();
-    list = list.slice(0, limit);
-    return [...list].reverse();
-  });
 
 
   isMenuValid = computed(() => {
@@ -636,131 +614,7 @@ export class PortalPage implements OnInit, OnDestroy {
     return Math.max(0, Math.min(100, Math.round(progress)));
   });
 
-  activeLines = computed(() => {
-    const prog = this.filteredProgress();
-    const patient = this.patient();
-    const active = this.activeMetrics();
-    if (prog.length < 1 || !patient) return [];
 
-    const lines: any[] = [];
-
-    // Helper to scale values relative to min/max of the specific metric
-    const getScale = (values: number[], target: number | null) => {
-      const allValues = target !== null && target > 0 ? [...values, target] : values;
-      const minValue = Math.min(...allValues) - 1;
-      const maxValue = Math.max(...allValues) + 1;
-      const range = maxValue - minValue || 1;
-      return { minValue, maxValue, range };
-    };
-
-    const width = 400;
-    const height = 100;
-    const stepX = prog.length > 1 ? width / (prog.length - 1) : width / 2;
-
-    const createLineData = (
-      key: 'weight' | 'fat' | 'muscle',
-      label: string,
-      unit: string,
-      color: string,
-      targetColor: string,
-      values: number[],
-      target: number | null,
-      isGoodFn: (diff: number) => boolean
-    ) => {
-      const { minValue, range } = getScale(values, target);
-      
-      const points = values.map((val, i) => {
-        const diff = i > 0 ? val - values[i - 1] : 0;
-        const isGood = i > 0 ? isGoodFn(diff) : true;
-        const diffText = i > 0 
-          ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}${unit}`
-          : '';
-        const tooltipShift = i === 0 ? 35 : (i === prog.length - 1 ? -35 : 0);
-        const y = height - ((val - minValue) / range * height);
-        return {
-          x: i * stepX,
-          y,
-          value: val,
-          date: prog[i].date,
-          unit,
-          diff: diffText,
-          isGood,
-          tooltipShift
-        };
-      });
-
-      const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-      const targetY = target !== null && target > 0 ? height - ((target - minValue) / range * height) : null;
-
-      return {
-        key,
-        label,
-        unit,
-        color,
-        targetColor,
-        points,
-        path,
-        targetY,
-        targetValue: target
-      };
-    };
-
-    // 1. Weight Line
-    if (active.weight) {
-      const values = prog.map(p => Number(p.weight || 0));
-      const target = this.currentGoal() === 'bajar_peso' ? Number(patient.peso_meta || 0) : null;
-      lines.push(
-        createLineData(
-          'weight',
-          'Peso',
-          'kg',
-          '#6366F1', // Indigo
-          '#818CF8', // Indigo light
-          values,
-          target,
-          (diff) => diff <= 0 // Bajar peso is good
-        )
-      );
-    }
-
-    // 2. Fat Line
-    if (active.fat) {
-      const values = prog.map(p => Number(p.body_fat || 0));
-      const target = this.currentGoal() === 'bajar_grasa' ? Number(patient.grasa_meta || 0) : null;
-      lines.push(
-        createLineData(
-          'fat',
-          'Grasa',
-          '%',
-          '#F59E0B', // Amber
-          '#FBBF24', // Amber light
-          values,
-          target,
-          (diff) => diff <= 0 // Bajar grasa is good
-        )
-      );
-    }
-
-    // 3. Muscle Line
-    if (active.muscle) {
-      const values = prog.map(p => Number(p.muscle_mass || 0));
-      const target = this.currentGoal() === 'subir_musculo' ? Number(patient.musculo_meta || 0) : null;
-      lines.push(
-        createLineData(
-          'muscle',
-          'M. Esquelético',
-          'kg',
-          '#D81B60', // Rose
-          '#E91E63', // Rose light
-          values,
-          target,
-          (diff) => diff >= 0 // Subir musculo is good
-        )
-      );
-    }
-
-    return lines;
-  });
 
   milestones = computed(() => {
     const p = this.patient();
@@ -821,13 +675,7 @@ export class PortalPage implements OnInit, OnDestroy {
           this.nextAppointment.set(null);
         }
 
-        // Inicializar métricas activas según el objetivo principal
-        const goal = currentPatient.meta_objetivo;
-        this.activeMetrics.set({
-          weight: goal === 'bajar_peso' || !goal,
-          fat: goal === 'bajar_grasa',
-          muscle: goal === 'subir_musculo'
-        });
+
 
         // Cargar o reiniciar la lista de súper según corresponda
         if (menuChanged) {
@@ -985,6 +833,9 @@ export class PortalPage implements OnInit, OnDestroy {
         document.removeEventListener('visibilitychange', this.visibilityListener);
       }
     }
+    if (this.shoppingListInterval) {
+      clearInterval(this.shoppingListInterval);
+    }
   }
 
   async handleUrlActions() {
@@ -1119,12 +970,17 @@ export class PortalPage implements OnInit, OnDestroy {
     if (cached && !cached.some(cat => cat.category.includes('ERROR'))) {
       const sorted = this.sortShoppingCategoryItems(cached);
       this.shoppingList.set(sorted);
-      this.initializeCollapsedCategories(sorted);
       console.log('Shopping list loaded from cache');
     }
   }
 
   async fetchShoppingList() {
+    if (this.loadingShoppingList()) return;
+
+    if (this.shoppingListInterval) {
+      clearInterval(this.shoppingListInterval);
+    }
+
     const p = this.patient();
     const menu = this.getActiveMenu();
     if (!p || !menu || !menu.url) return;
@@ -1151,7 +1007,7 @@ export class PortalPage implements OnInit, OnDestroy {
     };
 
     // Simulate smooth progress over time, decelerating as it approaches 95%
-    const progressInterval = setInterval(() => {
+    this.shoppingListInterval = setInterval(() => {
       if (currentProgress < 95) {
         let increment = 1.8; // Starts relatively fast
         if (currentProgress >= 40 && currentProgress < 75) {
@@ -1171,7 +1027,7 @@ export class PortalPage implements OnInit, OnDestroy {
       const list = await this.patientService.getShoppingList(menu.url);
       
       // Stop simulator, set immediately to 100%
-      clearInterval(progressInterval);
+      clearInterval(this.shoppingListInterval);
       this.shoppingListProgress.set(100);
       this.shoppingListLoadingMessage.set('¡Lista generada con éxito!');
 
@@ -1199,7 +1055,6 @@ export class PortalPage implements OnInit, OnDestroy {
       
       const sorted = this.sortShoppingCategoryItems(enrichedList);
       this.shoppingList.set(sorted);
-      this.initializeCollapsedCategories(sorted);
       
       // Guardar lista completa en caché únicamente si no contiene errores
       const hasError = enrichedList.some(cat => cat.category.includes('ERROR'));
@@ -1208,7 +1063,7 @@ export class PortalPage implements OnInit, OnDestroy {
         this.storageService.setItem(cacheKey, sorted);
       }
     } catch (err) {
-      clearInterval(progressInterval);
+      clearInterval(this.shoppingListInterval);
       console.error('Error fetching shopping list', err);
       this.shoppingListProgress.set(0);
       this.shoppingList.set([
@@ -1264,21 +1119,12 @@ export class PortalPage implements OnInit, OnDestroy {
     const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
     this.storageService.setItem(cacheKey, updated);
 
-    // Wait 350ms for premium transition visualization before sorting and potentially auto-collapsing
+    // Wait 350ms for premium transition visualization before sorting
     setTimeout(() => {
       const latest = this.shoppingList();
       const sorted = this.sortShoppingCategoryItems(latest);
       this.shoppingList.set(sorted);
       this.storageService.setItem(cacheKey, sorted);
-
-      // Auto-collapse if category is newly completed
-      const cat = sorted.find(c => c.category === category);
-      if (cat && this.isCategoryCompleted(cat)) {
-        this.collapsedCategories.update(prev => ({
-          ...prev,
-          [category]: true
-        }));
-      }
     }, 350);
   }
 
@@ -1290,57 +1136,6 @@ export class PortalPage implements OnInit, OnDestroy {
         ...cat.items.filter(i => i.checked)
       ]
     }));
-  }
-
-  initializeCollapsedCategories(list: ShoppingCategory[]) {
-    const collapsed: Record<string, boolean> = {};
-    list.forEach(cat => {
-      collapsed[cat.category] = true;
-    });
-    this.collapsedCategories.set(collapsed);
-  }
-
-  toggleCategory(categoryName: string) {
-    this.collapsedCategories.update(prev => ({
-      ...prev,
-      [categoryName]: !prev[categoryName]
-    }));
-  }
-
-  toggleAllCategories() {
-    const list = this.shoppingList();
-    const currentAllCollapsed = this.isAllCategoriesCollapsed();
-    const newCollapsed: Record<string, boolean> = {};
-    list.forEach(cat => {
-      newCollapsed[cat.category] = !currentAllCollapsed;
-    });
-    this.collapsedCategories.set(newCollapsed);
-  }
-
-  isCategoryCompleted(cat: ShoppingCategory): boolean {
-    return cat.items.length > 0 && cat.items.every(i => i.checked);
-  }
-
-  getCategoryProgress(cat: ShoppingCategory): string {
-    const total = cat.items.length;
-    const checked = cat.items.filter(i => i.checked).length;
-    return `${checked}/${total}`;
-  }
-
-  getCategoryEmoji(catName: string): string {
-    const parts = catName.trim().split(/\s+/);
-    if (parts.length > 1 && parts[0].length <= 4) {
-      return parts[0];
-    }
-    return '🛒';
-  }
-
-  getCategoryTitle(catName: string): string {
-    const parts = catName.trim().split(/\s+/);
-    if (parts.length > 1 && parts[0].length <= 4) {
-      return parts.slice(1).join(' ');
-    }
-    return catName;
   }
 
   closeShoppingModal() {

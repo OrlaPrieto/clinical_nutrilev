@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { SupabaseService } from '../common/supabase.service';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +14,7 @@ import { UpdateProgressDto } from './dto/update-progress.dto';
 
 @Injectable()
 export class PatientService {
-  private shoppingListCache = new Map<string, any>();
+
 
   constructor(
     private supabaseService: SupabaseService,
@@ -232,14 +232,22 @@ export class PatientService {
       .delete()
       .or(`email.eq.${identifier},nombre.eq.${identifier}`);
 
-    if (error) throw error;
+        if (error) throw error;
     return { success: true };
   }
 
   async getShoppingList(menuUrl: string, clientIp?: string): Promise<any> {
-    const cached = this.shoppingListCache.get(menuUrl);
-    if (cached) {
-      return cached;
+    const client: any = this.supabaseService.getClient();
+
+    // 1. Consultar si ya existe en la base de datos de caché
+    const { data: cached } = await client
+      .from('ai_menu_cache')
+      .select('shopping_list')
+      .eq('menu_url', menuUrl)
+      .single();
+
+    if (cached && cached.shopping_list) {
+      return cached.shopping_list;
     }
 
     const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
@@ -271,9 +279,12 @@ export class PatientService {
       );
       
       const result = response.data;
-      const hasError = Array.isArray(result) && result.some(cat => cat.category?.includes('ERROR'));
-      if (!hasError) {
-        this.shoppingListCache.set(menuUrl, result);
+      if (result && !result.error) {
+        // Upsert en la tabla de caché
+        await client.from('ai_menu_cache').upsert({
+          menu_url: menuUrl,
+          shopping_list: result,
+        });
       }
       return result;
     } catch (error) {
@@ -285,48 +296,277 @@ export class PatientService {
     }
   }
 
+  async getParsedMenu(menuUrl: string, clientIp?: string): Promise<any> {
+    const client: any = this.supabaseService.getClient();
+
+    // 1. Consultar si ya existe en la base de datos de caché
+    const { data: cached } = await client
+      .from('ai_menu_cache')
+      .select('parsed_menu')
+      .eq('menu_url', menuUrl)
+      .single();
+
+    if (cached && cached.parsed_menu) {
+      return cached.parsed_menu;
+    }
+
+    const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
+    if (!flaskApiUrl) {
+      throw new Error('FLASK_API_URL is not defined in environment variables');
+    }
+
+    const headers: Record<string, string> = {
+      'x-internal-key': this.configService.get<string>('INTERNAL_API_KEY') || '',
+    };
+
+    if (clientIp) {
+      headers['x-forwarded-for'] = clientIp;
+    }
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${flaskApiUrl.replace(/\/$/, '')}/api/parsed-menu`,
+          {
+            menu_url: menuUrl,
+          },
+          {
+            headers,
+            timeout: 120000,
+          }, // 120 second timeout
+        ),
+      );
+      
+      const result = response.data;
+      if (result && !result.error) {
+        // Upsert en la tabla de caché
+        await client.from('ai_menu_cache').upsert({
+          menu_url: menuUrl,
+          parsed_menu: result,
+        });
+      }
+      return result;
+    } catch (error: any) {
+      console.error(
+        'Error calling Python AI service (Parsed Menu):',
+        error instanceof Error ? error.message : error,
+      );
+      if (error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+        if (data && data.error && data.message) {
+          throw new HttpException(
+            { error: data.error, message: data.message },
+            status,
+          );
+        }
+      }
+      throw error;
+    }
+  }
+
   async cleanupOldStorageFiles(): Promise<{ deletedCount: number }> {
     try {
-      const client = this.supabaseService.getClient();
-      if (!client || !client.storage) return { deletedCount: 0 };
-
-      let allFiles: any[] = [];
-      let page = 0;
-      const limit = 1000;
+      const client: any = this.supabaseService.getClient();
       
-      while (true) {
-        const { data: files } = await client.storage
-          .from('patient_menus')
-          .list('', {
-            limit,
-            offset: page * limit,
-            sortBy: { column: 'name', order: 'asc' }
-          });
-          
-        if (!files || files.length === 0) break;
-        allFiles = allFiles.concat(files);
-        if (files.length < limit) break;
-        page++;
-      }
+      const r2AccessKey = this.configService.get<string>('CLOUDFLARE_R2_ACCESS_KEY_ID');
+      const r2SecretKey = this.configService.get<string>('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
+      const r2Endpoint = this.configService.get<string>('CLOUDFLARE_R2_ENDPOINT');
+      const r2Bucket = this.configService.get<string>('CLOUDFLARE_R2_BUCKET_NAME');
+
+      const isR2Configured = r2AccessKey && r2SecretKey && r2Endpoint && r2Bucket;
 
       const now = new Date();
       const cutoffDate = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000);
-      const filesToDelete = allFiles
-        .filter(f => f.name !== '.emptyFolderPlaceholder' && new Date(f.created_at) < cutoffDate)
-        .map(f => f.name);
+      let deletedCount = 0;
 
-      if (filesToDelete.length > 0) {
-        const chunkSize = 100;
-        for (let i = 0; i < filesToDelete.length; i += chunkSize) {
-          const chunk = filesToDelete.slice(i, i + chunkSize);
-          await client.storage.from('patient_menus').remove(chunk);
+      if (isR2Configured) {
+        console.log(`[StorageCleanup] Running automated cleanup on Cloudflare R2 bucket: ${r2Bucket}...`);
+        const { S3Client, ListObjectsV2Command, DeleteObjectsCommand } = require('@aws-sdk/client-s3');
+        const s3 = new S3Client({
+          region: 'auto',
+          endpoint: r2Endpoint,
+          credentials: {
+            accessKeyId: r2AccessKey,
+            secretAccessKey: r2SecretKey,
+          },
+        });
+
+        // 1. List objects from R2
+        let continuationToken: string | undefined = undefined;
+        let filesToDelete: string[] = [];
+
+        do {
+          const listCommand: any = new ListObjectsV2Command({
+            Bucket: r2Bucket,
+            ContinuationToken: continuationToken,
+          });
+          const listResponse = await s3.send(listCommand);
+          const contents = listResponse.Contents || [];
+
+          for (const item of contents) {
+            if (item.Key && item.Key !== '.emptyFolderPlaceholder' && item.LastModified) {
+              if (new Date(item.LastModified) < cutoffDate) {
+                filesToDelete.push(item.Key);
+              }
+            }
+          }
+          continuationToken = listResponse.NextContinuationToken;
+        } while (continuationToken);
+
+        // 2. Delete objects in chunks of 1000
+        if (filesToDelete.length > 0) {
+          const chunkSize = 1000;
+          for (let i = 0; i < filesToDelete.length; i += chunkSize) {
+            const chunk = filesToDelete.slice(i, i + chunkSize);
+            const deleteCommand = new DeleteObjectsCommand({
+              Bucket: r2Bucket,
+              Delete: {
+                Objects: chunk.map(key => ({ Key: key })),
+                Quiet: true,
+              },
+            });
+            await s3.send(deleteCommand);
+          }
+          deletedCount = filesToDelete.length;
+          console.log(`[StorageCleanup] Deleted ${deletedCount} expired files from R2.`);
         }
+      } else {
+        console.log('[StorageCleanup] R2 not configured. Running automated cleanup on Supabase Storage.');
+        if (!client || !client.storage) return { deletedCount: 0 };
+
+        let allFiles: any[] = [];
+        let page = 0;
+        const limit = 1000;
+        
+        while (true) {
+          const { data: files } = await client.storage
+            .from('patient_menus')
+            .list('', {
+              limit,
+              offset: page * limit,
+              sortBy: { column: 'name', order: 'asc' }
+            });
+            
+          if (!files || files.length === 0) break;
+          allFiles = allFiles.concat(files);
+          if (files.length < limit) break;
+          page++;
+        }
+
+        const filesToDelete = allFiles
+          .filter(f => f.name !== '.emptyFolderPlaceholder' && new Date(f.created_at) < cutoffDate)
+          .map(f => f.name);
+
+        if (filesToDelete.length > 0) {
+          const chunkSize = 100;
+          for (let i = 0; i < filesToDelete.length; i += chunkSize) {
+            const chunk = filesToDelete.slice(i, i + chunkSize);
+            await client.storage.from('patient_menus').remove(chunk);
+          }
+        }
+        deletedCount = filesToDelete.length;
       }
 
-      return { deletedCount: filesToDelete.length };
+      // Limpiar caché de IA obsoleto (> 8 días)
+      const cutoffIso = cutoffDate.toISOString();
+      if (client && typeof client.from === 'function') {
+        await client.from('ai_menu_cache').delete().lt('created_at', cutoffIso);
+      }
+
+      return { deletedCount };
     } catch (err) {
       console.error('Failed to run automated storage cleanup:', err);
       throw err;
+    }
+  }
+
+  async uploadMenuPdf(file: any, email: string, fileName: string): Promise<{ url: string }> {
+    try {
+      if (!file || !file.buffer) {
+        throw new HttpException('No file buffer provided', 400);
+      }
+
+      console.log(`[PdfUpload] Starting upload process for ${fileName} (${file.size} bytes)...`);
+
+      let pdfBuffer = file.buffer;
+      try {
+        const { PDFDocument } = require('pdf-lib');
+        const pdfDoc = await PDFDocument.load(file.buffer);
+        
+        // Apply compression settings
+        // useObjectStreams: true compresses the internal structures into binary object streams
+        pdfBuffer = Buffer.from(
+          await pdfDoc.save({
+            useObjectStreams: true,
+            addGlyphMapGroups: false,
+          })
+        );
+        console.log(`[PdfUpload] Structurally compressed PDF from ${file.size} to ${pdfBuffer.length} bytes.`);
+      } catch (pdfError) {
+        console.error('[PdfUpload] pdf-lib compression failed, uploading original buffer:', pdfError);
+      }
+
+      const r2AccessKey = this.configService.get<string>('CLOUDFLARE_R2_ACCESS_KEY_ID');
+      const r2SecretKey = this.configService.get<string>('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
+      const r2Endpoint = this.configService.get<string>('CLOUDFLARE_R2_ENDPOINT');
+      const r2Bucket = this.configService.get<string>('CLOUDFLARE_R2_BUCKET_NAME');
+      const r2PublicUrl = this.configService.get<string>('CLOUDFLARE_R2_PUBLIC_URL');
+
+      const isR2Configured = r2AccessKey && r2SecretKey && r2Endpoint && r2Bucket && r2PublicUrl;
+
+      if (isR2Configured) {
+        console.log(`[PdfUpload] Uploading to Cloudflare R2 bucket: ${r2Bucket}...`);
+        const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+        const s3 = new S3Client({
+          region: 'auto',
+          endpoint: r2Endpoint,
+          credentials: {
+            accessKeyId: r2AccessKey,
+            secretAccessKey: r2SecretKey,
+          },
+        });
+
+        const command = new PutObjectCommand({
+          Bucket: r2Bucket,
+          Key: fileName,
+          Body: pdfBuffer,
+          ContentType: 'application/pdf',
+          CacheControl: 'public, max-age=31536000, immutable',
+        });
+
+        await s3.send(command);
+        const publicUrl = `${r2PublicUrl.replace(/\/$/, '')}/${fileName}`;
+        console.log(`[PdfUpload] Uploaded to R2 successfully: ${publicUrl}`);
+        return { url: publicUrl };
+      } else {
+        console.log('[PdfUpload] Cloudflare R2 is not fully configured. Falling back to Supabase Storage.');
+        
+        // Upload to Supabase Storage using the service client
+        const client = this.supabaseService.getClient();
+        const { data, error } = await client.storage
+          .from('patient_menus')
+          .upload(fileName, pdfBuffer, {
+            upsert: true,
+            contentType: 'application/pdf',
+            cacheControl: 'public, max-age=31536000, immutable'
+          });
+
+        if (error) {
+          console.error('[PdfUpload] Supabase upload failed:', error);
+          throw error;
+        }
+
+        // Get public URL
+        const { data: publicUrlData } = client.storage
+          .from('patient_menus')
+          .getPublicUrl(fileName);
+
+        return { url: publicUrlData.publicUrl };
+      }
+    } catch (err) {
+      console.error('[PdfUpload] Error in uploadMenuPdf:', err);
+      throw new HttpException(err.message || 'Error uploading menu PDF', 500);
     }
   }
 }

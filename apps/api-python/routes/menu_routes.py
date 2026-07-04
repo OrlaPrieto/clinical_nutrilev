@@ -24,6 +24,7 @@ import requests
 
 def is_safe_url(url: str) -> bool:
     try:
+        import os
         parsed = urlparse(url)
         if parsed.scheme not in ('http', 'https'):
             return False
@@ -36,6 +37,20 @@ def is_safe_url(url: str) -> bool:
         # Allow official Supabase domains
         if hostname_lower.endswith('.supabase.co'):
             return True
+        # Allow Cloudflare R2 domains
+        if hostname_lower.endswith('.r2.dev'):
+            return True
+
+        # Allow user's configured R2 Public URL custom domain if available
+        r2_public_url = os.getenv('CLOUDFLARE_R2_PUBLIC_URL')
+        if r2_public_url:
+            try:
+                r2_parsed = urlparse(r2_public_url)
+                if r2_parsed.hostname and hostname_lower == r2_parsed.hostname.lower():
+                    return True
+            except Exception:
+                pass
+
         # Allow local development hostnames
         if hostname_lower in ('localhost', '127.0.0.1', '::1'):
             return True
@@ -195,4 +210,56 @@ def get_shopping_list():
         print(f"Error generating shopping list: {e}")
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
+
+@menu_bp.route('/parsed-menu', methods=['POST', 'OPTIONS'])
+@limiter.limit("10 per hour")
+def get_parsed_menu():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    data = request.json
+    menu_url = data.get('menu_url')
+
+    if not menu_url or not is_safe_url(menu_url):
+        return jsonify({"error": "Invalid or restricted menu URL"}), 400
+
+    gemini_key = GEMINI_API_KEY # Strictly from environment
+
+    try:
+        from services.ai_service import parse_menu_document_to_json
+        parsed_json = parse_menu_document_to_json(menu_url, gemini_key)
+        
+        # Enriquecer con imágenes de Pexels si está configurado en el entorno
+        import os
+        pexels_key = os.getenv("PEXELS_API_KEY")
+        
+        def enrich_meal(meal):
+            query = meal.get("termino_busqueda_imagen") or meal.get("platillo", "")
+            from services.ai_service import fetch_dish_image_url
+            meal["platillo_imagen_url"] = fetch_dish_image_url(query, pexels_key)
+
+        meals_to_enrich = []
+        for sec in parsed_json.get("secciones", []):
+            for meal in sec.get("tiempos_comida", []):
+                meals_to_enrich.append(meal)
+                
+        if meals_to_enrich:
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                executor.map(enrich_meal, meals_to_enrich)
+
+        return jsonify(parsed_json)
+    except Exception as e:
+        print(f"Error parsing menu document: {e}")
+        traceback.print_exc()
+        
+        err_msg = str(e)
+        if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "quota" in err_msg.lower():
+            return jsonify({
+                "error": "RATE_LIMIT_EXHAUSTED",
+                "message": "Has excedido el límite de peticiones gratuitas de Gemini. Por favor, espera 30 segundos antes de volver a intentarlo."
+            }), 429
+
+        return jsonify({"error": str(e)}), 500
+
 
