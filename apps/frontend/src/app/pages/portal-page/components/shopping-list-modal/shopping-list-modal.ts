@@ -151,11 +151,15 @@ export class ShoppingListModalComponent {
       year: 'numeric'
     });
 
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      this.toastService.show('Por favor, permite las ventanas emergentes (popups) para descargar el PDF.', 'error');
-      return;
-    }
+    // Create a hidden iframe for print isolation
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -168,53 +172,10 @@ export class ShoppingListModalComponent {
     body {
       font-family: 'Inter', sans-serif;
       color: #334155;
-      padding: 80px 40px 40px 40px;
+      padding: 20px 40px;
       background-color: #ffffff;
       font-size: 11px;
       line-height: 1.5;
-    }
-    .action-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 40px;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .action-bar-content {
-      width: 100%;
-      max-width: 800px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      font-weight: 500;
-      color: #64748b;
-    }
-    .download-btn {
-      background-color: #d11b60; /* nutri-rose */
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      transition: background-color 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .download-btn:hover {
-      background-color: #b0134e;
     }
     .header {
       border-bottom: 2px solid #e2e8f0;
@@ -313,12 +274,9 @@ export class ShoppingListModalComponent {
       margin-top: 1px;
     }
     .footer {
-      position: fixed;
-      bottom: 20px;
-      left: 40px;
-      right: 40px;
       border-top: 1px solid #e2e8f0;
       padding-top: 10px;
+      margin-top: 30px;
       text-align: center;
       font-size: 8.5px;
       color: #94a3b8;
@@ -327,26 +285,10 @@ export class ShoppingListModalComponent {
       body {
         padding: 0 !important;
       }
-      .no-print {
-        display: none !important;
-      }
-      .footer {
-        position: running(footer);
-      }
     }
   </style>
 </head>
 <body>
-  <div class="action-bar no-print">
-    <div class="action-bar-content">
-      <span>Vista previa de tu lista:</span>
-      <button onclick="window.print()" class="download-btn">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Guardar o Imprimir
-      </button>
-    </div>
-  </div>
-
   <div class="header">
     <div>
       <div class="title">Lista de Súper</div>
@@ -369,7 +311,58 @@ export class ShoppingListModalComponent {
 </html>
     `;
 
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+
+      // Trigger printing once the iframe renders
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        // Remove iframe safely after print dialog closes
+        setTimeout(() => {
+          iframe.remove();
+        }, 1000);
+      }, 500);
+    } else {
+      iframe.remove();
+    }
+  }
+
+  sendToWhatsApp() {
+    const list = this.shoppingList();
+    if (!list || list.length === 0) return;
+
+    // Emojis represented as escape sequences to prevent any file encoding or compilation corruption
+    const shoppingCart = '\u{1F6D2}';
+    const greenApple = '\u{1F34F}';
+    const checkedBox = '\u{2705}';
+    const emptyBox = '\u{2B1C}';
+    const salad = '\u{1F957}';
+
+    let text = `${shoppingCart} *MI LISTA DE COMPRAS - NUTRILEV* ${greenApple}\n`;
+    text += `====================================\n\n`;
+
+    list.forEach(cat => {
+      text += `*${cat.category.toUpperCase()}*\n`;
+      cat.items.forEach(item => {
+        const checkbox = item.checked ? checkedBox : emptyBox;
+        const amount = item.amount ? ` (${item.amount})` : '';
+        text += `${checkbox} ${item.icon || ''} ${item.name}${amount}\n`;
+        if (item.tip) {
+          text += `   _Nota: ${item.tip}_\n`;
+        }
+      });
+      text += `\n`;
+    });
+
+    text += `====================================\n`;
+    text += `${salad} _Plan alimenticio personalizado de Nutrilev_`;
+
+    const encodedText = encodeURIComponent(text);
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+    window.open(whatsappUrl, '_blank', 'noopener');
   }
 }

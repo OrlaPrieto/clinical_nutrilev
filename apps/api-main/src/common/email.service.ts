@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { NotifyMenuRequest } from '@shared/index';
+import { SupabaseService } from './supabase.service';
 
 @Injectable()
 export class EmailService {
@@ -9,7 +10,10 @@ export class EmailService {
   private readonly resendApiKey: string;
   private readonly emailFrom: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private supabaseService: SupabaseService,
+  ) {
     this.resendApiKey = this.configService.get<string>('RESEND_API_KEY') || '';
     this.emailFrom =
       this.configService.get<string>('EMAIL_FROM') || 'onboarding@resend.dev';
@@ -22,6 +26,22 @@ export class EmailService {
     }
 
     const { email, nombre, menu_url, menus } = data;
+
+    // Fetch plan_duration_days for the patient
+    let planDurationDays = 7;
+    try {
+      const client = this.supabaseService.getClient();
+      const { data: patient } = await client
+        .from('patients')
+        .select('plan_duration_days')
+        .ilike('email', email)
+        .maybeSingle() as any;
+      if (patient && patient.plan_duration_days != null) {
+        planDurationDays = Number(patient.plan_duration_days);
+      }
+    } catch (err: any) {
+      this.logger.error(`Failed to fetch patient plan duration for email notification: ${err.message}`);
+    }
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -61,7 +81,7 @@ export class EmailService {
             
             <div style="background-color: #fdf5ff; border: 1px solid #ffd9fd; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
                 <p style="font-size: 13px; margin: 0; line-height: 1.5; color: #b32eb0;">
-                    <strong>⚠️ Aviso de Privacidad:</strong> Por seguridad de tu expediente, el menú estará disponible para previsualización y descarga únicamente durante <strong>7 días</strong>. Asegúrate de guardarlo localmente.
+                    <strong>⚠️ Aviso de Privacidad:</strong> Por seguridad de tu expediente, el menú estará disponible para previsualización y descarga únicamente durante <strong>${planDurationDays >= 9999 ? 'tiempo ilimitado' : `${planDurationDays} días`}</strong>. Asegúrate de guardarlo localmente.
                 </p>
             </div>
             

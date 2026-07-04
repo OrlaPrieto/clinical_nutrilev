@@ -154,24 +154,29 @@
             </div>
         
             <!-- Footer -->
-            <div class="p-5 sm:p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5 flex gap-3">
+            <div class="p-5 sm:p-8 bg-nutri-bg/50 dark:bg-white/5 border-t border-nutri-rose/10 dark:border-white/5 flex flex-col sm:flex-row gap-3">
                 @if (hasShoppingError()) {
                     <app-a-button (onClick)="retryShoppingList()" label="Reintentar Generar" variant="primary" size="lg"
-                                class="flex-1"
+                                class="w-full sm:flex-1"
                                 customClass="!rounded-2xl !shadow-xl !shadow-nutri-rose/20 active:scale-95 transition-all">
+                    </app-a-button>
+                    <app-a-button (onClick)="closeShoppingModal()" label="Cerrar" variant="outline" size="lg"
+                                class="w-full sm:flex-1"
+                                customClass="!rounded-2xl active:scale-95 transition-all">
                     </app-a-button>
                 }
                 @if (!loadingShoppingList() && !hasShoppingError() && shoppingList().length > 0) {
+                    <app-a-button (onClick)="sendToWhatsApp()" label="Enviar a WhatsApp" variant="primary" size="lg"
+                                 icon="share"
+                                 class="w-full sm:flex-1"
+                                 customClass="!rounded-2xl !bg-[#25D366] !border-none hover:!bg-[#20ba59] !text-white active:scale-95 transition-all !shadow-xl !shadow-green-500/15">
+                    </app-a-button>
                     <app-a-button (onClick)="printShoppingList()" label="Descargar PDF" variant="outline" size="lg"
                                  icon="download"
-                                 class="flex-1"
+                                 class="w-full sm:flex-1"
                                  customClass="!rounded-2xl !border-nutri-rose/20 !text-nutri-rose active:scale-95 transition-all">
                     </app-a-button>
                 }
-                <app-a-button (onClick)="closeShoppingModal()" [label]="hasShoppingError() ? 'Cerrar' : '¡Listo, a comprar!'" [variant]="hasShoppingError() ? 'outline' : 'primary'" size="lg"
-                            class="flex-1"
-                            customClass="!rounded-2xl active:scale-95 transition-all">
-                </app-a-button>
             </div>
         </div>
     </div>
