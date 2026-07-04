@@ -368,46 +368,113 @@ export class PatientService {
   async cleanupOldStorageFiles(): Promise<{ deletedCount: number }> {
     try {
       const client: any = this.supabaseService.getClient();
-      if (!client || !client.storage) return { deletedCount: 0 };
-
-      let allFiles: any[] = [];
-      let page = 0;
-      const limit = 1000;
       
-      while (true) {
-        const { data: files } = await client.storage
-          .from('patient_menus')
-          .list('', {
-            limit,
-            offset: page * limit,
-            sortBy: { column: 'name', order: 'asc' }
-          });
-          
-        if (!files || files.length === 0) break;
-        allFiles = allFiles.concat(files);
-        if (files.length < limit) break;
-        page++;
-      }
+      const r2AccessKey = this.configService.get<string>('CLOUDFLARE_R2_ACCESS_KEY_ID');
+      const r2SecretKey = this.configService.get<string>('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
+      const r2Endpoint = this.configService.get<string>('CLOUDFLARE_R2_ENDPOINT');
+      const r2Bucket = this.configService.get<string>('CLOUDFLARE_R2_BUCKET_NAME');
+
+      const isR2Configured = r2AccessKey && r2SecretKey && r2Endpoint && r2Bucket;
 
       const now = new Date();
       const cutoffDate = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000);
-      const filesToDelete = allFiles
-        .filter(f => f.name !== '.emptyFolderPlaceholder' && new Date(f.created_at) < cutoffDate)
-        .map(f => f.name);
+      let deletedCount = 0;
 
-      if (filesToDelete.length > 0) {
-        const chunkSize = 100;
-        for (let i = 0; i < filesToDelete.length; i += chunkSize) {
-          const chunk = filesToDelete.slice(i, i + chunkSize);
-          await client.storage.from('patient_menus').remove(chunk);
+      if (isR2Configured) {
+        console.log(`[StorageCleanup] Running automated cleanup on Cloudflare R2 bucket: ${r2Bucket}...`);
+        const { S3Client, ListObjectsV2Command, DeleteObjectsCommand } = require('@aws-sdk/client-s3');
+        const s3 = new S3Client({
+          region: 'auto',
+          endpoint: r2Endpoint,
+          credentials: {
+            accessKeyId: r2AccessKey,
+            secretAccessKey: r2SecretKey,
+          },
+        });
+
+        // 1. List objects from R2
+        let continuationToken: string | undefined = undefined;
+        let filesToDelete: string[] = [];
+
+        do {
+          const listCommand: any = new ListObjectsV2Command({
+            Bucket: r2Bucket,
+            ContinuationToken: continuationToken,
+          });
+          const listResponse = await s3.send(listCommand);
+          const contents = listResponse.Contents || [];
+
+          for (const item of contents) {
+            if (item.Key && item.Key !== '.emptyFolderPlaceholder' && item.LastModified) {
+              if (new Date(item.LastModified) < cutoffDate) {
+                filesToDelete.push(item.Key);
+              }
+            }
+          }
+          continuationToken = listResponse.NextContinuationToken;
+        } while (continuationToken);
+
+        // 2. Delete objects in chunks of 1000
+        if (filesToDelete.length > 0) {
+          const chunkSize = 1000;
+          for (let i = 0; i < filesToDelete.length; i += chunkSize) {
+            const chunk = filesToDelete.slice(i, i + chunkSize);
+            const deleteCommand = new DeleteObjectsCommand({
+              Bucket: r2Bucket,
+              Delete: {
+                Objects: chunk.map(key => ({ Key: key })),
+                Quiet: true,
+              },
+            });
+            await s3.send(deleteCommand);
+          }
+          deletedCount = filesToDelete.length;
+          console.log(`[StorageCleanup] Deleted ${deletedCount} expired files from R2.`);
         }
+      } else {
+        console.log('[StorageCleanup] R2 not configured. Running automated cleanup on Supabase Storage.');
+        if (!client || !client.storage) return { deletedCount: 0 };
+
+        let allFiles: any[] = [];
+        let page = 0;
+        const limit = 1000;
+        
+        while (true) {
+          const { data: files } = await client.storage
+            .from('patient_menus')
+            .list('', {
+              limit,
+              offset: page * limit,
+              sortBy: { column: 'name', order: 'asc' }
+            });
+            
+          if (!files || files.length === 0) break;
+          allFiles = allFiles.concat(files);
+          if (files.length < limit) break;
+          page++;
+        }
+
+        const filesToDelete = allFiles
+          .filter(f => f.name !== '.emptyFolderPlaceholder' && new Date(f.created_at) < cutoffDate)
+          .map(f => f.name);
+
+        if (filesToDelete.length > 0) {
+          const chunkSize = 100;
+          for (let i = 0; i < filesToDelete.length; i += chunkSize) {
+            const chunk = filesToDelete.slice(i, i + chunkSize);
+            await client.storage.from('patient_menus').remove(chunk);
+          }
+        }
+        deletedCount = filesToDelete.length;
       }
 
       // Limpiar caché de IA obsoleto (> 8 días)
       const cutoffIso = cutoffDate.toISOString();
-      await client.from('ai_menu_cache').delete().lt('created_at', cutoffIso);
+      if (client && typeof client.from === 'function') {
+        await client.from('ai_menu_cache').delete().lt('created_at', cutoffIso);
+      }
 
-      return { deletedCount: filesToDelete.length };
+      return { deletedCount };
     } catch (err) {
       console.error('Failed to run automated storage cleanup:', err);
       throw err;
