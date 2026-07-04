@@ -109,7 +109,7 @@
           <div class="bg-white dark:bg-[#0c0c0c] border border-nutri-rose/10 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-nutri-rose/5 transition-all overflow-hidden flex flex-col relative group">
             
             <!-- Premium Meal Card Header Image -->
-            @if (meal.platillo_imagen_url) {
+            @if (showMealImages() && meal.platillo_imagen_url) {
               <div class="relative h-44 sm:h-56 w-full overflow-hidden shrink-0">
                 <img [src]="meal.platillo_imagen_url" 
                      [alt]="meal.platillo" 
@@ -146,7 +146,7 @@
                         Ahora
                       </span>
                     }
-                    @if (meal.hora_sugerida && !meal.platillo_imagen_url) {
+                    @if (meal.hora_sugerida && (!showMealImages() || !meal.platillo_imagen_url)) {
                       <span class="px-2 py-0.5 text-[8px] font-bold rounded-lg bg-slate-100 dark:bg-white/5 text-slate-400 tracking-wider">
                         {{ meal.hora_sugerida }}
                       </span>
