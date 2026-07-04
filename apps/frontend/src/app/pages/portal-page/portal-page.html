@@ -562,14 +562,14 @@
                                     </div>
                                 </div>
                             </div>
- 
+
                             <!-- Grid de Métricas Rápidas -->
                             <div class="grid grid-cols-2 gap-4">
                                 <!-- Fat Card -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
+                                    <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
                                         <app-a-icon name="percent" size="14px" class="text-amber-500"></app-a-icon>
-                                        <span class="text-[9px] font-black uppercase tracking-widest">% Grasa</span>
+                                        <span class="text-[9px] font-black uppercase tracking-wider">% Grasa</span>
                                     </div>
                                     <div class="flex items-baseline gap-1 mt-2">
                                         <span class="text-3xl font-black font-sans tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
@@ -583,33 +583,30 @@
                                         }
                                     </span>
                                 </div>
- 
+
                                 <!-- Porcentaje de Avance General (Circular Gauge) -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex items-center justify-between transition-colors">
-                                    <div class="space-y-2 min-w-0 flex-1 pr-2">
-                                        <div class="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex items-center justify-between transition-colors">
+                                    <div class="space-y-1 min-w-0 flex-1 pr-2">
+                                        <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
                                             <app-a-icon name="flag" size="14px" class="text-nutri-rose"></app-a-icon>
-                                            <span class="text-[9px] font-black uppercase tracking-widest truncate">Avance Meta</span>
+                                            <span class="text-[9px] font-black uppercase tracking-wider">Avance</span>
                                         </div>
-                                        <div class="flex items-baseline gap-1 mt-2">
-                                            <span class="text-2xl sm:text-3xl font-black font-sans tracking-tight text-nutri-rose dark:text-nutri-rose-soft">{{ goalPercentage() | number:'1.0-0' }}%</span>
-                                        </div>
-                                        <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-2 block truncate">
+                                        <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-1 block leading-tight">
                                             {{ goalPercentage() >= 100 ? '¡Meta lograda!' : 'En camino al 100%' }}
                                         </span>
                                     </div>
                                     
                                     <!-- Circular Progress Gauge (SVG) -->
-                                    <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
-                                        <svg class="w-full h-full transform -rotate-90">
+                                    <div class="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center">
+                                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
                                             <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" class="text-slate-100 dark:text-white/5" fill="transparent"/>
                                             <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" 
-                                                    class="text-nutri-rose transition-all duration-1000" 
-                                                    fill="transparent"
-                                                    [attr.stroke-dasharray]="163.36"
-                                                    [attr.stroke-dashoffset]="163.36 - (163.36 * goalPercentage() / 100)"/>
+                                                     class="text-nutri-rose transition-all duration-1000" 
+                                                     fill="transparent"
+                                                     [attr.stroke-dasharray]="163.36"
+                                                     [attr.stroke-dashoffset]="163.36 - (163.36 * goalPercentage() / 100)"/>
                                         </svg>
-                                        <div class="absolute text-[10px] font-black text-nutri-text dark:text-white">
+                                        <div class="absolute text-[9px] sm:text-[10px] font-black text-nutri-text dark:text-white">
                                             {{ goalPercentage() | number:'1.0-0' }}%
                                         </div>
                                     </div>
