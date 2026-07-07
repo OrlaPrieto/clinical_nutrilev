@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { inject as injectAnalytics } from '@vercel/analytics';
 import { ThemeService } from './shared/services/theme.service';
 import { AuthService } from './services/auth.service';
 import { DashboardFooterComponent } from './shared/components/organisms/dashboard-footer/dashboard-footer';
@@ -69,6 +70,7 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     injectSpeedInsights();
+    injectAnalytics();
 
     if (typeof window !== 'undefined') {
       window.addEventListener('online', () => this.isOffline.set(false));
