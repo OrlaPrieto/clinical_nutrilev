@@ -99,3 +99,41 @@ aside, .flex-1 {
   60% { transform: rotate( 0.0deg) }
   100% { transform: rotate( 0.0deg) }
 }
+
+/* Screen Orientation Lock Overlay */
+.orientation-lock-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(250, 249, 246, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+:host-context(.dark) .orientation-lock-overlay {
+  background: rgba(18, 18, 18, 0.9);
+}
+
+.animate-phone-rotate {
+  animation: phoneRotate 2.5s ease-in-out infinite;
+}
+
+@keyframes phoneRotate {
+  0%, 100% { transform: rotate(0deg); }
+  40%, 60% { transform: rotate(90deg); }
+}
+
+/* Muestra el bloqueo de rotación solo en dispositivos móviles/tablets (<1024px) en horizontal */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .orientation-lock-overlay {
+    display: flex !important;
+  }
+}
+
