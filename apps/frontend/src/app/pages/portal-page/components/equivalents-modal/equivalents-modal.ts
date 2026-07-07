@@ -21,6 +21,7 @@ export class EquivalentsModalComponent {
   selectedCategory = signal<string>('Verduras');
   calculatorFood = signal<SmaeFood | null>(null);
   calculatorQuantity = signal<number>(1);
+  shuffledCandidates = signal<SmaeFood[]>([]);
 
   // Category list configuration
   categories = [
@@ -44,22 +45,25 @@ export class EquivalentsModalComponent {
     const catId = this.selectedCategory();
 
     return SMAE_DATABASE.filter(food => {
-      // Category Match
-      let categoryMatch = false;
-      if (catId === 'Lácteos') {
-        categoryMatch = food.category.startsWith('Lácteos');
-      } else if (catId === 'Grasas sin proteína') {
-        categoryMatch = food.category === 'Grasas sin proteína';
-      } else if (catId === 'Grasas con proteína') {
-        categoryMatch = food.category === 'Grasas con proteína';
-      } else {
-        categoryMatch = food.category === catId;
-      }
-
       // Search term Match
       const nameMatch = food.name.toLowerCase().includes(term);
+      if (!nameMatch) return false;
 
-      return categoryMatch && nameMatch;
+      // If search term is present, search globally across all categories
+      if (term) {
+        return true;
+      }
+
+      // Category Match (only when no search term is entered)
+      if (catId === 'Lácteos') {
+        return food.category.startsWith('Lácteos');
+      } else if (catId === 'Grasas sin proteína') {
+        return food.category === 'Grasas sin proteína';
+      } else if (catId === 'Grasas con proteína') {
+        return food.category === 'Grasas con proteína';
+      } else {
+        return food.category === catId;
+      }
     });
   });
 
@@ -73,7 +77,7 @@ export class EquivalentsModalComponent {
     return Math.round(equivalents * 100) / 100;
   });
 
-  // Suggest replacements from the same category
+  // Suggest replacements from compatible categories, randomized
   suggestedReplacements = computed(() => {
     const currentFood = this.calculatorFood();
     if (!currentFood) return [];
@@ -81,20 +85,32 @@ export class EquivalentsModalComponent {
     const equivalents = this.calculatedEquivalents();
     if (equivalents <= 0) return [];
 
-    // Find other foods in the same category
-    return SMAE_DATABASE.filter(food => 
-      food.category === currentFood.category && food.name !== currentFood.name
-    )
-    .slice(0, 4) // Show up to 4 options
-    .map(food => {
-      const scaledAmount = equivalents * food.amountValue;
-      // Round to 1 decimal place if decimal
-      const formattedAmount = Math.round(scaledAmount * 10) / 10;
-      return {
-        ...food,
-        scaledPortion: `${formattedAmount} ${food.unit}${formattedAmount > 1 && food.unit.endsWith('a') ? 'as' : ''}`
-      };
-    });
+    return this.shuffledCandidates()
+      .slice(0, 5)
+      .map(food => {
+        const scaledAmount = equivalents * food.amountValue;
+        const formattedAmount = Math.round(scaledAmount * 10) / 10;
+        
+        let portionText = '';
+        const isCupUnit = food.unit.toLowerCase().includes('taza') || food.unit.toLowerCase() === 'tza' || food.unit.toLowerCase() === 'tzas';
+        
+        if (isCupUnit) {
+          const displayUnit = formattedAmount > 1 ? 'tzas' : 'tza';
+          if (food.gramsEquivalent) {
+            const scaledGrams = Math.round(equivalents * food.gramsEquivalent);
+            portionText = `${formattedAmount} ${displayUnit} (${scaledGrams}g)`;
+          } else {
+            portionText = `${formattedAmount} ${displayUnit}`;
+          }
+        } else {
+          portionText = `${formattedAmount} ${food.unit}${formattedAmount > 1 && food.unit.endsWith('a') ? 'as' : ''}`;
+        }
+
+        return {
+          ...food,
+          scaledPortion: portionText
+        };
+      });
   });
 
   closeModal() {
@@ -106,6 +122,7 @@ export class EquivalentsModalComponent {
     this.searchTerm.set('');
     this.calculatorFood.set(null);
     this.calculatorQuantity.set(1);
+    this.shuffledCandidates.set([]);
   }
 
   onSearch(event: Event) {
@@ -125,11 +142,56 @@ export class EquivalentsModalComponent {
   openCalculator(food: SmaeFood) {
     this.calculatorFood.set(food);
     this.calculatorQuantity.set(food.amountValue);
+    this.loadReplacementCandidates(food);
   }
 
   closeCalculator() {
     this.calculatorFood.set(null);
     this.calculatorQuantity.set(1);
+    this.shuffledCandidates.set([]);
+  }
+
+  // Shuffle replacements manually
+  shuffleReplacements() {
+    const currentFood = this.calculatorFood();
+    if (currentFood) {
+      this.loadReplacementCandidates(currentFood);
+    }
+  }
+
+  // Helper to calculate weight in grams dynamically
+  getCalculatedGrams(): number {
+    const food = this.calculatorFood();
+    if (!food || !food.gramsEquivalent) return 0;
+    const equivalents = this.calculatedEquivalents();
+    return Math.round(equivalents * food.gramsEquivalent);
+  }
+
+  // Check if two categories belong to the same compatible group
+  private areCategoriesCompatible(cat1: string, cat2: string): boolean {
+    if (cat1 === cat2) return true;
+    if (cat1.startsWith('Lácteos') && cat2.startsWith('Lácteos')) return true;
+    if (cat1.startsWith('AOA') && cat2.startsWith('AOA')) return true;
+    if (cat1.startsWith('Cereales') && cat2.startsWith('Cereales')) return true;
+    return false;
+  }
+
+  // Randomize replacement candidates using Fisher-Yates shuffle
+  private shuffleArray(array: SmaeFood[]): SmaeFood[] {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  private loadReplacementCandidates(currentFood: SmaeFood) {
+    const others = SMAE_DATABASE.filter(food => 
+      this.areCategoriesCompatible(food.category, currentFood.category) && 
+      food.name !== currentFood.name
+    );
+    this.shuffledCandidates.set(this.shuffleArray(others));
   }
 
   setCalculatorQuantity(event: Event) {
