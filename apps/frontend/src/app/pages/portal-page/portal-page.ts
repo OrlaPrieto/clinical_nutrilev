@@ -156,8 +156,16 @@ export class PortalPage implements OnInit, OnDestroy {
   public pullDistance = signal<number>(0);
   public isRefreshing = signal<boolean>(false);
 
+  isAnyModalOpen(): boolean {
+    return this.showEquivalentsModal() || 
+           this.showCondimentsModal() || 
+           this.showShoppingModal() || 
+           this.showCancelConfirmModal();
+  }
+
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent) {
+    if (this.isAnyModalOpen()) return;
     this.swipeStartX = event.touches[0].clientX;
     this.swipeStartY = event.touches[0].clientY;
 
@@ -169,6 +177,7 @@ export class PortalPage implements OnInit, OnDestroy {
 
   @HostListener('touchmove', ['$event'])
   onTouchMove(event: TouchEvent) {
+    if (this.isAnyModalOpen()) return;
     if (!this.isPulling) return;
     const currentY = event.touches[0].clientY;
     const diff = currentY - this.touchStartY;
@@ -186,6 +195,11 @@ export class PortalPage implements OnInit, OnDestroy {
 
   @HostListener('touchend', ['$event'])
   async onTouchEnd(event: TouchEvent) {
+    if (this.isAnyModalOpen()) {
+      this.isPulling = false;
+      this.pullDistance.set(0);
+      return;
+    }
     // 1. Handle Swipe navigation
     const diffX = event.changedTouches[0].clientX - this.swipeStartX;
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
