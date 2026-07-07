@@ -33,7 +33,7 @@
                             <input #searchInput
                                    (input)="onSearch($event)"
                                    type="text" 
-                                   placeholder="Busca un alimento (ej. Manzana, Huevo, Tortilla)..." 
+                                   placeholder="Buscar alimento..." 
                                    class="w-full pl-11 pr-10 py-3.5 bg-nutri-bg dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 text-sm font-semibold text-nutri-text dark:text-slate-200 outline-none focus:ring-2 focus:ring-nutri-rose/30 transition-all placeholder:text-nutri-text/30 dark:placeholder:text-white/20">
                             @if (searchTerm()) {
                                 <button (click)="clearSearch(searchInput)" 
