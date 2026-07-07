@@ -14,18 +14,18 @@ export interface SmaeFood {
 
 export const SMAE_DATABASE: SmaeFood[] = [
   // ==================== 🥦 VERDURAS ====================
-  { name: 'Calabacita picada', category: 'Verduras', emoji: '🥒', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal al vapor, asada o en caldos.' },
-  { name: 'Brócoli cocido', category: 'Verduras', emoji: '🥦', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Excelente fuente de fibra y antioxidantes.' },
+  { name: 'Calabacita picada', category: 'Verduras', emoji: '🥒', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal al vapor, asada o en caldos.' },
+  { name: 'Brócoli cocido', category: 'Verduras', emoji: '🥦', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Excelente fuente de fibra y antioxidantes.' },
   { name: 'Zanahoria picada o rallada', category: 'Verduras', emoji: '🥕', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Aporta betacarotenos excelentes para la vista.' },
   { name: 'Espinaca cruda', category: 'Verduras', emoji: '🥬', equivalentPortion: '2 tazas', amountValue: 2, unit: 'tazas', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal para ensaladas o licuados verdes.' },
   { name: 'Espinaca cocida', category: 'Verduras', emoji: '🥬', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Se reduce mucho al cocer, aporta hierro no hemo.' },
   { name: 'Jitomate picado o en rodajas', category: 'Verduras', emoji: '🍅', equivalentPortion: '1 pieza mediana', amountValue: 1, unit: 'pieza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Rico en licopeno. Consúmelo crudo o cocido.' },
   { name: 'Pepino rebanado', category: 'Verduras', emoji: '🥒', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Muy hidratante y saciante, ideal para colaciones.' },
   { name: 'Nopal cocido', category: 'Verduras', emoji: '🌵', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Excelente aporte de fibra soluble que ayuda a controlar la glucosa.' },
-  { name: 'Champiñón cocido', category: 'Verduras', emoji: '🍄', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal para acompañar quesadillas o guisados.' },
-  { name: 'Cebolla picada', category: 'Verduras', emoji: '🧅', equivalentPortion: '1/4 taza', amountValue: 0.25, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Añade gran sabor con un aporte mínimo de calorías.' },
-  { name: 'Lechuga (todas las variedades)', category: 'Verduras', emoji: '🥬', equivalentPortion: '3 tazas', amountValue: 3, unit: 'tazas', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal para dar volumen y saciedad a tus platos.' },
-  { name: 'Ejotes cocidos', category: 'Verduras', emoji: '🌱', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Combínalos con huevo o pollo.' },
+  { name: 'Champiñón cocido', category: 'Verduras', emoji: '🍄', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal para acompañar quesadillas o guisados.' },
+  { name: 'Cebolla picada', category: 'Verduras', emoji: '🧅', equivalentPortion: '1/2 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Añade gran sabor con un aporte mínimo de calorías.' },
+  { name: 'Lechuga (todas las variedades)', category: 'Verduras', emoji: '🥬', equivalentPortion: '2 tazas', amountValue: 2, unit: 'tazas', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Ideal para dar volumen y saciedad a tus platos.' },
+  { name: 'Ejotes cocidos', category: 'Verduras', emoji: '🌱', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Combínalos con huevo o pollo.' },
   { name: 'Flor de calabaza', category: 'Verduras', emoji: '🌸', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Poco aporte calórico, ideal en quesadillas de panela.' },
   { name: 'Apio crudo picado', category: 'Verduras', emoji: '🌿', equivalentPortion: '1.5 tazas', amountValue: 1.5, unit: 'tazas', calories: 25, protein: 2, carbs: 4, fat: 0, tip: 'Súper crujiente, ideal para calmar la ansiedad.' },
 
@@ -34,7 +34,7 @@ export const SMAE_DATABASE: SmaeFood[] = [
   { name: 'Plátano', category: 'Frutas', emoji: '🍌', equivalentPortion: '1/2 pieza', amountValue: 0.5, unit: 'pieza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Excelente fuente de potasio y energía pre-entrenamiento.' },
   { name: 'Fresas enteras', category: 'Frutas', emoji: '🍓', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Muy pocas calorías por volumen. Desinféctalas bien.' },
   { name: 'Melón picado', category: 'Frutas', emoji: '🍈', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Muy rico en agua e ideal para mantenerte hidratado.' },
-  { name: 'Papaya picada', category: 'Frutas', emoji: '🥭', equivalentPortion: '1 taza', amountValue: 1, unit: 'taza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Excelente para la digestión por su enzima papaína.' },
+  { name: 'Papaya picada', category: 'Frutas', emoji: '🥭', equivalentPortion: '3/4 taza', amountValue: 0.75, unit: 'taza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Excelente para la digestión por su enzima papaína.' },
   { name: 'Naranja entera', category: 'Frutas', emoji: '🍊', equivalentPortion: '1 pieza', amountValue: 1, unit: 'pieza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Prefiere comerla entera en lugar de en jugo para no perder la fibra.' },
   { name: 'Mango picado', category: 'Frutas', emoji: '🥭', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Rico en vitaminas A y C.' },
   { name: 'Guayaba', category: 'Frutas', emoji: '🥝', equivalentPortion: '3 piezas medianas', amountValue: 3, unit: 'piezas', calories: 60, protein: 0, carbs: 15, fat: 0, tip: 'Excelente aporte de vitamina C, superior a la naranja.' },
@@ -48,23 +48,17 @@ export const SMAE_DATABASE: SmaeFood[] = [
   // ==================== 🌾 CEREALES SIN GRASA ====================
   { name: 'Tortilla de maíz nixtamalizado', category: 'Cereales sin grasa', emoji: '🌮', equivalentPortion: '1 pieza', amountValue: 1, unit: 'pieza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Aporte excelente de calcio debido al proceso de nixtamalización.' },
   { name: 'Pan de caja integral', category: 'Cereales sin grasa', emoji: '🍞', equivalentPortion: '1 rebanada', amountValue: 1, unit: 'rebanada', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Busca opciones que declaren harina integral como primer ingrediente.' },
-  { name: 'Avena cruda en hojuelas', category: 'Cereales sin grasa', emoji: '🌾', equivalentPortion: '1/3 taza', amountValue: 0.33, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Rica en betaglucanos que ayudan a reducir el colesterol.' },
-  { name: 'Avena cocida en agua', category: 'Cereales sin grasa', emoji: '🥣', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Al cocerse en agua duplica su tamaño y aumenta la saciedad.' },
+  { name: 'Avena cruda en hojuelas', category: 'Cereales sin grasa', emoji: '🌾', equivalentPortion: '1/4 taza', amountValue: 0.25, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Rica en betaglucanos que ayudan a reducir el colesterol.' },
+  { name: 'Avena cocida en agua', category: 'Cereales sin grasa', emoji: '🥣', equivalentPortion: '1/3 taza', amountValue: 0.33, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Al cocerse en agua duplica su tamaño y aumenta la saciedad.' },
   { name: 'Arroz blanco o integral cocido', category: 'Cereales sin grasa', emoji: '🍚', equivalentPortion: '1/4 taza', amountValue: 0.25, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Cocínalo al vapor con sal de mar, cebolla y ajo.' },
   { name: 'Pasta cocida (spaghetti, pluma, etc.)', category: 'Cereales sin grasa', emoji: '🍝', equivalentPortion: '1/3 taza', amountValue: 0.33, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Cocínala "al dente" para reducir su índice glucémico.' },
   { name: 'Papa cocida o al horno', category: 'Cereales sin grasa', emoji: '🥔', equivalentPortion: '1/2 pieza mediana', amountValue: 0.5, unit: 'pieza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Puedes comerla fría para generar almidón resistente benéfico.' },
-  { name: 'Tostada de maíz horneada (Sanissimo o similar)', category: 'Cereales sin grasa', emoji: '🌮', equivalentPortion: '2 piezas', amountValue: 2, unit: 'piezas', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Crujientes y bajas en grasa saturada.' },
+  { name: 'Tostada de maíz horneada (Sanissimo o similar)', category: 'Cereales sin grasa', emoji: '🌮', equivalentPortion: '1 piezas', amountValue: 1, unit: 'piezas', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Crujientes y bajas en grasa saturada.' },
   { name: 'Galletas de arroz (Rice Cakes)', category: 'Cereales sin grasa', emoji: '🍘', equivalentPortion: '2 piezas', amountValue: 2, unit: 'piezas', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Excelente base para untar crema de cacahuate o aguacate.' },
   { name: 'Galletas Habaneras integrales', category: 'Cereales sin grasa', emoji: '🍪', equivalentPortion: '4 piezas', amountValue: 4, unit: 'piezas', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Prácticas para acompañar ensaladas de atún.' },
   { name: 'Amaranto natural tostado', category: 'Cereales sin grasa', emoji: '🌾', equivalentPortion: '1/4 taza', amountValue: 0.25, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Excelente fuente de proteína vegetal de alta calidad.' },
   { name: 'Pan Pita integral mediano', category: 'Cereales sin grasa', emoji: '🫓', equivalentPortion: '1/2 pieza', amountValue: 0.5, unit: 'pieza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Perfecto para rellenar con pollo y verduras.' },
   { name: 'Elote desgranado cocido', category: 'Cereales sin grasa', emoji: '🌽', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 70, protein: 2, carbs: 15, fat: 0, tip: 'Aporte dulce y rico en fibra.' },
-
-  // ==================== 🌾 CEREALES CON GRASA ====================
-  { name: 'Galletas con chispas de chocolate', category: 'Cereales con grasa', emoji: '🍪', equivalentPortion: '1.5 piezas', amountValue: 1.5, unit: 'piezas', calories: 115, protein: 2, carbs: 15, fat: 5, tip: 'Consumo moderado. Contienen azúcares y grasas añadidas.' },
-  { name: 'Papas fritas clásicas bolsas', category: 'Cereales con grasa', emoji: '🍟', equivalentPortion: '10 piezas o 20g', amountValue: 10, unit: 'piezas', calories: 115, protein: 2, carbs: 15, fat: 5, tip: 'Alto contenido de sodio y aceites refinados.' },
-  { name: 'Bolillo con migajón', category: 'Cereales con grasa', emoji: '🥖', equivalentPortion: '1/3 pieza', amountValue: 0.33, unit: 'pieza', calories: 115, protein: 2, carbs: 15, fat: 5, tip: 'Si le quitas el migajón puedes comer 1/2 pieza como cereal sin grasa.' },
-  { name: 'Tostada de maíz frita', category: 'Cereales con grasa', emoji: '🌮', equivalentPortion: '1 pieza', amountValue: 1, unit: 'pieza', calories: 115, protein: 2, carbs: 15, fat: 5, tip: 'Aporta significativamente más grasa que la horneada.' },
 
   // ==================== 🫘 LEGUMINOSAS ====================
   { name: 'Frijoles cocidos de la olla', category: 'Leguminosas', emoji: '🫘', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 120, protein: 8, carbs: 20, fat: 1, tip: 'Excelente fuente de hierro y fibra. Prefiérelos sin freír.' },
@@ -79,18 +73,18 @@ export const SMAE_DATABASE: SmaeFood[] = [
   { name: 'Camarón gigante cocido', category: 'AOA muy bajo en grasa', emoji: '🍤', equivalentPortion: '5 piezas medianas', amountValue: 5, unit: 'piezas', calories: 40, protein: 7, carbs: 0, fat: 0, tip: 'Bajo en calorías y alto en minerales.' },
 
   // ==================== 🍗 ORIGEN ANIMAL (BAJO EN GRASA) ====================
-  { name: 'Queso Panela pasteurizado', category: 'AOA bajo en grasa', emoji: '🧀', equivalentPortion: '40 gramos', amountValue: 40, unit: 'gramos', calories: 55, protein: 7, carbs: 0, fat: 3, tip: 'El queso clínico por excelencia, bajo en sodio y grasas.' },
+  { name: 'Queso Panela pasteurizado', category: 'AOA bajo en grasa', emoji: '🧀', equivalentPortion: '30 gramos', amountValue: 30, unit: 'gramos', calories: 55, protein: 7, carbs: 0, fat: 3, tip: 'El queso clínico por excelencia, bajo en sodio y grasas.' },
   { name: 'Huevo entero fresco', category: 'AOA bajo en grasa', emoji: '🥚', equivalentPortion: '1 pieza', amountValue: 1, unit: 'pieza', calories: 55, protein: 7, carbs: 0, fat: 3, tip: 'Contiene grasas saludables y colina en la yema.' },
   { name: 'Filete de res (cuete, falda o filete)', category: 'AOA bajo en grasa', emoji: '🥩', equivalentPortion: '30 gramos', amountValue: 30, unit: 'gramos', calories: 55, protein: 7, carbs: 0, fat: 3, tip: 'Aporte alto de hierro hemo altamente absorbible.' },
   { name: 'Filete de pescado fresco (Tilapia, Lenguado)', category: 'AOA bajo en grasa', emoji: '🐟', equivalentPortion: '40 gramos', amountValue: 40, unit: 'gramos', calories: 55, protein: 7, carbs: 0, fat: 2, tip: 'Fácil de digerir y bajo en grasa.' },
-  { name: 'Jamón de pechuga de pavo de calidad', category: 'AOA bajo en grasa', emoji: '🥓', equivalentPortion: '2 rebanadas gruesas', amountValue: 2, unit: 'rebanadas', calories: 55, protein: 7, carbs: 0, fat: 2, tip: 'Busca marcas que declaren >16% de proteína libre de almidones.' },
-  { name: 'Queso Cottage bajo en grasa', category: 'AOA bajo en grasa', emoji: '🥛', equivalentPortion: '3 cucharadas soperas', amountValue: 3, unit: 'cucharadas', calories: 55, protein: 7, carbs: 1, fat: 2, tip: 'Excelente opción untable o para ensaladas dulces.' },
+  { name: 'Jamón de pechuga de pavo de calidad', category: 'AOA bajo en grasa', emoji: '🥓', equivalentPortion: '1 rebanadas gruesas', amountValue: 1, unit: 'rebanadas', calories: 55, protein: 7, carbs: 0, fat: 2, tip: 'Busca marcas que declaren >16% de proteína libre de almidones.' },
+  { name: 'Queso Cottage bajo en grasa', category: 'AOA bajo en grasa', emoji: '🥛', equivalentPortion: '1/4 Taza', amountValue: 0.25, unit: 'taza', calories: 55, protein: 7, carbs: 1, fat: 2, tip: 'Excelente opción untable o para ensaladas dulces.' },
 
   // ==================== 🍗 ORIGEN ANIMAL (MODERADO EN GRASA) ====================
-  { name: 'Carne molida de res 90/10', category: 'AOA moderado en grasa', emoji: '🥩', equivalentPortion: '30 gramos', amountValue: 30, unit: 'gramos', calories: 75, protein: 7, carbs: 0, fat: 5, tip: 'Pídela bien limpia de grasa visible antes de moler.' },
+  { name: 'Carne molida de res 90/10', category: 'AOA moderado en grasa', emoji: '🥩', equivalentPortion: '25 gramos', amountValue: 25, unit: 'gramos', calories: 75, protein: 7, carbs: 0, fat: 5, tip: 'Pídela bien limpia de grasa visible antes de moler.' },
   { name: 'Huevo duro cocido', category: 'AOA moderado en grasa', emoji: '🥚', equivalentPortion: '1 pieza', amountValue: 1, unit: 'pieza', calories: 75, protein: 7, carbs: 0, fat: 5, tip: 'Práctico y seguro para transportar como colación.' },
   { name: 'Queso Oaxaca o Hebra', category: 'AOA moderado en grasa', emoji: '🧀', equivalentPortion: '30 gramos', amountValue: 30, unit: 'gramos', calories: 75, protein: 7, carbs: 0, fat: 5, tip: 'Se funde delicioso. Úsalo con moderación.' },
-  { name: 'Muslo de pollo sin piel cocido', category: 'AOA moderado en grasa', emoji: '🍗', equivalentPortion: '30 gramos', amountValue: 30, unit: 'gramos', calories: 75, protein: 7, carbs: 0, fat: 5, tip: 'Más jugoso que la pechuga, pero con mayor contenido lipídico.' },
+  { name: 'Muslo de pollo sin piel cocido', category: 'AOA moderado en grasa', emoji: '🍗', equivalentPortion: '25 gramos', amountValue: 25, unit: 'gramos', calories: 75, protein: 7, carbs: 0, fat: 5, tip: 'Más jugoso que la pechuga, pero con mayor contenido lipídico.' },
 
   // ==================== 🍗 ORIGEN ANIMAL (ALTO EN GRASA) ====================
   { name: 'Queso Manchego o Chihuahua', category: 'AOA alto en grasa', emoji: '🧀', equivalentPortion: '25 gramos', amountValue: 25, unit: 'gramos', calories: 100, protein: 7, carbs: 0, fat: 8, tip: 'Muy alto en grasas saturadas. Limitar su consumo en planes de pérdida de peso.' },
@@ -104,7 +98,7 @@ export const SMAE_DATABASE: SmaeFood[] = [
   { name: 'Yogurt natural entero sin azúcar', category: 'Lácteos enteros', emoji: '🥛', equivalentPortion: '1/2 taza', amountValue: 0.5, unit: 'taza', calories: 150, protein: 9, carbs: 12, fat: 8, tip: 'Textura cremosa y aporte balanceado.' },
 
   // ==================== 🥑 GRASAS SIN PROTEÍNA ====================
-  { name: 'Aguacate Hass mediano', category: 'Grasas sin proteína', emoji: '🥑', equivalentPortion: '1/3 de pieza', amountValue: 0.33, unit: 'pieza', calories: 45, protein: 0, carbs: 3, fat: 5, tip: 'Excelente fuente de grasas monoinsaturadas y fibra.' },
+  { name: 'Aguacate Hass mediano', category: 'Grasas sin proteína', emoji: '🥑', equivalentPortion: '1/4 de pieza', amountValue: 0.25, unit: 'pieza', calories: 45, protein: 0, carbs: 3, fat: 5, tip: 'Excelente fuente de grasas monoinsaturadas y fibra.' },
   { name: 'Aceite de oliva extra virgen', category: 'Grasas sin proteína', emoji: '🫒', equivalentPortion: '1 cucharadita (5ml)', amountValue: 1, unit: 'cucharadita', calories: 45, protein: 0, carbs: 0, fat: 5, tip: 'Utilízalo en crudo para sazonar ensaladas o verduras.' },
   { name: 'Aceite de cocina en aerosol (Pam o similar)', category: 'Grasas sin proteína', emoji: '💨', equivalentPortion: 'Disparo de 2 segundos', amountValue: 1, unit: 'disparo', calories: 15, protein: 0, carbs: 0, fat: 1.5, tip: 'Excelente aliado para no exceder las grasas añadidas.' },
   { name: 'Mayonesa Light comercial', category: 'Grasas sin proteína', emoji: '🍯', equivalentPortion: '1 cucharada sopera', amountValue: 1, unit: 'cucharada', calories: 45, protein: 0, carbs: 3, fat: 4, tip: 'Reduce calorías en sándwiches o aderezos de atún.' },
