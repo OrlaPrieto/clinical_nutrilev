@@ -27,6 +27,7 @@ import { ProgressChartSvgComponent } from './components/progress-chart-svg/progr
 import { HabitsTrackerComponent } from './components/habits-tracker/habits-tracker';
 import { ShoppingListModalComponent } from './components/shopping-list-modal/shopping-list-modal';
 import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
+import { EquivalentsModalComponent } from './components/equivalents-modal/equivalents-modal';
 
 @Component({
   selector: 'app-portal-page',
@@ -45,7 +46,8 @@ import { PortalPlanOrganism } from '../../shared/components/organisms/portal-pla
     ProgressChartSvgComponent,
     HabitsTrackerComponent,
     ShoppingListModalComponent,
-    PortalPlanOrganism
+    PortalPlanOrganism,
+    EquivalentsModalComponent
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -84,6 +86,7 @@ export class PortalPage implements OnInit, OnDestroy {
   showThemeMenu = signal<boolean>(false);
   showAccessibilityMenu = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
+  showEquivalentsModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
   activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
