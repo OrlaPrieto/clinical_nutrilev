@@ -1,0 +1,168 @@
+@if (showModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#151515] w-full max-w-4xl h-[90vh] md:h-[80vh] rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
+            
+            <!-- Header -->
+            <div class="p-6 md:p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shadow-inner">
+                        <app-a-icon name="dining"></app-a-icon>
+                    </div>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-white leading-none">Condimentos Libres</h3>
+                        <p class="text-[9px] sm:text-[10px] text-emerald-500 font-black uppercase tracking-widest mt-1">Especias e Ingredientes Sin Calorías</p>
+                    </div>
+                </div>
+                <button (click)="closeModal()" class="w-10 h-10 rounded-full hover:bg-emerald-500/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-emerald-500 shrink-0">
+                    <app-a-icon name="close"></app-a-icon>
+                </button>
+            </div>
+
+            <!-- Body Wrapper -->
+            <div class="flex-1 overflow-hidden flex flex-col md:flex-row relative">
+                
+                <!-- Left Column: Search & Condiments List -->
+                <div class="flex-1 flex flex-col overflow-hidden p-6 md:p-8 space-y-6">
+                    
+                    <!-- Search Input & Tabs Bar -->
+                    <div class="space-y-4 shrink-0">
+                        <div class="relative w-full">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-nutri-text/30 dark:text-white/20">
+                                <app-a-icon name="search" size="18px"></app-a-icon>
+                            </span>
+                            <input #searchInput
+                                   (input)="onSearch($event)"
+                                   type="text" 
+                                   placeholder="Busca un condimento (ej. Ajo, Limón, Albahaca, Canela)..." 
+                                   class="w-full pl-11 pr-10 py-3.5 bg-nutri-bg dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 text-sm font-semibold text-nutri-text dark:text-slate-200 outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all placeholder:text-nutri-text/30 dark:placeholder:text-white/20">
+                            @if (searchTerm()) {
+                                <button (click)="clearSearch(searchInput)" 
+                                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-emerald-500/65 hover:text-emerald-500 transition-colors">
+                                    <app-a-icon name="cancel" size="18px"></app-a-icon>
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Horizontal Scroll Category List -->
+                        <div class="flex items-center gap-2 overflow-x-auto pb-2 scroll-hide scroll-smooth scrollbar-thin">
+                            @for (cat of categories; track cat.id) {
+                                <button (click)="selectCategory(cat.id)"
+                                        [class.bg-emerald-500]="selectedCategory() === cat.id"
+                                        [class.text-white]="selectedCategory() === cat.id"
+                                        [class.bg-nutri-bg]="selectedCategory() !== cat.id"
+                                        [class.dark:bg-white/5]="selectedCategory() !== cat.id"
+                                        [class.text-nutri-text/60]="selectedCategory() !== cat.id"
+                                        [class.dark:text-slate-400]="selectedCategory() !== cat.id"
+                                        [class.border-emerald-500/20]="selectedCategory() === cat.id"
+                                        [class.border-emerald-500/5]="selectedCategory() !== cat.id"
+                                        class="px-4 py-2 text-xs font-bold rounded-full border flex items-center gap-1.5 whitespace-nowrap active:scale-95 transition-all select-none">
+                                    <span>{{ cat.emoji }}</span>
+                                    <span>{{ cat.label }}</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Condiments List Scroll Container -->
+                    <div class="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1">
+                        @if (filteredCondiments().length === 0) {
+                            <div class="flex flex-col items-center justify-center py-16 text-center opacity-40">
+                                <app-a-icon name="search_off" class="mb-4" size="large"></app-a-icon>
+                                <h4 class="font-bold serif">No encontramos condimentos</h4>
+                                <p class="text-[10px] uppercase font-black tracking-widest mt-2">Intenta buscar otra especia o hierba</p>
+                            </div>
+                        } @else {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                @for (condiment of filteredCondiments(); track condiment.name) {
+                                    <div (click)="selectCondiment(condiment)"
+                                         [class.border-emerald-500/30]="selectedCondiment()?.name === condiment.name"
+                                         [class.bg-emerald-500/[0.02]]="selectedCondiment()?.name === condiment.name"
+                                         class="group/item flex items-center justify-between p-4 bg-nutri-bg/20 dark:bg-white/1 border border-nutri-rose/5 dark:border-white/5 rounded-3xl hover:border-emerald-500/20 dark:hover:border-white/10 hover:bg-white dark:hover:bg-white/5 hover:shadow-lg hover:shadow-emerald-500/[0.02] transition-all duration-300 cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/5 flex items-center justify-center text-xl shrink-0">
+                                                {{ condiment.emoji }}
+                                            </div>
+                                            <div>
+                                                <h4 class="text-sm font-bold text-nutri-text dark:text-slate-200 group-hover/item:text-emerald-500 transition-colors leading-tight">{{ condiment.name }}</h4>
+                                                @if (searchTerm()) {
+                                                    <span class="inline-block px-1.5 py-0.5 mt-1 text-[7px] rounded-md font-extrabold uppercase tracking-widest text-white shrink-0" [style.background-color]="getCategoryColor(condiment.category)">
+                                                        {{ condiment.category }}
+                                                    </span>
+                                                } @else {
+                                                    <p class="text-[10px] text-nutri-text/40 dark:text-slate-500 mt-0.5 font-medium line-clamp-1 pr-2">{{ condiment.description }}</p>
+                                                }
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Open Detail Action Button -->
+                                        <button class="w-9 h-9 rounded-xl bg-emerald-500/5 border border-emerald-500/10 group-hover/item:bg-emerald-500 group-hover/item:text-white flex items-center justify-center text-emerald-500 transition-all shrink-0 active:scale-95">
+                                            <app-a-icon name="arrow_forward" size="18px"></app-a-icon>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Right Column: Condiment Detail Drawer -->
+                @if (selectedCondiment()) {
+                    <div class="absolute inset-0 md:relative md:inset-auto w-full md:w-80 border-t md:border-t-0 md:border-l border-emerald-500/10 dark:border-white/5 bg-white dark:bg-[#121212] z-50 flex flex-col overflow-hidden animate-slide-in-right">
+                        
+                        <!-- Detail Header -->
+                        <div class="p-6 border-b border-emerald-500/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/20 dark:bg-white/5 shrink-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">ℹ️</span>
+                                <h4 class="font-bold text-base text-nutri-text dark:text-slate-200">Detalles e Ideas</h4>
+                            </div>
+                            <button (click)="closeDetail()" class="w-8 h-8 rounded-full hover:bg-emerald-500/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-emerald-500">
+                                <app-a-icon name="arrow_back" size="20px"></app-a-icon>
+                            </button>
+                        </div>
+
+                        <!-- Detail Scroll Content -->
+                        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                            
+                            <!-- Selected Condiment Detail Card -->
+                            <div class="bg-nutri-bg/30 dark:bg-white/2 p-5 rounded-3xl border border-emerald-500/5 dark:border-white/5 text-center space-y-2">
+                                <div class="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-emerald-500/10 dark:border-white/10 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                                    {{ selectedCondiment()?.emoji }}
+                                </div>
+                                <h4 class="font-bold text-base text-nutri-text dark:text-slate-200 serif leading-snug">{{ selectedCondiment()?.name }}</h4>
+                                <span class="inline-block px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-white rounded-full shadow-sm" [style.background-color]="getCategoryColor(selectedCondiment()!.category)">
+                                    {{ selectedCondiment()?.category }}
+                                </span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">¿Qué aporta?</label>
+                                <p class="text-xs text-nutri-text/80 dark:text-slate-300 font-medium leading-relaxed bg-nutri-bg/20 dark:bg-white/1 p-4 rounded-2xl border border-nutri-rose/5">
+                                    {{ selectedCondiment()?.description }}
+                                </p>
+                            </div>
+
+                            <!-- Tip / Recommended use -->
+                            @if (selectedCondiment()?.tip) {
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">💡 Consejo Clínico-Culinario</label>
+                                    <p class="text-xs text-emerald-800 dark:text-emerald-300 font-bold leading-relaxed bg-emerald-500/5 dark:bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10 shadow-inner">
+                                        {{ selectedCondiment()?.tip }}
+                                    </p>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Detail Footer -->
+                        <div class="p-6 border-t border-emerald-500/10 dark:border-white/5 bg-nutri-bg/10 dark:bg-white/5 shrink-0">
+                            <app-a-button (onClick)="closeDetail()" label="Aceptar" variant="primary" size="lg"
+                                        class="w-full"
+                                        customClass="!bg-emerald-500 hover:!bg-emerald-600 !border-emerald-500 !rounded-2xl active:scale-95 transition-all">
+                            </app-a-button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

@@ -28,6 +28,7 @@ import { HabitsTrackerComponent } from './components/habits-tracker/habits-track
 import { ShoppingListModalComponent } from './components/shopping-list-modal/shopping-list-modal';
 import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
 import { EquivalentsModalComponent } from './components/equivalents-modal/equivalents-modal';
+import { FreeCondimentsModalComponent } from './components/free-condiments-modal/free-condiments-modal';
 
 @Component({
   selector: 'app-portal-page',
@@ -47,7 +48,8 @@ import { EquivalentsModalComponent } from './components/equivalents-modal/equiva
     HabitsTrackerComponent,
     ShoppingListModalComponent,
     PortalPlanOrganism,
-    EquivalentsModalComponent
+    EquivalentsModalComponent,
+    FreeCondimentsModalComponent
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -87,6 +89,7 @@ export class PortalPage implements OnInit, OnDestroy {
   showAccessibilityMenu = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
   showEquivalentsModal = signal<boolean>(false);
+  showCondimentsModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
   activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
