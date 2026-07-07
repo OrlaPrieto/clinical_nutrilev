@@ -1,0 +1,209 @@
+@if (showModal()) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overscroll-contain">
+        <div class="bg-white dark:bg-[#151515] w-full max-w-4xl h-[90vh] md:h-[80vh] rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col animate-fade-up">
+            
+            <!-- Header -->
+            <div class="p-6 md:p-8 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/50 dark:bg-white/5 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 flex items-center justify-center text-nutri-rose shadow-inner">
+                        <app-a-icon name="menu_book"></app-a-icon>
+                    </div>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold serif text-nutri-text dark:text-white leading-none">Equivalentes Interactivos</h3>
+                        <p class="text-[9px] sm:text-[10px] text-nutri-rose font-black uppercase tracking-widest mt-1">Guía Oficial SMAE</p>
+                    </div>
+                </div>
+                <button (click)="closeModal()" class="w-10 h-10 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose shrink-0">
+                    <app-a-icon name="close"></app-a-icon>
+                </button>
+            </div>
+
+            <!-- Body Wrapper: Split Screen on larger viewports when calculator is open -->
+            <div class="flex-1 overflow-hidden flex flex-col md:flex-row relative">
+                
+                <!-- Left Column: Search & Foods List -->
+                <div class="flex-1 flex flex-col overflow-hidden p-6 md:p-8 space-y-6">
+                    
+                    <!-- Search Input & Tabs Bar -->
+                    <div class="space-y-4 shrink-0">
+                        <div class="relative w-full">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-nutri-text/30 dark:text-white/20">
+                                <app-a-icon name="search" size="18px"></app-a-icon>
+                            </span>
+                            <input #searchInput
+                                   (input)="onSearch($event)"
+                                   type="text" 
+                                   placeholder="Buscar alimento..." 
+                                   class="w-full pl-11 pr-10 py-3.5 bg-nutri-bg dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 text-sm font-semibold text-nutri-text dark:text-slate-200 outline-none focus:ring-2 focus:ring-nutri-rose/30 transition-all placeholder:text-nutri-text/30 dark:placeholder:text-white/20">
+                            @if (searchTerm()) {
+                                <button (click)="clearSearch(searchInput)" 
+                                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-nutri-rose/65 hover:text-nutri-rose transition-colors">
+                                    <app-a-icon name="cancel" size="18px"></app-a-icon>
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Horizontal Scroll Category List -->
+                        <div class="flex items-center gap-2 overflow-x-auto pb-2 scroll-hide scroll-smooth scrollbar-thin">
+                            @for (cat of categories; track cat.id) {
+                                <button (click)="selectCategory(cat.id)"
+                                        [class.bg-nutri-rose]="selectedCategory() === cat.id"
+                                        [class.text-white]="selectedCategory() === cat.id"
+                                        [class.bg-nutri-bg]="selectedCategory() !== cat.id"
+                                        [class.dark:bg-white/5]="selectedCategory() !== cat.id"
+                                        [class.text-nutri-text/60]="selectedCategory() !== cat.id"
+                                        [class.dark:text-slate-400]="selectedCategory() !== cat.id"
+                                        [class.border-nutri-rose/20]="selectedCategory() === cat.id"
+                                        [class.border-nutri-rose/5]="selectedCategory() !== cat.id"
+                                        class="px-4 py-2 text-xs font-bold rounded-full border flex items-center gap-1.5 whitespace-nowrap active:scale-95 transition-all select-none">
+                                    <span>{{ cat.emoji }}</span>
+                                    <span>{{ cat.label }}</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Foods List Scroll Container -->
+                    <div class="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1">
+                        @if (filteredFoods().length === 0) {
+                            <div class="flex flex-col items-center justify-center py-16 text-center opacity-40">
+                                <app-a-icon name="search_off" class="mb-4" size="large"></app-a-icon>
+                                <h4 class="font-bold serif">No encontramos equivalencias</h4>
+                                <p class="text-[10px] uppercase font-black tracking-widest mt-2">Intenta buscar otro ingrediente</p>
+                            </div>
+                        } @else {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                @for (food of filteredFoods(); track food.name) {
+                                    <div class="group/item flex items-center justify-between p-4 bg-nutri-bg/20 dark:bg-white/1 border border-nutri-rose/5 dark:border-white/5 rounded-3xl hover:border-nutri-rose/20 dark:hover:border-white/10 hover:bg-white dark:hover:bg-white/5 hover:shadow-lg hover:shadow-nutri-rose/[0.02] transition-all duration-300">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/5 flex items-center justify-center text-xl shrink-0">
+                                                {{ food.emoji }}
+                                            </div>
+                                            <div>
+                                                <h4 class="text-sm font-bold text-nutri-text dark:text-slate-200 group-hover/item:text-nutri-rose transition-colors leading-tight">{{ food.name }}</h4>
+                                                <p class="text-[11px] text-nutri-text/50 dark:text-slate-400 mt-0.5 font-medium flex flex-wrap items-center gap-y-1">
+                                                    Porción: <span class="font-bold text-nutri-text dark:text-slate-300 mr-1.5">{{ food.equivalentPortion }}</span>
+                                                    @if (searchTerm()) {
+                                                        <span class="inline-block px-1.5 py-0.5 text-[8px] rounded-md font-extrabold uppercase tracking-widest text-white shrink-0 shadow-sm" [style.background-color]="getCategoryColor(food.category)">
+                                                            {{ food.category }}
+                                                        </span>
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Open Calculator Action Button -->
+                                        <button (click)="openCalculator(food)"
+                                                class="w-9 h-9 rounded-xl bg-nutri-rose/5 border border-nutri-rose/10 hover:bg-nutri-rose hover:text-white flex items-center justify-center text-nutri-rose transition-all shrink-0 active:scale-95">
+                                            <app-a-icon name="calculate" size="18px"></app-a-icon>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Equivalents Calculator (Slides from the side on mobile / fixed on Desktop) -->
+                @if (calculatorFood()) {
+                    <div class="absolute inset-0 md:relative md:inset-auto w-full md:w-80 border-t md:border-t-0 md:border-l border-nutri-rose/10 dark:border-white/5 bg-white dark:bg-[#121212] z-50 flex flex-col overflow-hidden animate-slide-in-right">
+                        
+                        <!-- Calculator Header -->
+                        <div class="p-6 border-b border-nutri-rose/10 dark:border-white/5 flex items-center justify-between bg-nutri-bg/20 dark:bg-white/5 shrink-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">🧮</span>
+                                <h4 class="font-bold text-base text-nutri-text dark:text-slate-200">Conversor de Porciones</h4>
+                            </div>
+                            <button (click)="closeCalculator()" class="md:hidden w-8 h-8 rounded-full hover:bg-nutri-rose/10 dark:hover:bg-white/5 flex items-center justify-center transition-colors text-nutri-rose">
+                                <app-a-icon name="arrow_back" size="20px"></app-a-icon>
+                            </button>
+                        </div>
+
+                        <!-- Calculator Scroll Content -->
+                        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                            
+                            <!-- Selected Food Detail Card -->
+                            <div class="bg-nutri-bg/30 dark:bg-white/2 p-5 rounded-3xl border border-nutri-rose/5 dark:border-white/5 text-center space-y-2">
+                                <div class="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-nutri-rose/10 dark:border-white/10 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                                    {{ calculatorFood()?.emoji }}
+                                </div>
+                                <h4 class="font-bold text-base text-nutri-text dark:text-slate-200 serif leading-snug">{{ calculatorFood()?.name }}</h4>
+                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 font-semibold uppercase tracking-wider">
+                                    {{ calculatorFood()?.category }}
+                                </p>
+                            </div>
+
+                            <!-- Interactive Input -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Cantidad que deseas consumir</label>
+                                <div class="flex items-center gap-3">
+                                    <input [value]="calculatorQuantity()"
+                                           (input)="setCalculatorQuantity($event)"
+                                           type="number" 
+                                           min="0.1" 
+                                           step="0.5"
+                                           class="w-24 px-4 py-3.5 bg-nutri-bg dark:bg-white/5 rounded-2xl border border-nutri-rose/10 dark:border-white/10 text-base font-extrabold text-nutri-text dark:text-slate-200 outline-none text-center focus:ring-2 focus:ring-nutri-rose/30">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-semibold text-nutri-text/60 dark:text-slate-400">
+                                            {{ calculatorFood()?.unit }}{{ calculatorQuantity() > 1 && calculatorFood()?.unit?.endsWith('a') ? 'as' : '' }}
+                                        </span>
+                                        @if (calculatorFood()?.gramsEquivalent) {
+                                            <span class="text-[11px] text-nutri-rose dark:text-rose-400 font-bold leading-none mt-0.5">
+                                                ≈ {{ getCalculatedGrams() }}g
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Calculation Result -->
+                            <div class="bg-gradient-to-tr from-nutri-rose/5 to-purple-500/5 p-6 rounded-[2rem] border border-nutri-rose/10 dark:border-white/5 text-center shadow-inner relative overflow-hidden">
+                                <div class="absolute -right-8 -top-8 w-24 h-24 bg-nutri-rose/5 rounded-full blur-xl"></div>
+                                <p class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest relative z-10">Equivale a</p>
+                                <h2 class="text-4.5xl font-black serif text-nutri-rose dark:text-rose-400 my-2 drop-shadow-md select-none relative z-10 leading-none">
+                                    {{ calculatedEquivalents() }}
+                                </h2>
+                                <p class="text-xs font-bold text-nutri-text/70 dark:text-slate-400 uppercase tracking-widest relative z-10">
+                                    Equivalente{{ calculatedEquivalents() > 1 ? 's' : '' }}
+                                </p>
+                            </div>
+
+                            <!-- Suggested Replacements -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h5 class="text-[10px] font-black text-nutri-rose/70 dark:text-rose-400/80 uppercase tracking-widest">Sustituir por porciones de:</h5>
+                                    <button (click)="shuffleReplacements()" 
+                                            class="text-[10px] font-extrabold text-nutri-rose hover:text-nutri-rose/80 dark:text-rose-400 dark:hover:text-rose-400/80 transition-colors flex items-center gap-1 uppercase tracking-widest cursor-pointer select-none">
+                                        <app-a-icon name="refresh" size="12px"></app-a-icon>
+                                        Variar
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    @for (rep of suggestedReplacements(); track rep.name) {
+                                        <div class="flex items-center justify-between p-3 bg-nutri-bg/10 dark:bg-white/1 border border-nutri-rose/5 dark:border-white/5 rounded-2xl">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-base">{{ rep.emoji }}</span>
+                                                <span class="text-xs font-bold text-nutri-text/80 dark:text-slate-300 line-clamp-1 pr-2">{{ rep.name }}</span>
+                                            </div>
+                                            <span class="text-xs font-black text-nutri-rose shrink-0 whitespace-nowrap bg-nutri-rose/5 dark:bg-rose-400/5 px-2.5 py-1 rounded-xl">
+                                                {{ rep.scaledPortion }}
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calculator Footer -->
+                        <div class="p-6 border-t border-nutri-rose/10 dark:border-white/5 bg-nutri-bg/10 dark:bg-white/5 shrink-0">
+                            <app-a-button (onClick)="closeCalculator()" label="Aceptar" variant="primary" size="lg"
+                                        class="w-full"
+                                        customClass="!rounded-2xl active:scale-95 transition-all">
+                            </app-a-button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

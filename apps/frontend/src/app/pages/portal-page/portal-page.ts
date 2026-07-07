@@ -27,6 +27,8 @@ import { ProgressChartSvgComponent } from './components/progress-chart-svg/progr
 import { HabitsTrackerComponent } from './components/habits-tracker/habits-tracker';
 import { ShoppingListModalComponent } from './components/shopping-list-modal/shopping-list-modal';
 import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
+import { EquivalentsModalComponent } from './components/equivalents-modal/equivalents-modal';
+import { FreeCondimentsModalComponent } from './components/free-condiments-modal/free-condiments-modal';
 
 @Component({
   selector: 'app-portal-page',
@@ -45,7 +47,9 @@ import { PortalPlanOrganism } from '../../shared/components/organisms/portal-pla
     ProgressChartSvgComponent,
     HabitsTrackerComponent,
     ShoppingListModalComponent,
-    PortalPlanOrganism
+    PortalPlanOrganism,
+    EquivalentsModalComponent,
+    FreeCondimentsModalComponent
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -84,6 +88,8 @@ export class PortalPage implements OnInit, OnDestroy {
   showThemeMenu = signal<boolean>(false);
   showAccessibilityMenu = signal<boolean>(false);
   showCancelConfirmModal = signal<boolean>(false);
+  showEquivalentsModal = signal<boolean>(false);
+  showCondimentsModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
   activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
@@ -150,8 +156,16 @@ export class PortalPage implements OnInit, OnDestroy {
   public pullDistance = signal<number>(0);
   public isRefreshing = signal<boolean>(false);
 
+  isAnyModalOpen(): boolean {
+    return this.showEquivalentsModal() || 
+           this.showCondimentsModal() || 
+           this.showShoppingModal() || 
+           this.showCancelConfirmModal();
+  }
+
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent) {
+    if (this.isAnyModalOpen()) return;
     this.swipeStartX = event.touches[0].clientX;
     this.swipeStartY = event.touches[0].clientY;
 
@@ -163,6 +177,7 @@ export class PortalPage implements OnInit, OnDestroy {
 
   @HostListener('touchmove', ['$event'])
   onTouchMove(event: TouchEvent) {
+    if (this.isAnyModalOpen()) return;
     if (!this.isPulling) return;
     const currentY = event.touches[0].clientY;
     const diff = currentY - this.touchStartY;
@@ -180,6 +195,11 @@ export class PortalPage implements OnInit, OnDestroy {
 
   @HostListener('touchend', ['$event'])
   async onTouchEnd(event: TouchEvent) {
+    if (this.isAnyModalOpen()) {
+      this.isPulling = false;
+      this.pullDistance.set(0);
+      return;
+    }
     // 1. Handle Swipe navigation
     const diffX = event.changedTouches[0].clientX - this.swipeStartX;
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
