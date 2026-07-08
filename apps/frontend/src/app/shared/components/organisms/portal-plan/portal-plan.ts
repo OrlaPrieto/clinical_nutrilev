@@ -222,6 +222,50 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     return 0;
   }
 
+  getMealTimeColorClasses(tiempo: string = ''): {
+    badgeClass: string;
+    timelineDotClass: string;
+    recipeBtnClass: string;
+  } {
+    const cleanTiempo = tiempo.toLowerCase();
+    
+    // Mañana / Desayuno (Yellow/Amber)
+    if (
+      cleanTiempo.includes('desayuno') || 
+      cleanTiempo.includes('licuado') || 
+      cleanTiempo.includes('colación 1') || 
+      cleanTiempo.includes('matutina') || 
+      cleanTiempo.includes('mañana')
+    ) {
+      return {
+        badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded-lg',
+        timelineDotClass: 'border-amber-400 bg-amber-400',
+        recipeBtnClass: 'text-amber-500 bg-amber-500/5 border-amber-500/10 hover:bg-amber-500 hover:text-white hover:border-amber-500 hover:shadow-amber-500/20'
+      };
+    }
+    
+    // Tarde / Comida (Orange)
+    if (
+      cleanTiempo.includes('comida') || 
+      cleanTiempo.includes('colación 2') || 
+      cleanTiempo.includes('vespertina') || 
+      cleanTiempo.includes('tarde')
+    ) {
+      return {
+        badgeClass: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/25 px-2 py-0.5 rounded-lg',
+        timelineDotClass: 'border-orange-500 bg-orange-500',
+        recipeBtnClass: 'text-orange-500 bg-orange-500/5 border-orange-500/10 hover:bg-orange-500 hover:text-white hover:border-orange-500 hover:shadow-orange-500/20'
+      };
+    }
+    
+    // Noche / Cena (Indigo/Violet)
+    return {
+      badgeClass: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/25 px-2 py-0.5 rounded-lg',
+      timelineDotClass: 'border-indigo-500 bg-indigo-500',
+      recipeBtnClass: 'text-indigo-500 bg-indigo-500/5 border-indigo-500/10 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 hover:shadow-indigo-500/20'
+    };
+  }
+
   getIngredientIcon(grupo?: string, nombre: string = ''): { name: string; colorClass: string; bgClass: string; borderClass: string } {
     const cleanGroup = (grupo || '').toLowerCase();
     const cleanNombre = nombre.toLowerCase();
