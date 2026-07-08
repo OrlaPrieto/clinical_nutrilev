@@ -108,12 +108,7 @@
           <div class="bg-white dark:bg-[#0c0c0c] border border-nutri-rose/10 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-nutri-rose/5 transition-all overflow-hidden flex flex-col relative group">
             
             <!-- Visual Time Header Line (Always shown on top of the card) -->
-            <div class="absolute top-0 left-0 right-0 h-1.5 z-10"
-                 [ngClass]="{
-                   'bg-gradient-to-r from-yellow-400 to-amber-300': meal.tiempo.toLowerCase().includes('desayuno') || meal.tiempo.toLowerCase().includes('licuado') || meal.tiempo.toLowerCase().includes('colación 1') || meal.tiempo.toLowerCase().includes('matutina') || meal.tiempo.toLowerCase().includes('mañana'),
-                   'bg-gradient-to-r from-orange-500 to-amber-400': meal.tiempo.toLowerCase().includes('comida') || meal.tiempo.toLowerCase().includes('colación 2') || meal.tiempo.toLowerCase().includes('vespertina') || meal.tiempo.toLowerCase().includes('tarde'),
-                   'bg-gradient-to-r from-indigo-500 to-violet-300': meal.tiempo.toLowerCase().includes('cena') || meal.tiempo.toLowerCase().includes('colación 3') || meal.tiempo.toLowerCase().includes('nocturna') || meal.tiempo.toLowerCase().includes('noche')
-                 }"></div>
+            <div [class]="getMealTimeColorClasses(meal.tiempo).topLineClass" class="absolute top-0 left-0 right-0 h-1.5 z-10"></div>
 
             <!-- Premium Meal Card Header Image -->
             @if (showMealImages() && meal.platillo_imagen_url) {
