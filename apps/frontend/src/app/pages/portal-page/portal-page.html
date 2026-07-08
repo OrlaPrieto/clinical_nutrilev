@@ -476,9 +476,16 @@
                         <div [@tabAnimation] class="space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                 <!-- Meta de Progreso (Vibrant Gradient Card) -->
-                                <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full group-hover:scale-110 transition-transform duration-500 blur-sm pointer-events-none"></div>
-                                    <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-white/5 rounded-full group-hover:scale-115 transition-transform duration-500 blur-md pointer-events-none"></div>
+                                <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[2rem] flex flex-col justify-between overflow-hidden relative group border-none shadow-md">
+                                    
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
+                                        <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
+                                            <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+                                                <app-a-icon name="track_changes" size="20px" class="text-white opacity-80"></app-a-icon>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="relative z-10">
                                         <span class="text-[9px] font-black uppercase tracking-widest text-white/80 mb-3 block">
                                             {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
@@ -691,8 +698,16 @@
                                 <div class="space-y-6">
                                         
                                         <!-- 1. Banner de Bienvenida Glassmorphic (Vibrant Hero Gradient Card) -->
-                                        <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8">
-                                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                                        <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8 group shadow-md">
+                                            
+                                            <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                            <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
+                                                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
+                                                    <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+                                                        <app-a-icon name="restaurant" size="20px" class="text-white opacity-80"></app-a-icon>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div>
                                                     <span class="text-xs font-black uppercase tracking-widest text-white/80">Tu Plan Nutricional Activo</span>
@@ -922,8 +937,16 @@
                     @if (activeTab() === 'resources') {
                         <div [@tabAnimation] class="space-y-8 animate-fade-in">
                             <!-- Hero Section del Recurso (Vibrant Hero Gradient Card) -->
-                            <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8">
-                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                            <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8 group shadow-md">
+                                
+                                <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
+                                    <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
+                                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+                                            <app-a-icon name="local_library" size="20px" class="text-white opacity-80"></app-a-icon>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="max-w-2xl relative z-10 space-y-3">
                                     <span class="text-[8px] font-black tracking-[0.3em] uppercase text-white/90 bg-white/15 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
                                     <h2 class="text-3xl sm:text-4xl font-medium serif text-white leading-tight">Documentos de Apoyo</h2>
