@@ -6,6 +6,7 @@ import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { Patient } from '@shared/models/interfaces';
+import { AnalyticsService } from '../../../../shared/services/analytics.service';
 
 @Component({
   selector: 'app-o-portal-plan',
@@ -22,6 +23,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   private patientService = inject(PatientService);
   private toastService = inject(ToastService);
   public themeService = inject(ThemeService);
+  private analytics = inject(AnalyticsService);
 
   parsedMenu = signal<any | null>(null);
   loading = signal<boolean>(false);
@@ -148,6 +150,12 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       clearInterval(this.progressInterval);
       this.menuProgress.set(100);
       this.menuLoadingMessage.set('¡Menú digitalizado con éxito!');
+
+      // Analytics
+      this.analytics.logEvent('generate_ai_menu', {
+        patient_email: this.patient()?.email,
+        patient_name: this.patient()?.nombre
+      });
       
       // Wait briefly for completion transition
       await new Promise(resolve => setTimeout(resolve, 600));
