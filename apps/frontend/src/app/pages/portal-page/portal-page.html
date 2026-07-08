@@ -478,13 +478,11 @@
                                 <!-- Meta de Progreso (Vibrant Gradient Card) -->
                                 <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[2rem] flex flex-col justify-between overflow-hidden relative group border-none shadow-md">
                                     
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
-                                        <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
-                                            <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
-                                                <app-a-icon name="track_changes" size="20px" class="text-white opacity-80"></app-a-icon>
-                                            </div>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="track_changes" size="20px" class="text-white opacity-90"></app-a-icon>
                                     </div>
                                     <div class="relative z-10">
                                         <span class="text-[9px] font-black uppercase tracking-widest text-white/80 mb-3 block">
@@ -510,13 +508,11 @@
                                 <!-- Último Registro Físico (Samsung Health Style Card) -->
                                 <div class="dashboard-card bg-indigo-600 dark:bg-indigo-600 p-6 sm:p-8 rounded-[2rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
                                     
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
-                                        <div class="w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                            <div class="w-14 h-14 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                                <app-a-icon name="monitor_weight" size="20px" class="text-white opacity-80"></app-a-icon>
-                                            </div>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="monitor_weight" size="20px" class="text-white opacity-90"></app-a-icon>
                                     </div>
 
                                     <div class="relative z-10">
@@ -584,11 +580,11 @@
                                 <!-- Fat Card (Samsung Health Style) -->
                                 <div class="dashboard-card col-span-1 bg-amber-500 dark:bg-amber-500 p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
                                     
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
-                                        <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                            <app-a-icon name="percent" size="12px" class="text-white opacity-80"></app-a-icon>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="percent" size="12px" class="text-white opacity-90"></app-a-icon>
                                     </div>
 
                                     <div class="flex items-center gap-1.5 text-white/60 relative z-10">
@@ -611,11 +607,11 @@
                                 <!-- Porcentaje de Avance General (Samsung Health Style Circular Gauge) -->
                                 <div class="dashboard-card col-span-1 bg-emerald-500 dark:bg-emerald-500 p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex items-center justify-between overflow-hidden relative group border-none">
                                     
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
-                                        <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                            <app-a-icon name="flag" size="12px" class="text-white opacity-80"></app-a-icon>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="flag" size="12px" class="text-white opacity-90"></app-a-icon>
                                     </div>
 
                                     <div class="space-y-1 min-w-0 flex-1 pr-2 relative z-10">
@@ -700,13 +696,11 @@
                                         <!-- 1. Banner de Bienvenida Glassmorphic (Vibrant Hero Gradient Card) -->
                                         <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8 group shadow-md">
                                             
-                                            <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                            <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
-                                                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
-                                                    <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
-                                                        <app-a-icon name="restaurant" size="20px" class="text-white opacity-80"></app-a-icon>
-                                                    </div>
-                                                </div>
+                                            <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                            <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                            <!-- Standalone icon badge -->
+                                            <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                                <app-a-icon name="restaurant" size="20px" class="text-white opacity-90"></app-a-icon>
                                             </div>
                                             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div>
@@ -951,13 +945,11 @@
                             <!-- Hero Section del Recurso (Vibrant Hero Gradient Card) -->
                             <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8 group shadow-md">
                                 
-                                <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
-                                    <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
-                                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
-                                            <app-a-icon name="local_library" size="20px" class="text-white opacity-80"></app-a-icon>
-                                        </div>
-                                    </div>
+                                <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                <!-- Standalone icon badge -->
+                                <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                    <app-a-icon name="local_library" size="20px" class="text-white opacity-90"></app-a-icon>
                                 </div>
                                 <div class="max-w-2xl relative z-10 space-y-3">
                                     <span class="text-[8px] font-black tracking-[0.3em] uppercase text-white/90 bg-white/15 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
@@ -972,13 +964,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Tarjeta 1: Guía de Equivalentes -->
                                 <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-rose-500 dark:bg-rose-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover/card:scale-105">
-                                        <div class="w-20 h-20 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                            <div class="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                                <app-a-icon name="menu_book" size="18px" class="text-white opacity-85"></app-a-icon>
-                                            </div>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover/card:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="menu_book" size="16px" class="text-white opacity-90"></app-a-icon>
                                     </div>
 
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
@@ -995,12 +985,12 @@
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showEquivalentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-600 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/lista-equivalentes.pdf" download="Lista_Equivalentes_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-700 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -1010,13 +1000,11 @@
 
                                 <!-- Tarjeta 2: Guía de Marcas -->
                                 <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-amber-500 dark:bg-amber-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover/card:scale-105">
-                                        <div class="w-20 h-20 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                            <div class="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                                <app-a-icon name="local_mall" size="18px" class="text-white opacity-85"></app-a-icon>
-                                            </div>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover/card:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="local_mall" size="16px" class="text-white opacity-90"></app-a-icon>
                                     </div>
 
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
@@ -1033,12 +1021,12 @@
                                         </div>
                                         <div class="flex gap-3">
                                             <a href="/documents/guia-marcas-recomendadas.pdf" target="_blank"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </a>
                                             <a href="/documents/guia-marcas-recomendadas.pdf" download="Guia_Marcas_Recomendadas.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-700 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -1048,13 +1036,11 @@
 
                                 <!-- Tarjeta 3: Condimentos -->
                                 <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-emerald-500 dark:bg-emerald-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
-                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
-                                    <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover/card:scale-105">
-                                        <div class="w-20 h-20 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                            <div class="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
-                                                <app-a-icon name="dining" size="18px" class="text-white opacity-85"></app-a-icon>
-                                            </div>
-                                        </div>
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover/card:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="dining" size="16px" class="text-white opacity-90"></app-a-icon>
                                     </div>
 
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
@@ -1070,12 +1056,12 @@
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showCondimentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none font-bold">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/condimentos.pdf" download="Condimentos_Libres_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
