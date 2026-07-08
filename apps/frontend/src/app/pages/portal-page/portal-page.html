@@ -726,60 +726,78 @@
                                         <!-- 2. Descargas y Herramientas -->
                                         <div class="space-y-3">
                                             <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Descargas y Herramientas</h3>
-                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <!-- Múltiples Menús PDFs -->
+                                                <!-- Múltiples Menús PDFs (Samsung Health Solid Button Style) -->
                                                 @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                                     @for (m of patient()?.current_menus; track m.url) {
                                                         <a [href]="m.url" target="_blank" rel="noopener noreferrer" 
-                                                           class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
+                                                           class="group bg-rose-500 dark:bg-rose-500 p-5 rounded-[2.25rem] shadow-sm hover:shadow-xl hover:shadow-rose-500/35 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden active:scale-[0.99] border-none text-white mb-4">
+                                                            
+                                                            <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0">
+                                                                <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full"></div>
+                                                            </div>
+
+                                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0 z-10">
                                                                 <app-a-icon name="description"></app-a-icon>
                                                             </div>
                                                             <div class="flex-1 min-w-0 z-10">
-                                                                <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Archivo PDF</span>
-                                                                <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">{{ m.name }}</p>
+                                                                <span class="inline-block text-[8px] font-black uppercase tracking-wider text-rose-200 bg-white/10 px-2 py-0.5 rounded-md mb-1.5">Archivo PDF</span>
+                                                                <p class="text-sm font-extrabold text-white truncate leading-snug">{{ m.name }}</p>
                                                             </div>
-                                                            <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
+                                                            <!-- Clickable indicator circle -->
+                                                            <div class="w-8 h-8 rounded-full bg-white text-rose-600 flex items-center justify-center shadow-md scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300 shrink-0 z-10">
                                                                 <app-a-icon name="download" size="18px"></app-a-icon>
                                                             </div>
                                                         </a>
                                                     }
                                                 } @else if (patient()?.menu_url) {
                                                     <a [href]="patient()?.menu_url" target="_blank" rel="noopener noreferrer" 
-                                                       class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
+                                                       class="group bg-rose-500 dark:bg-rose-500 p-5 rounded-[2.25rem] shadow-sm hover:shadow-xl hover:shadow-rose-500/35 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden active:scale-[0.99] border-none text-white mb-4">
+                                                        
+                                                        <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                                        <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0">
+                                                            <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full"></div>
+                                                        </div>
+
+                                                        <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0 z-10">
                                                             <app-a-icon name="description"></app-a-icon>
                                                         </div>
                                                         <div class="flex-1 min-w-0 z-10">
-                                                            <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Plan Principal</span>
-                                                            <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Ver Menú Digital</p>
+                                                            <span class="inline-block text-[8px] font-black uppercase tracking-wider text-rose-200 bg-white/10 px-2 py-0.5 rounded-md mb-1.5">Plan Principal</span>
+                                                            <p class="text-sm font-extrabold text-white truncate leading-snug">Ver Menú Digital</p>
                                                         </div>
-                                                        <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
+                                                        <!-- Clickable indicator circle -->
+                                                        <div class="w-8 h-8 rounded-full bg-white text-rose-600 flex items-center justify-center shadow-md scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300 shrink-0 z-10">
                                                             <app-a-icon name="launch" size="16px"></app-a-icon>
                                                         </div>
                                                     </a>
                                                 }
- 
-                                                <!-- Lista de Súper Card (Asistente IA) -->
+                                 
+                                                <!-- Lista de Súper Card (Samsung Health Solid Button Style) -->
                                                 <div (click)="openShoppingList()" 
-                                                     class="group bg-gradient-to-br from-emerald-500/[0.06] via-white/50 to-emerald-500/[0.02] dark:from-emerald-950/20 dark:to-emerald-950/5 p-5 rounded-[2.25rem] border border-emerald-500/30 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0 border border-emerald-500/10">
+                                                     class="group bg-emerald-500 dark:bg-emerald-500 p-5 rounded-[2.25rem] shadow-sm hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden active:scale-[0.99] border-none text-white mb-4">
+                                                    
+                                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0">
+                                                        <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full"></div>
+                                                    </div>
+
+                                                    <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0 z-10">
                                                         <app-a-icon name="shopping_cart"></app-a-icon>
                                                     </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <span class="inline-block text-[8px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-md mb-1.5">Asistente IA</span>
-                                                        <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Lista de Súper</p>
+                                                    <div class="flex-1 min-w-0 z-10">
+                                                        <span class="inline-block text-[8px] font-black uppercase tracking-wider text-emerald-200 bg-white/10 px-2 py-0.5 rounded-md mb-1.5">Asistente IA</span>
+                                                        <p class="text-sm font-extrabold text-white truncate leading-snug">Lista de Súper</p>
                                                     </div>
                                                     @if (loadingShoppingList()) {
-                                                        <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                                                        <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0 z-10"></div>
                                                     } @else {
-                                                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 dark:bg-white/5 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shrink-0">
+                                                        <!-- Clickable indicator circle -->
+                                                        <div class="w-8 h-8 rounded-full bg-white text-emerald-600 flex items-center justify-center shadow-md scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300 shrink-0 z-10">
                                                             <app-a-icon name="chevron_right" size="18px"></app-a-icon>
                                                         </div>
                                                     }
                                                 </div>
-                                            </div>
                                         </div>
                                     </div>
                                 } @else {
