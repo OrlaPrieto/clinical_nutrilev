@@ -4,6 +4,22 @@ module.exports = {
   content: [
     "./src/**/*.{html,ts}",
   ],
+  safelist: [
+    'from-orange-500',
+    'to-amber-600',
+    'border-orange-400/20',
+    'shadow-orange-500/5',
+    'from-yellow-400',
+    'to-orange-500',
+    'border-yellow-400/20',
+    'shadow-yellow-500/5',
+    'from-sky-400',
+    'to-indigo-600',
+    'border-sky-400/20',
+    'shadow-sky-500/5',
+    'bg-gradient-to-br',
+    'text-white'
+  ],
   theme: {
     extend: {
       colors: {

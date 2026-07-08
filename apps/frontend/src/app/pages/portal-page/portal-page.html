@@ -640,9 +640,16 @@
                             <!-- Sección de Logros (Estrellas de Logro) -->
                             <div class="py-12 border-t border-nutri-rose/5 dark:border-white/5">
                                 <div class="flex flex-col items-center gap-10">
-                                    <div class="text-center space-y-2">
-                                        <h3 class="text-lg font-bold serif dark:text-slate-200">Estrellas Nutrilev</h3>
-                                        <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 dark:text-nutri-rose-soft/40 uppercase">Reconocimientos de tu disciplina</p>
+                                    <div class="text-center space-y-1.5">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <app-a-icon name="military_tech" size="22px" class="text-amber-500"></app-a-icon>
+                                            <h3 class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 serif">
+                                                Estrellas Nutrilev
+                                            </h3>
+                                        </div>
+                                        <p class="text-[9px] font-bold tracking-[0.35em] text-nutri-rose/60 dark:text-nutri-rose-soft/50 uppercase">
+                                            Reconocimientos de tu disciplina
+                                        </p>
                                     </div>
 
                                     <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 w-full max-w-5xl mx-auto">
@@ -1242,19 +1249,21 @@
 @if (activeCelebration()) {
     <div class="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#080808]/85 dark:bg-black/90 backdrop-blur-md animate-fade-in"
          (click)="activeCelebration.set(null)">
-        <div class="bg-white/95 dark:bg-[#121212]/95 w-full max-w-md rounded-[3rem] border border-nutri-rose/20 dark:border-white/10 p-8 text-center shadow-2xl relative flex flex-col items-center space-y-6 overflow-hidden animate-scale-up pointer-events-auto"
+        <div [style.background]="activeCelebration().id === '25-percent' ? 'linear-gradient(135deg, #f97316, #d97706)' : activeCelebration().id === 'halfway' ? 'linear-gradient(135deg, #facc15, #f97316)' : 'linear-gradient(135deg, #38bdf8, #4f46e5)'"
+             [style.borderColor]="activeCelebration().id === '25-percent' ? 'rgba(249, 115, 22, 0.25)' : activeCelebration().id === 'halfway' ? 'rgba(250, 204, 21, 0.25)' : 'rgba(56, 189, 248, 0.25)'"
+             class="w-full max-w-md rounded-[3rem] border p-8 text-center shadow-2xl relative flex flex-col items-center space-y-6 overflow-hidden animate-scale-up pointer-events-auto"
              (click)="$event.stopPropagation()">
             
             <!-- Ambient Glow Background -->
-            <div class="absolute -top-20 w-48 h-48 rounded-full blur-[80px] opacity-40 -z-10"
+            <div class="absolute -top-20 w-48 h-48 rounded-full blur-[80px] opacity-20 -z-10"
                  [ngClass]="{
-                   'bg-gradient-to-tr from-orange-400 to-amber-200': activeCelebration().id === '25-percent',
-                   'bg-gradient-to-tr from-yellow-500 to-amber-300': activeCelebration().id === 'halfway',
-                   'bg-gradient-to-tr from-sky-400 to-indigo-300': activeCelebration().id === 'goal-reached'
+                   'bg-orange-300': activeCelebration().id === '25-percent',
+                   'bg-yellow-300': activeCelebration().id === 'halfway',
+                   'bg-sky-300': activeCelebration().id === 'goal-reached'
                  }"></div>
 
             <!-- Header Badge Graphic -->
-            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full flex items-center justify-center border border-nutri-rose/10 dark:border-white/10 shadow-2xl bg-white dark:bg-[#181818] relative shrink-0">
+            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full flex items-center justify-center border border-white/20 shadow-2xl bg-white/20 backdrop-blur-md shadow-inner relative shrink-0">
                 <!-- Outer decorative orbit glow -->
                 <div class="absolute -inset-1 rounded-full blur-md opacity-30 animate-glow-pulse"
                      [ngClass]="{
@@ -1263,87 +1272,54 @@
                        'bg-gradient-to-tr from-sky-400 to-indigo-300': activeCelebration().id === 'goal-reached'
                      }"></div>
                 
-                <div class="relative z-10 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
+                <div class="relative z-10 w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
                     @if (activeCelebration().id === '25-percent') {
-                        <!-- Bronze Star -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(156,93,48,0.2)]">
+                        <!-- Bronze Star (Option B Shield) -->
+                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(198,130,84,0.15)]">
                             <defs>
-                                <linearGradient id="bronzeGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#FFCDA3" />
-                                    <stop offset="30%" stop-color="#D98A53" />
-                                    <stop offset="70%" stop-color="#B26C3B" />
-                                    <stop offset="100%" stop-color="#80441C" />
-                                </linearGradient>
-                                <linearGradient id="bronzeBgCel" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#FCF6F0" />
-                                    <stop offset="100%" stop-color="#EBE0D5" />
+                                <linearGradient id="shieldGrad25Cel" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="45%" stop-color="#F3E5D8" />
+                                    <stop offset="100%" stop-color="#C68254" />
                                 </linearGradient>
                             </defs>
-                            <circle cx="32" cy="32" r="28" fill="url(#bronzeBgCel)" stroke="url(#bronzeGradCel)" stroke-width="2" />
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="url(#bronzeGradCel)" stroke-width="0.75" stroke-dasharray="3 2" />
-                            <circle cx="32" cy="32" r="20" fill="url(#bronzeGradCel)" fill-opacity="0.1" stroke="url(#bronzeGradCel)" stroke-width="1.25" />
-                            <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGradCel)" transform="scale(1.35)" transform-origin="32 32" />
-                            <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" transform="scale(1.35)" transform-origin="32 32" />
+                            <circle cx="32" cy="32" r="29" fill="none" stroke="url(#shieldGrad25Cel)" stroke-width="0.75" stroke-dasharray="2 1.5" />
+                            <circle cx="32" cy="32" r="26" fill="none" stroke="url(#shieldGrad25Cel)" stroke-width="1.25" opacity="0.5" />
+                            <circle cx="32" cy="32" r="22" fill="url(#shieldGrad25Cel)" fill-opacity="0.08" />
+                            <polygon points="32,18 36,27 45.5,28 38,34.5 40.5,44 32,39 23.5,44 26,34.5 18.5,28 28,27" fill="url(#shieldGrad25Cel)" />
+                            <path d="M 18,36 C 18,44 26,48 32,48 C 38,48 46,44 46,36" fill="none" stroke="url(#shieldGrad25Cel)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
                         </svg>
                     } @else if (activeCelebration().id === 'halfway') {
-                        <!-- Gold Medal -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_5px_8px_rgba(192,57,43,0.15)]">
+                        <!-- Gold Medal (Option B Shield) -->
+                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(245,158,11,0.15)]">
                             <defs>
-                                <linearGradient id="goldGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#FFF3B0" />
-                                    <stop offset="35%" stop-color="#F9D423" />
-                                    <stop offset="70%" stop-color="#E67E22" />
-                                    <stop offset="100%" stop-color="#935116" />
-                                </linearGradient>
-                                <linearGradient id="ribbonGradCel" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#C0392B" />
-                                    <stop offset="50%" stop-color="#E74C3C" />
-                                    <stop offset="100%" stop-color="#962D22" />
-                                </linearGradient>
-                                <linearGradient id="goldBgCel" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#FFFDF0" />
-                                    <stop offset="100%" stop-color="#FFF5D6" />
+                                <linearGradient id="shieldGrad50Cel" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="45%" stop-color="#FEF9E7" />
+                                    <stop offset="100%" stop-color="#F1C40F" />
                                 </linearGradient>
                             </defs>
-                            <path d="M 24,24 L 16,48 L 25,43 L 32,48 L 39,43 L 48,48 L 40,24 Z" fill="url(#ribbonGradCel)" />
-                            <path d="M 28,24 L 32,48 L 36,24 Z" fill="#FFFFFF" fill-opacity="0.1" />
-                            <circle cx="32" cy="28" r="22" fill="url(#goldBgCel)" stroke="url(#goldGradCel)" stroke-width="2.5" />
-                            <circle cx="32" cy="28" r="18" fill="url(#goldGradCel)" fill-opacity="0.08" stroke="url(#goldGradCel)" stroke-width="0.75" stroke-dasharray="2 2" />
-                            <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGradCel)" transform="scale(1.35)" transform-origin="32 28" />
-                            <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" transform="scale(1.35)" transform-origin="32 28" />
+                            <circle cx="32" cy="32" r="29" fill="none" stroke="url(#shieldGrad50Cel)" stroke-width="0.75" stroke-dasharray="2 1.5" />
+                            <circle cx="32" cy="32" r="26" fill="none" stroke="url(#shieldGrad50Cel)" stroke-width="1.25" opacity="0.5" />
+                            <circle cx="32" cy="32" r="22" fill="url(#shieldGrad50Cel)" fill-opacity="0.08" />
+                            <polygon points="32,18 36,27 45.5,28 38,34.5 40.5,44 32,39 23.5,44 26,34.5 18.5,28 28,27" fill="url(#shieldGrad50Cel)" />
+                            <path d="M 18,36 C 18,44 26,48 32,48 C 38,48 46,44 46,36" fill="none" stroke="url(#shieldGrad50Cel)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
                         </svg>
                     } @else if (activeCelebration().id === 'goal-reached') {
-                        <!-- Diamond Jewel -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_6px_10px_rgba(79,172,254,0.25)]">
+                        <!-- Diamond Shield (Option B Shield) -->
+                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(59,130,246,0.15)]">
                             <defs>
-                                <linearGradient id="diamondGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#BFF0FA" />
-                                    <stop offset="35%" stop-color="#4FACFE" />
-                                    <stop offset="70%" stop-color="#0052D4" />
-                                    <stop offset="100%" stop-color="#4364F7" />
-                                </linearGradient>
-                                <linearGradient id="diamondBgCel" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#F2FBFC" />
-                                    <stop offset="100%" stop-color="#E1F3F7" />
-                                </linearGradient>
-                                <linearGradient id="gemGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#00F2FE" />
-                                    <stop offset="50%" stop-color="#4FACFE" />
-                                    <stop offset="100%" stop-color="#8E2DE2" />
+                                <linearGradient id="shieldGrad100Cel" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="40%" stop-color="#E0F7FA" />
+                                    <stop offset="100%" stop-color="#00BCD4" />
                                 </linearGradient>
                             </defs>
-                            <polygon points="32,6 54,22 54,48 32,58 10,48 10,22" fill="url(#diamondBgCel)" stroke="url(#diamondGradCel)" stroke-width="2.5" stroke-linejoin="round" />
-                            <polygon points="32,9 50,23 50,45 32,54 14,45 14,23" fill="none" stroke="url(#diamondGradCel)" stroke-width="0.75" stroke-dasharray="3 3" stroke-linejoin="round" />
-                            <g transform="translate(0, -1)">
-                                <polygon points="20,22 44,22 38,15 26,15" fill="url(#gemGradCel)" opacity="0.85" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="12,22 20,22 26,15" fill="url(#gemGradCel)" opacity="0.75" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="44,22 52,22 38,15" fill="url(#gemGradCel)" opacity="0.7" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="12,22 32,45 20,22" fill="url(#gemGradCel)" opacity="0.9" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="20,22 32,45 44,22" fill="url(#gemGradCel)" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="44,22 32,45 52,22" fill="url(#gemGradCel)" opacity="0.8" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="20,22 32,45 32,22" fill="#FFFFFF" fill-opacity="0.18" />
-                                <polygon points="26,15 32,22 20,22" fill="#FFFFFF" fill-opacity="0.1" />
-                            </g>
+                            <circle cx="32" cy="32" r="29" fill="none" stroke="url(#shieldGrad100Cel)" stroke-width="0.75" stroke-dasharray="2 1.5" />
+                            <circle cx="32" cy="32" r="26" fill="none" stroke="url(#shieldGrad100Cel)" stroke-width="1.25" opacity="0.5" />
+                            <circle cx="32" cy="32" r="22" fill="url(#shieldGrad100Cel)" fill-opacity="0.08" />
+                            <polygon points="32,18 36,27 45.5,28 38,34.5 40.5,44 32,39 23.5,44 26,34.5 18.5,28 28,27" fill="url(#shieldGrad100Cel)" />
+                            <path d="M 18,36 C 18,44 26,48 32,48 C 38,48 46,44 46,36" fill="none" stroke="url(#shieldGrad100Cel)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
                         </svg>
                     }
                 </div>
@@ -1351,13 +1327,13 @@
 
             <!-- Content text block -->
             <div class="space-y-2">
-                <span class="text-[9px] font-black tracking-[0.35em] text-nutri-rose dark:text-nutri-rose-soft uppercase block">
+                <span class="text-[9px] font-black tracking-[0.35em] text-white/70 uppercase block">
                     🏆 Logro Alcanzado
                 </span>
-                <h3 class="text-2xl font-bold serif text-nutri-text dark:text-white leading-tight">
+                <h3 class="text-2xl font-bold serif text-white leading-tight">
                     {{ activeCelebration().title }}
                 </h3>
-                <p class="text-[11px] text-nutri-text/60 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+                <p class="text-[11px] text-white/90 max-w-xs mx-auto leading-relaxed">
                     {{ getCelebrationMessage(activeCelebration().id) }}
                 </p>
             </div>
@@ -1365,14 +1341,16 @@
             <!-- Close and continue button -->
             <div class="w-full pt-2">
                 <button (click)="activeCelebration.set(null)" 
-                        class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-nutri-rose hover:bg-nutri-rose/90 text-white shadow-lg shadow-nutri-rose/15 hover:shadow-xl hover:shadow-nutri-rose/25 active:scale-[0.98] transition-all duration-200">
+                        class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-white hover:bg-white/90 text-slate-800 shadow-lg shadow-black/10 active:scale-[0.98] transition-all duration-200">
                     Cerrar y continuar
                 </button>
             </div>
 
             <!-- Brand Logo Watermark -->
             <div class="pt-4 border-t border-slate-100 dark:border-white/5 w-full flex items-center justify-center">
-                <img src="images/logo.png" alt="Nutrilev Logo" class="h-8 w-auto opacity-90 dark:brightness-110 dark:opacity-90 object-contain" />
+                <div class="px-4 py-1.5 rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-md shadow-sm border border-white/20 flex items-center justify-center">
+                    <img src="images/logo.png" alt="Nutrilev Logo" class="h-6 w-auto opacity-90 dark:brightness-110 dark:opacity-90 object-contain" />
+                </div>
             </div>
         </div>
     </div>

@@ -656,21 +656,21 @@ export class PortalPage implements OnInit, OnDestroy {
         id: '25-percent',
         image: 'images/milestones/star_bronze.png',
         title: 'Primer Paso',
-        description: 'Logra el 25% de tu objetivo.',
+        description: 'Iniciando con éxito tu camino hacia una vida saludable.',
         unlocked: goalPct >= 25
       },
       {
         id: 'halfway',
         image: 'images/milestones/star_gold.png',
         title: 'A Medio Camino',
-        description: 'Logra el 50% de tu objetivo.',
+        description: 'Cruzando con constancia la mitad de tu objetivo nutricional.',
         unlocked: goalPct >= 50
       },
       {
         id: 'goal-reached',
         image: 'images/milestones/star_diamond.png',
         title: 'Meta Lograda',
-        description: 'Alcanza el 100% de tu objetivo.',
+        description: '¡Felicidades! Has conquistado por completo tu meta de bienestar.',
         unlocked: goalPct >= 100
       }
     ];
@@ -803,11 +803,11 @@ export class PortalPage implements OnInit, OnDestroy {
   getCelebrationMessage(id: string): string {
     switch (id) {
       case '25-percent':
-        return '¡Excelente inicio! Has alcanzado el primer cuarto de tu camino. Tus hábitos están cambiando positivamente y vas con paso firme hacia tu meta de bienestar.';
+        return '¡Excelente inicio en este gran camino hacia tu bienestar! Cada pequeño cambio cuenta y tus hábitos ya están dando sus primeros frutos. ¡Sigue adelante con esa misma determinación!';
       case 'halfway':
-        return '¡Hito increíble! Estás a la mitad del camino de tu meta. Tu perseverancia y constancia están dando frutos extraordinarios. ¡Sigue así!';
+        return '¡Un avance extraordinario! Estás oficialmente a la mitad del camino para alcanzar tu objetivo. Tu constancia es sumamente admirable y estás demostrando que sí se puede. ¡No te detengas!';
       case 'goal-reached':
-        return '¡META CUMPLIDA! Has alcanzado el 100% de tu objetivo. Tu disciplina es admirable y has transformado tu calidad de vida. ¡Muchísimas felicidades!';
+        return '¡META CUMPLIDA! Has alcanzado el 100% de tu gran objetivo de salud. Tu disciplina y perseverancia son admirables, has transformado tu estilo de vida por completo. ¡Muchísimas felicidades por este gran triunfo!';
       default:
         return 'Sigue sumando logros en tu plan nutricional para alcanzar tus objetivos.';
     }
