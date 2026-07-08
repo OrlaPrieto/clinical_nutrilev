@@ -500,22 +500,31 @@
                                     <p class="text-xs text-white/95 mt-6 leading-relaxed italic border-l-2 border-white/30 pl-3">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
                                 </div>
  
-                                <!-- Último Registro Físico (Polished High Contrast Card) -->
-                                <div class="dashboard-card bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm text-slate-800 dark:text-slate-200 flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-50 dark:bg-white/[0.01] rounded-full group-hover:scale-110 transition-transform duration-500 pointer-events-none"></div>
+                                <!-- Último Registro Físico (Samsung Health Style Card) -->
+                                <div class="dashboard-card bg-indigo-600 dark:bg-[#151329] p-6 sm:p-8 rounded-[2rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
+                                    
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
+                                        <div class="w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                            <div class="w-14 h-14 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                                <app-a-icon name="monitor_weight" size="20px" class="text-white opacity-80"></app-a-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="relative z-10">
-                                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 block">Último Registro Clínico</span>
+                                        <span class="text-[9px] font-black uppercase tracking-widest text-white/50 mb-4 block">Último Registro Clínico</span>
                                         <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6">
                                             <!-- Peso -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() && currentGoal() !== 'bajar_peso'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Peso</span>
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-white/60">Peso</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-sky-600 dark:text-sky-400">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
-                                                    <span class="text-[10px] font-bold text-sky-600/60 dark:text-sky-400/60 ml-0.5">kg</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-white">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                                    <span class="text-[10px] font-bold text-white/70 ml-0.5">kg</span>
                                                 </div>
                                                 @if (weightDiff()) {
                                                     <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
-                                                          [class]="weightDiff()?.isIncrease ? 'bg-rose-500/10 text-rose-500' : 'bg-emerald-500/10 text-emerald-500'">
+                                                          [class]="weightDiff()?.isIncrease ? 'bg-rose-500/20 text-rose-200 border border-rose-500/20' : 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/20'">
                                                         {{ weightDiff()?.isIncrease ? '↑' : '↓' }} {{ weightDiff()?.value }} kg
                                                     </span>
                                                 }
@@ -523,14 +532,14 @@
                                             
                                             <!-- Grasa -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() !== 'bajar_grasa'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Grasa</span>
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-white/60">Grasa</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
-                                                    <span class="text-[10px] font-bold text-amber-500/60 dark:text-amber-400/60 ml-0.5">%</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-white">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                                    <span class="text-[10px] font-bold text-white/70 ml-0.5">%</span>
                                                 </div>
                                                 @if (fatDiff()) {
                                                     <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
-                                                          [class]="fatDiff()?.isIncrease ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'">
+                                                          [class]="fatDiff()?.isIncrease ? 'bg-amber-500/20 text-amber-200 border border-amber-500/20' : 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/20'">
                                                         {{ fatDiff()?.isIncrease ? '↑' : '↓' }} {{ fatDiff()?.value }}%
                                                     </span>
                                                 }
@@ -538,22 +547,22 @@
 
                                             <!-- Músculo -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() !== 'subir_musculo'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Músculo</span>
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-white/60">Músculo</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
-                                                    <span class="text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose-soft/60 ml-0.5">kg</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-white">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                                    <span class="text-[10px] font-bold text-white/70 ml-0.5">kg</span>
                                                 </div>
                                                 @if (muscleDiff()) {
                                                     <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
-                                                          [class]="muscleDiff()?.isIncrease ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                                          [class]="muscleDiff()?.isIncrease ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-200 border border-rose-500/20'">
                                                         {{ muscleDiff()?.isIncrease ? '↑' : '↓' }} {{ muscleDiff()?.value }} kg
                                                     </span>
                                                 }
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2 mt-6 text-slate-400 dark:text-slate-500">
-                                        <div class="w-6 h-6 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-xs">
+                                    <div class="flex items-center gap-2 mt-6 text-white/50 relative z-10">
+                                        <div class="w-6 h-6 rounded-full bg-white/10 dark:bg-white/5 flex items-center justify-center text-xs">
                                             <app-a-icon name="calendar_today" size="10px"></app-a-icon>
                                         </div>
                                         <span class="text-[9px] font-black uppercase tracking-widest">
@@ -565,17 +574,25 @@
 
                             <!-- Grid de Métricas Rápidas -->
                             <div class="grid grid-cols-2 gap-4">
-                                <!-- Fat Card -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
-                                        <app-a-icon name="percent" size="14px" class="text-amber-500"></app-a-icon>
+                                <!-- Fat Card (Samsung Health Style) -->
+                                <div class="dashboard-card col-span-1 bg-amber-500 dark:bg-[#20160a] p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
+                                    
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
+                                        <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                            <app-a-icon name="percent" size="12px" class="text-white opacity-80"></app-a-icon>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1.5 text-white/60 relative z-10">
+                                        <app-a-icon name="percent" size="12px" class="text-white"></app-a-icon>
                                         <span class="text-[9px] font-black uppercase tracking-wider">% Grasa</span>
                                     </div>
-                                    <div class="flex items-baseline gap-1 mt-2">
-                                        <span class="text-3xl font-black font-sans tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
-                                        <span class="text-[9px] font-bold text-amber-500/60 dark:text-amber-400/60 uppercase">% corp.</span>
+                                    <div class="flex items-baseline gap-1 mt-2 relative z-10">
+                                        <span class="text-3xl font-black font-sans tracking-tight text-white">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
+                                        <span class="text-[9px] font-bold text-white/70 uppercase">% corp.</span>
                                     </div>
-                                    <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-2 block truncate">
+                                    <span class="text-[9px] font-bold text-white/60 mt-2 block truncate relative z-10">
                                         @if (patient()?.grasa_meta) {
                                             Meta clínica: {{ patient()?.grasa_meta }}%
                                         } @else {
@@ -584,29 +601,37 @@
                                     </span>
                                 </div>
 
-                                <!-- Porcentaje de Avance General (Circular Gauge) -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex items-center justify-between transition-colors">
-                                    <div class="space-y-1 min-w-0 flex-1 pr-2">
-                                        <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
-                                            <app-a-icon name="flag" size="14px" class="text-nutri-rose"></app-a-icon>
+                                <!-- Porcentaje de Avance General (Samsung Health Style Circular Gauge) -->
+                                <div class="dashboard-card col-span-1 bg-emerald-500 dark:bg-[#072015] p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex items-center justify-between overflow-hidden relative group border-none">
+                                    
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
+                                        <div class="w-16 h-16 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                            <app-a-icon name="flag" size="12px" class="text-white opacity-80"></app-a-icon>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-1 min-w-0 flex-1 pr-2 relative z-10">
+                                        <div class="flex items-center gap-1.5 text-white/60">
+                                            <app-a-icon name="flag" size="12px" class="text-white"></app-a-icon>
                                             <span class="text-[9px] font-black uppercase tracking-wider">Avance</span>
                                         </div>
-                                        <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-1 block leading-tight">
+                                        <span class="text-[9px] font-bold text-white/60 mt-1 block leading-tight">
                                             {{ goalPercentage() >= 100 ? '¡Meta lograda!' : 'En camino al 100%' }}
                                         </span>
                                     </div>
                                     
                                     <!-- Circular Progress Gauge (SVG) -->
-                                    <div class="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center">
+                                    <div class="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center relative z-10">
                                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
-                                            <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" class="text-slate-100 dark:text-white/5" fill="transparent"/>
+                                            <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" class="text-white/10" fill="transparent"/>
                                             <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" 
-                                                     class="text-nutri-rose transition-all duration-1000" 
+                                                     class="text-white transition-all duration-1000" 
                                                      fill="transparent"
                                                      [attr.stroke-dasharray]="163.36"
                                                      [attr.stroke-dashoffset]="163.36 - (163.36 * goalPercentage() / 100)"/>
                                         </svg>
-                                        <div class="absolute text-[9px] sm:text-[10px] font-black text-nutri-text dark:text-white">
+                                        <div class="absolute text-[9px] sm:text-[10px] font-black text-white">
                                             {{ goalPercentage() | number:'1.0-0' }}%
                                         </div>
                                     </div>

@@ -1,77 +1,85 @@
 @if (progress().length >= 2) {
-    <div class="bg-white dark:bg-[#111111] p-5 sm:p-8 rounded-[1.75rem] sm:rounded-[3rem] border border-nutri-rose/10 dark:border-white/5 shadow-sm transition-colors">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div class="bg-[#0c0c0c] p-6 sm:p-8 rounded-[2.5rem] shadow-2xl transition-colors text-white relative overflow-hidden">
+        
+        <!-- Samsung Health Decorative Corner Circle -->
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-white/[0.02] dark:bg-white/[0.01] rounded-full pointer-events-none flex items-center justify-center">
+            <div class="w-32 h-32 bg-white/[0.02] dark:bg-white/[0.01] rounded-full flex items-center justify-center">
+                <div class="w-20 h-20 bg-white/[0.02] dark:bg-white/[0.01] rounded-full"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 relative z-10">
             <div>
-                <h3 class="text-xl font-bold serif text-nutri-text dark:text-white">
+                <h3 class="text-xl font-bold serif text-white">
                     Tendencia de Progreso
                 </h3>
-                <p class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
+                <p class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
             </div>
             
-            <!-- Selectores de Métricas -->
+            <!-- Selectores de Métricas (Samsung Health Pill Style) -->
             <div class="flex flex-wrap gap-2">
                 <!-- Peso Toggle -->
                 <button (click)="toggleMetric('weight'); $event.stopPropagation()"
                         [class]="activeMetrics().weight 
-                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25 shadow-sm'
-                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" [class.animate-pulse]="activeMetrics().weight"></span>
+                                 ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-white/10 bg-white/5 text-white/50 hover:bg-white/10'">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white" [class.animate-pulse]="activeMetrics().weight"></span>
                     Peso
                 </button>
                 
                 <!-- Grasa Toggle -->
                 <button (click)="toggleMetric('fat'); $event.stopPropagation()"
                         [class]="activeMetrics().fat 
-                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 shadow-sm'
-                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500" [class.animate-pulse]="activeMetrics().fat"></span>
+                                 ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all bg-amber-500 text-white shadow-lg shadow-amber-500/20'
+                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-white/10 bg-white/5 text-white/50 hover:bg-white/10'">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white" [class.animate-pulse]="activeMetrics().fat"></span>
                     Grasa
                 </button>
                 
                 <!-- Músculo Toggle -->
                 <button (click)="toggleMetric('muscle'); $event.stopPropagation()"
                         [class]="activeMetrics().muscle 
-                                 ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border bg-nutri-rose/10 text-nutri-rose dark:text-nutri-rose-soft border-nutri-rose/25 shadow-sm'
-                                 : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/5 bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'">
-                    <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose" [class.animate-pulse]="activeMetrics().muscle"></span>
+                                 ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20'
+                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-white/10 bg-white/5 text-white/50 hover:bg-white/10'">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white" [class.animate-pulse]="activeMetrics().muscle"></span>
                     Músculo
                 </button>
             </div>
         </div>
         
         <!-- Barra de Filtros y Límites -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 mb-6 bg-nutri-bg/40 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/5 rounded-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 mb-6 bg-white/[0.03] border border-white/5 rounded-2xl relative z-10">
             <!-- Selector de Meses -->
             <div class="flex items-center gap-2">
-                <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Filtrar por Mes:</span>
+                <span class="text-[9px] font-black text-white/45 uppercase tracking-widest">Filtrar por Mes:</span>
                 <select [value]="filterMonth()" (change)="onMonthChange($event)"
-                        class="bg-white dark:bg-[#1a1a1a] border border-nutri-rose/10 focus:border-nutri-rose rounded-xl px-3 py-1.5 text-[9px] font-black text-nutri-text dark:text-slate-200 uppercase tracking-wider shadow-sm transition-all cursor-pointer outline-none">
-                    <option value="all">Todos los meses</option>
+                        class="bg-white/10 border border-white/10 rounded-xl px-3 py-1.5 text-[9px] font-black text-white uppercase tracking-wider shadow-sm transition-all cursor-pointer outline-none focus:border-white/30">
+                    <option value="all" class="bg-[#111111] text-white">Todos los meses</option>
                     @for (m of availableMonths(); track m.value) {
-                        <option [value]="m.value">{{ m.label }}</option>
+                        <option [value]="m.value" class="bg-[#111111] text-white">{{ m.label }}</option>
                     }
                 </select>
             </div>
             
             <!-- Selector de Límite -->
             <div class="flex items-center gap-2">
-                <span class="text-[9px] font-black text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest">Registros Visibles:</span>
-                <div class="flex bg-nutri-bg dark:bg-white/5 p-1 rounded-xl border border-nutri-rose/5 dark:border-white/5">
-                    <button (click)="limitRecords.set(5)" [class.bg-white]="limitRecords() === 5" [class.dark:bg-white/10]="limitRecords() === 5" [class.shadow-sm]="limitRecords() === 5" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">5</button>
-                    <button (click)="limitRecords.set(8)" [class.bg-white]="limitRecords() === 8" [class.dark:bg-white/10]="limitRecords() === 8" [class.shadow-sm]="limitRecords() === 8" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">8</button>
-                    <button (click)="limitRecords.set(10)" [class.bg-white]="limitRecords() === 10" [class.dark:bg-white/10]="limitRecords() === 10" [class.shadow-sm]="limitRecords() === 10" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">10</button>
-                    <button (click)="limitRecords.set(13)" [class.bg-white]="limitRecords() === 13" [class.dark:bg-white/10]="limitRecords() === 13" [class.shadow-sm]="limitRecords() === 13" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-nutri-text dark:text-slate-300">13</button>
+                <span class="text-[9px] font-black text-white/45 uppercase tracking-widest">Registros Visibles:</span>
+                <div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
+                    <button (click)="limitRecords.set(5)" [class.bg-white/20]="limitRecords() === 5" [class.text-white]="limitRecords() === 5" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">5</button>
+                    <button (click)="limitRecords.set(8)" [class.bg-white/20]="limitRecords() === 8" [class.text-white]="limitRecords() === 8" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">8</button>
+                    <button (click)="limitRecords.set(10)" [class.bg-white/20]="limitRecords() === 10" [class.text-white]="limitRecords() === 10" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">10</button>
+                    <button (click)="limitRecords.set(13)" [class.bg-white/20]="limitRecords() === 13" [class.text-white]="limitRecords() === 13" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">13</button>
                 </div>
             </div>
         </div>
 
         @if (filteredProgress().length === 0) {
-            <div class="h-48 flex flex-col items-center justify-center text-center opacity-30 gap-2 border border-dashed border-nutri-rose/10 rounded-2xl py-12">
+            <div class="h-48 flex flex-col items-center justify-center text-center opacity-30 gap-2 border border-dashed border-white/10 rounded-2xl py-12 relative z-10">
                 <app-a-icon name="analytics" customClass="!text-3xl"></app-a-icon>
                 <p class="text-[10px] font-bold uppercase tracking-widest">Sin datos para este mes</p>
             </div>
         } @else {
-            <div class="w-full overflow-hidden mt-4">
+            <div class="w-full overflow-hidden mt-4 relative z-10">
                 <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
                     <defs>
                         <!-- Gradiente Peso (Indigo) -->
@@ -101,12 +109,12 @@
                     <!-- Líneas Meta (Goal Target Lines) -->
                     @for (line of activeLines(); track line.key) {
                         @if (line.targetY !== null) {
-                            <g class="opacity-70 transition-all duration-300">
+                            <g class="opacity-30 transition-all duration-300">
                                 <line x1="0" [attr.y1]="line.targetY" x2="400" [attr.y2]="line.targetY"
-                                      [attr.stroke]="line.color" stroke-width="1.5" stroke-dasharray="4 4" />
-                                <text x="402" [attr.y]="line.targetY + 3"
+                                      [attr.stroke]="line.color" stroke-width="1" stroke-dasharray="3 3" />
+                                <text x="402" [attr.y]="line.targetY + 2.5"
                                       [attr.fill]="line.color"
-                                      class="text-[7.5px] font-black">
+                                      class="text-[7px] font-black uppercase tracking-wider">
                                     META: {{ line.targetValue }}{{ line.unit }}
                                 </text>
                             </g>
@@ -129,7 +137,7 @@
                         @for (point of activeLines()[0].points; track point.date) {
                             <text [attr.x]="point.x" [attr.y]="115" 
                                   text-anchor="middle" 
-                                  class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-nutri-text/30 dark:fill-slate-600">
+                                  class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-white/30">
                                 {{ point.date | date:'dd MMM' }}
                             </text>
                         }
@@ -139,28 +147,44 @@
                     @for (line of activeLines(); track line.key) {
                         @for (point of line.points; track point.date) {
                             <g class="animate-fade-up relative" [style.animation-delay]="$index * 50 + 'ms'">
-                                <!-- Etiqueta de valor -->
+                                <!-- Etiqueta de valor (Solo si hay 1 sola métrica activa) -->
                                 @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
                                     <text [attr.x]="point.x" [attr.y]="point.y - 12" 
                                           text-anchor="middle" 
-                                          class="text-[11px] sm:text-[10px] font-black fill-nutri-text dark:fill-slate-300">
-                                        {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-30 uppercase">{{ point.unit }}</tspan>
+                                          class="text-[11px] sm:text-[10px] font-black fill-white">
+                                        {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-35 uppercase">{{ point.unit }}</tspan>
                                     </text>
                                 }
                                 
-                                <!-- Marcador de Punto -->
+                                <!-- Marcador de Punto Normal -->
                                 <circle [attr.cx]="point.x" [attr.cy]="point.y" 
-                                        [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 7 : 5" 
-                                        class="fill-white dark:fill-[#1a1a1a] stroke-[3px] transition-all duration-300 cursor-pointer"
-                                        [attr.stroke]="line.color"
-                                        [class.!stroke-emerald-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && point.isGood"
-                                        [class.!stroke-red-500]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) && !point.isGood" />
-                                
+                                        [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 8 : 4.5" 
+                                        class="fill-[#0c0c0c] stroke-[3px] transition-all duration-300 cursor-pointer"
+                                        [attr.stroke]="line.color" />
+
                                 <!-- Línea Guía Vertical y Tooltip (hover) -->
                                 @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
+                                    
+                                    <!-- Línea Guía Vertical Dashed -->
                                     <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
-                                          stroke="currentColor" stroke-dasharray="3 3" class="opacity-20 dark:opacity-30 pointer-events-none" />
+                                          stroke="rgba(255,255,255,0.25)" stroke-dasharray="3 3" class="pointer-events-none" />
 
+                                    <!-- Marcador Especial de Punto Activo (Samsung Health Style) -->
+                                    <g [attr.transform]="'translate(' + point.x + ',' + point.y + ')'" class="pointer-events-none">
+                                        <circle cx="0" cy="0" r="10" [attr.fill]="line.color" class="opacity-25 animate-ping" />
+                                        <circle cx="0" cy="0" r="6" fill="white" />
+                                        <circle cx="0" cy="0" r="3.5" [attr.fill]="line.color" />
+                                    </g>
+
+                                    <!-- Burbuja Blanca de Valor Flotante en el tope (Samsung Health style) -->
+                                    <g [attr.transform]="'translate(' + point.x + ', -13)'" class="pointer-events-none transition-all duration-300">
+                                        <rect x="-24" y="-12" width="48" height="17" rx="8.5" fill="white" class="shadow-md" />
+                                        <text x="0" y="0.5" text-anchor="middle" fill="#0c0c0c" class="text-[8.5px] font-black">
+                                            {{ point.value }}{{ point.unit }}
+                                        </text>
+                                    </g>
+
+                                    <!-- Detalle de Comparación (Comparativo) -->
                                     <g class="transition-all duration-300 pointer-events-none z-50">
                                         @if (point.y < 50) {
                                             <!-- Puntero Triángulo (Abajo) -->
@@ -174,7 +198,7 @@
                                                   width="110" 
                                                   height="34" 
                                                   rx="8" 
-                                                  fill="#0F172A"
+                                                  fill="#161616"
                                                   [attr.stroke]="line.color"
                                                   stroke-width="1.5" />
                                             
@@ -212,7 +236,7 @@
                                                   width="110" 
                                                   height="34" 
                                                   rx="8" 
-                                                  fill="#0F172A"
+                                                  fill="#161616"
                                                   [attr.stroke]="line.color"
                                                   stroke-width="1.5" />
                                             
@@ -256,9 +280,14 @@
         }
     </div>
 } @else {
-    <div class="bg-white dark:bg-[#111111] p-8 rounded-[1.75rem] border border-nutri-rose/10 dark:border-white/5 text-center py-16">
-        <app-a-icon name="show_chart" customClass="text-4xl text-nutri-rose/30 mb-3"></app-a-icon>
-        <h4 class="text-base font-bold serif text-nutri-text dark:text-white">Gráfica de Tendencia</h4>
-        <p class="text-xs text-nutri-text/60 dark:text-slate-500 mt-1 max-w-xs mx-auto">Necesitas al menos 2 registros de consulta para generar la gráfica de progreso de tendencia.</p>
+    <div class="bg-[#0c0c0c] p-8 rounded-[2.5rem] text-center py-16 text-white relative overflow-hidden">
+        <!-- Samsung Health Decorative Corner Circle -->
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-white/[0.02] dark:bg-white/[0.01] rounded-full pointer-events-none flex items-center justify-center">
+            <div class="w-32 h-32 bg-white/[0.02] dark:bg-white/[0.01] rounded-full"></div>
+        </div>
+        
+        <app-a-icon name="show_chart" customClass="text-4xl text-white/20 mb-3 relative z-10"></app-a-icon>
+        <h4 class="text-base font-bold serif text-white relative z-10">Gráfica de Tendencia</h4>
+        <p class="text-xs text-white/50 mt-1 max-w-xs mx-auto relative z-10">Necesitas al menos 2 registros de consulta para generar la gráfica de progreso de tendencia.</p>
     </div>
 }
