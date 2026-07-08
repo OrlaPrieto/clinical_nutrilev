@@ -1,19 +1,19 @@
 @if (progress().length >= 2) {
-    <div class="bg-[#0c0c0c] p-6 sm:p-8 rounded-[2.5rem] shadow-2xl transition-colors text-white relative overflow-hidden">
+    <div (click)="hoveredPoint.set(null)" class="bg-white dark:bg-[#0c0c0c] p-6 sm:p-8 rounded-[2.5rem] shadow-md dark:shadow-2xl border border-slate-100 dark:border-none transition-colors text-slate-800 dark:text-white relative overflow-hidden">
         
         <!-- Samsung Health Decorative Corner Circle -->
-        <div class="absolute -right-10 -top-10 w-44 h-44 bg-white/[0.02] dark:bg-white/[0.01] rounded-full pointer-events-none flex items-center justify-center">
-            <div class="w-32 h-32 bg-white/[0.02] dark:bg-white/[0.01] rounded-full flex items-center justify-center">
-                <div class="w-20 h-20 bg-white/[0.02] dark:bg-white/[0.01] rounded-full"></div>
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-slate-100/30 dark:bg-white/[0.01] rounded-full pointer-events-none flex items-center justify-center">
+            <div class="w-32 h-32 bg-slate-100/20 dark:bg-white/[0.01] rounded-full flex items-center justify-center">
+                <div class="w-20 h-20 bg-slate-100/10 dark:bg-white/[0.01] rounded-full"></div>
             </div>
         </div>
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 relative z-10">
             <div>
-                <h3 class="text-xl font-bold serif text-white">
+                <h3 class="text-xl font-bold serif text-slate-800 dark:text-white">
                     Tendencia de Progreso
                 </h3>
-                <p class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
+                <p class="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Evolución visual de tus últimos registros</p>
             </div>
             
             <!-- Selectores de Métricas (Samsung Health Pill Style) -->
@@ -22,7 +22,7 @@
                 <button (click)="toggleMetric('weight'); $event.stopPropagation()"
                         [class]="activeMetrics().weight 
                                  ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-white/10 bg-white/5 text-white/50 hover:bg-white/10'">
+                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-white/50 hover:bg-slate-100/80 dark:hover:bg-white/10'">
                     <span class="w-1.5 h-1.5 rounded-full bg-white" [class.animate-pulse]="activeMetrics().weight"></span>
                     Peso
                 </button>
@@ -31,7 +31,7 @@
                 <button (click)="toggleMetric('fat'); $event.stopPropagation()"
                         [class]="activeMetrics().fat 
                                  ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all bg-amber-500 text-white shadow-lg shadow-amber-500/20'
-                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-white/10 bg-white/5 text-white/50 hover:bg-white/10'">
+                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-white/50 hover:bg-slate-100/80 dark:hover:bg-white/10'">
                     <span class="w-1.5 h-1.5 rounded-full bg-white" [class.animate-pulse]="activeMetrics().fat"></span>
                     Grasa
                 </button>
@@ -40,47 +40,71 @@
                 <button (click)="toggleMetric('muscle'); $event.stopPropagation()"
                         [class]="activeMetrics().muscle 
                                  ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all bg-nutri-rose text-white shadow-lg shadow-nutri-rose/20'
-                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-white/10 bg-white/5 text-white/50 hover:bg-white/10'">
+                                 : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-white/50 hover:bg-slate-100/80 dark:hover:bg-white/10'">
                     <span class="w-1.5 h-1.5 rounded-full bg-white" [class.animate-pulse]="activeMetrics().muscle"></span>
                     Músculo
                 </button>
             </div>
         </div>
         
-        <!-- Barra de Filtros y Límites -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 mb-6 bg-white/[0.03] border border-white/5 rounded-2xl relative z-10">
+        <!-- Barra de Filtros y Líneas Temporales -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 mb-6 bg-slate-50/50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 rounded-2xl relative z-10">
             <!-- Selector de Meses -->
             <div class="flex items-center gap-2">
-                <span class="text-[9px] font-black text-white/45 uppercase tracking-widest">Filtrar por Mes:</span>
+                <span class="text-[9px] font-black text-slate-400 dark:text-white/45 uppercase tracking-widest">Filtrar por Mes:</span>
                 <select [value]="filterMonth()" (change)="onMonthChange($event)"
-                        class="bg-white/10 border border-white/10 rounded-xl px-3 py-1.5 text-[9px] font-black text-white uppercase tracking-wider shadow-sm transition-all cursor-pointer outline-none focus:border-white/30">
-                    <option value="all" class="bg-[#111111] text-white">Todos los meses</option>
+                        class="bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-1.5 text-[9px] font-black text-slate-700 dark:text-white uppercase tracking-wider shadow-sm transition-all cursor-pointer outline-none focus:border-slate-300 dark:focus:border-white/30">
+                    <option value="all" class="bg-white dark:bg-[#111111] text-slate-800 dark:text-white">Todos los meses</option>
                     @for (m of availableMonths(); track m.value) {
-                        <option [value]="m.value" class="bg-[#111111] text-white">{{ m.label }}</option>
+                        <option [value]="m.value" class="bg-white dark:bg-[#111111] text-slate-800 dark:text-white">{{ m.label }}</option>
                     }
                 </select>
             </div>
             
             <!-- Selector de Límite -->
             <div class="flex items-center gap-2">
-                <span class="text-[9px] font-black text-white/45 uppercase tracking-widest">Registros Visibles:</span>
-                <div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
-                    <button (click)="limitRecords.set(5)" [class.bg-white/20]="limitRecords() === 5" [class.text-white]="limitRecords() === 5" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">5</button>
-                    <button (click)="limitRecords.set(8)" [class.bg-white/20]="limitRecords() === 8" [class.text-white]="limitRecords() === 8" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">8</button>
-                    <button (click)="limitRecords.set(10)" [class.bg-white/20]="limitRecords() === 10" [class.text-white]="limitRecords() === 10" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">10</button>
-                    <button (click)="limitRecords.set(13)" [class.bg-white/20]="limitRecords() === 13" [class.text-white]="limitRecords() === 13" class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-white/50">13</button>
+                <span class="text-[9px] font-black text-slate-400 dark:text-white/45 uppercase tracking-widest">Registros Visibles:</span>
+                <div class="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/5">
+                    <button (click)="limitRecords.set(5)" 
+                            [class.bg-white]="limitRecords() === 5" 
+                            [class.dark:bg-white/20]="limitRecords() === 5" 
+                            [class.text-slate-800]="limitRecords() === 5" 
+                            [class.dark:text-white]="limitRecords() === 5" 
+                            [class.shadow-sm]="limitRecords() === 5"
+                            class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 dark:text-white/50">5</button>
+                    <button (click)="limitRecords.set(8)" 
+                            [class.bg-white]="limitRecords() === 8" 
+                            [class.dark:bg-white/20]="limitRecords() === 8" 
+                            [class.text-slate-800]="limitRecords() === 8" 
+                            [class.dark:text-white]="limitRecords() === 8" 
+                            [class.shadow-sm]="limitRecords() === 8"
+                            class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 dark:text-white/50">8</button>
+                    <button (click)="limitRecords.set(10)" 
+                            [class.bg-white]="limitRecords() === 10" 
+                            [class.dark:bg-white/20]="limitRecords() === 10" 
+                            [class.text-slate-800]="limitRecords() === 10" 
+                            [class.dark:text-white]="limitRecords() === 10" 
+                            [class.shadow-sm]="limitRecords() === 10"
+                            class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 dark:text-white/50">10</button>
+                    <button (click)="limitRecords.set(13)" 
+                            [class.bg-white]="limitRecords() === 13" 
+                            [class.dark:bg-white/20]="limitRecords() === 13" 
+                            [class.text-slate-800]="limitRecords() === 13" 
+                            [class.dark:text-white]="limitRecords() === 13" 
+                            [class.shadow-sm]="limitRecords() === 13"
+                            class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 dark:text-white/50">13</button>
                 </div>
             </div>
         </div>
 
         @if (filteredProgress().length === 0) {
-            <div class="h-48 flex flex-col items-center justify-center text-center opacity-30 gap-2 border border-dashed border-white/10 rounded-2xl py-12 relative z-10">
+            <div class="h-48 flex flex-col items-center justify-center text-center text-slate-400 dark:text-white/30 gap-2 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl py-12 relative z-10">
                 <app-a-icon name="analytics" customClass="!text-3xl"></app-a-icon>
                 <p class="text-[10px] font-bold uppercase tracking-widest">Sin datos para este mes</p>
             </div>
         } @else {
             <div class="w-full overflow-hidden mt-4 relative z-10">
-                <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible">
+                <svg viewBox="-20 -20 440 140" class="w-full h-48 text-nutri-rose preserve-3d overflow-visible select-none">
                     <defs>
                         <!-- Gradiente Peso (Indigo) -->
                         <linearGradient id="gradient-weight" x1="0" y1="0" x2="0" y2="1">
@@ -137,7 +161,7 @@
                         @for (point of activeLines()[0].points; track point.date) {
                             <text [attr.x]="point.x" [attr.y]="115" 
                                   text-anchor="middle" 
-                                  class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-white/30">
+                                  class="text-[8px] sm:text-[7px] font-bold uppercase tracking-tighter fill-slate-400 dark:fill-white/30">
                                 {{ point.date | date:'dd MMM' }}
                             </text>
                         }
@@ -151,7 +175,7 @@
                                 @if (activeLines().length === 1 && hoveredPoint()?.index !== $index) {
                                     <text [attr.x]="point.x" [attr.y]="point.y - 12" 
                                           text-anchor="middle" 
-                                          class="text-[11px] sm:text-[10px] font-black fill-white">
+                                          class="text-[11px] sm:text-[10px] font-black fill-slate-700 dark:fill-white">
                                         {{ point.value }}<tspan class="text-[8px] sm:text-[7px] opacity-35 uppercase">{{ point.unit }}</tspan>
                                     </text>
                                 }
@@ -159,15 +183,15 @@
                                 <!-- Marcador de Punto Normal -->
                                 <circle [attr.cx]="point.x" [attr.cy]="point.y" 
                                         [attr.r]="(hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) ? 8 : 4.5" 
-                                        class="fill-[#0c0c0c] stroke-[3px] transition-all duration-300 cursor-pointer"
+                                        class="fill-white dark:fill-[#0c0c0c] stroke-[3px] transition-all duration-300 cursor-pointer"
                                         [attr.stroke]="line.color" />
 
-                                <!-- Línea Guía Vertical y Tooltip (hover) -->
+                                <!-- Línea Guía Vertical y Tooltip (hover/click) -->
                                 @if (hoveredPoint()?.index === $index && hoveredPoint()?.key === line.key) {
                                     
                                     <!-- Línea Guía Vertical Dashed -->
                                     <line [attr.x1]="point.x" y1="-10" [attr.x2]="point.x" y2="105"
-                                          stroke="rgba(255,255,255,0.25)" stroke-dasharray="3 3" class="pointer-events-none" />
+                                          class="stroke-slate-300 dark:stroke-white/25 pointer-events-none" stroke-dasharray="3 3" />
 
                                     <!-- Marcador Especial de Punto Activo (Samsung Health Style) -->
                                     <g [attr.transform]="'translate(' + point.x + ',' + point.y + ')'" class="pointer-events-none">
@@ -176,10 +200,10 @@
                                         <circle cx="0" cy="0" r="3.5" [attr.fill]="line.color" />
                                     </g>
 
-                                    <!-- Burbuja Blanca de Valor Flotante en el tope (Samsung Health style) -->
+                                    <!-- Burbuja de Valor Flotante en el tope (Samsung Health style) -->
                                     <g [attr.transform]="'translate(' + point.x + ', -13)'" class="pointer-events-none transition-all duration-300">
-                                        <rect x="-24" y="-12" width="48" height="17" rx="8.5" fill="white" class="shadow-md" />
-                                        <text x="0" y="0.5" text-anchor="middle" fill="#0c0c0c" class="text-[8.5px] font-black">
+                                        <rect x="-24" y="-12" width="48" height="17" rx="8.5" class="fill-slate-800 dark:fill-white" />
+                                        <text x="0" y="0.5" text-anchor="middle" class="fill-white dark:fill-[#0c0c0c] text-[8.5px] font-black">
                                             {{ point.value }}{{ point.unit }}
                                         </text>
                                     </g>
@@ -198,7 +222,7 @@
                                                   width="110" 
                                                   height="34" 
                                                   rx="8" 
-                                                  fill="#161616"
+                                                  class="fill-slate-800 dark:fill-[#161616]"
                                                   [attr.stroke]="line.color"
                                                   stroke-width="1.5" />
                                             
@@ -236,7 +260,7 @@
                                                   width="110" 
                                                   height="34" 
                                                   rx="8" 
-                                                  fill="#161616"
+                                                  class="fill-slate-800 dark:fill-[#161616]"
                                                   [attr.stroke]="line.color"
                                                   stroke-width="1.5" />
                                             
@@ -265,14 +289,23 @@
                                         }
                                     </g>
                                 }
-
-                                <!-- Detección táctil y de cursor -->
-                                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="18" 
-                                        fill="transparent" class="cursor-pointer"
-                                        (mouseenter)="hoveredPoint.set({ index: $index, key: line.key })" 
-                                        (mouseleave)="hoveredPoint.set(null)"
-                                        (click)="togglePoint($index, line.key); $event.stopPropagation()" />
                             </g>
+                        }
+                    }
+
+                    <!-- Zonas de Detección Táctil Verticales (Optimizadas para Fácil Selección en Móvil/Táctil) -->
+                    @if (activeLines().length > 0) {
+                        @for (point of activeLines()[0].points; track point.date) {
+                            <rect [attr.x]="point.x - (activeLines()[0].points.length > 1 ? 400 / (activeLines()[0].points.length - 1) : 400) / 2"
+                                  y="-20"
+                                  [attr.width]="activeLines()[0].points.length > 1 ? 400 / (activeLines()[0].points.length - 1) : 400"
+                                  height="135"
+                                  fill="transparent"
+                                  class="cursor-pointer select-none"
+                                  (mouseenter)="hoveredPoint.set({ index: $index, key: activeLines()[0].key })"
+                                  (mouseleave)="hoveredPoint.set(null)"
+                                  (touchstart)="hoveredPoint.set({ index: $index, key: activeLines()[0].key }); $event.stopPropagation()"
+                                  (click)="togglePoint($index, activeLines()[0].key); $event.stopPropagation()" />
                         }
                     }
                 </svg>
@@ -280,14 +313,14 @@
         }
     </div>
 } @else {
-    <div class="bg-[#0c0c0c] p-8 rounded-[2.5rem] text-center py-16 text-white relative overflow-hidden">
+    <div class="bg-white dark:bg-[#0c0c0c] p-8 rounded-[2.5rem] text-center py-16 text-slate-800 dark:text-white border border-slate-100 dark:border-none shadow-md dark:shadow-2xl relative overflow-hidden">
         <!-- Samsung Health Decorative Corner Circle -->
-        <div class="absolute -right-10 -top-10 w-44 h-44 bg-white/[0.02] dark:bg-white/[0.01] rounded-full pointer-events-none flex items-center justify-center">
-            <div class="w-32 h-32 bg-white/[0.02] dark:bg-white/[0.01] rounded-full"></div>
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-slate-100/30 dark:bg-white/[0.01] rounded-full pointer-events-none flex items-center justify-center">
+            <div class="w-32 h-32 bg-slate-100/20 dark:bg-white/[0.01] rounded-full"></div>
         </div>
         
-        <app-a-icon name="show_chart" customClass="text-4xl text-white/20 mb-3 relative z-10"></app-a-icon>
-        <h4 class="text-base font-bold serif text-white relative z-10">Gráfica de Tendencia</h4>
-        <p class="text-xs text-white/50 mt-1 max-w-xs mx-auto relative z-10">Necesitas al menos 2 registros de consulta para generar la gráfica de progreso de tendencia.</p>
+        <app-a-icon name="show_chart" customClass="text-4xl text-slate-300 dark:text-white/20 mb-3 relative z-10"></app-a-icon>
+        <h4 class="text-base font-bold serif text-slate-800 dark:text-white relative z-10">Gráfica de Tendencia</h4>
+        <p class="text-xs text-slate-500 dark:text-white/50 mt-1 max-w-xs mx-auto relative z-10">Necesitas al menos 2 registros de consulta para generar la gráfica de progreso de tendencia.</p>
     </div>
 }
