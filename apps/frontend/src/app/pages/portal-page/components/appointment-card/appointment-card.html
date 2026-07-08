@@ -2,19 +2,19 @@
     <!-- Widget de Siguiente Cita (Estático) -->
     <div [class]="patient()?.plan_citas ? 'lg:col-span-2' : 'lg:col-span-3'">
         @if (nextAppointment() && nextAppointment()?.hasAppointment) {
-            <div class="relative overflow-hidden rounded-[2rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 shadow-xl shadow-slate-200/20 dark:shadow-none transition-all duration-300 border-l-4 h-full"
+            <div class="relative overflow-hidden rounded-[2rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-5 sm:p-6 shadow-md transition-all duration-300 border-l-4 h-full"
                  [class.border-l-amber-500]="nextAppointment()?.status === 'pending'"
                  [class.border-l-emerald-500]="nextAppointment()?.status === 'confirmed'"
                  [class.border-l-rose-500]="nextAppointment()?.status === 'cancelled'">
-                <div class="absolute -right-10 -top-10 w-32 h-32 bg-nutri-rose/5 dark:bg-white/[0.01] rounded-full blur-xl"></div>
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/5 dark:bg-white/[0.01] rounded-full blur-xl"></div>
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 h-full">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-nutri-rose/10 to-nutri-rose/5 dark:from-white/5 dark:to-white/[0.01] border border-nutri-rose/10 dark:border-white/5 flex items-center justify-center text-nutri-rose shrink-0 shadow-inner">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 border border-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0 shadow-inner">
                             <app-a-icon name="calendar_today" size="22px"></app-a-icon>
                         </div>
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Próxima Consulta</span>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500/70 dark:text-indigo-400/70">Próxima Consulta</span>
                                 @if (nextAppointment()?.status === 'pending') {
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200/50 dark:border-amber-500/20">Pendiente 🟡</span>
                                 } @else if (nextAppointment()?.status === 'confirmed') {
@@ -69,14 +69,14 @@
                 </div>
             </div>
         } @else {
-            <div class="relative overflow-hidden rounded-[2rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 shadow-md transition-all duration-300 border-l-4 border-l-slate-300 dark:border-l-white/10 h-full">
+            <div class="relative overflow-hidden rounded-[2rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-5 sm:p-6 shadow-md transition-all duration-300 border-l-4 border-l-indigo-300 dark:border-l-indigo-500/30 h-full">
                 <div class="relative z-10 flex items-center gap-4 h-full">
-                    <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0 shadow-inner">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0 shadow-inner">
                         <app-a-icon name="calendar_today" size="22px"></app-a-icon>
                     </div>
                     <div>
-                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Próxima Consulta</span>
-                        <h3 class="text-base font-bold text-slate-500 dark:text-slate-400 mt-1 font-sans">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500/70 dark:text-indigo-400/70">Próxima Consulta</span>
+                        <h3 class="text-base font-bold text-indigo-700/80 dark:text-indigo-200/80 mt-1 font-sans">
                             No se ha establecido una nueva cita.
                         </h3>
                     </div>
@@ -88,7 +88,7 @@
     <!-- Plan de Pagos -->
     @if (patient()?.plan_citas) {
         <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-[#111111] p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300 overflow-hidden relative group h-full flex flex-col justify-between">
+            <div class="bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] p-6 rounded-[2rem] border border-emerald-100/50 dark:border-emerald-950/20 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300 overflow-hidden relative group h-full flex flex-col justify-between">
                 <!-- Ambient light glow -->
                 <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-2xl transition-all group-hover:scale-125 duration-700"></div>
                 <div class="absolute -left-12 -top-12 w-24 h-24 bg-blue-500/5 rounded-full blur-xl transition-all group-hover:scale-110 duration-700"></div>
@@ -99,7 +99,7 @@
                         <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                             <app-a-icon name="payments" size="14px" customClass="text-emerald-500 dark:text-emerald-400"></app-a-icon>
                         </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Paquete de Citas</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70">Paquete de Citas</span>
                     </div>
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider transition-all"
                           [ngClass]="toNumber(patient()?.plan_citas_completadas) === toNumber(patient()?.plan_citas)
