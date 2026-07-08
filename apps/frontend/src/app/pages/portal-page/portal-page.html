@@ -501,7 +501,7 @@
                                 </div>
  
                                 <!-- Último Registro Físico (Samsung Health Style Card) -->
-                                <div class="dashboard-card bg-indigo-600 dark:bg-[#151329] p-6 sm:p-8 rounded-[2rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
+                                <div class="dashboard-card bg-indigo-600 dark:bg-indigo-600 p-6 sm:p-8 rounded-[2rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
                                     
                                     <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
                                     <div class="absolute -right-6 -top-6 w-36 h-36 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
@@ -575,7 +575,7 @@
                             <!-- Grid de Métricas Rápidas -->
                             <div class="grid grid-cols-2 gap-4">
                                 <!-- Fat Card (Samsung Health Style) -->
-                                <div class="dashboard-card col-span-1 bg-amber-500 dark:bg-[#20160a] p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
+                                <div class="dashboard-card col-span-1 bg-amber-500 dark:bg-amber-500 p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
                                     
                                     <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
                                     <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
@@ -602,7 +602,7 @@
                                 </div>
 
                                 <!-- Porcentaje de Avance General (Samsung Health Style Circular Gauge) -->
-                                <div class="dashboard-card col-span-1 bg-emerald-500 dark:bg-[#072015] p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex items-center justify-between overflow-hidden relative group border-none">
+                                <div class="dashboard-card col-span-1 bg-emerald-500 dark:bg-emerald-500 p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex items-center justify-between overflow-hidden relative group border-none">
                                     
                                     <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
                                     <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover:scale-105">
@@ -936,28 +936,36 @@
                             <!-- Grid de Documentos -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Tarjeta 1: Guía de Equivalentes -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
-                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-nutri-rose/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-rose-500 dark:bg-rose-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover/card:scale-105">
+                                        <div class="w-20 h-20 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                            <div class="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                                <app-a-icon name="menu_book" size="18px" class="text-white opacity-85"></app-a-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 dark:bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
                                                 <app-a-icon name="menu_book" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Lista de Equivalentes</h3>
-                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-white">Lista de Equivalentes</h3>
+                                                <p class="text-xs text-white/70 leading-relaxed">
                                                     Manual oficial para conocer las porciones correctas e intercambiar alimentos de forma segura sin alterar tu plan.
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showEquivalentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/5 hover:bg-nutri-rose/10 border border-nutri-rose/10 hover:border-nutri-rose/20 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/lista-equivalentes.pdf" download="Lista_Equivalentes_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-nutri-rose hover:opacity-95 shadow-md shadow-nutri-rose/15 hover:shadow-lg hover:shadow-nutri-rose/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-700 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -966,28 +974,36 @@
                                 </div>
 
                                 <!-- Tarjeta 2: Guía de Marcas -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
-                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-amber-500/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-amber-500 dark:bg-amber-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover/card:scale-105">
+                                        <div class="w-20 h-20 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                            <div class="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                                <app-a-icon name="local_mall" size="18px" class="text-white opacity-85"></app-a-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 flex items-center justify-center text-amber-500">
+                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
                                                 <app-a-icon name="local_mall" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Marcas Recomendadas</h3>
-                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-white">Marcas Recomendadas</h3>
+                                                <p class="text-xs text-white/70 leading-relaxed">
                                                     Catálogo visual con los productos comerciales aprobados en el consultorio, marcas saludables y opciones del supermercado.
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <a href="/documents/guia-marcas-recomendadas.pdf" target="_blank"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 hover:border-amber-500/20 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </a>
                                             <a href="/documents/guia-marcas-recomendadas.pdf" download="Guia_Marcas_Recomendadas.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-amber-500 hover:bg-amber-600 shadow-md shadow-amber-500/15 hover:shadow-lg hover:shadow-amber-500/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-700 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -996,27 +1012,35 @@
                                 </div>
 
                                 <!-- Tarjeta 3: Condimentos -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
-                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-emerald-500 dark:bg-emerald-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
+                                    <!-- Círculos concéntricos de adorno (Samsung Health Style) -->
+                                    <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center pointer-events-none transition-transform duration-500 group-hover/card:scale-105">
+                                        <div class="w-20 h-20 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                            <div class="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                                <app-a-icon name="dining" size="18px" class="text-white opacity-85"></app-a-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/5 flex items-center justify-center text-emerald-500">
+                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
                                                 <app-a-icon name="dining" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Condimentos Libres</h3>
-                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-white">Condimentos Libres</h3>
+                                                <p class="text-xs text-white/70 leading-relaxed">
                                                     Guía de especias y condimentos sin calorías, ideales para realzar el sabor de tus platillos de manera saludable.                                                </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showCondimentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/20 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/condimentos.pdf" download="Condimentos_Libres_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-emerald-500 hover:bg-emerald-600 shadow-md shadow-emerald-500/15 hover:shadow-lg hover:shadow-emerald-500/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
