@@ -105,7 +105,13 @@
           </div>
 
           <!-- Premium Meal Card -->
-          <div class="bg-white dark:bg-[#0c0c0c] border border-nutri-rose/10 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-nutri-rose/5 transition-all overflow-hidden flex flex-col relative group">
+          <div class="bg-white dark:bg-[#0c0c0c] border rounded-[2rem] sm:rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-nutri-rose/5 transition-all overflow-hidden flex flex-col relative group"
+               [class.border-emerald-500\/30]="isCurrentMeal(meal.tiempo)"
+               [class.dark:border-emerald-500\/20]="isCurrentMeal(meal.tiempo)"
+               [class.shadow-md]="isCurrentMeal(meal.tiempo)"
+               [class.shadow-emerald-500\/5]="isCurrentMeal(meal.tiempo)"
+               [class.border-nutri-rose/10]="!isCurrentMeal(meal.tiempo)"
+               [class.dark:border-white/5]="!isCurrentMeal(meal.tiempo)">
             
             <!-- Visual Time Header Line (Always shown on top of the card) -->
             <div [class]="getMealTimeColorClasses(meal.tiempo).topLineClass" class="absolute top-0 left-0 right-0 h-1.5 z-10"></div>

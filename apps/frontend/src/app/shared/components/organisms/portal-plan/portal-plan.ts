@@ -59,6 +59,53 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     }
   }
 
+  private touchStartX = 0;
+  private touchStartY = 0;
+
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  @HostListener('touchend', ['$event'])
+  onTouchEnd(event: TouchEvent) {
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+    
+    const diffX = touchEndX - this.touchStartX;
+    const diffY = touchEndY - this.touchStartY;
+    
+    // Solo registrar si el deslizamiento es predominantemente horizontal y supera los 60px
+    if (Math.abs(diffX) > 60 && Math.abs(diffY) < 40) {
+      const menu = this.parsedMenu();
+      if (!menu || !menu.secciones) return;
+      
+      const maxIndex = menu.secciones.length - 1;
+      const currentIndex = this.activeSectionIdx();
+      
+      if (diffX < 0) {
+        // Deslizar a la izquierda (Avanzar al siguiente día)
+        if (currentIndex < maxIndex) {
+          this.selectSection(currentIndex + 1);
+          this.triggerHapticFeedback();
+        }
+      } else {
+        // Deslizar a la derecha (Regresar al día anterior)
+        if (currentIndex > 0) {
+          this.selectSection(currentIndex - 1);
+          this.triggerHapticFeedback();
+        }
+      }
+    }
+  }
+
+  private triggerHapticFeedback() {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+  }
+
   ngOnInit() {
     this.loadPlan();
   }
@@ -119,6 +166,9 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
         const parsed = JSON.parse(cached);
         this.parsedMenu.set(parsed);
         this.autoSelectDaySection();
+        setTimeout(() => {
+          this.scrollToCurrentMeal();
+        }, 300);
         // Si ya está en caché, no necesitamos mostrar el spinner lento de carga
         return;
       }
