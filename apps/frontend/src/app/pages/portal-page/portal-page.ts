@@ -873,27 +873,48 @@ export class PortalPage implements OnInit, OnDestroy {
     this.triggerCelebrationConfetti(ms.id);
   }
 
-  async generateBadgePng(svgElement: SVGElement, id: string): Promise<File | null> {
-    try {
-      const svgString = new XMLSerializer().serializeToString(svgElement);
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const URL = window.URL || window.webkitURL || window;
-      const blobURL = URL.createObjectURL(svgBlob);
+  generateBadgePng(svgElement: SVGElement, id: string, title: string): Promise<File | null> {
+    const svgString = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
 
-      return new Promise((resolve) => {
-        const image = new Image();
-        image.onload = () => {
+    const logoImg = new Image();
+    logoImg.src = 'images/logo.png';
+
+    const svgImg = new Image();
+    svgImg.src = blobURL;
+
+    return new Promise((resolve) => {
+      let loadedCount = 0;
+      const checkLoaded = () => {
+        loadedCount++;
+        if (loadedCount === 2) {
           const canvas = document.createElement('canvas');
-          canvas.width = 512;
-          canvas.height = 512;
+          canvas.width = 480;
+          canvas.height = 640;
           const context = canvas.getContext('2d');
           if (!context) {
             resolve(null);
             return;
           }
 
-          // Crear fondo premium gradiente radial (como el fondo del modal de celebración)
-          const gradient = context.createRadialGradient(256, 256, 50, 256, 256, 256);
+          // 1. Tarjeta con bordes redondeados
+          context.beginPath();
+          const r = 40;
+          context.moveTo(r, 0);
+          context.lineTo(480 - r, 0);
+          context.quadraticCurveTo(480, 0, 480, r);
+          context.lineTo(480, 640 - r);
+          context.quadraticCurveTo(480, 640, 480 - r, 640);
+          context.lineTo(r, 640);
+          context.quadraticCurveTo(0, 640, 0, 640 - r);
+          context.lineTo(0, r);
+          context.quadraticCurveTo(0, 0, r, 0);
+          context.closePath();
+          
+          // Gradiente de fondo radial coincidiendo con los colores de la celebración
+          const gradient = context.createRadialGradient(240, 320, 50, 240, 320, 380);
           if (id === '25-percent') {
             gradient.addColorStop(0, '#f97316');
             gradient.addColorStop(1, '#d97706');
@@ -904,14 +925,94 @@ export class PortalPage implements OnInit, OnDestroy {
             gradient.addColorStop(0, '#38bdf8');
             gradient.addColorStop(1, '#4f46e5');
           }
-
           context.fillStyle = gradient;
-          context.beginPath();
-          context.arc(256, 256, 256, 0, 2 * Math.PI);
           context.fill();
 
-          // Dibujar el SVG centrado en el canvas
-          context.drawImage(image, 64, 64, 384, 384);
+          // 2. Órbita circular blanca translúcida para el badge
+          context.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          context.lineWidth = 1;
+          context.beginPath();
+          context.arc(240, 150, 64, 0, 2 * Math.PI);
+          context.fill();
+          context.stroke();
+
+          // Dibujar el SVG del logro centrado
+          context.drawImage(svgImg, 188, 98, 104, 104);
+
+          // 3. Textos alineados
+          context.textAlign = 'center';
+          
+          // Subtítulo "🏆 LOGRO ALCANZADO"
+          context.font = '900 11px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.75)';
+          context.fillText('🏆 LOGRO ALCANZADO', 240, 260);
+
+          // Título del logro
+          context.font = 'bold 30px Georgia, serif';
+          context.fillStyle = '#ffffff';
+          context.fillText(title, 240, 305);
+
+          // Mensaje de felicitación
+          context.font = '500 13px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          
+          const text = this.getCelebrationMessage(id);
+          const words = text.split(' ');
+          let line = '';
+          const lines = [];
+          const maxWidth = 380;
+          for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            if (metrics.width > maxWidth && n > 0) {
+              lines.push(line);
+              line = words[n] + ' ';
+            } else {
+              line = testLine;
+            }
+          }
+          lines.push(line);
+          
+          let yPos = 350;
+          for (const l of lines) {
+            context.fillText(l.trim(), 240, yPos);
+            yPos += 22;
+          }
+
+          // 4. Línea divisoria decorativa
+          context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(40, 495);
+          context.lineTo(440, 495);
+          context.stroke();
+
+          // 5. Contenedor del Logo de Nutrilev (Pastilla ovalada blanca)
+          context.beginPath();
+          const pWidth = 220;
+          const pHeight = 64;
+          const px = 240 - (pWidth / 2);
+          const py = 530;
+          const pr = 32;
+          context.moveTo(px + pr, py);
+          context.lineTo(px + pWidth - pr, py);
+          context.quadraticCurveTo(px + pWidth, py, px + pWidth, py + pr);
+          context.lineTo(px + pWidth, py + pHeight - pr);
+          context.quadraticCurveTo(px + pWidth, py + pHeight, px + pWidth - pr, py + pHeight);
+          context.lineTo(px + pr, py + pHeight);
+          context.quadraticCurveTo(px, py + pHeight, px, py + pHeight - pr);
+          context.lineTo(px, py + pr);
+          context.quadraticCurveTo(px, py, px + pr, py);
+          context.closePath();
+          context.fillStyle = '#ffffff';
+          context.fill();
+
+          // Dibujar la imagen del Logo
+          const logoAspect = logoImg.width / logoImg.height;
+          const targetHeight = 44;
+          const targetWidth = targetHeight * logoAspect;
+          context.drawImage(logoImg, 240 - (targetWidth / 2), py + 10, targetWidth, targetHeight);
 
           canvas.toBlob((blob) => {
             if (blob) {
@@ -921,14 +1022,20 @@ export class PortalPage implements OnInit, OnDestroy {
               resolve(null);
             }
           }, 'image/png');
-        };
-        image.onerror = () => resolve(null);
-        image.src = blobURL;
-      });
-    } catch (e) {
-      console.error('Error generating badge PNG:', e);
-      return null;
-    }
+        }
+      };
+
+      logoImg.onload = checkLoaded;
+      logoImg.onerror = () => {
+        loadedCount++;
+        checkLoaded();
+      };
+      
+      svgImg.onload = checkLoaded;
+      svgImg.onerror = () => {
+        resolve(null);
+      };
+    });
   }
 
   async shareMilestone() {
@@ -946,7 +1053,7 @@ export class PortalPage implements OnInit, OnDestroy {
         let files: File[] = [];
         const svgElement = document.getElementById('celebration-svg') as SVGElement | null;
         if (svgElement) {
-          const file = await this.generateBadgePng(svgElement, ms.id);
+          const file = await this.generateBadgePng(svgElement, ms.id, ms.title);
           if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
             files = [file];
           }
