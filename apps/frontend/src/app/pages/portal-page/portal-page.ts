@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
@@ -64,6 +64,7 @@ import { FreeCondimentsModalComponent } from './components/free-condiments-modal
   ]
 })
 export class PortalPage implements OnInit, OnDestroy {
+  @ViewChild(HabitsTrackerComponent) habitsTracker?: HabitsTrackerComponent;
   sidebarCollapsed = signal<boolean>(false);
   private lastFocusTime = Date.now();
   private focusListener?: () => void;
@@ -919,6 +920,13 @@ export class PortalPage implements OnInit, OnDestroy {
       if (tab && ['dashboard', 'plan', 'analysis', 'history'].includes(tab)) {
         console.log(`PWA: Navigating to tab ${tab} via shortcut/URL param...`);
         this.setActiveTab(tab as any);
+      }
+
+      if (action === 'habits') {
+        console.log('PWA: Opening habits tracker floating modal via shortcut...');
+        setTimeout(() => {
+          this.habitsTracker?.showHabitsFloatingModal.set(true);
+        }, 300);
       }
 
       if (action && id) {

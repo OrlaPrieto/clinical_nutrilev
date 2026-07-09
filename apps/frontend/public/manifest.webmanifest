@@ -47,6 +47,12 @@
       "icons": [{ "src": "images/pwa-icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
+      "name": "Registrar Hábitos",
+      "short_name": "Hábitos",
+      "url": "./portal?tab=dashboard&action=habits",
+      "icons": [{ "src": "images/pwa-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Historial de Progreso",
       "short_name": "Historial",
       "url": "./portal?tab=history",
