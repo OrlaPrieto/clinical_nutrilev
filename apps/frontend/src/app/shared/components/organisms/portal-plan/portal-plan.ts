@@ -384,7 +384,8 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
           portionText = `${formattedAmount} ${displayUnit}`;
         }
       } else {
-        portionText = `${formattedAmount} ${food.unit}${formattedAmount > 1 && food.unit.endsWith('a') ? 'as' : ''}`;
+        const suffix = (formattedAmount > 1 && food.unit.endsWith('a')) ? 's' : '';
+        portionText = `${formattedAmount} ${food.unit}${suffix}`;
       }
 
       return `${food.emoji} ${food.name}: ${portionText}`;
