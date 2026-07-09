@@ -7,6 +7,7 @@ import { ButtonComponent } from '../../atoms/button/button';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { Patient } from '@shared/models/interfaces';
 import { AnalyticsService } from '../../../../shared/services/analytics.service';
+import { SMAE_DATABASE, SmaeFood } from '../../../../shared/data/smae-db';
 
 @Component({
   selector: 'app-o-portal-plan',
@@ -109,6 +110,21 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       return;
     }
 
+    // Intentar cargar del caché local de PWA para respuesta instantánea (offline-first)
+    const cacheKey = `parsed_menu_${p?.email}_${url}`;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        this.parsedMenu.set(parsed);
+        this.autoSelectDaySection();
+        // Si ya está en caché, no necesitamos mostrar el spinner lento de carga
+        return;
+      }
+    } catch (e) {
+      console.error('Error reading menu cache:', e);
+    }
+
     this.loading.set(true);
     this.error.set(null);
     this.menuProgress.set(0);
@@ -162,6 +178,21 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
 
       if (data && !data.error) {
         this.parsedMenu.set(data);
+        
+        // Guardar en caché local
+        try {
+          // Limpiar cualquier menú antiguo en caché de este paciente para optimizar almacenamiento
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith(`parsed_menu_${p?.email}_`) && key !== cacheKey) {
+              localStorage.removeItem(key);
+            }
+          }
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+        } catch (cacheErr) {
+          console.error('Failed to write menu cache:', cacheErr);
+        }
+
         this.autoSelectDaySection();
         setTimeout(() => {
           this.scrollToCurrentMeal();
