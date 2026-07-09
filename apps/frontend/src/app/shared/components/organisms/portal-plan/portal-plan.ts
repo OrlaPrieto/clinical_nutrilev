@@ -1,4 +1,4 @@
-import { Component, input, signal, effect, inject, OnInit, OnDestroy, HostListener, untracked } from '@angular/core';
+import { Component, input, signal, effect, inject, OnInit, OnDestroy, HostListener, untracked, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../../services/patient';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -14,7 +14,8 @@ import { SMAE_DATABASE, SmaeFood } from '../../../../shared/data/smae-db';
   standalone: true,
   imports: [CommonModule, IconComponent, ButtonComponent],
   templateUrl: './portal-plan.html',
-  styleUrl: './portal-plan.css'
+  styleUrl: './portal-plan.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortalPlanOrganism implements OnInit, OnDestroy {
   patient = input.required<Patient | null>();
