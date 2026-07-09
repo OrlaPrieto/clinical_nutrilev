@@ -118,7 +118,7 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
 
     try {
       const whitelistedKeys = [
-        'patient_id', 'date', 'weight', 'body_fat', 'muscle_mass',
+        'date', 'weight', 'body_fat', 'muscle_mass',
         'agua_corporal', 'proteinas', 'minerales', 'masa_grasa', 'masa_magra', 'imc',
         'brazo_der_grasa', 'brazo_der_musculo', 'brazo_der_cm',
         'brazo_izq_grasa', 'brazo_izq_musculo', 'brazo_izq_cm',
