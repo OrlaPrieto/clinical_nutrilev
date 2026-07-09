@@ -676,6 +676,36 @@ export class PortalPage implements OnInit, OnDestroy {
     ];
   });
 
+  loadPortalDataFromCache(userEmail: string) {
+    try {
+      const cachedPatientStr = localStorage.getItem(`portal_patient_${userEmail}`);
+      const cachedProgressStr = localStorage.getItem(`portal_progress_${userEmail}`);
+      const cachedAptStr = localStorage.getItem(`portal_next_appointment_${userEmail}`);
+
+      if (cachedPatientStr) {
+        const cachedPatient = JSON.parse(cachedPatientStr);
+        this.patient.set(cachedPatient);
+        this.titleService.setTitle(`Portal de ${cachedPatient.nombre} - Nutrilev`);
+        this.loading.set(false); // Detener pantalla de carga ya que hay datos locales
+      }
+
+      if (cachedProgressStr) {
+        this.progress.set(JSON.parse(cachedProgressStr));
+      }
+
+      if (cachedAptStr) {
+        const cachedApt = JSON.parse(cachedAptStr);
+        if (cachedApt && cachedApt.hasAppointment) {
+          this.nextAppointment.set(cachedApt);
+        } else {
+          this.nextAppointment.set(null);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading data from cache:', err);
+    }
+  }
+
   async loadPortalData(userEmail: string, forceRefresh = false) {
     try {
       // Cargar datos en paralelo para evitar waterfall
@@ -705,7 +735,14 @@ export class PortalPage implements OnInit, OnDestroy {
           this.nextAppointment.set(null);
         }
 
-
+        // Guardar en caché local para soporte offline-first
+        try {
+          localStorage.setItem(`portal_patient_${userEmail}`, JSON.stringify(currentPatient));
+          localStorage.setItem(`portal_progress_${userEmail}`, JSON.stringify(history || []));
+          localStorage.setItem(`portal_next_appointment_${userEmail}`, JSON.stringify(apt));
+        } catch (cacheErr) {
+          console.error('Failed to write portal data cache:', cacheErr);
+        }
 
         // Cargar o reiniciar la lista de súper según corresponda
         if (menuChanged) {
@@ -818,7 +855,11 @@ export class PortalPage implements OnInit, OnDestroy {
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        await this.loadPortalData(userEmail, true); // Force fresh load on initialization
+        // Carga offline-first: restaurar caché local antes de conectar con el servidor
+        this.loadPortalDataFromCache(userEmail);
+
+        // Cargar datos frescos en segundo plano
+        await this.loadPortalData(userEmail, true); 
 
         // Solicitar suscripción de notificaciones push
         this.pushService.requestSubscription(userEmail);
