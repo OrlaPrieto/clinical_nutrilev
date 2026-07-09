@@ -873,7 +873,65 @@ export class PortalPage implements OnInit, OnDestroy {
     this.triggerCelebrationConfetti(ms.id);
   }
 
-  shareMilestone() {
+  async generateBadgePng(svgElement: SVGElement, id: string): Promise<File | null> {
+    try {
+      const svgString = new XMLSerializer().serializeToString(svgElement);
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+
+      return new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 512;
+          canvas.height = 512;
+          const context = canvas.getContext('2d');
+          if (!context) {
+            resolve(null);
+            return;
+          }
+
+          // Crear fondo premium gradiente radial (como el fondo del modal de celebración)
+          const gradient = context.createRadialGradient(256, 256, 50, 256, 256, 256);
+          if (id === '25-percent') {
+            gradient.addColorStop(0, '#f97316');
+            gradient.addColorStop(1, '#d97706');
+          } else if (id === 'halfway') {
+            gradient.addColorStop(0, '#facc15');
+            gradient.addColorStop(1, '#f97316');
+          } else {
+            gradient.addColorStop(0, '#38bdf8');
+            gradient.addColorStop(1, '#4f46e5');
+          }
+
+          context.fillStyle = gradient;
+          context.beginPath();
+          context.arc(256, 256, 256, 0, 2 * Math.PI);
+          context.fill();
+
+          // Dibujar el SVG centrado en el canvas
+          context.drawImage(image, 64, 64, 384, 384);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], `logro-${id}.png`, { type: 'image/png' });
+              resolve(file);
+            } else {
+              resolve(null);
+            }
+          }, 'image/png');
+        };
+        image.onerror = () => resolve(null);
+        image.src = blobURL;
+      });
+    } catch (e) {
+      console.error('Error generating badge PNG:', e);
+      return null;
+    }
+  }
+
+  async shareMilestone() {
     const ms = this.activeCelebration();
     if (!ms) return;
 
@@ -884,12 +942,31 @@ export class PortalPage implements OnInit, OnDestroy {
     const shareText = `¡He alcanzado un nuevo logro en mi plan de alimentación de Nutrilev! ${trophy}\n\n*${ms.title.toUpperCase()}*\n"${this.getCelebrationMessage(ms.id)}"\n\n${sparkle} Únete a un estilo de vida de élite con Nutrilev ${apple}`;
 
     if (typeof navigator !== 'undefined' && navigator.share) {
-      navigator.share({
-        title: `Logro Alcanzado: ${ms.title}`,
-        text: shareText
-      }).catch(err => {
+      try {
+        let files: File[] = [];
+        const svgElement = document.getElementById('celebration-svg') as SVGElement | null;
+        if (svgElement) {
+          const file = await this.generateBadgePng(svgElement, ms.id);
+          if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+            files = [file];
+          }
+        }
+
+        if (files.length > 0) {
+          await navigator.share({
+            title: `Logro Alcanzado: ${ms.title}`,
+            text: shareText,
+            files: files
+          });
+        } else {
+          await navigator.share({
+            title: `Logro Alcanzado: ${ms.title}`,
+            text: shareText
+          });
+        }
+      } catch (err) {
         console.log('Error sharing milestone:', err);
-      });
+      }
     } else {
       // Fallback a WhatsApp
       const encodedText = encodeURIComponent(shareText);

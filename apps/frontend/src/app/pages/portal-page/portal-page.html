@@ -1284,7 +1284,7 @@
                 <div class="relative z-10 w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
                     @if (activeCelebration().id === '25-percent') {
                         <!-- Bronze Star (Option B Shield) -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(198,130,84,0.15)]">
+                        <svg id="celebration-svg" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(198,130,84,0.15)]">
                             <defs>
                                 <linearGradient id="shieldGrad25Cel" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FFFFFF" />
@@ -1300,7 +1300,7 @@
                         </svg>
                     } @else if (activeCelebration().id === 'halfway') {
                         <!-- Gold Medal (Option B Shield) -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(245,158,11,0.15)]">
+                        <svg id="celebration-svg" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(245,158,11,0.15)]">
                             <defs>
                                 <linearGradient id="shieldGrad50Cel" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FFFFFF" />
@@ -1316,7 +1316,7 @@
                         </svg>
                     } @else if (activeCelebration().id === 'goal-reached') {
                         <!-- Diamond Shield (Option B Shield) -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(59,130,246,0.15)]">
+                        <svg id="celebration-svg" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(59,130,246,0.15)]">
                             <defs>
                                 <linearGradient id="shieldGrad100Cel" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FFFFFF" />
