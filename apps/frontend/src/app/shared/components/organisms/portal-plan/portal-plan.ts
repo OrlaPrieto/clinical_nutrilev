@@ -131,6 +131,8 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     }
   }
 
+  private isHistoryPushed = false;
+
   constructor() {
     // Reload menu if patient or menu_url changes
     effect(() => {
@@ -141,6 +143,34 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
         });
       }
     }, { allowSignalWrites: true });
+
+    effect(() => {
+      const open = this.selectedMealForRecipe() !== null || this.selectedIngredientForReplacement() !== null;
+      untracked(() => {
+        if (open) {
+          if (!this.isHistoryPushed) {
+            window.history.pushState({ modalOpen: 'plan' }, '');
+            this.isHistoryPushed = true;
+          }
+        } else {
+          if (this.isHistoryPushed) {
+            this.isHistoryPushed = false;
+            if (window.history.state && window.history.state.modalOpen === 'plan') {
+              window.history.back();
+            }
+          }
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: PopStateEvent) {
+    if (this.isHistoryPushed) {
+      this.isHistoryPushed = false;
+      this.selectedMealForRecipe.set(null);
+      this.selectedIngredientForReplacement.set(null);
+    }
   }
 
   async loadPlan() {

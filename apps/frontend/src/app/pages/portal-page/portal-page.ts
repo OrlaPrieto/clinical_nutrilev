@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy, ViewChild, effect, untracked } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
@@ -93,6 +93,41 @@ export class PortalPage implements OnInit, OnDestroy {
   showCondimentsModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
   activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
+
+  private isHistoryPushed = false;
+
+  constructor() {
+    effect(() => {
+      const open = this.isAnyModalOpen() || this.activeCelebration() !== null;
+      untracked(() => {
+        if (open) {
+          if (!this.isHistoryPushed) {
+            window.history.pushState({ modalOpen: 'portal' }, '');
+            this.isHistoryPushed = true;
+          }
+        } else {
+          if (this.isHistoryPushed) {
+            this.isHistoryPushed = false;
+            if (window.history.state && window.history.state.modalOpen === 'portal') {
+              window.history.back();
+            }
+          }
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: PopStateEvent) {
+    if (this.isHistoryPushed) {
+      this.isHistoryPushed = false;
+      this.showEquivalentsModal.set(false);
+      this.showCondimentsModal.set(false);
+      this.showShoppingModal.set(false);
+      this.showCancelConfirmModal.set(false);
+      this.activeCelebration.set(null);
+    }
+  }
 
 
   dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
