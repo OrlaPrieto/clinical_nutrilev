@@ -235,9 +235,160 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
 
   openReplacements(ingredient: any, event: Event) {
     event.stopPropagation();
-    if (ingredient.reemplazos && ingredient.reemplazos.length > 0) {
-      this.selectedIngredientForReplacement.set(ingredient);
+    
+    // Si ya vienen reemplazos procesados del backend, úsalos pero compleméntalos
+    let reps = ingredient.reemplazos || [];
+    
+    if (reps.length === 0) {
+      // Buscar reemplazos en la base de datos SMAE local
+      reps = this.generateSmaeReplacements(ingredient);
     }
+    
+    const enriched = {
+      ...ingredient,
+      reemplazos: reps
+    };
+    
+    this.selectedIngredientForReplacement.set(enriched);
+  }
+
+  canReplace(ing: any): boolean {
+    if (ing.reemplazos && ing.reemplazos.length > 0) return true;
+    if (ing.grupo) return true;
+    
+    // Intentar buscar correspondencia por nombre en base de datos SMAE
+    const nameLower = (ing.nombre || '').toLowerCase();
+    return SMAE_DATABASE.some(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+  }
+
+  generateSmaeReplacements(ingredient: any): string[] {
+    const groupName = (ingredient.grupo || '').toLowerCase();
+    const nameLower = (ingredient.nombre || '').toLowerCase();
+
+    // 1. Encontrar la categoría compatible del SMAE
+    let categoryMatch = '';
+    
+    if (groupName.includes('verdura')) {
+      categoryMatch = 'Verduras';
+    } else if (groupName.includes('fruta')) {
+      categoryMatch = 'Frutas';
+    } else if (groupName.includes('cereal') && groupName.includes('sin grasa')) {
+      categoryMatch = 'Cereales sin grasa';
+    } else if (groupName.includes('cereal') && groupName.includes('con grasa')) {
+      categoryMatch = 'Cereales con grasa';
+    } else if (groupName.includes('leguminosa')) {
+      categoryMatch = 'Leguminosas';
+    } else if (groupName.includes('muy bajo') || (groupName.includes('aoa') && groupName.includes('muy bajo'))) {
+      categoryMatch = 'AOA muy bajo en grasa';
+    } else if (groupName.includes('bajo en grasa') || (groupName.includes('aoa') && groupName.includes('bajo'))) {
+      categoryMatch = 'AOA bajo en grasa';
+    } else if (groupName.includes('moderado') || (groupName.includes('aoa') && groupName.includes('moderado'))) {
+      categoryMatch = 'AOA moderado en grasa';
+    } else if (groupName.includes('alto en grasa') || (groupName.includes('aoa') && groupName.includes('alto'))) {
+      categoryMatch = 'AOA alto en grasa';
+    } else if (groupName.includes('lácteo') || groupName.includes('lacteo') || groupName.includes('leche')) {
+      categoryMatch = 'Lácteos';
+    } else if (groupName.includes('grasa') && groupName.includes('sin prote')) {
+      categoryMatch = 'Grasas sin proteína';
+    } else if (groupName.includes('grasa') && groupName.includes('con prote')) {
+      categoryMatch = 'Grasas con proteína';
+    } else if (groupName.includes('libre')) {
+      categoryMatch = 'Libres de energía';
+    } else {
+      // Si no hay grupo claro, buscar por nombre del ingrediente en SMAE_DATABASE
+      const match = SMAE_DATABASE.find(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+      if (match) {
+        categoryMatch = match.category;
+      }
+    }
+
+    if (!categoryMatch) return [];
+
+    // 2. Intentar buscar el ingrediente en la base de datos para saber cuántos equivalentes representa su porción
+    let matchedFood = SMAE_DATABASE.find(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+    
+    // Si no se encuentra una porción exacta en SMAE, asumimos que representa 1 equivalente
+    let equivalents = 1;
+    
+    if (matchedFood) {
+      // Intentar extraer el número de la cantidad del ingrediente (ej: "1 pieza", "1/2 taza", "90g", "30 gramos")
+      const qtyStr = (ingredient.cantidad || '').toLowerCase();
+      let numericalQty = parseFloat(qtyStr);
+      
+      // Manejo de fracciones comunes (1/2, 1/3, 1/4, 3/4)
+      if (qtyStr.includes('1/2') || qtyStr.includes('0.5') || qtyStr.includes('medio')) {
+        numericalQty = 0.5;
+      } else if (qtyStr.includes('1/3') || qtyStr.includes('0.33')) {
+        numericalQty = 0.33;
+      } else if (qtyStr.includes('1/4') || qtyStr.includes('0.25') || qtyStr.includes('cuarto')) {
+        numericalQty = 0.25;
+      } else if (qtyStr.includes('3/4') || qtyStr.includes('0.75')) {
+        numericalQty = 0.75;
+      } else if (qtyStr.includes('1.5') || qtyStr.includes('1 1/2')) {
+        numericalQty = 1.5;
+      } else {
+        // Buscar el primer número del string
+        const numMatch = qtyStr.match(/[\d.]+/);
+        if (numMatch) {
+          numericalQty = parseFloat(numMatch[0]);
+        }
+      }
+
+      if (!isNaN(numericalQty) && numericalQty > 0) {
+        // Si la unidad es gramos, y la base de datos tiene gramosEquivalent
+        if ((qtyStr.includes('g') || qtyStr.includes('gramos')) && matchedFood.gramsEquivalent) {
+          equivalents = numericalQty / matchedFood.gramsEquivalent;
+        } else {
+          equivalents = numericalQty / matchedFood.amountValue;
+        }
+      }
+    }
+
+    if (equivalents <= 0 || isNaN(equivalents)) equivalents = 1;
+
+    // 3. Buscar candidatos compatibles de la categoría
+    const isCategoryCompatible = (cat1: string, cat2: string) => {
+      if (cat1 === cat2) return true;
+      if (cat1.startsWith('Lácteos') && cat2.startsWith('Lácteos')) return true;
+      if (cat1.startsWith('AOA') && cat2.startsWith('AOA')) return true;
+      if (cat1.startsWith('Cereales') && cat2.startsWith('Cereales')) return true;
+      return false;
+    };
+
+    const candidates = SMAE_DATABASE.filter(food => 
+      isCategoryCompatible(food.category, categoryMatch) && 
+      !nameLower.includes(food.name.toLowerCase())
+    );
+
+    // Mezclar candidatos usando Fisher-Yates
+    const shuffled = [...candidates];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // Retornar las primeras 5 sugerencias formateadas
+    return shuffled.slice(0, 5).map(food => {
+      const scaledAmount = equivalents * food.amountValue;
+      const formattedAmount = Math.round(scaledAmount * 10) / 10;
+      
+      let portionText = '';
+      const isCupUnit = food.unit.toLowerCase().includes('taza') || food.unit.toLowerCase() === 'tza' || food.unit.toLowerCase() === 'tzas';
+      
+      if (isCupUnit) {
+        const displayUnit = formattedAmount > 1 ? 'tzas' : 'tza';
+        if (food.gramsEquivalent) {
+          const scaledGrams = Math.round(equivalents * food.gramsEquivalent);
+          portionText = `${formattedAmount} ${displayUnit} (${scaledGrams}g)`;
+        } else {
+          portionText = `${formattedAmount} ${displayUnit}`;
+        }
+      } else {
+        portionText = `${formattedAmount} ${food.unit}${formattedAmount > 1 && food.unit.endsWith('a') ? 'as' : ''}`;
+      }
+
+      return `${food.emoji} ${food.name}: ${portionText}`;
+    });
   }
 
   closeReplacements() {

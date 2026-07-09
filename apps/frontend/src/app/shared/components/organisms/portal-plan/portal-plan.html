@@ -190,7 +190,7 @@
                       </div>
 
                       <!-- Sustitutos button -->
-                      @if (ing.reemplazos && ing.reemplazos.length > 0) {
+                      @if (canReplace(ing)) {
                         <button (click)="openReplacements(ing, $event)"
                                 class="w-7 h-7 rounded-md flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/10 active:scale-95 transition-all cursor-pointer shrink-0"
                                 title="Ver sustitutos autorizados">
