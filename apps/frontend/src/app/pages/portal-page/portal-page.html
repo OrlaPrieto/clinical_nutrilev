@@ -286,7 +286,8 @@
         <div [class]="'flex-1 flex flex-col min-w-0 transition-all duration-300 ' + (sidebarCollapsed() ? 'md:pl-16' : 'md:pl-64')">
             
             <!-- Encabezado Superior (Solo Móvil) -->
-            <header class="md:hidden bg-white/85 dark:bg-[#080808]/85 backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 py-3 sticky top-0 z-50 transition-colors duration-300">
+            <header class="md:hidden bg-white/85 dark:bg-[#080808]/85 backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 sticky top-0 z-50 transition-colors duration-300"
+                    style="padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); padding-bottom: 0.75rem;">
                 <div class="max-w-5xl mx-auto flex items-center justify-between">
                     <!-- Logotipo -->
                     <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="100" height="38" 
@@ -956,34 +957,34 @@
                             <!-- Grid de Documentos -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Tarjeta 1: Guía de Equivalentes -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-rose-500 dark:bg-rose-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#1C1C1E] text-slate-800 dark:text-slate-100 p-6 shadow-xl shadow-slate-200/5 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-rose-100 dark:border-rose-950/20 hover:border-transparent hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500">
                                     <!-- Ambient light glow (Samsung Health Style blurred) -->
-                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover/card:scale-105 z-0"></div>
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-all duration-500 group-hover/card:scale-105 opacity-0 group-hover/card:opacity-100 z-0"></div>
                                     <!-- Standalone icon badge -->
-                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center pointer-events-none z-10">
-                                        <app-a-icon name="menu_book" size="16px" class="text-white opacity-90"></app-a-icon>
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-950/30 group-hover/card:bg-white/15 flex items-center justify-center pointer-events-none z-10 transition-all duration-300">
+                                        <app-a-icon name="menu_book" size="16px" class="text-rose-500 dark:text-rose-400 group-hover/card:text-white opacity-90 transition-colors duration-300"></app-a-icon>
                                     </div>
 
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
+                                            <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/30 group-hover/card:bg-white/15 flex items-center justify-center text-rose-500 dark:text-rose-400 transition-all duration-300">
                                                 <app-a-icon name="menu_book" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-white">Lista de Equivalentes</h3>
-                                                <p class="text-xs text-white/70 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-slate-800 dark:text-slate-100 group-hover/card:text-white transition-colors duration-300">Lista de Equivalentes</h3>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/card:text-white/80 leading-relaxed transition-colors duration-300">
                                                     Manual oficial para conocer las porciones correctas e intercambiar alimentos de forma segura sin alterar tu plan.
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showEquivalentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-600 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 group-hover/card:bg-white group-hover/card:text-rose-600 group-hover/card:border-transparent group-hover/card:shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none font-bold">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/lista-equivalentes.pdf" download="Lista_Equivalentes_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 group-hover/card:text-rose-200 group-hover/card:bg-white/10 group-hover/card:hover:bg-white/20 group-hover/card:border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -992,34 +993,34 @@
                                 </div>
 
                                 <!-- Tarjeta 2: Guía de Marcas -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-amber-500 dark:bg-amber-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#1C1C1E] text-slate-800 dark:text-slate-100 p-6 shadow-xl shadow-slate-200/5 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-amber-100 dark:border-amber-950/20 hover:border-transparent hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500">
                                     <!-- Ambient light glow (Samsung Health Style blurred) -->
-                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover/card:scale-105 z-0"></div>
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-all duration-500 group-hover/card:scale-105 opacity-0 group-hover/card:opacity-100 z-0"></div>
                                     <!-- Standalone icon badge -->
-                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center pointer-events-none z-10">
-                                        <app-a-icon name="local_mall" size="16px" class="text-white opacity-90"></app-a-icon>
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-950/30 group-hover/card:bg-white/15 flex items-center justify-center pointer-events-none z-10 transition-all duration-300">
+                                        <app-a-icon name="local_mall" size="16px" class="text-amber-500 dark:text-amber-400 group-hover/card:text-white opacity-90 transition-colors duration-300"></app-a-icon>
                                     </div>
 
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
+                                            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/30 group-hover/card:bg-white/15 flex items-center justify-center text-amber-500 dark:text-amber-400 transition-all duration-300">
                                                 <app-a-icon name="local_mall" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-white">Marcas Recomendadas</h3>
-                                                <p class="text-xs text-white/70 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-slate-800 dark:text-slate-100 group-hover/card:text-white transition-colors duration-300">Marcas Recomendadas</h3>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/card:text-white/80 leading-relaxed transition-colors duration-300">
                                                     Catálogo visual con los productos comerciales aprobados en el consultorio, marcas saludables y opciones del supermercado.
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <a href="/documents/guia-marcas-recomendadas.pdf" target="_blank"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 group-hover/card:bg-white group-hover/card:text-amber-600 group-hover/card:border-transparent group-hover/card:shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </a>
                                             <a href="/documents/guia-marcas-recomendadas.pdf" download="Guia_Marcas_Recomendadas.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 group-hover/card:text-amber-200 group-hover/card:bg-white/10 group-hover/card:hover:bg-white/20 group-hover/card:border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -1028,33 +1029,33 @@
                                 </div>
 
                                 <!-- Tarjeta 3: Condimentos -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-emerald-500 dark:bg-emerald-500 text-white p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-none">
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#1C1C1E] text-slate-800 dark:text-slate-100 p-6 shadow-xl shadow-slate-200/5 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-emerald-100 dark:border-emerald-950/20 hover:border-transparent hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500">
                                     <!-- Ambient light glow (Samsung Health Style blurred) -->
-                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover/card:scale-105 z-0"></div>
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-all duration-500 group-hover/card:scale-105 opacity-0 group-hover/card:opacity-100 z-0"></div>
                                     <!-- Standalone icon badge -->
-                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center pointer-events-none z-10">
-                                        <app-a-icon name="dining" size="16px" class="text-white opacity-90"></app-a-icon>
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 group-hover/card:bg-white/15 flex items-center justify-center pointer-events-none z-10 transition-all duration-300">
+                                        <app-a-icon name="dining" size="16px" class="text-emerald-500 dark:text-emerald-400 group-hover/card:text-white opacity-90 transition-colors duration-300"></app-a-icon>
                                     </div>
 
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white">
+                                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 group-hover/card:bg-white/15 flex items-center justify-center text-emerald-500 dark:text-emerald-400 transition-all duration-300">
                                                 <app-a-icon name="dining" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-white">Condimentos Libres</h3>
-                                                <p class="text-xs text-white/70 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-slate-800 dark:text-slate-100 group-hover/card:text-white transition-colors duration-300">Condimentos Libres</h3>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/card:text-white/80 leading-relaxed transition-colors duration-300">
                                                     Guía de especias y condimentos sin calorías, ideales para realzar el sabor de tus platillos de manera saludable.                                                </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showCondimentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-white hover:bg-white/95 shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none font-bold">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 group-hover/card:bg-white group-hover/card:text-emerald-600 group-hover/card:border-transparent group-hover/card:shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none font-bold">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/condimentos.pdf" download="Condimentos_Libres_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-200 bg-white/10 hover:bg-white/20 border border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 group-hover/card:text-emerald-200 group-hover/card:bg-white/10 group-hover/card:hover:bg-white/20 group-hover/card:border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
