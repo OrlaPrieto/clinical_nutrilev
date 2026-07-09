@@ -1255,6 +1255,14 @@
              class="w-full max-w-md rounded-[3rem] border p-8 text-center shadow-2xl relative flex flex-col items-center space-y-6 overflow-hidden animate-scale-up pointer-events-auto"
              (click)="$event.stopPropagation()">
             
+            <!-- Botón de compartir sutil (Esquina superior derecha) -->
+            <button (click)="shareMilestone()"
+                    class="absolute right-6 top-6 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all duration-200 outline-none active:scale-95 z-20"
+                    title="Compartir logro"
+                    aria-label="Compartir logro">
+                <app-a-icon name="share" size="18px"></app-a-icon>
+            </button>
+
             <!-- Ambient Glow Background -->
             <div class="absolute -top-20 w-48 h-48 rounded-full blur-[80px] opacity-20 -z-10"
                  [ngClass]="{
@@ -1340,12 +1348,7 @@
             </div>
 
             <!-- Close and continue button -->
-            <div class="w-full pt-2 flex flex-col gap-2.5">
-                <button (click)="shareMilestone()" 
-                        class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-transparent hover:bg-white/10 text-white border border-white/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-all duration-200 outline-none">
-                    <app-a-icon name="share" size="14px"></app-a-icon>
-                    Compartir Logro
-                </button>
+            <div class="w-full pt-2">
                 <button (click)="activeCelebration.set(null)" 
                         class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-white hover:bg-white/90 text-slate-800 shadow-lg shadow-black/10 active:scale-[0.98] transition-all duration-200 outline-none">
                     Cerrar y continuar
