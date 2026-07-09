@@ -838,6 +838,31 @@ export class PortalPage implements OnInit, OnDestroy {
     this.triggerCelebrationConfetti(ms.id);
   }
 
+  shareMilestone() {
+    const ms = this.activeCelebration();
+    if (!ms) return;
+
+    const trophy = '\u{1F3C6}';
+    const apple = '\u{1F34E}';
+    const sparkle = '\u{2728}';
+
+    const shareText = `¡He alcanzado un nuevo logro en mi plan de alimentación de Nutrilev! ${trophy}\n\n*${ms.title.toUpperCase()}*\n"${this.getCelebrationMessage(ms.id)}"\n\n${sparkle} Únete a un estilo de vida de élite con Nutrilev ${apple}`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({
+        title: `Logro Alcanzado: ${ms.title}`,
+        text: shareText
+      }).catch(err => {
+        console.log('Error sharing milestone:', err);
+      });
+    } else {
+      // Fallback a WhatsApp
+      const encodedText = encodeURIComponent(shareText);
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+      window.open(whatsappUrl, '_blank', 'noopener');
+    }
+  }
+
   getCelebrationMessage(id: string): string {
     switch (id) {
       case '25-percent':
