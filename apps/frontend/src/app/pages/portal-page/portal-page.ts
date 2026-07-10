@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, HostListener, ChangeDetectionStrategy, ViewChild, effect, untracked } from '@angular/core';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
@@ -64,6 +64,7 @@ import { FreeCondimentsModalComponent } from './components/free-condiments-modal
   ]
 })
 export class PortalPage implements OnInit, OnDestroy {
+  @ViewChild(HabitsTrackerComponent) habitsTracker?: HabitsTrackerComponent;
   sidebarCollapsed = signal<boolean>(false);
   private lastFocusTime = Date.now();
   private focusListener?: () => void;
@@ -93,6 +94,41 @@ export class PortalPage implements OnInit, OnDestroy {
   activeCelebration = signal<any | null>(null);
   activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
+  private isHistoryPushed = false;
+
+  constructor() {
+    effect(() => {
+      const open = this.isAnyModalOpen() || this.activeCelebration() !== null;
+      untracked(() => {
+        if (open) {
+          if (!this.isHistoryPushed) {
+            window.history.pushState({ modalOpen: 'portal' }, '');
+            this.isHistoryPushed = true;
+          }
+        } else {
+          if (this.isHistoryPushed) {
+            this.isHistoryPushed = false;
+            if (window.history.state && window.history.state.modalOpen === 'portal') {
+              window.history.back();
+            }
+          }
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: PopStateEvent) {
+    if (this.isHistoryPushed) {
+      this.isHistoryPushed = false;
+      this.showEquivalentsModal.set(false);
+      this.showCondimentsModal.set(false);
+      this.showShoppingModal.set(false);
+      this.showCancelConfirmModal.set(false);
+      this.activeCelebration.set(null);
+    }
+  }
+
 
   dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
     water: false,
@@ -115,7 +151,7 @@ export class PortalPage implements OnInit, OnDestroy {
     const activeTheme = this.themeService.theme();
     switch (activeTheme) {
       case 'dark':
-        return 'bg-gradient-to-tr from-nutri-rose via-[#b80f4e] to-[#590b32] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+        return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/20 border-0';
       case 'purple':
         return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
       case 'vibrant':
@@ -656,25 +692,55 @@ export class PortalPage implements OnInit, OnDestroy {
         id: '25-percent',
         image: 'images/milestones/star_bronze.png',
         title: 'Primer Paso',
-        description: 'Logra el 25% de tu objetivo.',
+        description: 'Iniciando con éxito tu camino hacia una vida saludable.',
         unlocked: goalPct >= 25
       },
       {
         id: 'halfway',
         image: 'images/milestones/star_gold.png',
         title: 'A Medio Camino',
-        description: 'Logra el 50% de tu objetivo.',
+        description: 'Cruzando con constancia la mitad de tu objetivo nutricional.',
         unlocked: goalPct >= 50
       },
       {
         id: 'goal-reached',
         image: 'images/milestones/star_diamond.png',
         title: 'Meta Lograda',
-        description: 'Alcanza el 100% de tu objetivo.',
+        description: '¡Felicidades! Has conquistado por completo tu meta de bienestar.',
         unlocked: goalPct >= 100
       }
     ];
   });
+
+  loadPortalDataFromCache(userEmail: string) {
+    try {
+      const cachedPatientStr = localStorage.getItem(`portal_patient_${userEmail}`);
+      const cachedProgressStr = localStorage.getItem(`portal_progress_${userEmail}`);
+      const cachedAptStr = localStorage.getItem(`portal_next_appointment_${userEmail}`);
+
+      if (cachedPatientStr) {
+        const cachedPatient = JSON.parse(cachedPatientStr);
+        this.patient.set(cachedPatient);
+        this.titleService.setTitle(`Portal de ${cachedPatient.nombre} - Nutrilev`);
+        this.loading.set(false); // Detener pantalla de carga ya que hay datos locales
+      }
+
+      if (cachedProgressStr) {
+        this.progress.set(JSON.parse(cachedProgressStr));
+      }
+
+      if (cachedAptStr) {
+        const cachedApt = JSON.parse(cachedAptStr);
+        if (cachedApt && cachedApt.hasAppointment) {
+          this.nextAppointment.set(cachedApt);
+        } else {
+          this.nextAppointment.set(null);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading data from cache:', err);
+    }
+  }
 
   async loadPortalData(userEmail: string, forceRefresh = false) {
     try {
@@ -705,7 +771,14 @@ export class PortalPage implements OnInit, OnDestroy {
           this.nextAppointment.set(null);
         }
 
-
+        // Guardar en caché local para soporte offline-first
+        try {
+          localStorage.setItem(`portal_patient_${userEmail}`, JSON.stringify(currentPatient));
+          localStorage.setItem(`portal_progress_${userEmail}`, JSON.stringify(history || []));
+          localStorage.setItem(`portal_next_appointment_${userEmail}`, JSON.stringify(apt));
+        } catch (cacheErr) {
+          console.error('Failed to write portal data cache:', cacheErr);
+        }
 
         // Cargar o reiniciar la lista de súper según corresponda
         if (menuChanged) {
@@ -800,14 +873,223 @@ export class PortalPage implements OnInit, OnDestroy {
     this.triggerCelebrationConfetti(ms.id);
   }
 
+  generateBadgePng(svgElement: SVGElement, id: string, title: string): Promise<File | null> {
+    const svgString = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
+
+    const logoImg = new Image();
+    logoImg.src = 'images/logo.png';
+
+    const svgImg = new Image();
+    svgImg.src = blobURL;
+
+    return new Promise((resolve) => {
+      let loadedCount = 0;
+      const checkLoaded = () => {
+        loadedCount++;
+        if (loadedCount === 2) {
+          const canvas = document.createElement('canvas');
+          canvas.width = 480;
+          canvas.height = 640;
+          const context = canvas.getContext('2d');
+          if (!context) {
+            resolve(null);
+            return;
+          }
+
+          // 1. Tarjeta con bordes redondeados
+          context.beginPath();
+          const r = 40;
+          context.moveTo(r, 0);
+          context.lineTo(480 - r, 0);
+          context.quadraticCurveTo(480, 0, 480, r);
+          context.lineTo(480, 640 - r);
+          context.quadraticCurveTo(480, 640, 480 - r, 640);
+          context.lineTo(r, 640);
+          context.quadraticCurveTo(0, 640, 0, 640 - r);
+          context.lineTo(0, r);
+          context.quadraticCurveTo(0, 0, r, 0);
+          context.closePath();
+          
+          // Gradiente de fondo radial coincidiendo con los colores de la celebración
+          const gradient = context.createRadialGradient(240, 320, 50, 240, 320, 380);
+          if (id === '25-percent') {
+            gradient.addColorStop(0, '#f97316');
+            gradient.addColorStop(1, '#d97706');
+          } else if (id === 'halfway') {
+            gradient.addColorStop(0, '#facc15');
+            gradient.addColorStop(1, '#f97316');
+          } else {
+            gradient.addColorStop(0, '#38bdf8');
+            gradient.addColorStop(1, '#4f46e5');
+          }
+          context.fillStyle = gradient;
+          context.fill();
+
+          // 2. Órbita circular blanca translúcida para el badge
+          context.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          context.lineWidth = 1;
+          context.beginPath();
+          context.arc(240, 150, 64, 0, 2 * Math.PI);
+          context.fill();
+          context.stroke();
+
+          // Dibujar el SVG del logro centrado
+          context.drawImage(svgImg, 188, 98, 104, 104);
+
+          // 3. Textos alineados
+          context.textAlign = 'center';
+          
+          // Subtítulo "🏆 LOGRO ALCANZADO"
+          context.font = '900 11px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.75)';
+          context.fillText('🏆 LOGRO ALCANZADO', 240, 260);
+
+          // Título del logro
+          context.font = 'bold 30px Georgia, serif';
+          context.fillStyle = '#ffffff';
+          context.fillText(title, 240, 305);
+
+          // Mensaje de felicitación
+          context.font = '500 13px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          
+          const text = this.getCelebrationMessage(id);
+          const words = text.split(' ');
+          let line = '';
+          const lines = [];
+          const maxWidth = 380;
+          for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            if (metrics.width > maxWidth && n > 0) {
+              lines.push(line);
+              line = words[n] + ' ';
+            } else {
+              line = testLine;
+            }
+          }
+          lines.push(line);
+          
+          let yPos = 350;
+          for (const l of lines) {
+            context.fillText(l.trim(), 240, yPos);
+            yPos += 22;
+          }
+
+          // 4. Línea divisoria decorativa
+          context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(40, 495);
+          context.lineTo(440, 495);
+          context.stroke();
+
+          // 5. Contenedor del Logo de Nutrilev (Pastilla ovalada blanca)
+          context.beginPath();
+          const pWidth = 220;
+          const pHeight = 64;
+          const px = 240 - (pWidth / 2);
+          const py = 530;
+          const pr = 32;
+          context.moveTo(px + pr, py);
+          context.lineTo(px + pWidth - pr, py);
+          context.quadraticCurveTo(px + pWidth, py, px + pWidth, py + pr);
+          context.lineTo(px + pWidth, py + pHeight - pr);
+          context.quadraticCurveTo(px + pWidth, py + pHeight, px + pWidth - pr, py + pHeight);
+          context.lineTo(px + pr, py + pHeight);
+          context.quadraticCurveTo(px, py + pHeight, px, py + pHeight - pr);
+          context.lineTo(px, py + pr);
+          context.quadraticCurveTo(px, py, px + pr, py);
+          context.closePath();
+          context.fillStyle = '#ffffff';
+          context.fill();
+
+          // Dibujar la imagen del Logo
+          const logoAspect = logoImg.width / logoImg.height;
+          const targetHeight = 44;
+          const targetWidth = targetHeight * logoAspect;
+          context.drawImage(logoImg, 240 - (targetWidth / 2), py + 10, targetWidth, targetHeight);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], `logro-${id}.png`, { type: 'image/png' });
+              resolve(file);
+            } else {
+              resolve(null);
+            }
+          }, 'image/png');
+        }
+      };
+
+      logoImg.onload = checkLoaded;
+      logoImg.onerror = () => {
+        loadedCount++;
+        checkLoaded();
+      };
+      
+      svgImg.onload = checkLoaded;
+      svgImg.onerror = () => {
+        resolve(null);
+      };
+    });
+  }
+
+  async shareMilestone() {
+    const ms = this.activeCelebration();
+    if (!ms) return;
+
+    const trophy = '\u{1F3C6}';
+    const apple = '\u{1F34E}';
+    const sparkle = '\u{2728}';
+
+    const shareText = `¡He alcanzado un nuevo logro en mi plan de alimentación de Nutrilev! ${trophy}\n\n*${ms.title.toUpperCase()}*\n"${this.getCelebrationMessage(ms.id)}"\n\n${sparkle} Únete a un estilo de vida de élite con Nutrilev ${apple}`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        let files: File[] = [];
+        const svgElement = document.getElementById('celebration-svg') as SVGElement | null;
+        if (svgElement) {
+          const file = await this.generateBadgePng(svgElement, ms.id, ms.title);
+          if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+            files = [file];
+          }
+        }
+
+        if (files.length > 0) {
+          await navigator.share({
+            title: `Logro Alcanzado: ${ms.title}`,
+            text: shareText,
+            files: files
+          });
+        } else {
+          await navigator.share({
+            title: `Logro Alcanzado: ${ms.title}`,
+            text: shareText
+          });
+        }
+      } catch (err) {
+        console.log('Error sharing milestone:', err);
+      }
+    } else {
+      // Fallback a WhatsApp
+      const encodedText = encodeURIComponent(shareText);
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+      window.open(whatsappUrl, '_blank', 'noopener');
+    }
+  }
+
   getCelebrationMessage(id: string): string {
     switch (id) {
       case '25-percent':
-        return '¡Excelente inicio! Has alcanzado el primer cuarto de tu camino. Tus hábitos están cambiando positivamente y vas con paso firme hacia tu meta de bienestar.';
+        return '¡Excelente inicio en este gran camino hacia tu bienestar! Cada pequeño cambio cuenta y tus hábitos ya están dando sus primeros frutos. ¡Sigue adelante con esa misma determinación!';
       case 'halfway':
-        return '¡Hito increíble! Estás a la mitad del camino de tu meta. Tu perseverancia y constancia están dando frutos extraordinarios. ¡Sigue así!';
+        return '¡Un avance extraordinario! Estás oficialmente a la mitad del camino para alcanzar tu objetivo. Tu constancia es sumamente admirable y estás demostrando que sí se puede. ¡No te detengas!';
       case 'goal-reached':
-        return '¡META CUMPLIDA! Has alcanzado el 100% de tu objetivo. Tu disciplina es admirable y has transformado tu calidad de vida. ¡Muchísimas felicidades!';
+        return '¡META CUMPLIDA! Has alcanzado el 100% de tu gran objetivo de salud. Tu disciplina y perseverancia son admirables, has transformado tu estilo de vida por completo. ¡Muchísimas felicidades por este gran triunfo!';
       default:
         return 'Sigue sumando logros en tu plan nutricional para alcanzar tus objetivos.';
     }
@@ -818,7 +1100,11 @@ export class PortalPage implements OnInit, OnDestroy {
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        await this.loadPortalData(userEmail, true); // Force fresh load on initialization
+        // Carga offline-first: restaurar caché local antes de conectar con el servidor
+        this.loadPortalDataFromCache(userEmail);
+
+        // Cargar datos frescos en segundo plano
+        await this.loadPortalData(userEmail, true); 
 
         // Solicitar suscripción de notificaciones push
         this.pushService.requestSubscription(userEmail);
@@ -878,6 +1164,13 @@ export class PortalPage implements OnInit, OnDestroy {
       if (tab && ['dashboard', 'plan', 'analysis', 'history'].includes(tab)) {
         console.log(`PWA: Navigating to tab ${tab} via shortcut/URL param...`);
         this.setActiveTab(tab as any);
+      }
+
+      if (action === 'habits') {
+        console.log('PWA: Opening habits tracker floating modal via shortcut...');
+        setTimeout(() => {
+          this.habitsTracker?.showHabitsFloatingModal.set(true);
+        }, 300);
       }
 
       if (action && id) {

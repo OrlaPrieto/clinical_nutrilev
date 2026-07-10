@@ -1,4 +1,4 @@
-import { Component, input, signal, effect, inject, OnInit, OnDestroy, HostListener, untracked } from '@angular/core';
+import { Component, input, signal, effect, inject, OnInit, OnDestroy, HostListener, untracked, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../../services/patient';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -6,13 +6,16 @@ import { IconComponent } from '../../atoms/icon/icon';
 import { ButtonComponent } from '../../atoms/button/button';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { Patient } from '@shared/models/interfaces';
+import { AnalyticsService } from '../../../../shared/services/analytics.service';
+import { SMAE_DATABASE, SmaeFood } from '../../../../shared/data/smae-db';
 
 @Component({
   selector: 'app-o-portal-plan',
   standalone: true,
   imports: [CommonModule, IconComponent, ButtonComponent],
   templateUrl: './portal-plan.html',
-  styleUrl: './portal-plan.css'
+  styleUrl: './portal-plan.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortalPlanOrganism implements OnInit, OnDestroy {
   patient = input.required<Patient | null>();
@@ -22,6 +25,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   private patientService = inject(PatientService);
   private toastService = inject(ToastService);
   public themeService = inject(ThemeService);
+  private analytics = inject(AnalyticsService);
 
   parsedMenu = signal<any | null>(null);
   loading = signal<boolean>(false);
@@ -55,6 +59,53 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     }
   }
 
+  private touchStartX = 0;
+  private touchStartY = 0;
+
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  @HostListener('touchend', ['$event'])
+  onTouchEnd(event: TouchEvent) {
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+    
+    const diffX = touchEndX - this.touchStartX;
+    const diffY = touchEndY - this.touchStartY;
+    
+    // Solo registrar si el deslizamiento es predominantemente horizontal y supera los 60px
+    if (Math.abs(diffX) > 60 && Math.abs(diffY) < 40) {
+      const menu = this.parsedMenu();
+      if (!menu || !menu.secciones) return;
+      
+      const maxIndex = menu.secciones.length - 1;
+      const currentIndex = this.activeSectionIdx();
+      
+      if (diffX < 0) {
+        // Deslizar a la izquierda (Avanzar al siguiente día)
+        if (currentIndex < maxIndex) {
+          this.selectSection(currentIndex + 1);
+          this.triggerHapticFeedback();
+        }
+      } else {
+        // Deslizar a la derecha (Regresar al día anterior)
+        if (currentIndex > 0) {
+          this.selectSection(currentIndex - 1);
+          this.triggerHapticFeedback();
+        }
+      }
+    }
+  }
+
+  private triggerHapticFeedback() {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+  }
+
   ngOnInit() {
     this.loadPlan();
   }
@@ -63,7 +114,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     const activeTheme = this.themeService.theme();
     switch (activeTheme) {
       case 'dark':
-        return 'bg-gradient-to-tr from-nutri-rose via-[#b80f4e] to-[#590b32] border border-nutri-rose/15 shadow-lg shadow-pink-950/20';
+        return 'bg-gradient-to-tr from-nutri-rose via-[#e91e63] to-[#ff7043] shadow-lg shadow-nutri-rose/20 border-0';
       case 'purple':
         return 'bg-gradient-to-tr from-blue-700 via-indigo-700 to-sky-600 shadow-lg shadow-blue-900/20 border-0';
       case 'vibrant':
@@ -80,6 +131,8 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     }
   }
 
+  private isHistoryPushed = false;
+
   constructor() {
     // Reload menu if patient or menu_url changes
     effect(() => {
@@ -90,6 +143,34 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
         });
       }
     }, { allowSignalWrites: true });
+
+    effect(() => {
+      const open = this.selectedMealForRecipe() !== null || this.selectedIngredientForReplacement() !== null;
+      untracked(() => {
+        if (open) {
+          if (!this.isHistoryPushed) {
+            window.history.pushState({ modalOpen: 'plan' }, '');
+            this.isHistoryPushed = true;
+          }
+        } else {
+          if (this.isHistoryPushed) {
+            this.isHistoryPushed = false;
+            if (window.history.state && window.history.state.modalOpen === 'plan') {
+              window.history.back();
+            }
+          }
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: PopStateEvent) {
+    if (this.isHistoryPushed) {
+      this.isHistoryPushed = false;
+      this.selectedMealForRecipe.set(null);
+      this.selectedIngredientForReplacement.set(null);
+    }
   }
 
   async loadPlan() {
@@ -105,6 +186,24 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     if (!url) {
       this.parsedMenu.set(null);
       return;
+    }
+
+    // Intentar cargar del caché local de PWA para respuesta instantánea (offline-first)
+    const cacheKey = `parsed_menu_${p?.email}_${url}`;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        this.parsedMenu.set(parsed);
+        this.autoSelectDaySection();
+        setTimeout(() => {
+          this.scrollToCurrentMeal();
+        }, 300);
+        // Si ya está en caché, no necesitamos mostrar el spinner lento de carga
+        return;
+      }
+    } catch (e) {
+      console.error('Error reading menu cache:', e);
     }
 
     this.loading.set(true);
@@ -148,12 +247,33 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       clearInterval(this.progressInterval);
       this.menuProgress.set(100);
       this.menuLoadingMessage.set('¡Menú digitalizado con éxito!');
+
+      // Analytics
+      this.analytics.logEvent('generate_ai_menu', {
+        patient_email: this.patient()?.email,
+        patient_name: this.patient()?.nombre
+      });
       
       // Wait briefly for completion transition
       await new Promise(resolve => setTimeout(resolve, 600));
 
       if (data && !data.error) {
         this.parsedMenu.set(data);
+        
+        // Guardar en caché local
+        try {
+          // Limpiar cualquier menú antiguo en caché de este paciente para optimizar almacenamiento
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith(`parsed_menu_${p?.email}_`) && key !== cacheKey) {
+              localStorage.removeItem(key);
+            }
+          }
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+        } catch (cacheErr) {
+          console.error('Failed to write menu cache:', cacheErr);
+        }
+
         this.autoSelectDaySection();
         setTimeout(() => {
           this.scrollToCurrentMeal();
@@ -196,9 +316,161 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
 
   openReplacements(ingredient: any, event: Event) {
     event.stopPropagation();
-    if (ingredient.reemplazos && ingredient.reemplazos.length > 0) {
-      this.selectedIngredientForReplacement.set(ingredient);
+    
+    // Si ya vienen reemplazos procesados del backend, úsalos pero compleméntalos
+    let reps = ingredient.reemplazos || [];
+    
+    if (reps.length === 0) {
+      // Buscar reemplazos en la base de datos SMAE local
+      reps = this.generateSmaeReplacements(ingredient);
     }
+    
+    const enriched = {
+      ...ingredient,
+      reemplazos: reps
+    };
+    
+    this.selectedIngredientForReplacement.set(enriched);
+  }
+
+  canReplace(ing: any): boolean {
+    if (ing.reemplazos && ing.reemplazos.length > 0) return true;
+    if (ing.grupo) return true;
+    
+    // Intentar buscar correspondencia por nombre en base de datos SMAE
+    const nameLower = (ing.nombre || '').toLowerCase();
+    return SMAE_DATABASE.some(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+  }
+
+  generateSmaeReplacements(ingredient: any): string[] {
+    const groupName = (ingredient.grupo || '').toLowerCase();
+    const nameLower = (ingredient.nombre || '').toLowerCase();
+
+    // 1. Encontrar la categoría compatible del SMAE
+    let categoryMatch = '';
+    
+    if (groupName.includes('verdura')) {
+      categoryMatch = 'Verduras';
+    } else if (groupName.includes('fruta')) {
+      categoryMatch = 'Frutas';
+    } else if (groupName.includes('cereal') && groupName.includes('sin grasa')) {
+      categoryMatch = 'Cereales sin grasa';
+    } else if (groupName.includes('cereal') && groupName.includes('con grasa')) {
+      categoryMatch = 'Cereales con grasa';
+    } else if (groupName.includes('leguminosa')) {
+      categoryMatch = 'Leguminosas';
+    } else if (groupName.includes('muy bajo') || (groupName.includes('aoa') && groupName.includes('muy bajo'))) {
+      categoryMatch = 'AOA muy bajo en grasa';
+    } else if (groupName.includes('bajo en grasa') || (groupName.includes('aoa') && groupName.includes('bajo'))) {
+      categoryMatch = 'AOA bajo en grasa';
+    } else if (groupName.includes('moderado') || (groupName.includes('aoa') && groupName.includes('moderado'))) {
+      categoryMatch = 'AOA moderado en grasa';
+    } else if (groupName.includes('alto en grasa') || (groupName.includes('aoa') && groupName.includes('alto'))) {
+      categoryMatch = 'AOA alto en grasa';
+    } else if (groupName.includes('lácteo') || groupName.includes('lacteo') || groupName.includes('leche')) {
+      categoryMatch = 'Lácteos';
+    } else if (groupName.includes('grasa') && groupName.includes('sin prote')) {
+      categoryMatch = 'Grasas sin proteína';
+    } else if (groupName.includes('grasa') && groupName.includes('con prote')) {
+      categoryMatch = 'Grasas con proteína';
+    } else if (groupName.includes('libre')) {
+      categoryMatch = 'Libres de energía';
+    } else {
+      // Si no hay grupo claro, buscar por nombre del ingrediente en SMAE_DATABASE
+      const match = SMAE_DATABASE.find(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+      if (match) {
+        categoryMatch = match.category;
+      }
+    }
+
+    if (!categoryMatch) return [];
+
+    // 2. Intentar buscar el ingrediente en la base de datos para saber cuántos equivalentes representa su porción
+    let matchedFood = SMAE_DATABASE.find(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+    
+    // Si no se encuentra una porción exacta en SMAE, asumimos que representa 1 equivalente
+    let equivalents = 1;
+    
+    if (matchedFood) {
+      // Intentar extraer el número de la cantidad del ingrediente (ej: "1 pieza", "1/2 taza", "90g", "30 gramos")
+      const qtyStr = (ingredient.cantidad || '').toLowerCase();
+      let numericalQty = parseFloat(qtyStr);
+      
+      // Manejo de fracciones comunes (1/2, 1/3, 1/4, 3/4)
+      if (qtyStr.includes('1/2') || qtyStr.includes('0.5') || qtyStr.includes('medio')) {
+        numericalQty = 0.5;
+      } else if (qtyStr.includes('1/3') || qtyStr.includes('0.33')) {
+        numericalQty = 0.33;
+      } else if (qtyStr.includes('1/4') || qtyStr.includes('0.25') || qtyStr.includes('cuarto')) {
+        numericalQty = 0.25;
+      } else if (qtyStr.includes('3/4') || qtyStr.includes('0.75')) {
+        numericalQty = 0.75;
+      } else if (qtyStr.includes('1.5') || qtyStr.includes('1 1/2')) {
+        numericalQty = 1.5;
+      } else {
+        // Buscar el primer número del string
+        const numMatch = qtyStr.match(/[\d.]+/);
+        if (numMatch) {
+          numericalQty = parseFloat(numMatch[0]);
+        }
+      }
+
+      if (!isNaN(numericalQty) && numericalQty > 0) {
+        // Si la unidad es gramos, y la base de datos tiene gramosEquivalent
+        if ((qtyStr.includes('g') || qtyStr.includes('gramos')) && matchedFood.gramsEquivalent) {
+          equivalents = numericalQty / matchedFood.gramsEquivalent;
+        } else {
+          equivalents = numericalQty / matchedFood.amountValue;
+        }
+      }
+    }
+
+    if (equivalents <= 0 || isNaN(equivalents)) equivalents = 1;
+
+    // 3. Buscar candidatos compatibles de la categoría
+    const isCategoryCompatible = (cat1: string, cat2: string) => {
+      if (cat1 === cat2) return true;
+      if (cat1.startsWith('Lácteos') && cat2.startsWith('Lácteos')) return true;
+      if (cat1.startsWith('AOA') && cat2.startsWith('AOA')) return true;
+      if (cat1.startsWith('Cereales') && cat2.startsWith('Cereales')) return true;
+      return false;
+    };
+
+    const candidates = SMAE_DATABASE.filter(food => 
+      isCategoryCompatible(food.category, categoryMatch) && 
+      !nameLower.includes(food.name.toLowerCase())
+    );
+
+    // Mezclar candidatos usando Fisher-Yates
+    const shuffled = [...candidates];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // Retornar las primeras 5 sugerencias formateadas
+    return shuffled.slice(0, 5).map(food => {
+      const scaledAmount = equivalents * food.amountValue;
+      const formattedAmount = Math.round(scaledAmount * 10) / 10;
+      
+      let portionText = '';
+      const isCupUnit = food.unit.toLowerCase().includes('taza') || food.unit.toLowerCase() === 'tza' || food.unit.toLowerCase() === 'tzas';
+      
+      if (isCupUnit) {
+        const displayUnit = formattedAmount > 1 ? 'tzas' : 'tza';
+        if (food.gramsEquivalent) {
+          const scaledGrams = Math.round(equivalents * food.gramsEquivalent);
+          portionText = `${formattedAmount} ${displayUnit} (${scaledGrams}g)`;
+        } else {
+          portionText = `${formattedAmount} ${displayUnit}`;
+        }
+      } else {
+        const suffix = (formattedAmount > 1 && food.unit.endsWith('a')) ? 's' : '';
+        portionText = `${formattedAmount} ${food.unit}${suffix}`;
+      }
+
+      return `${food.emoji} ${food.name}: ${portionText}`;
+    });
   }
 
   closeReplacements() {
@@ -212,6 +484,54 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     if (type === 'carb') return Math.round(((grams * 4) / calories) * 100);
     if (type === 'fat') return Math.round(((grams * 9) / calories) * 100);
     return 0;
+  }
+
+  getMealTimeColorClasses(tiempo: string = ''): {
+    badgeClass: string;
+    timelineDotClass: string;
+    recipeBtnClass: string;
+    topLineClass: string;
+  } {
+    const cleanTiempo = tiempo.toLowerCase();
+    
+    // Mañana / Desayuno (Yellow/Amber)
+    if (
+      cleanTiempo.includes('desayuno') || 
+      cleanTiempo.includes('licuado') || 
+      cleanTiempo.includes('colación 1') || 
+      cleanTiempo.includes('matutina') || 
+      cleanTiempo.includes('mañana')
+    ) {
+      return {
+        badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded-lg',
+        timelineDotClass: 'border-amber-400 bg-amber-400',
+        recipeBtnClass: 'text-amber-500 bg-amber-500/5 border-amber-500/10 hover:bg-amber-500 hover:text-white hover:border-amber-500 hover:shadow-amber-500/20',
+        topLineClass: 'bg-gradient-to-r from-yellow-400 to-amber-300'
+      };
+    }
+    
+    // Tarde / Comida (Orange)
+    if (
+      cleanTiempo.includes('comida') || 
+      cleanTiempo.includes('colación 2') || 
+      cleanTiempo.includes('vespertina') || 
+      cleanTiempo.includes('tarde')
+    ) {
+      return {
+        badgeClass: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/25 px-2 py-0.5 rounded-lg',
+        timelineDotClass: 'border-orange-500 bg-orange-500',
+        recipeBtnClass: 'text-orange-500 bg-orange-500/5 border-orange-500/10 hover:bg-orange-500 hover:text-white hover:border-orange-500 hover:shadow-orange-500/20',
+        topLineClass: 'bg-gradient-to-r from-orange-500 to-amber-400'
+      };
+    }
+    
+    // Noche / Cena (Indigo/Violet)
+    return {
+      badgeClass: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/25 px-2 py-0.5 rounded-lg',
+      timelineDotClass: 'border-indigo-500 bg-indigo-500',
+      recipeBtnClass: 'text-indigo-500 bg-indigo-500/5 border-indigo-500/10 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 hover:shadow-indigo-500/20',
+      topLineClass: 'bg-gradient-to-r from-indigo-500 to-violet-300'
+    };
   }
 
   getIngredientIcon(grupo?: string, nombre: string = ''): { name: string; colorClass: string; bgClass: string; borderClass: string } {

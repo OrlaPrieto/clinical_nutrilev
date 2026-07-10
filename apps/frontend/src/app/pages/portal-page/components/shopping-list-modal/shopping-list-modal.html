@@ -166,10 +166,10 @@
                     </app-a-button>
                 }
                 @if (!loadingShoppingList() && !hasShoppingError() && shoppingList().length > 0) {
-                    <app-a-button (onClick)="sendToWhatsApp()" label="Enviar a WhatsApp" variant="primary" size="lg"
+                    <app-a-button (onClick)="shareShoppingList()" label="Compartir Lista" variant="primary" size="lg"
                                  icon="share"
                                  class="w-full sm:flex-1"
-                                 customClass="!rounded-2xl !bg-[#25D366] !border-none hover:!bg-[#20ba59] !text-white active:scale-95 transition-all !shadow-xl !shadow-green-500/15">
+                                 customClass="!rounded-2xl !bg-[#ff6b9b] !border-none hover:!bg-[#e05686] !text-white active:scale-95 transition-all !shadow-xl !shadow-pink-500/15">
                     </app-a-button>
                     <app-a-button (onClick)="printShoppingList()" label="Descargar PDF" variant="outline" size="lg"
                                  icon="download"

@@ -286,7 +286,8 @@
         <div [class]="'flex-1 flex flex-col min-w-0 transition-all duration-300 ' + (sidebarCollapsed() ? 'md:pl-16' : 'md:pl-64')">
             
             <!-- Encabezado Superior (Solo Móvil) -->
-            <header class="md:hidden bg-white/85 dark:bg-[#080808]/85 backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 py-3 sticky top-0 z-50 transition-colors duration-300">
+            <header class="md:hidden bg-white/85 dark:bg-[#080808]/85 backdrop-blur-xl border-b border-nutri-rose/10 dark:border-white/5 px-4 sticky top-0 z-50 transition-colors duration-300"
+                    style="padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); padding-bottom: 0.75rem;">
                 <div class="max-w-5xl mx-auto flex items-center justify-between">
                     <!-- Logotipo -->
                     <img ngSrc="images/logo.png" alt="Nutrilev Logo" width="100" height="38" 
@@ -476,9 +477,14 @@
                         <div [@tabAnimation] class="space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                 <!-- Meta de Progreso (Vibrant Gradient Card) -->
-                                <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full group-hover:scale-110 transition-transform duration-500 blur-sm pointer-events-none"></div>
-                                    <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-white/5 rounded-full group-hover:scale-115 transition-transform duration-500 blur-md pointer-events-none"></div>
+                                <div [ngClass]="getHeroGradientClass()" class="dashboard-card text-white p-6 sm:p-8 rounded-[2rem] flex flex-col justify-between overflow-hidden relative group border-none shadow-md">
+                                    
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="track_changes" size="20px" class="text-white opacity-90"></app-a-icon>
+                                    </div>
                                     <div class="relative z-10">
                                         <span class="text-[9px] font-black uppercase tracking-widest text-white/80 mb-3 block">
                                             {{ currentGoal() === 'bajar_peso' ? 'Meta de Peso' : 
@@ -500,22 +506,29 @@
                                     <p class="text-xs text-white/95 mt-6 leading-relaxed italic border-l-2 border-white/30 pl-3">"{{ patient()?.motivos_consulta || 'En camino a tu mejor versión' }}"</p>
                                 </div>
  
-                                <!-- Último Registro Físico (Polished High Contrast Card) -->
-                                <div class="dashboard-card bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[1.75rem] sm:rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm text-slate-800 dark:text-slate-200 flex flex-col justify-between overflow-hidden relative group">
-                                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-50 dark:bg-white/[0.01] rounded-full group-hover:scale-110 transition-transform duration-500 pointer-events-none"></div>
+                                <!-- Último Registro Físico (Samsung Health Style Card) -->
+                                <div class="dashboard-card bg-indigo-600 dark:bg-indigo-600 p-6 sm:p-8 rounded-[2rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
+                                    
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="monitor_weight" size="20px" class="text-white opacity-90"></app-a-icon>
+                                    </div>
+
                                     <div class="relative z-10">
-                                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 block">Último Registro Clínico</span>
+                                        <span class="text-[9px] font-black uppercase tracking-widest text-white/50 mb-4 block">Último Registro Clínico</span>
                                         <div class="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6">
                                             <!-- Peso -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() && currentGoal() !== 'bajar_peso'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Peso</span>
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-white/60">Peso</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-sky-600 dark:text-sky-400">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
-                                                    <span class="text-[10px] font-bold text-sky-600/60 dark:text-sky-400/60 ml-0.5">kg</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-white">{{ progress().length > 0 ? progress()[0].weight : (patient()?.peso_habitual || '--') }}</h2>
+                                                    <span class="text-[10px] font-bold text-white/70 ml-0.5">kg</span>
                                                 </div>
                                                 @if (weightDiff()) {
                                                     <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
-                                                          [class]="weightDiff()?.isIncrease ? 'bg-rose-500/10 text-rose-500' : 'bg-emerald-500/10 text-emerald-500'">
+                                                          [class]="weightDiff()?.isIncrease ? 'bg-rose-500/20 text-rose-200 border border-rose-500/20' : 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/20'">
                                                         {{ weightDiff()?.isIncrease ? '↑' : '↓' }} {{ weightDiff()?.value }} kg
                                                     </span>
                                                 }
@@ -523,14 +536,14 @@
                                             
                                             <!-- Grasa -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() !== 'bajar_grasa'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Grasa</span>
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-white/60">Grasa</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
-                                                    <span class="text-[10px] font-bold text-amber-500/60 dark:text-amber-400/60 ml-0.5">%</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-white">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</h2>
+                                                    <span class="text-[10px] font-bold text-white/70 ml-0.5">%</span>
                                                 </div>
                                                 @if (fatDiff()) {
                                                     <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
-                                                          [class]="fatDiff()?.isIncrease ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'">
+                                                          [class]="fatDiff()?.isIncrease ? 'bg-amber-500/20 text-amber-200 border border-amber-500/20' : 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/20'">
                                                         {{ fatDiff()?.isIncrease ? '↑' : '↓' }} {{ fatDiff()?.value }}%
                                                     </span>
                                                 }
@@ -538,22 +551,22 @@
 
                                             <!-- Músculo -->
                                             <div class="flex flex-col items-start gap-1 transition-all" [class.opacity-45]="currentGoal() !== 'subir_musculo'">
-                                                <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Músculo</span>
+                                                <span class="text-[8px] font-black uppercase tracking-wider text-white/60">Músculo</span>
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-nutri-rose dark:text-nutri-rose-soft">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
-                                                    <span class="text-[10px] font-bold text-nutri-rose/60 dark:text-nutri-rose-soft/60 ml-0.5">kg</span>
+                                                    <h2 class="text-2xl sm:text-3xl font-black font-sans leading-none tracking-tight text-white">{{ (progress().length > 0 && progress()[0].muscle_mass) ? progress()[0].muscle_mass : '--' }}</h2>
+                                                    <span class="text-[10px] font-bold text-white/70 ml-0.5">kg</span>
                                                 </div>
                                                 @if (muscleDiff()) {
                                                     <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-0.5 mt-1"
-                                                          [class]="muscleDiff()?.isIncrease ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                                          [class]="muscleDiff()?.isIncrease ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/20' : 'bg-rose-500/20 text-rose-200 border border-rose-500/20'">
                                                         {{ muscleDiff()?.isIncrease ? '↑' : '↓' }} {{ muscleDiff()?.value }} kg
                                                     </span>
                                                 }
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2 mt-6 text-slate-400 dark:text-slate-500">
-                                        <div class="w-6 h-6 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-xs">
+                                    <div class="flex items-center gap-2 mt-6 text-white/50 relative z-10">
+                                        <div class="w-6 h-6 rounded-full bg-white/10 dark:bg-white/5 flex items-center justify-center text-xs">
                                             <app-a-icon name="calendar_today" size="10px"></app-a-icon>
                                         </div>
                                         <span class="text-[9px] font-black uppercase tracking-widest">
@@ -565,17 +578,25 @@
 
                             <!-- Grid de Métricas Rápidas -->
                             <div class="grid grid-cols-2 gap-4">
-                                <!-- Fat Card -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex flex-col justify-between transition-colors">
-                                    <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
-                                        <app-a-icon name="percent" size="14px" class="text-amber-500"></app-a-icon>
+                                <!-- Fat Card (Samsung Health Style) -->
+                                <div class="dashboard-card col-span-1 bg-amber-500 dark:bg-amber-500 p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex flex-col justify-between overflow-hidden relative group border-none">
+                                    
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                        <app-a-icon name="percent" size="12px" class="text-white opacity-90"></app-a-icon>
+                                    </div>
+
+                                    <div class="flex items-center gap-1.5 text-white/60 relative z-10">
+                                        <app-a-icon name="percent" size="12px" class="text-white"></app-a-icon>
                                         <span class="text-[9px] font-black uppercase tracking-wider">% Grasa</span>
                                     </div>
-                                    <div class="flex items-baseline gap-1 mt-2">
-                                        <span class="text-3xl font-black font-sans tracking-tight text-amber-500 dark:text-amber-400">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
-                                        <span class="text-[9px] font-bold text-amber-500/60 dark:text-amber-400/60 uppercase">% corp.</span>
+                                    <div class="flex items-baseline gap-1 mt-2 relative z-10">
+                                        <span class="text-3xl font-black font-sans tracking-tight text-white">{{ (progress().length > 0 && progress()[0].body_fat) ? progress()[0].body_fat : '--' }}</span>
+                                        <span class="text-[9px] font-bold text-white/70 uppercase">% corp.</span>
                                     </div>
-                                    <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-2 block truncate">
+                                    <span class="text-[9px] font-bold text-white/60 mt-2 block truncate relative z-10">
                                         @if (patient()?.grasa_meta) {
                                             Meta clínica: {{ patient()?.grasa_meta }}%
                                         } @else {
@@ -584,29 +605,33 @@
                                     </span>
                                 </div>
 
-                                <!-- Porcentaje de Avance General (Circular Gauge) -->
-                                <div class="dashboard-card col-span-1 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-[1.5rem] border border-slate-100 dark:border-white/5 shadow-sm flex items-center justify-between transition-colors">
-                                    <div class="space-y-1 min-w-0 flex-1 pr-2">
-                                        <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
-                                            <app-a-icon name="flag" size="14px" class="text-nutri-rose"></app-a-icon>
+                                <!-- Porcentaje de Avance General (Samsung Health Style Circular Gauge) -->
+                                <div class="dashboard-card col-span-1 bg-emerald-500 dark:bg-emerald-500 p-4 sm:p-5 rounded-[1.75rem] shadow-sm text-white flex items-center justify-between overflow-hidden relative group border-none">
+                                    
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+
+                                    <div class="space-y-1 min-w-0 flex-1 pr-2 relative z-10">
+                                        <div class="flex items-center gap-1.5 text-white/60">
+                                            <app-a-icon name="flag" size="12px" class="text-white"></app-a-icon>
                                             <span class="text-[9px] font-black uppercase tracking-wider">Avance</span>
                                         </div>
-                                        <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-1 block leading-tight">
+                                        <span class="text-[9px] font-bold text-white/60 mt-1 block leading-tight">
                                             {{ goalPercentage() >= 100 ? '¡Meta lograda!' : 'En camino al 100%' }}
                                         </span>
                                     </div>
                                     
                                     <!-- Circular Progress Gauge (SVG) -->
-                                    <div class="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center">
+                                    <div class="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center relative z-10">
                                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
-                                            <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" class="text-slate-100 dark:text-white/5" fill="transparent"/>
+                                            <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" class="text-white/10" fill="transparent"/>
                                             <circle cx="32" cy="32" r="26" stroke-width="4" stroke="currentColor" 
-                                                     class="text-nutri-rose transition-all duration-1000" 
+                                                     class="text-white transition-all duration-1000" 
                                                      fill="transparent"
                                                      [attr.stroke-dasharray]="163.36"
                                                      [attr.stroke-dashoffset]="163.36 - (163.36 * goalPercentage() / 100)"/>
                                         </svg>
-                                        <div class="absolute text-[9px] sm:text-[10px] font-black text-nutri-text dark:text-white">
+                                        <div class="absolute text-[9px] sm:text-[10px] font-black text-white">
                                             {{ goalPercentage() | number:'1.0-0' }}%
                                         </div>
                                     </div>
@@ -616,22 +641,19 @@
                             <!-- Sección de Logros (Estrellas de Logro) -->
                             <div class="py-12 border-t border-nutri-rose/5 dark:border-white/5">
                                 <div class="flex flex-col items-center gap-10">
-                                    <div class="text-center space-y-2">
-                                        <h3 class="text-lg font-bold serif dark:text-slate-200">Estrellas Nutrilev</h3>
-                                        <p class="text-[9px] font-black tracking-[0.4em] text-nutri-rose/50 dark:text-nutri-rose-soft/40 uppercase">Reconocimientos de tu disciplina</p>
+                                    <div class="text-center space-y-1.5">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <app-a-icon name="military_tech" size="22px" class="text-amber-500"></app-a-icon>
+                                            <h3 class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 serif">
+                                                Estrellas Nutrilev
+                                            </h3>
+                                        </div>
+                                        <p class="text-[9px] font-bold tracking-[0.35em] text-nutri-rose/60 dark:text-nutri-rose-soft/50 uppercase">
+                                            Reconocimientos de tu disciplina
+                                        </p>
                                     </div>
 
-                                    <div class="flex flex-col sm:flex-row items-start sm:items-start justify-center gap-12 sm:gap-20 md:gap-32 relative w-full max-w-[300px] sm:max-w-5xl mx-auto">
-                                        <!-- Línea de progreso - Escritorio -->
-                                        <div class="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 hidden sm:block"></div>
-                                        <div class="absolute top-12 left-[12.5%] h-[3px] bg-gradient-to-r from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 hidden sm:block transition-all duration-1000 origin-left"
-                                             [style.width.%]="(goalPercentage() / 100) * 75"></div>
-                                        
-                                        <!-- Línea de progreso - Móvil -->
-                                        <div class="absolute left-10 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-slate-100 dark:bg-white/5 rounded-full -z-10 sm:hidden"></div>
-                                        <div class="absolute left-10 -translate-x-1/2 top-10 w-[3px] bg-gradient-to-b from-amber-600 via-yellow-500 to-sky-400 rounded-full -z-10 sm:hidden transition-all duration-1000 origin-top"
-                                             [style.height.%]="(goalPercentage() / 100) * 80"></div>
-                                        
+                                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 w-full max-w-5xl mx-auto">
                                         @for (ms of milestones(); track ms.id) {
                                             <app-m-milestone-badge 
                                                 [id]="ms.id" 
@@ -666,8 +688,14 @@
                                 <div class="space-y-6">
                                         
                                         <!-- 1. Banner de Bienvenida Glassmorphic (Vibrant Hero Gradient Card) -->
-                                        <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8">
-                                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                                        <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-6 sm:p-8 group shadow-md">
+                                            
+                                            <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                            <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                            <!-- Standalone icon badge -->
+                                            <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                                <app-a-icon name="restaurant" size="20px" class="text-white opacity-90"></app-a-icon>
+                                            </div>
                                             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div>
                                                     <span class="text-xs font-black uppercase tracking-widest text-white/80">Tu Plan Nutricional Activo</span>
@@ -686,60 +714,72 @@
                                         <!-- 2. Descargas y Herramientas -->
                                         <div class="space-y-3">
                                             <h3 class="text-xs font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Descargas y Herramientas</h3>
-                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <!-- Múltiples Menús PDFs -->
+                                                <!-- Múltiples Menús PDFs (Samsung Health Solid Button Style) -->
                                                 @if (patient()?.current_menus && patient()?.current_menus!.length > 0) {
                                                     @for (m of patient()?.current_menus; track m.url) {
                                                         <a [href]="m.url" target="_blank" rel="noopener noreferrer" 
-                                                           class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                            <div class="absolute inset-0 bg-gradient-to-br from-nutri-rose/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl shadow-inner group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
+                                                           class="group bg-gradient-to-br from-rose-500 to-rose-400 dark:from-rose-600 dark:to-rose-500 p-5 rounded-[2.25rem] shadow-sm hover:shadow-xl hover:shadow-rose-500/35 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden active:scale-[0.99] border-none text-white mb-4">
+                                                            
+                                                            <!-- Ambient light glow (Option 1) -->
+                                                            <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-lg pointer-events-none transition-transform duration-500 group-hover:scale-110 z-0"></div>
+
+                                                            <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0 z-10">
                                                                 <app-a-icon name="description"></app-a-icon>
                                                             </div>
                                                             <div class="flex-1 min-w-0 z-10">
-                                                                <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Archivo PDF</span>
-                                                                <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">{{ m.name }}</p>
+                                                                <span class="inline-block text-[8px] font-black uppercase tracking-wider text-rose-200 bg-white/10 px-2 py-0.5 rounded-md mb-1.5">Archivo PDF</span>
+                                                                <p class="text-sm font-extrabold text-white truncate leading-snug">{{ m.name }}</p>
                                                             </div>
-                                                            <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
+                                                            <!-- Clickable indicator circle -->
+                                                            <div class="w-8 h-8 rounded-full bg-white text-rose-600 flex items-center justify-center shadow-md scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300 shrink-0 z-10">
                                                                 <app-a-icon name="download" size="18px"></app-a-icon>
                                                             </div>
                                                         </a>
                                                     }
                                                 } @else if (patient()?.menu_url) {
                                                     <a [href]="patient()?.menu_url" target="_blank" rel="noopener noreferrer" 
-                                                       class="group bg-gradient-to-br from-white to-nutri-rose/[0.02] dark:from-[#111111] dark:to-nutri-rose/[0.04] p-5 rounded-[2.25rem] border border-nutri-rose/25 dark:border-nutri-rose/15 shadow-sm hover:shadow-xl hover:shadow-nutri-rose/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                        <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center text-xl group-hover:bg-nutri-rose group-hover:text-white transition-all duration-500 shrink-0 border border-nutri-rose/10 z-10">
+                                                       class="group bg-gradient-to-br from-rose-500 to-rose-400 dark:from-rose-600 dark:to-rose-500 p-5 rounded-[2.25rem] shadow-sm hover:shadow-xl hover:shadow-rose-500/35 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden active:scale-[0.99] border-none text-white mb-4">
+                                                        
+                                                        <!-- Ambient light glow (Option 1) -->
+                                                        <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-lg pointer-events-none transition-transform duration-500 group-hover:scale-110 z-0"></div>
+
+                                                        <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0 z-10">
                                                             <app-a-icon name="description"></app-a-icon>
                                                         </div>
                                                         <div class="flex-1 min-w-0 z-10">
-                                                            <span class="inline-block text-[8px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/10 px-2 py-0.5 rounded-md mb-1.5">Plan Principal</span>
-                                                            <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Ver Menú Digital</p>
+                                                            <span class="inline-block text-[8px] font-black uppercase tracking-wider text-rose-200 bg-white/10 px-2 py-0.5 rounded-md mb-1.5">Plan Principal</span>
+                                                            <p class="text-sm font-extrabold text-white truncate leading-snug">Ver Menú Digital</p>
                                                         </div>
-                                                        <div class="w-8 h-8 rounded-full bg-nutri-rose/10 dark:bg-white/5 text-nutri-rose flex items-center justify-center group-hover:bg-nutri-rose group-hover:text-white transition-all duration-300 shrink-0 z-10">
+                                                        <!-- Clickable indicator circle -->
+                                                        <div class="w-8 h-8 rounded-full bg-white text-rose-600 flex items-center justify-center shadow-md scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300 shrink-0 z-10">
                                                             <app-a-icon name="launch" size="16px"></app-a-icon>
                                                         </div>
                                                     </a>
                                                 }
- 
-                                                <!-- Lista de Súper Card (Asistente IA) -->
+                                 
+                                                <!-- Lista de Súper Card (Samsung Health Solid Button Style) -->
                                                 <div (click)="openShoppingList()" 
-                                                     class="group bg-gradient-to-br from-emerald-500/[0.06] via-white/50 to-emerald-500/[0.02] dark:from-emerald-950/20 dark:to-emerald-950/5 p-5 rounded-[2.25rem] border border-emerald-500/30 dark:border-emerald-500/20 shadow-sm hover:shadow-xl hover:shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden">
-                                                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0 border border-emerald-500/10">
+                                                     class="group bg-gradient-to-br from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-500 p-5 rounded-[2.25rem] shadow-sm hover:shadow-xl hover:shadow-emerald-500/35 transition-all cursor-pointer flex items-center gap-4 relative overflow-hidden active:scale-[0.99] border-none text-white mb-4">
+                                                    
+                                                    <!-- Ambient light glow (Option 1) -->
+                                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-lg pointer-events-none transition-transform duration-500 group-hover:scale-110 z-0"></div>
+
+                                                    <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0 z-10">
                                                         <app-a-icon name="shopping_cart"></app-a-icon>
                                                     </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <span class="inline-block text-[8px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-md mb-1.5">Asistente IA</span>
-                                                        <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 truncate leading-snug">Lista de Súper</p>
+                                                    <div class="flex-1 min-w-0 z-10">
+                                                        <span class="inline-block text-[8px] font-black uppercase tracking-wider text-emerald-200 bg-white/10 px-2 py-0.5 rounded-md mb-1.5">Asistente IA</span>
+                                                        <p class="text-sm font-extrabold text-white truncate leading-snug">Lista de Súper</p>
                                                     </div>
                                                     @if (loadingShoppingList()) {
-                                                        <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                                                        <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0 z-10"></div>
                                                     } @else {
-                                                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 dark:bg-white/5 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shrink-0">
+                                                        <!-- Clickable indicator circle -->
+                                                        <div class="w-8 h-8 rounded-full bg-white text-emerald-600 flex items-center justify-center shadow-md scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300 shrink-0 z-10">
                                                             <app-a-icon name="chevron_right" size="18px"></app-a-icon>
                                                         </div>
                                                     }
                                                 </div>
-                                            </div>
                                         </div>
                                     </div>
                                 } @else {
@@ -897,8 +937,14 @@
                     @if (activeTab() === 'resources') {
                         <div [@tabAnimation] class="space-y-8 animate-fade-in">
                             <!-- Hero Section del Recurso (Vibrant Hero Gradient Card) -->
-                            <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8">
-                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                            <div [ngClass]="getHeroGradientClass()" class="relative overflow-hidden rounded-[2.5rem] text-white p-8 group shadow-md">
+                                
+                                <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                <div class="absolute -right-4 -top-4 w-36 h-36 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-transform duration-500 group-hover:scale-105 z-0"></div>
+                                <!-- Standalone icon badge -->
+                                <div class="absolute right-4 top-4 w-10 h-10 bg-white/15 dark:bg-white/10 rounded-full flex items-center justify-center pointer-events-none z-10">
+                                    <app-a-icon name="local_library" size="20px" class="text-white opacity-90"></app-a-icon>
+                                </div>
                                 <div class="max-w-2xl relative z-10 space-y-3">
                                     <span class="text-[8px] font-black tracking-[0.3em] uppercase text-white/90 bg-white/15 px-3 py-1.5 rounded-full">Biblioteca Nutrilev</span>
                                     <h2 class="text-3xl sm:text-4xl font-medium serif text-white leading-tight">Documentos de Apoyo</h2>
@@ -911,28 +957,34 @@
                             <!-- Grid de Documentos -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Tarjeta 1: Guía de Equivalentes -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
-                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-nutri-rose/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#1C1C1E] text-slate-800 dark:text-slate-100 p-6 shadow-xl shadow-slate-200/5 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-rose-100 dark:border-rose-950/20 hover:border-transparent hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500">
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-all duration-500 group-hover/card:scale-105 opacity-0 group-hover/card:opacity-100 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-950/30 group-hover/card:bg-white/15 flex items-center justify-center pointer-events-none z-10 transition-all duration-300">
+                                        <app-a-icon name="menu_book" size="16px" class="text-rose-500 dark:text-rose-400 group-hover/card:text-white opacity-90 transition-colors duration-300"></app-a-icon>
+                                    </div>
+
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 dark:bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
+                                            <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/30 group-hover/card:bg-white/15 flex items-center justify-center text-rose-500 dark:text-rose-400 transition-all duration-300">
                                                 <app-a-icon name="menu_book" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Lista de Equivalentes</h3>
-                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-slate-800 dark:text-slate-100 group-hover/card:text-white transition-colors duration-300">Lista de Equivalentes</h3>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/card:text-white/80 leading-relaxed transition-colors duration-300">
                                                     Manual oficial para conocer las porciones correctas e intercambiar alimentos de forma segura sin alterar tu plan.
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showEquivalentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-nutri-rose bg-nutri-rose/5 hover:bg-nutri-rose/10 border border-nutri-rose/10 hover:border-nutri-rose/20 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 group-hover/card:bg-white group-hover/card:text-rose-600 group-hover/card:border-transparent group-hover/card:shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none font-bold">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/lista-equivalentes.pdf" download="Lista_Equivalentes_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-nutri-rose hover:opacity-95 shadow-md shadow-nutri-rose/15 hover:shadow-lg hover:shadow-nutri-rose/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 group-hover/card:text-rose-200 group-hover/card:bg-white/10 group-hover/card:hover:bg-white/20 group-hover/card:border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -941,28 +993,34 @@
                                 </div>
 
                                 <!-- Tarjeta 2: Guía de Marcas -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
-                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-amber-500/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#1C1C1E] text-slate-800 dark:text-slate-100 p-6 shadow-xl shadow-slate-200/5 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-amber-100 dark:border-amber-950/20 hover:border-transparent hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500">
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-all duration-500 group-hover/card:scale-105 opacity-0 group-hover/card:opacity-100 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-950/30 group-hover/card:bg-white/15 flex items-center justify-center pointer-events-none z-10 transition-all duration-300">
+                                        <app-a-icon name="local_mall" size="16px" class="text-amber-500 dark:text-amber-400 group-hover/card:text-white opacity-90 transition-colors duration-300"></app-a-icon>
+                                    </div>
+
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 flex items-center justify-center text-amber-500">
+                                            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/30 group-hover/card:bg-white/15 flex items-center justify-center text-amber-500 dark:text-amber-400 transition-all duration-300">
                                                 <app-a-icon name="local_mall" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Marcas Recomendadas</h3>
-                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-slate-800 dark:text-slate-100 group-hover/card:text-white transition-colors duration-300">Marcas Recomendadas</h3>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/card:text-white/80 leading-relaxed transition-colors duration-300">
                                                     Catálogo visual con los productos comerciales aprobados en el consultorio, marcas saludables y opciones del supermercado.
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <a href="/documents/guia-marcas-recomendadas.pdf" target="_blank"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 hover:border-amber-500/20 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 group-hover/card:bg-white group-hover/card:text-amber-600 group-hover/card:border-transparent group-hover/card:shadow-md py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </a>
                                             <a href="/documents/guia-marcas-recomendadas.pdf" download="Guia_Marcas_Recomendadas.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-amber-500 hover:bg-amber-600 shadow-md shadow-amber-500/15 hover:shadow-lg hover:shadow-amber-500/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 group-hover/card:text-amber-200 group-hover/card:bg-white/10 group-hover/card:hover:bg-white/20 group-hover/card:border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -971,27 +1029,33 @@
                                 </div>
 
                                 <!-- Tarjeta 3: Condimentos -->
-                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#111111] border border-slate-200/50 dark:border-white/5 p-6 shadow-xl shadow-slate-200/10 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-nutri-rose/5">
-                                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl transition-all duration-500 group-hover/card:scale-125"></div>
+                                <div class="group/card relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#1C1C1E] text-slate-800 dark:text-slate-100 p-6 shadow-xl shadow-slate-200/5 dark:shadow-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-emerald-100 dark:border-emerald-950/20 hover:border-transparent hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500">
+                                    <!-- Ambient light glow (Samsung Health Style blurred) -->
+                                    <div class="absolute -right-4 -top-4 w-28 h-28 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none transition-all duration-500 group-hover/card:scale-105 opacity-0 group-hover/card:opacity-100 z-0"></div>
+                                    <!-- Standalone icon badge -->
+                                    <div class="absolute right-4 top-4 w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 group-hover/card:bg-white/15 flex items-center justify-center pointer-events-none z-10 transition-all duration-300">
+                                        <app-a-icon name="dining" size="16px" class="text-emerald-500 dark:text-emerald-400 group-hover/card:text-white opacity-90 transition-colors duration-300"></app-a-icon>
+                                    </div>
+
                                     <div class="flex flex-col h-full justify-between gap-6 relative z-10">
                                         <div class="space-y-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/5 flex items-center justify-center text-emerald-500">
+                                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 group-hover/card:bg-white/15 flex items-center justify-center text-emerald-500 dark:text-emerald-400 transition-all duration-300">
                                                 <app-a-icon name="dining" size="24px"></app-a-icon>
                                             </div>
                                             <div class="space-y-1.5">
-                                                <h3 class="text-lg font-bold serif text-nutri-text dark:text-slate-200">Condimentos Libres</h3>
-                                                <p class="text-xs text-nutri-text/50 dark:text-slate-400 leading-relaxed">
+                                                <h3 class="text-lg font-bold serif text-slate-800 dark:text-slate-100 group-hover/card:text-white transition-colors duration-300">Condimentos Libres</h3>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/card:text-white/80 leading-relaxed transition-colors duration-300">
                                                     Guía de especias y condimentos sin calorías, ideales para realzar el sabor de tus platillos de manera saludable.                                                </p>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
                                             <button (click)="showCondimentsModal.set(true)"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/20 py-3 transition-all cursor-pointer select-none active:scale-95 outline-none">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 group-hover/card:bg-white group-hover/card:text-emerald-600 group-hover/card:border-transparent group-hover/card:shadow-md py-3 transition-all cursor-pointer select-none active:scale-95 outline-none font-bold">
                                                 <app-a-icon name="visibility" size="14px"></app-a-icon>
                                                 Ver
                                             </button>
                                             <a href="/documents/condimentos.pdf" download="Condimentos_Libres_Nutrilev.pdf"
-                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-emerald-500 hover:bg-emerald-600 shadow-md shadow-emerald-500/15 hover:shadow-lg hover:shadow-emerald-500/25 py-3 transition-all cursor-pointer select-none active:scale-95">
+                                               class="flex-1 flex items-center justify-center gap-2 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 group-hover/card:text-emerald-200 group-hover/card:bg-white/10 group-hover/card:hover:bg-white/20 group-hover/card:border-white/10 py-3 transition-all cursor-pointer select-none active:scale-95">
                                                 <app-a-icon name="download" size="14px"></app-a-icon>
                                                 Descargar
                                             </a>
@@ -1039,11 +1103,11 @@
         </div>
 
         <!-- Barra de Navegación Inferior (Bottom Navigation Bar - Solo Móvil) -->
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pt-2.5 px-1 sm:px-4 shadow-2xl flex justify-around items-center transition-all duration-300"
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0c0c0c]/80 backdrop-blur-xl border-t border-nutri-rose/10 dark:border-white/5 pt-2 px-1 sm:px-4 shadow-2xl flex justify-around items-center transition-all duration-300"
              style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">
             <!-- Mi Plan -->
             <button (click)="setActiveTab('plan')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'plan'"
                     [class.text-slate-400]="activeTab() !== 'plan'"
                     [class.dark:text-slate-500]="activeTab() !== 'plan'">
@@ -1053,7 +1117,7 @@
 
             <!-- Menú -->
             <button (click)="setActiveTab('menu-ia')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'menu-ia'"
                     [class.text-slate-400]="activeTab() !== 'menu-ia'"
                     [class.dark:text-slate-500]="activeTab() !== 'menu-ia'">
@@ -1063,7 +1127,7 @@
 
             <!-- Inicio -->
             <button (click)="setActiveTab('dashboard')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'dashboard'"
                     [class.text-slate-400]="activeTab() !== 'dashboard'"
                     [class.dark:text-slate-500]="activeTab() !== 'dashboard'">
@@ -1073,7 +1137,7 @@
 
             <!-- Recursos -->
             <button (click)="setActiveTab('resources')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'resources'"
                     [class.text-slate-400]="activeTab() !== 'resources'"
                     [class.dark:text-slate-500]="activeTab() !== 'resources'">
@@ -1083,7 +1147,7 @@
 
             <!-- Análisis -->
             <button (click)="setActiveTab('analysis')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'analysis'"
                     [class.text-slate-400]="activeTab() !== 'analysis'"
                     [class.dark:text-slate-500]="activeTab() !== 'analysis'">
@@ -1093,7 +1157,7 @@
 
             <!-- Historial -->
             <button (click)="setActiveTab('history')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-1 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'history'"
                     [class.text-slate-400]="activeTab() !== 'history'"
                     [class.dark:text-slate-500]="activeTab() !== 'history'">
@@ -1186,19 +1250,29 @@
 @if (activeCelebration()) {
     <div class="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#080808]/85 dark:bg-black/90 backdrop-blur-md animate-fade-in"
          (click)="activeCelebration.set(null)">
-        <div class="bg-white/95 dark:bg-[#121212]/95 w-full max-w-md rounded-[3rem] border border-nutri-rose/20 dark:border-white/10 p-8 text-center shadow-2xl relative flex flex-col items-center space-y-6 overflow-hidden animate-scale-up pointer-events-auto"
+        <div [style.background]="activeCelebration().id === '25-percent' ? 'linear-gradient(135deg, #f97316, #d97706)' : activeCelebration().id === 'halfway' ? 'linear-gradient(135deg, #facc15, #f97316)' : 'linear-gradient(135deg, #38bdf8, #4f46e5)'"
+             [style.borderColor]="activeCelebration().id === '25-percent' ? 'rgba(249, 115, 22, 0.25)' : activeCelebration().id === 'halfway' ? 'rgba(250, 204, 21, 0.25)' : 'rgba(56, 189, 248, 0.25)'"
+             class="w-full max-w-md rounded-[3rem] border p-8 text-center shadow-2xl relative flex flex-col items-center space-y-6 overflow-hidden animate-scale-up pointer-events-auto"
              (click)="$event.stopPropagation()">
             
+            <!-- Botón de compartir sutil (Esquina superior derecha) -->
+            <button (click)="shareMilestone()"
+                    class="absolute right-6 top-6 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all duration-200 outline-none active:scale-95 z-20"
+                    title="Compartir logro"
+                    aria-label="Compartir logro">
+                <app-a-icon name="share" size="18px"></app-a-icon>
+            </button>
+
             <!-- Ambient Glow Background -->
-            <div class="absolute -top-20 w-48 h-48 rounded-full blur-[80px] opacity-40 -z-10"
+            <div class="absolute -top-20 w-48 h-48 rounded-full blur-[80px] opacity-20 -z-10"
                  [ngClass]="{
-                   'bg-gradient-to-tr from-orange-400 to-amber-200': activeCelebration().id === '25-percent',
-                   'bg-gradient-to-tr from-yellow-500 to-amber-300': activeCelebration().id === 'halfway',
-                   'bg-gradient-to-tr from-sky-400 to-indigo-300': activeCelebration().id === 'goal-reached'
+                   'bg-orange-300': activeCelebration().id === '25-percent',
+                   'bg-yellow-300': activeCelebration().id === 'halfway',
+                   'bg-sky-300': activeCelebration().id === 'goal-reached'
                  }"></div>
 
             <!-- Header Badge Graphic -->
-            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full flex items-center justify-center border border-nutri-rose/10 dark:border-white/10 shadow-2xl bg-white dark:bg-[#181818] relative shrink-0">
+            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full flex items-center justify-center border border-white/20 shadow-2xl bg-white/20 backdrop-blur-md shadow-inner relative shrink-0">
                 <!-- Outer decorative orbit glow -->
                 <div class="absolute -inset-1 rounded-full blur-md opacity-30 animate-glow-pulse"
                      [ngClass]="{
@@ -1207,87 +1281,54 @@
                        'bg-gradient-to-tr from-sky-400 to-indigo-300': activeCelebration().id === 'goal-reached'
                      }"></div>
                 
-                <div class="relative z-10 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
+                <div class="relative z-10 w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
                     @if (activeCelebration().id === '25-percent') {
-                        <!-- Bronze Star -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(156,93,48,0.2)]">
+                        <!-- Bronze Star (Option B Shield) -->
+                        <svg id="celebration-svg" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(198,130,84,0.15)]">
                             <defs>
-                                <linearGradient id="bronzeGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#FFCDA3" />
-                                    <stop offset="30%" stop-color="#D98A53" />
-                                    <stop offset="70%" stop-color="#B26C3B" />
-                                    <stop offset="100%" stop-color="#80441C" />
-                                </linearGradient>
-                                <linearGradient id="bronzeBgCel" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#FCF6F0" />
-                                    <stop offset="100%" stop-color="#EBE0D5" />
+                                <linearGradient id="shieldGrad25Cel" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="45%" stop-color="#F3E5D8" />
+                                    <stop offset="100%" stop-color="#C68254" />
                                 </linearGradient>
                             </defs>
-                            <circle cx="32" cy="32" r="28" fill="url(#bronzeBgCel)" stroke="url(#bronzeGradCel)" stroke-width="2" />
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="url(#bronzeGradCel)" stroke-width="0.75" stroke-dasharray="3 2" />
-                            <circle cx="32" cy="32" r="20" fill="url(#bronzeGradCel)" fill-opacity="0.1" stroke="url(#bronzeGradCel)" stroke-width="1.25" />
-                            <polygon points="32,17 35.5,24.5 43.5,24.5 37,29.5 39.5,37 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="url(#bronzeGradCel)" transform="scale(1.35)" transform-origin="32 32" />
-                            <polygon points="32,17 32,32 24.5,37 27,29.5 20.5,24.5 28.5,24.5" fill="#FFFFFF" fill-opacity="0.15" transform="scale(1.35)" transform-origin="32 32" />
+                            <circle cx="32" cy="32" r="29" fill="none" stroke="url(#shieldGrad25Cel)" stroke-width="0.75" stroke-dasharray="2 1.5" />
+                            <circle cx="32" cy="32" r="26" fill="none" stroke="url(#shieldGrad25Cel)" stroke-width="1.25" opacity="0.5" />
+                            <circle cx="32" cy="32" r="22" fill="url(#shieldGrad25Cel)" fill-opacity="0.08" />
+                            <polygon points="32,18 36,27 45.5,28 38,34.5 40.5,44 32,39 23.5,44 26,34.5 18.5,28 28,27" fill="url(#shieldGrad25Cel)" />
+                            <path d="M 18,36 C 18,44 26,48 32,48 C 38,48 46,44 46,36" fill="none" stroke="url(#shieldGrad25Cel)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
                         </svg>
                     } @else if (activeCelebration().id === 'halfway') {
-                        <!-- Gold Medal -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_5px_8px_rgba(192,57,43,0.15)]">
+                        <!-- Gold Medal (Option B Shield) -->
+                        <svg id="celebration-svg" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(245,158,11,0.15)]">
                             <defs>
-                                <linearGradient id="goldGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#FFF3B0" />
-                                    <stop offset="35%" stop-color="#F9D423" />
-                                    <stop offset="70%" stop-color="#E67E22" />
-                                    <stop offset="100%" stop-color="#935116" />
-                                </linearGradient>
-                                <linearGradient id="ribbonGradCel" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#C0392B" />
-                                    <stop offset="50%" stop-color="#E74C3C" />
-                                    <stop offset="100%" stop-color="#962D22" />
-                                </linearGradient>
-                                <linearGradient id="goldBgCel" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#FFFDF0" />
-                                    <stop offset="100%" stop-color="#FFF5D6" />
+                                <linearGradient id="shieldGrad50Cel" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="45%" stop-color="#FEF9E7" />
+                                    <stop offset="100%" stop-color="#F1C40F" />
                                 </linearGradient>
                             </defs>
-                            <path d="M 24,24 L 16,48 L 25,43 L 32,48 L 39,43 L 48,48 L 40,24 Z" fill="url(#ribbonGradCel)" />
-                            <path d="M 28,24 L 32,48 L 36,24 Z" fill="#FFFFFF" fill-opacity="0.1" />
-                            <circle cx="32" cy="28" r="22" fill="url(#goldBgCel)" stroke="url(#goldGradCel)" stroke-width="2.5" />
-                            <circle cx="32" cy="28" r="18" fill="url(#goldGradCel)" fill-opacity="0.08" stroke="url(#goldGradCel)" stroke-width="0.75" stroke-dasharray="2 2" />
-                            <polygon points="32,15 35,21.5 42,21.5 36.5,25.5 38.5,32 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="url(#goldGradCel)" transform="scale(1.35)" transform-origin="32 28" />
-                            <polygon points="32,15 32,28 25.5,32 27.5,25.5 22,21.5 29,21.5" fill="#FFFFFF" fill-opacity="0.2" transform="scale(1.35)" transform-origin="32 28" />
+                            <circle cx="32" cy="32" r="29" fill="none" stroke="url(#shieldGrad50Cel)" stroke-width="0.75" stroke-dasharray="2 1.5" />
+                            <circle cx="32" cy="32" r="26" fill="none" stroke="url(#shieldGrad50Cel)" stroke-width="1.25" opacity="0.5" />
+                            <circle cx="32" cy="32" r="22" fill="url(#shieldGrad50Cel)" fill-opacity="0.08" />
+                            <polygon points="32,18 36,27 45.5,28 38,34.5 40.5,44 32,39 23.5,44 26,34.5 18.5,28 28,27" fill="url(#shieldGrad50Cel)" />
+                            <path d="M 18,36 C 18,44 26,48 32,48 C 38,48 46,44 46,36" fill="none" stroke="url(#shieldGrad50Cel)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
                         </svg>
                     } @else if (activeCelebration().id === 'goal-reached') {
-                        <!-- Diamond Jewel -->
-                        <svg viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_6px_10px_rgba(79,172,254,0.25)]">
+                        <!-- Diamond Shield (Option B Shield) -->
+                        <svg id="celebration-svg" viewBox="0 0 64 64" class="w-full h-full filter drop-shadow-[0_4px_6px_rgba(59,130,246,0.15)]">
                             <defs>
-                                <linearGradient id="diamondGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#BFF0FA" />
-                                    <stop offset="35%" stop-color="#4FACFE" />
-                                    <stop offset="70%" stop-color="#0052D4" />
-                                    <stop offset="100%" stop-color="#4364F7" />
-                                </linearGradient>
-                                <linearGradient id="diamondBgCel" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#F2FBFC" />
-                                    <stop offset="100%" stop-color="#E1F3F7" />
-                                </linearGradient>
-                                <linearGradient id="gemGradCel" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#00F2FE" />
-                                    <stop offset="50%" stop-color="#4FACFE" />
-                                    <stop offset="100%" stop-color="#8E2DE2" />
+                                <linearGradient id="shieldGrad100Cel" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="40%" stop-color="#E0F7FA" />
+                                    <stop offset="100%" stop-color="#00BCD4" />
                                 </linearGradient>
                             </defs>
-                            <polygon points="32,6 54,22 54,48 32,58 10,48 10,22" fill="url(#diamondBgCel)" stroke="url(#diamondGradCel)" stroke-width="2.5" stroke-linejoin="round" />
-                            <polygon points="32,9 50,23 50,45 32,54 14,45 14,23" fill="none" stroke="url(#diamondGradCel)" stroke-width="0.75" stroke-dasharray="3 3" stroke-linejoin="round" />
-                            <g transform="translate(0, -1)">
-                                <polygon points="20,22 44,22 38,15 26,15" fill="url(#gemGradCel)" opacity="0.85" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="12,22 20,22 26,15" fill="url(#gemGradCel)" opacity="0.75" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="44,22 52,22 38,15" fill="url(#gemGradCel)" opacity="0.7" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="12,22 32,45 20,22" fill="url(#gemGradCel)" opacity="0.9" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="20,22 32,45 44,22" fill="url(#gemGradCel)" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="44,22 32,45 52,22" fill="url(#gemGradCel)" opacity="0.8" stroke="url(#diamondBgCel)" stroke-width="0.5" />
-                                <polygon points="20,22 32,45 32,22" fill="#FFFFFF" fill-opacity="0.18" />
-                                <polygon points="26,15 32,22 20,22" fill="#FFFFFF" fill-opacity="0.1" />
-                            </g>
+                            <circle cx="32" cy="32" r="29" fill="none" stroke="url(#shieldGrad100Cel)" stroke-width="0.75" stroke-dasharray="2 1.5" />
+                            <circle cx="32" cy="32" r="26" fill="none" stroke="url(#shieldGrad100Cel)" stroke-width="1.25" opacity="0.5" />
+                            <circle cx="32" cy="32" r="22" fill="url(#shieldGrad100Cel)" fill-opacity="0.08" />
+                            <polygon points="32,18 36,27 45.5,28 38,34.5 40.5,44 32,39 23.5,44 26,34.5 18.5,28 28,27" fill="url(#shieldGrad100Cel)" />
+                            <path d="M 18,36 C 18,44 26,48 32,48 C 38,48 46,44 46,36" fill="none" stroke="url(#shieldGrad100Cel)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
                         </svg>
                     }
                 </div>
@@ -1295,13 +1336,13 @@
 
             <!-- Content text block -->
             <div class="space-y-2">
-                <span class="text-[9px] font-black tracking-[0.35em] text-nutri-rose dark:text-nutri-rose-soft uppercase block">
+                <span class="text-[9px] font-black tracking-[0.35em] text-white/70 uppercase block">
                     🏆 Logro Alcanzado
                 </span>
-                <h3 class="text-2xl font-bold serif text-nutri-text dark:text-white leading-tight">
+                <h3 class="text-2xl font-bold serif text-white leading-tight">
                     {{ activeCelebration().title }}
                 </h3>
-                <p class="text-[11px] text-nutri-text/60 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+                <p class="text-[11px] text-white/90 max-w-xs mx-auto leading-relaxed">
                     {{ getCelebrationMessage(activeCelebration().id) }}
                 </p>
             </div>
@@ -1309,14 +1350,16 @@
             <!-- Close and continue button -->
             <div class="w-full pt-2">
                 <button (click)="activeCelebration.set(null)" 
-                        class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-nutri-rose hover:bg-nutri-rose/90 text-white shadow-lg shadow-nutri-rose/15 hover:shadow-xl hover:shadow-nutri-rose/25 active:scale-[0.98] transition-all duration-200">
+                        class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-wider bg-white hover:bg-white/90 text-slate-800 shadow-lg shadow-black/10 active:scale-[0.98] transition-all duration-200 outline-none">
                     Cerrar y continuar
                 </button>
             </div>
 
             <!-- Brand Logo Watermark -->
-            <div class="pt-4 border-t border-slate-100 dark:border-white/5 w-full flex items-center justify-center">
-                <img src="images/logo.png" alt="Nutrilev Logo" class="h-8 w-auto opacity-90 dark:brightness-110 dark:opacity-90 object-contain" />
+            <div class="pt-4 border-t border-white/10 w-full flex items-center justify-center">
+                <div class="px-8 py-3 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center">
+                    <img src="images/logo.png" alt="Nutrilev Logo" class="h-12 w-auto object-contain" />
+                </div>
             </div>
         </div>
     </div>

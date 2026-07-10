@@ -1,4 +1,4 @@
-import { Component, input, output, signal, HostListener, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, input, output, signal, HostListener, ChangeDetectionStrategy, inject, computed, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../../../shared/components/atoms/icon/icon';
 import { ThemeService } from '../../../../shared/services/theme.service';
@@ -25,6 +25,37 @@ export class HabitsTrackerComponent {
   showHabitsFloatingModal = signal<boolean>(false);
 
   private themeService = inject(ThemeService);
+
+  private isHistoryPushed = false;
+
+  constructor() {
+    effect(() => {
+      const open = this.showHabitsFloatingModal();
+      untracked(() => {
+        if (open) {
+          if (!this.isHistoryPushed) {
+            window.history.pushState({ modalOpen: 'habits' }, '');
+            this.isHistoryPushed = true;
+          }
+        } else {
+          if (this.isHistoryPushed) {
+            this.isHistoryPushed = false;
+            if (window.history.state && window.history.state.modalOpen === 'habits') {
+              window.history.back();
+            }
+          }
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: PopStateEvent) {
+    if (this.isHistoryPushed) {
+      this.isHistoryPushed = false;
+      this.showHabitsFloatingModal.set(false);
+    }
+  }
 
   themeClasses = computed(() => {
     const activeTheme = this.themeService.theme();

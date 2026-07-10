@@ -331,7 +331,7 @@ export class ShoppingListModalComponent {
     }
   }
 
-  sendToWhatsApp() {
+  shareShoppingList() {
     const list = this.shoppingList();
     if (!list || list.length === 0) return;
 
@@ -361,8 +361,18 @@ export class ShoppingListModalComponent {
     text += `====================================\n`;
     text += `${salad} _Plan alimenticio personalizado de Nutrilev_`;
 
-    const encodedText = encodeURIComponent(text);
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
-    window.open(whatsappUrl, '_blank', 'noopener');
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({
+        title: 'Mi Lista de Compras - Nutrilev',
+        text: text
+      }).catch(err => {
+        console.log('Error sharing via Web Share API:', err);
+      });
+    } else {
+      // Fallback a WhatsApp
+      const encodedText = encodeURIComponent(text);
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+      window.open(whatsappUrl, '_blank', 'noopener');
+    }
   }
 }
