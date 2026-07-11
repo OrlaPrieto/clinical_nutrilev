@@ -104,6 +104,14 @@ def generate_ai_menu():
     except Exception as e:
         print(f"ERROR [generate-ai-menu]: {str(e)}")
         traceback.print_exc()
+        
+        err_msg = str(e)
+        if any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"]):
+            return jsonify({
+                "error": "AI_SERVICE_TEMPORARILY_UNAVAILABLE",
+                "message": "El servicio de IA de Gemini está experimentando alta demanda o límites de cuota. Por favor, espera unos segundos e intenta nuevamente."
+            }), 429
+            
         return jsonify({
             "error": "Error al generar el menú clínico",
             "details": str(e)
@@ -209,6 +217,14 @@ def get_shopping_list():
     except Exception as e:
         print(f"Error generating shopping list: {e}")
         traceback.print_exc()
+        
+        err_msg = str(e)
+        if any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"]):
+            return jsonify({
+                "error": "AI_SERVICE_TEMPORARILY_UNAVAILABLE",
+                "message": "El servicio de IA de Gemini está experimentando alta demanda o límites de cuota. Por favor, espera unos segundos e intenta nuevamente."
+            }), 429
+            
         return jsonify({"error": str(e)}), 500
 
 
@@ -254,10 +270,10 @@ def get_parsed_menu():
         traceback.print_exc()
         
         err_msg = str(e)
-        if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "quota" in err_msg.lower():
+        if any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"]):
             return jsonify({
-                "error": "RATE_LIMIT_EXHAUSTED",
-                "message": "Has excedido el límite de peticiones gratuitas de Gemini. Por favor, espera 30 segundos antes de volver a intentarlo."
+                "error": "AI_SERVICE_TEMPORARILY_UNAVAILABLE",
+                "message": "El servicio de IA de Gemini está experimentando alta demanda o límites de cuota. Por favor, espera unos segundos e intenta nuevamente."
             }), 429
 
         return jsonify({"error": str(e)}), 500
