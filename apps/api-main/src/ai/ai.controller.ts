@@ -70,6 +70,10 @@ export class AiController {
         file,
       );
 
+      console.log(
+        `[AiController] Successfully generated AI Menu docx for patient: ${patientContext?.email || 'unknown'} (${calories} kcal)`,
+      );
+
       res.set({
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

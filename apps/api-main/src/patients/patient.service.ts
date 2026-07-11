@@ -168,12 +168,15 @@ export class PatientService {
       .maybeSingle() as any;
 
     if (cached && cached.shopping_list) {
+      console.log(`[ShoppingList] Cache HIT for menu URL: ${cleanMenuUrl}`);
       return cached.shopping_list;
     }
 
+    console.log(`[ShoppingList] Cache MISS. Generating shopping list via AI for menu URL: ${cleanMenuUrl}...`);
     const result = await this.aiGatewayService.getShoppingList(menuUrl, clientIp);
 
     if (result && !result.error) {
+      console.log(`[ShoppingList] Successfully generated shopping list via AI for menu URL: ${cleanMenuUrl}`);
       await client.from('ai_menu_cache').upsert({
         menu_url: cleanMenuUrl,
         shopping_list: result,
@@ -193,12 +196,15 @@ export class PatientService {
       .maybeSingle() as any;
 
     if (cached && cached.parsed_menu) {
+      console.log(`[ParsedMenu] Cache HIT for menu URL: ${cleanMenuUrl}`);
       return cached.parsed_menu;
     }
 
+    console.log(`[ParsedMenu] Cache MISS. Parsing menu document via AI for menu URL: ${cleanMenuUrl}...`);
     const result = await this.aiGatewayService.getParsedMenu(menuUrl, clientIp);
 
     if (result && !result.error) {
+      console.log(`[ParsedMenu] Successfully parsed clinical menu via AI for menu URL: ${cleanMenuUrl}`);
       await client.from('ai_menu_cache').upsert({
         menu_url: cleanMenuUrl,
         parsed_menu: result,
