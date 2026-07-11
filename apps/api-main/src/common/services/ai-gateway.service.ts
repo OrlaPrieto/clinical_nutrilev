@@ -57,7 +57,7 @@ export class AiGatewayService {
       headers['x-forwarded-for'] = clientIp;
     }
 
-    let taskId: string;
+    let taskId = '';
     try {
       const response = await firstValueFrom(
         this.httpService.post(

@@ -240,4 +240,30 @@ export class StorageService {
       throw err;
     }
   }
+
+  async deletePatientFiles(email: string): Promise<void> {
+    try {
+      const client = this.supabaseService.getClient();
+      if (client && client.storage) {
+        const { data: files } = await client.storage
+          .from('patient_menus')
+          .list();
+      
+        if (files && files.length > 0) {
+          const prefix = `menu_${email.toLowerCase().trim()}_`;
+          const filesToDelete = files
+            .filter((f) => f.name.startsWith(prefix))
+            .map((f) => f.name);
+          
+          if (filesToDelete.length > 0) {
+            await client.storage
+              .from('patient_menus')
+              .remove(filesToDelete);
+          }
+        }
+      }
+    } catch (storageErr) {
+      console.error(`Failed to clean up storage for deleted patient ${email}:`, storageErr);
+    }
+  }
 }
