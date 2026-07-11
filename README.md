@@ -44,6 +44,26 @@ graph TD
 ### 4. Lector Inteligente de Lista de Súper
 *   Descarga el plan nutricional activo en formato `.docx` o `.pdf` desde Supabase Storage y utiliza Gemini para estructurar, clasificar y devolver un JSON con la lista de compras del súper ordenada por departamentos (frutas, proteínas, lácteos, etc.).
 
+### 5. Confirmación de Citas con Trazabilidad de Origen
+*   Al confirmar citas desde el portal del paciente, se añade automáticamente la nota `[Cita confirmada mediante la aplicación Nutrilev]` en la descripción del evento en Google Calendar, diferenciando este canal de las confirmaciones por correo.
+
+---
+
+## ⚡ Mejoras de Arquitectura y Rendimiento (Refactorización)
+
+### 1. Procesamiento Asíncrono de IA y Polling No Bloqueante
+*   **Python AI**: El análisis de menús (`POST /api/parsed-menu`) inicia un hilo en segundo plano y responde de inmediato un `202 Accepted` con un identificador de tarea (`task_id`), liberando al servidor Flask de bloqueos síncronos de red.
+*   **NestJS Gateway**: NestJS implementa un mecanismo de **polling inteligente** consultando el estado de la tarea en Python (`GET /api/tasks/<task_id>`) cada 3 segundos, protegiendo las solicitudes contra timeouts de balanceadores de carga en producción (ej. Render/Cloudflare).
+
+### 2. Patrón Repositorio y Desacoplamiento (NestJS)
+*   **`PatientRepository`**: Centraliza todas las llamadas a la base de datos Supabase, aislando la lógica de base de datos de los servicios principales de negocio.
+*   **`StorageService`**: Mapeador desacoplado para la subida, compresión de PDF y limpieza automática de archivos en Cloudflare R2 o Supabase Storage.
+*   **`AiGatewayService`**: Gateway independiente para el despacho de solicitudes y lógica de polling al microservicio de Python.
+
+### 3. PortalStateService y Angular Signals
+*   **`PortalStateService`**: Extrae toda la lógica de obtención de datos, persistencia en caché local offline-first y estados reactivos del portal de pacientes, aligerando el controlador `portal-page.ts` en más de 900 líneas de código.
+*   **Resiliencia ante Rate-Limits (HTTP 429)**: El interceptor del frontend detecta automáticamente errores de cuotas de Gemini (HTTP 429), notifica visualmente al paciente de forma sutil y realiza reintentos exponenciales automáticos.
+
 ---
 
 ## 🛠️ Configuración y Requisitos Locales
