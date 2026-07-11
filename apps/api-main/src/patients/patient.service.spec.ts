@@ -35,6 +35,7 @@ describe('PatientService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockSupabaseClient.select.mockReturnValue(mockSupabaseClient);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PatientService,
@@ -98,8 +99,8 @@ describe('PatientService', () => {
       const updateData: PatientUpdate = { nombre: 'Updated Name' };
       const mockPatient = { id, ...updateData };
 
-      mockSupabaseClient.single.mockResolvedValue({
-        data: mockPatient,
+      mockSupabaseClient.select.mockResolvedValue({
+        data: [mockPatient],
         error: null,
       });
 
@@ -113,8 +114,8 @@ describe('PatientService', () => {
       const email = 'test@test.com';
       const updateData: PatientUpdate = { nombre: 'Updated Name' };
 
-      mockSupabaseClient.single.mockResolvedValue({
-        data: { email, ...updateData },
+      mockSupabaseClient.select.mockResolvedValue({
+        data: [{ email, ...updateData }],
         error: null,
       });
 
@@ -131,8 +132,8 @@ describe('PatientService', () => {
         originalEmail,
       };
 
-      mockSupabaseClient.single.mockResolvedValue({
-        data: { id, email: newEmail },
+      mockSupabaseClient.select.mockResolvedValue({
+        data: [{ id, email: newEmail }],
         error: null,
       });
 

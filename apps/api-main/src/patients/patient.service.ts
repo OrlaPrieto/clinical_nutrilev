@@ -71,15 +71,19 @@ export class PatientService {
         ultima_actualizacion: new Date().toISOString(),
       });
 
-    if (id.includes('@')) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) || id.startsWith('uuid-');
+    if (!isUuid) {
       query = query.eq('email', id);
     } else {
       query = query.eq('id', id);
     }
 
-    const { data, error } = await query.select().single();
+    const { data, error } = await query.select();
 
     if (error) throw error;
+    if (!data || data.length === 0) {
+      throw new HttpException('Patient not found', 404);
+    }
 
     if (emailChanged && cleanData.email) {
       try {
@@ -92,12 +96,13 @@ export class PatientService {
       }
     }
 
-    return data as Patient;
+    return data[0] as Patient;
   }
 
   async getProgress(patientEmailOrId: string): Promise<PatientProgress[]> {
     let patientId = patientEmailOrId;
-    if (patientEmailOrId.includes('@')) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(patientEmailOrId) || patientEmailOrId.startsWith('uuid-');
+    if (!isUuid) {
       const patient = await this.findByEmail(patientEmailOrId);
       if (!patient) return [];
       patientId = patient.id;
@@ -183,7 +188,23 @@ export class PatientService {
 
   async remove(identifier: string): Promise<{ success: boolean }> {
     let email: string | null = null;
-    if (identifier.includes('@')) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier) || identifier.startsWith('uuid-');
+
+    if (isUuid) {
+      try {
+        const { data } = await this.supabaseService
+          .getClient()
+          .from('patients')
+          .select('email')
+          .eq('id', identifier)
+          .maybeSingle() as any;
+        if (data && data.email) {
+          email = data.email.toLowerCase().trim();
+        }
+      } catch (err) {
+        console.error('Failed to resolve patient email from UUID for deletion:', err);
+      }
+    } else if (identifier.includes('@')) {
       email = identifier.toLowerCase().trim();
     } else {
       try {
@@ -227,13 +248,15 @@ export class PatientService {
       }
     }
 
-    const { error } = await this.supabaseService
-      .getClient()
-      .from('patients')
-      .delete()
-      .or(`email.eq.${identifier},nombre.eq.${identifier}`);
+    let query = this.supabaseService.getClient().from('patients').delete();
+    if (isUuid) {
+      query = query.eq('id', identifier);
+    } else {
+      query = query.or(`email.eq.${identifier},nombre.eq.${identifier}`);
+    }
 
-        if (error) throw error;
+    const { error } = await query;
+    if (error) throw error;
     return { success: true };
   }
 
@@ -288,12 +311,23 @@ export class PatientService {
         });
       }
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         'Error calling Python AI service (Shopping List):',
         error instanceof Error ? error.message : error,
       );
-      throw error;
+      if (error && error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+        throw new HttpException(
+          data?.error || data?.message || 'Error en el servicio de lista de compras',
+          status || 502,
+        );
+      }
+      throw new HttpException(
+        error instanceof Error ? error.message : 'Error al llamar al servicio de lista de compras',
+        502,
+      );
     }
   }
 
@@ -352,17 +386,18 @@ export class PatientService {
         'Error calling Python AI service (Parsed Menu):',
         error instanceof Error ? error.message : error,
       );
-      if (error.response) {
+      if (error && error.response) {
         const status = error.response.status;
         const data = error.response.data;
-        if (data && data.error && data.message) {
-          throw new HttpException(
-            { error: data.error, message: data.message },
-            status,
-          );
-        }
+        throw new HttpException(
+          data?.error || data?.message || 'Error en el servicio de análisis de menú',
+          status || 502,
+        );
       }
-      throw error;
+      throw new HttpException(
+        error instanceof Error ? error.message : 'Error al llamar al servicio de análisis de menú',
+        502,
+      );
     }
   }
 
