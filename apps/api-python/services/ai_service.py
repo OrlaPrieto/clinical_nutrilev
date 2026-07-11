@@ -185,8 +185,8 @@ Genera el JSON usando el esquema definido.
                 print(f"[Gemini JSON Shopping List] Error with model {model} on attempt {attempt + 1}: {e}")
                 err_str = str(e).lower()
                 
-                # If it's a rate limit error, sleep and retry
-                if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
+                # If it's a rate limit or transient service error, sleep and retry
+                if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
                     sleep_time = 5 * (2 ** attempt)
                     print(f"[ShoppingList AI] Rate limit hit. Sleeping for {sleep_time}s before retrying...")
                     time.sleep(sleep_time)
@@ -380,8 +380,8 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
                 last_exception = e
                 err_str = str(e).lower()
                 
-                # If it's a rate limit error, sleep and retry
-                if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
+                # If it's a rate limit or transient service error, sleep and retry
+                if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
                     rate_limit_exception = e
                     sleep_time = 5 * (2 ** attempt)
                     print(f"[MenuParser AI] Gemini Rate Limit hit. Sleeping for {sleep_time}s before retrying...")
