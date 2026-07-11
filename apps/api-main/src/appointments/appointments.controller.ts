@@ -85,13 +85,20 @@ export class AppointmentsController {
     try {
       const event = await this.calendarService.getEvent(eventId);
       const currentColor = event.colorId;
+      const currentDescription = event.description || '';
 
       // Sigue la misma regla de color que el bot de automation_nutrilev:
       // Si Menta '2' (Salvia), cambiar a Morado '3' (Uva)
       // Si es otro, cambiar a Verde Musgo '10' (Albahaca)
       const newColorId = currentColor === '2' ? '3' : '10';
 
-      await this.calendarService.updateEventColor(eventId, newColorId);
+      const note = '\n\n[Cita confirmada mediante la aplicación Nutrilev]';
+      let newDescription = currentDescription;
+      if (!currentDescription.includes('[Cita confirmada')) {
+        newDescription = (currentDescription.trim() + note).trim();
+      }
+
+      await this.calendarService.updateEventColorAndDescription(eventId, newColorId, newDescription);
       return { success: true, status: 'confirmed', colorId: newColorId };
     } catch (error: any) {
       this.logger.error(`Error confirming event ${eventId}: ${error.message}`);
