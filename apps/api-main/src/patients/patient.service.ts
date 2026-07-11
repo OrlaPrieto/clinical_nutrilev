@@ -262,13 +262,14 @@ export class PatientService {
 
   async getShoppingList(menuUrl: string, clientIp?: string): Promise<any> {
     const client: any = this.supabaseService.getClient();
+    const cleanMenuUrl = menuUrl.split('?')[0];
 
     // 1. Consultar si ya existe en la base de datos de caché
     const { data: cached } = await client
       .from('ai_menu_cache')
       .select('shopping_list')
-      .eq('menu_url', menuUrl)
-      .single();
+      .eq('menu_url', cleanMenuUrl)
+      .maybeSingle() as any;
 
     if (cached && cached.shopping_list) {
       return cached.shopping_list;
@@ -306,7 +307,7 @@ export class PatientService {
       if (result && !result.error) {
         // Upsert en la tabla de caché
         await client.from('ai_menu_cache').upsert({
-          menu_url: menuUrl,
+          menu_url: cleanMenuUrl,
           shopping_list: result,
         });
       }
@@ -333,13 +334,14 @@ export class PatientService {
 
   async getParsedMenu(menuUrl: string, clientIp?: string): Promise<any> {
     const client: any = this.supabaseService.getClient();
+    const cleanMenuUrl = menuUrl.split('?')[0];
 
     // 1. Consultar si ya existe en la base de datos de caché
     const { data: cached } = await client
       .from('ai_menu_cache')
       .select('parsed_menu')
-      .eq('menu_url', menuUrl)
-      .single();
+      .eq('menu_url', cleanMenuUrl)
+      .maybeSingle() as any;
 
     if (cached && cached.parsed_menu) {
       return cached.parsed_menu;
@@ -376,7 +378,7 @@ export class PatientService {
       if (result && !result.error) {
         // Upsert en la tabla de caché
         await client.from('ai_menu_cache').upsert({
-          menu_url: menuUrl,
+          menu_url: cleanMenuUrl,
           parsed_menu: result,
         });
       }

@@ -187,7 +187,7 @@ Genera el JSON usando el esquema definido.
                 
                 # If it's a rate limit error, sleep and retry
                 if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
-                    sleep_time = 4 * (attempt + 1)
+                    sleep_time = 5 * (2 ** attempt)
                     print(f"[ShoppingList AI] Rate limit hit. Sleeping for {sleep_time}s before retrying...")
                     time.sleep(sleep_time)
                     continue
@@ -383,7 +383,7 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
                 # If it's a rate limit error, sleep and retry
                 if "429" in err_str or "resource_exhausted" in err_str or "quota" in err_str:
                     rate_limit_exception = e
-                    sleep_time = 4 * (attempt + 1)
+                    sleep_time = 5 * (2 ** attempt)
                     print(f"[MenuParser AI] Gemini Rate Limit hit. Sleeping for {sleep_time}s before retrying...")
                     time.sleep(sleep_time)
                     continue
