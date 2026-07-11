@@ -298,8 +298,8 @@ export class PatientService {
           },
           {
             headers,
-            timeout: 120000,
-          }, // 120 second timeout
+            timeout: 240000,
+          }, // 240 second timeout
         ),
       );
       
@@ -369,8 +369,8 @@ export class PatientService {
           },
           {
             headers,
-            timeout: 120000,
-          }, // 120 second timeout
+            timeout: 240000,
+          }, // 240 second timeout
         ),
       );
       
