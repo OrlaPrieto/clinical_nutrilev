@@ -9,6 +9,28 @@ from services.docx_utils import (
 )
 from services.gemini_engine import _call_gemini, _resolve_model
 
+def extract_retry_delay(e: Exception) -> float:
+    import re
+    err_str = str(e)
+    
+    # 1. Match 'Please retry in X.XXs'
+    match = re.search(r"retry\s+in\s+(\d+(?:\.\d+)?)s", err_str, re.IGNORECASE)
+    if match:
+        try:
+            return float(match.group(1))
+        except ValueError:
+            pass
+            
+    # 2. Match 'retryDelay': 'Xs'
+    match = re.search(r"'retryDelay':\s*'(\d+(?:\.\d+)?)s'", err_str)
+    if match:
+        try:
+            return float(match.group(1))
+        except ValueError:
+            pass
+            
+    return 0.0
+
 def _normalizar_menu(menu_json: dict) -> dict:
     """Garantiza que los 3 menús tengan las mismas equivalencias que el esquema_dia."""
     esquema = menu_json.get("esquema_dia", {})
@@ -187,8 +209,9 @@ Genera el JSON usando el esquema definido.
                 
                 # If it's a rate limit or transient service error, sleep and retry
                 if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
-                    sleep_time = 5 * (2 ** attempt)
-                    print(f"[ShoppingList AI] Rate limit hit. Sleeping for {sleep_time}s before retrying...")
+                    retry_delay = extract_retry_delay(e)
+                    sleep_time = retry_delay + 1.0 if retry_delay > 0 else 5.0 * (2 ** attempt)
+                    print(f"[ShoppingList AI] Rate limit hit. Sleeping for {sleep_time:.2f}s before retrying...")
                     time.sleep(sleep_time)
                     continue
                 
@@ -383,8 +406,9 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
                 # If it's a rate limit or transient service error, sleep and retry
                 if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
                     rate_limit_exception = e
-                    sleep_time = 5 * (2 ** attempt)
-                    print(f"[MenuParser AI] Gemini Rate Limit hit. Sleeping for {sleep_time}s before retrying...")
+                    retry_delay = extract_retry_delay(e)
+                    sleep_time = retry_delay + 1.0 if retry_delay > 0 else 5.0 * (2 ** attempt)
+                    print(f"[MenuParser AI] Gemini Rate Limit hit. Sleeping for {sleep_time:.2f}s before retrying...")
                     time.sleep(sleep_time)
                     continue
                 
