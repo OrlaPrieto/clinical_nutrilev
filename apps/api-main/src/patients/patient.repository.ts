@@ -98,13 +98,13 @@ export class PatientRepository {
     return true;
   }
 
-  async getProgress(email: string): Promise<PatientProgress[]> {
+  async getProgress(patientId: string): Promise<PatientProgress[]> {
     const client: any = this.supabaseService.getClient();
     const { data, error } = await client
       .from('patient_progress')
       .select('*')
-      .eq('email', email)
-      .order('date', { ascending: false });
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('[PatientRepository] Error in getProgress:', error);
