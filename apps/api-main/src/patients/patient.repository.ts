@@ -14,7 +14,7 @@ export class PatientRepository {
     const { data, error } = await client
       .from('patients')
       .select('*')
-      .order('nombre', { ascending: true });
+      .order('nombre');
 
     if (error) {
       console.error('[PatientRepository] Error in findAll:', error);
@@ -28,15 +28,12 @@ export class PatientRepository {
     const { data, error } = await client
       .from('patients')
       .select('*')
-      .eq('email', email)
-      .maybeSingle();
+      .ilike('email', email)
+      .single();
 
     if (error) {
       console.error('[PatientRepository] Error in findByEmail:', error);
       throw error;
-    }
-    if (!data) {
-      throw new NotFoundException(`Patient with email ${email} not found`);
     }
     return data;
   }
