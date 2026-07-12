@@ -186,5 +186,23 @@ export class GoogleCalendarService {
       throw error;
     }
   }
+
+  /**
+   * Update color and description of an event.
+   */
+  async updateEventColorAndDescription(eventId: string, colorId: string, description: string): Promise<void> {
+    try {
+      const calendar = this.getCalendarClient();
+      await calendar.events.patch({
+        calendarId: this.calendarId,
+        eventId,
+        requestBody: { colorId, description },
+      });
+      this.logger.log(`Event ${eventId} color updated to ${colorId} and description updated`);
+    } catch (error: any) {
+      this.logger.error(`Error patching event ${eventId} details: ${error.message}`);
+      throw error;
+    }
+  }
 }
 

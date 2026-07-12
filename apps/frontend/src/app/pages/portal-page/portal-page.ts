@@ -29,6 +29,7 @@ import { ShoppingListModalComponent } from './components/shopping-list-modal/sho
 import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
 import { EquivalentsModalComponent } from './components/equivalents-modal/equivalents-modal';
 import { FreeCondimentsModalComponent } from './components/free-condiments-modal/free-condiments-modal';
+import { PortalStateService } from '../../services/portal-state.service';
 
 @Component({
   selector: 'app-portal-page',
@@ -65,34 +66,56 @@ import { FreeCondimentsModalComponent } from './components/free-condiments-modal
 })
 export class PortalPage implements OnInit, OnDestroy {
   @ViewChild(HabitsTrackerComponent) habitsTracker?: HabitsTrackerComponent;
+  
+  public state = inject(PortalStateService);
+  
+  patient = this.state.patient;
+  nextAppointment = this.state.nextAppointment;
+  progress = this.state.progress;
+  loading = this.state.loading;
+  showThemeMenu = this.state.showThemeMenu;
+  showAccessibilityMenu = this.state.showAccessibilityMenu;
+  showCancelConfirmModal = this.state.showCancelConfirmModal;
+  showEquivalentsModal = this.state.showEquivalentsModal;
+  showCondimentsModal = this.state.showCondimentsModal;
+  activeCelebration = this.state.activeCelebration;
+  activeTab = this.state.activeTab;
+  
+  pullDistance = this.state.pullDistance;
+  isRefreshing = this.state.isRefreshing;
+  loadingAppointmentAction = this.state.loadingAppointmentAction;
+  dailyHabits = this.state.dailyHabits;
+  habitsPercentage = this.state.habitsPercentage;
+  
+  shoppingList = this.state.shoppingList;
+  loadingShoppingList = this.state.loadingShoppingList;
+  showShoppingModal = this.state.showShoppingModal;
+  shoppingListProgress = this.state.shoppingListProgress;
+  shoppingListLoadingMessage = this.state.shoppingListLoadingMessage;
+  hasShoppingError = this.state.hasShoppingError;
+  
+  getActiveMenu = this.state.getActiveMenu;
+  firstName = this.state.firstName;
+  greetingPrefix = this.state.greetingPrefix;
+  greetingIcon = this.state.greetingIcon;
+  welcomeMessage = this.state.welcomeMessage;
+  currentGoal = this.state.currentGoal;
+  goalPercentage = this.state.goalPercentage;
+  milestones = this.state.milestones;
+
   sidebarCollapsed = signal<boolean>(false);
   private lastFocusTime = Date.now();
   private focusListener?: () => void;
   private visibilityListener?: () => void;
-  private shoppingListInterval: any = null;
   private authService = inject(AuthService);
   private patientService = inject(PatientService);
   public themeService = inject(ThemeService);
   public accessibilityService = inject(AccessibilityService);
   private storageService = inject(StorageService);
   private pushService = inject(PushNotificationService);
-  private appointmentService = inject(AppointmentService);
   private titleService = inject(Title);
   private analytics = inject(AnalyticsService);
   private toastService = inject(ToastService);
-
-  patient = signal<Patient | null>(null);
-  nextAppointment = signal<Appointment | null>(null);
-  loadingAppointmentAction = signal<boolean>(false);
-  progress = signal<PatientProgress[]>([]);
-  loading = signal<boolean>(true);
-  showThemeMenu = signal<boolean>(false);
-  showAccessibilityMenu = signal<boolean>(false);
-  showCancelConfirmModal = signal<boolean>(false);
-  showEquivalentsModal = signal<boolean>(false);
-  showCondimentsModal = signal<boolean>(false);
-  activeCelebration = signal<any | null>(null);
-  activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
 
   private isHistoryPushed = false;
 
@@ -129,23 +152,111 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   }
 
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.showThemeMenu.set(false);
+    this.showAccessibilityMenu.set(false);
+  }
 
-  dailyHabits = signal<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>({
-    water: false,
-    activity: false,
-    diet: false,
-    sleep: false
-  });
+  private swipeStartX = 0;
+  private swipeStartY = 0;
+  private touchStartY = 0;
+  private isPulling = false;
 
-  habitsPercentage = computed(() => {
-    const habits = this.dailyHabits();
-    let count = 0;
-    if (habits.water) count++;
-    if (habits.activity) count++;
-    if (habits.diet) count++;
-    if (habits.sleep) count++;
-    return Math.round((count / 4) * 100);
-  });
+  isAnyModalOpen(): boolean {
+    return this.showEquivalentsModal() || 
+           this.showCondimentsModal() || 
+           this.showShoppingModal() || 
+           this.showCancelConfirmModal();
+  }
+
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    if (this.isAnyModalOpen()) return;
+    this.swipeStartX = event.touches[0].clientX;
+    this.swipeStartY = event.touches[0].clientY;
+
+    if (window.scrollY === 0 && !this.isRefreshing()) {
+      this.touchStartY = event.touches[0].clientY;
+      this.isPulling = true;
+    }
+  }
+
+  @HostListener('touchmove', ['$event'])
+  onTouchMove(event: TouchEvent) {
+    if (this.isAnyModalOpen()) return;
+    if (!this.isPulling) return;
+    const currentY = event.touches[0].clientY;
+    const diff = currentY - this.touchStartY;
+    if (diff > 0) {
+      const distance = Math.min(100, diff * 0.4);
+      this.pullDistance.set(distance);
+      if (distance > 15) {
+        if (event.cancelable) {
+          event.preventDefault();
+        }
+      }
+    }
+  }
+
+  @HostListener('touchend', ['$event'])
+  async onTouchEnd(event: TouchEvent) {
+    if (this.isAnyModalOpen()) {
+      this.isPulling = false;
+      this.pullDistance.set(0);
+      return;
+    }
+    const diffX = event.changedTouches[0].clientX - this.swipeStartX;
+    const diffY = event.changedTouches[0].clientY - this.swipeStartY;
+
+    if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
+      const tabs: ('dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources')[] = ['plan', 'menu-ia', 'dashboard', 'resources', 'analysis', 'history'];
+      const currentIdx = tabs.indexOf(this.activeTab());
+      
+      if (diffX > 0 && currentIdx > 0) {
+        this.setActiveTab(tabs[currentIdx - 1]);
+        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate(15);
+        }
+      } else if (diffX < 0 && currentIdx < tabs.length - 1) {
+        this.setActiveTab(tabs[currentIdx + 1]);
+        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate(15);
+        }
+      }
+    }
+
+    if (this.isPulling) {
+      this.isPulling = false;
+      const distance = this.pullDistance();
+      if (distance >= 35) {
+        this.isRefreshing.set(true);
+        this.pullDistance.set(40);
+        try {
+          await this.ngOnInit();
+          if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+            navigator.vibrate(30);
+          }
+        } catch (err) {
+          console.error('Pull to refresh failed:', err);
+        } finally {
+          this.isRefreshing.set(false);
+          this.pullDistance.set(0);
+        }
+      } else {
+        this.pullDistance.set(0);
+      }
+    }
+  }
+
+  setActiveTab(tab: 'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources') {
+    this.activeTab.set(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  toNumber(val: any): number {
+    return Number(val);
+  }
 
   getHeroGradientClass(): string {
     const activeTheme = this.themeService.theme();
@@ -176,176 +287,6 @@ export class PortalPage implements OnInit, OnDestroy {
         return 'from-nutri-rose to-[#ff7043]';
     }
   }
-
-
-
-  @HostListener('document:click')
-  onDocumentClick() {
-    this.showThemeMenu.set(false);
-    this.showAccessibilityMenu.set(false);
-  }
-
-  private swipeStartX = 0;
-  private swipeStartY = 0;
-  private touchStartY = 0;
-  private isPulling = false;
-  public pullDistance = signal<number>(0);
-  public isRefreshing = signal<boolean>(false);
-
-  isAnyModalOpen(): boolean {
-    return this.showEquivalentsModal() || 
-           this.showCondimentsModal() || 
-           this.showShoppingModal() || 
-           this.showCancelConfirmModal();
-  }
-
-  @HostListener('touchstart', ['$event'])
-  onTouchStart(event: TouchEvent) {
-    if (this.isAnyModalOpen()) return;
-    this.swipeStartX = event.touches[0].clientX;
-    this.swipeStartY = event.touches[0].clientY;
-
-    if (window.scrollY === 0 && !this.isRefreshing()) {
-      this.touchStartY = event.touches[0].clientY;
-      this.isPulling = true;
-    }
-  }
-
-  @HostListener('touchmove', ['$event'])
-  onTouchMove(event: TouchEvent) {
-    if (this.isAnyModalOpen()) return;
-    if (!this.isPulling) return;
-    const currentY = event.touches[0].clientY;
-    const diff = currentY - this.touchStartY;
-    if (diff > 0) {
-      // Pulling down
-      const distance = Math.min(100, diff * 0.4); // Dampen distance
-      this.pullDistance.set(distance);
-      if (distance > 15) {
-        if (event.cancelable) {
-          event.preventDefault();
-        }
-      }
-    }
-  }
-
-  @HostListener('touchend', ['$event'])
-  async onTouchEnd(event: TouchEvent) {
-    if (this.isAnyModalOpen()) {
-      this.isPulling = false;
-      this.pullDistance.set(0);
-      return;
-    }
-    // 1. Handle Swipe navigation
-    const diffX = event.changedTouches[0].clientX - this.swipeStartX;
-    const diffY = event.changedTouches[0].clientY - this.swipeStartY;
-
-    if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
-      const tabs: ('dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources')[] = ['plan', 'menu-ia', 'dashboard', 'resources', 'analysis', 'history'];
-      const currentIdx = tabs.indexOf(this.activeTab());
-      
-      if (diffX > 0 && currentIdx > 0) {
-        this.setActiveTab(tabs[currentIdx - 1]);
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-          navigator.vibrate(15);
-        }
-      } else if (diffX < 0 && currentIdx < tabs.length - 1) {
-        this.setActiveTab(tabs[currentIdx + 1]);
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-          navigator.vibrate(15);
-        }
-      }
-    }
-
-    // 2. Handle Pull to Refresh
-    if (this.isPulling) {
-      this.isPulling = false;
-      const distance = this.pullDistance();
-      if (distance >= 35) {
-        this.isRefreshing.set(true);
-        this.pullDistance.set(40); // hold spinner
-        try {
-          await this.ngOnInit();
-          if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-            navigator.vibrate(30);
-          }
-        } catch (err) {
-          console.error('Pull to refresh failed:', err);
-        } finally {
-          this.isRefreshing.set(false);
-          this.pullDistance.set(0);
-        }
-      } else {
-        this.pullDistance.set(0);
-      }
-    }
-  }
-
-  setActiveTab(tab: 'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources') {
-    this.activeTab.set(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-
-
-  
-  shoppingList = signal<ShoppingCategory[]>([]);
-  loadingShoppingList = signal<boolean>(false);
-  showShoppingModal = signal<boolean>(false);
-  shoppingListProgress = signal<number>(0);
-  shoppingListLoadingMessage = signal<string>('Detectando ingredientes...');
-  hasShoppingError = computed(() => this.shoppingList().some(cat => cat.category.includes('ERROR')));
-
-
-  getActiveMenu = computed(() => {
-    const p = this.patient();
-    if (!p) return null;
-    const currentMenu = p.current_menus && p.current_menus.length > 0 ? p.current_menus[0] : null;
-    return {
-      url: currentMenu ? currentMenu.url : p.menu_url,
-      created_at: currentMenu ? currentMenu.uploaded_at : p.menu_created_at
-    };
-  });
-
-  firstName = computed(() => {
-    const p = this.patient();
-    if (!p || !p.nombre) return 'Usuario';
-    return p.nombre.split(' ')[0];
-  });
-
-  toNumber(val: any): number {
-    return Number(val);
-  }
-
-  greetingPrefix = computed(() => {
-    const hours = new Date().getHours();
-    if (hours < 12) return 'Buenos días';
-    if (hours < 19) return 'Buenas tardes';
-    return 'Buenas noches';
-  });
-
-  greetingIcon = computed(() => {
-    const hours = new Date().getHours();
-    if (hours < 12) return 'wb_sunny';
-    if (hours < 19) return 'light_mode';
-    return 'nights_stay';
-  });
-
-  welcomeMessage = computed(() => {
-    const hours = new Date().getHours();
-    const name = this.firstName();
-    let greeting = 'Hola';
-    
-    if (hours < 12) {
-      greeting = 'Buenos días';
-    } else if (hours < 19) {
-      greeting = 'Buenas tardes';
-    } else {
-      greeting = 'Buenas noches';
-    }
-    
-    return `¡${greeting}, ${name}!`;
-  });
 
   goalSubtitle = computed(() => {
     const goal = this.currentGoal();
@@ -385,9 +326,6 @@ export class PortalPage implements OnInit, OnDestroy {
     if (!hasSuplements || !sups) return [];
     return sups.split(',').map(s => s.trim()).filter(Boolean);
   });
-
-
-
 
   isMenuValid = computed(() => {
     const menu = this.getActiveMenu();
@@ -436,102 +374,12 @@ export class PortalPage implements OnInit, OnDestroy {
     return limit != null ? Number(limit) : environment.menuDurationDays;
   });
 
-  openMenu(url?: string) {
-    const targetUrl = url || this.getActiveMenu()?.url;
-    if (targetUrl) {
-      window.open(targetUrl, '_blank', 'noopener');
-    }
-  }
-
-  getHabitsStorageKey(): string {
-    const user = this.authService.user;
-    if (!user || !user.email) return '';
-    const email = user.email.toLowerCase();
-    const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD in local time
-    return `nutri_habits_${email}_${todayStr}`;
-  }
-
-  loadDailyHabits() {
-    const key = this.getHabitsStorageKey();
-    if (!key) return;
-    const saved = this.storageService.getItem<{ water: boolean; activity: boolean; diet: boolean; sleep: boolean }>(key);
-    if (saved) {
-      this.dailyHabits.set(saved);
-    } else {
-      this.dailyHabits.set({ water: false, activity: false, diet: false, sleep: false });
-    }
-  }
-
-  toggleHabit(habitKey: 'water' | 'activity' | 'diet' | 'sleep') {
-    const key = this.getHabitsStorageKey();
-    if (!key) return;
-    const current = this.dailyHabits();
-    const updated = {
-      ...current,
-      [habitKey]: !current[habitKey]
-    };
-    this.dailyHabits.set(updated);
-    this.storageService.setItem(key, updated);
-
-    const user = this.authService.user;
-    this.analytics.logEvent('toggle_habit', {
-      patient_email: user?.email,
-      habit_key: habitKey,
-      completed: updated[habitKey]
-    });
-
-    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(30);
-    }
-  }
-
-  bmi = computed(() => {
-    const p = this.patient();
-    const prog = this.progress();
-    if (!p || !p.estatura) return null;
-    
-    const weight = prog.length > 0 ? Number(prog[0].weight) : Number(p.peso_habitual || 0);
-    let height = Number(p.estatura);
-    
-    // Auto-detect cm or meters (if > 3 assume it's cm)
-    if (height > 3) height = height / 100;
-    
-    if (!weight || !height || height === 0) return null;
-    return (weight / (height * height)).toFixed(1);
-  });
-
-  bmiPosition = computed(() => {
-    const val = Number(this.bmi());
-    if (!val) return 0;
-    const min = 15;
-    const max = 35;
-    const pct = ((val - min) / (max - min)) * 100;
-    return Math.max(0, Math.min(100, Math.round(pct)));
-  });
-
-  bmiCategory = computed(() => {
-    const val = Number(this.bmi());
-    if (!val) return '';
-    if (val < 18.5) return 'Bajo peso';
-    if (val < 25.0) return 'Normal';
-    if (val < 30.0) return 'Sobrepeso';
-    return 'Obesidad';
-  });
-
-  bmiColorClass = computed(() => {
-    const val = Number(this.bmi());
-    if (!val) return 'text-slate-400';
-    if (val < 18.5) return 'text-sky-500 dark:text-sky-400'; // Bajo Peso
-    if (val < 25.0) return 'text-emerald-500 dark:text-emerald-400'; // Normal
-    if (val < 30.0) return 'text-amber-500 dark:text-amber-400'; // Sobrepeso
-    return 'text-rose-500 dark:text-rose-400'; // Obesidad
-  });
-
   weightDiff = computed(() => {
     const history = this.progress();
     if (history.length < 2) return null;
     const current = Number(history[0].weight || 0);
     const prev = Number(history[1].weight || 0);
+    if (!current || !prev) return null;
     const diff = current - prev;
     return {
       value: Math.abs(diff).toFixed(1),
@@ -589,10 +437,8 @@ export class PortalPage implements OnInit, OnDestroy {
       month: 'long',
     };
     let formattedDate = date.toLocaleDateString('es-MX', options);
-    // Capitalize first letter
     formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
     
-    // Get time: e.g. "4:30 PM"
     let hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -615,12 +461,10 @@ export class PortalPage implements OnInit, OnDestroy {
     const nowZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const diffDays = (startZero.getTime() - nowZero.getTime()) / (24 * 60 * 60 * 1000);
 
-    // Standard: today or tomorrow
     if (diffDays <= 1) {
       return true;
     }
     
-    // Weekend exception: If today is Saturday (6) and appointment is Monday (diffDays === 2)
     const todayDay = now.getDay();
     if (todayDay === 6 && diffDays === 2) {
       return true;
@@ -629,494 +473,19 @@ export class PortalPage implements OnInit, OnDestroy {
     return false;
   });
 
-  currentGoal = computed(() => this.patient()?.meta_objetivo || null);
-
-  goalPercentage = computed(() => {
-    const p = this.patient();
-    const history = this.progress();
-    const goal = this.currentGoal();
-    if (!p || !goal || history.length === 0) return 0;
-
-    const currentRecord = history[0];
-    
-    let start = 0;
-    let current = 0;
-    let target = 0;
-
-    switch (goal) {
-      case 'bajar_peso':
-        const firstWeight = [...history].reverse().find(r => r.weight);
-        start = Number(p.peso_habitual || (firstWeight ? firstWeight.weight : 0));
-        current = Number(currentRecord.weight || 0);
-        target = Number(p.peso_meta || 0);
-        break;
-      case 'bajar_grasa':
-        const firstFat = [...history].reverse().find(r => r.body_fat);
-        start = firstFat ? Number(firstFat.body_fat) : Number(currentRecord.body_fat || 0);
-        current = Number(currentRecord.body_fat || 0);
-        target = Number(p.grasa_meta || 0);
-        break;
-      case 'subir_musculo':
-        const firstMuscle = [...history].reverse().find(r => r.muscle_mass);
-        start = firstMuscle ? Number(firstMuscle.muscle_mass) : Number(currentRecord.muscle_mass || 0);
-        current = Number(currentRecord.muscle_mass || 0);
-        target = Number(p.musculo_meta || 0);
-        break;
-    }
-
-    if (target === 0 || start === target) return 0;
-    
-    let progress = 0;
-    if (goal === 'subir_musculo') {
-      const gainNeeded = target - start;
-      if (gainNeeded <= 0) return current >= target ? 100 : 0;
-      progress = ((current - start) / gainNeeded) * 100;
-    } else {
-      const lossNeeded = start - target;
-      if (lossNeeded <= 0) return current <= target ? 100 : 0;
-      progress = ((start - current) / lossNeeded) * 100;
-    }
-
-    return Math.max(0, Math.min(100, Math.round(progress)));
-  });
-
-
-
-  milestones = computed(() => {
-    const p = this.patient();
-    const goalPct = this.goalPercentage();
-    if (!p || !this.currentGoal()) return [];
-
-    return [
-      {
-        id: '25-percent',
-        image: 'images/milestones/star_bronze.png',
-        title: 'Primer Paso',
-        description: 'Iniciando con éxito tu camino hacia una vida saludable.',
-        unlocked: goalPct >= 25
-      },
-      {
-        id: 'halfway',
-        image: 'images/milestones/star_gold.png',
-        title: 'A Medio Camino',
-        description: 'Cruzando con constancia la mitad de tu objetivo nutricional.',
-        unlocked: goalPct >= 50
-      },
-      {
-        id: 'goal-reached',
-        image: 'images/milestones/star_diamond.png',
-        title: 'Meta Lograda',
-        description: '¡Felicidades! Has conquistado por completo tu meta de bienestar.',
-        unlocked: goalPct >= 100
-      }
-    ];
-  });
-
-  loadPortalDataFromCache(userEmail: string) {
-    try {
-      const cachedPatientStr = localStorage.getItem(`portal_patient_${userEmail}`);
-      const cachedProgressStr = localStorage.getItem(`portal_progress_${userEmail}`);
-      const cachedAptStr = localStorage.getItem(`portal_next_appointment_${userEmail}`);
-
-      if (cachedPatientStr) {
-        const cachedPatient = JSON.parse(cachedPatientStr);
-        this.patient.set(cachedPatient);
-        this.titleService.setTitle(`Portal de ${cachedPatient.nombre} - Nutrilev`);
-        this.loading.set(false); // Detener pantalla de carga ya que hay datos locales
-      }
-
-      if (cachedProgressStr) {
-        this.progress.set(JSON.parse(cachedProgressStr));
-      }
-
-      if (cachedAptStr) {
-        const cachedApt = JSON.parse(cachedAptStr);
-        if (cachedApt && cachedApt.hasAppointment) {
-          this.nextAppointment.set(cachedApt);
-        } else {
-          this.nextAppointment.set(null);
-        }
-      }
-    } catch (err) {
-      console.error('Error loading data from cache:', err);
-    }
-  }
-
-  async loadPortalData(userEmail: string, forceRefresh = false) {
-    try {
-      // Cargar datos en paralelo para evitar waterfall
-      const [currentPatient, history, apt] = await Promise.all([
-        this.patientService.getPatientByEmail(userEmail, forceRefresh),
-        this.patientService.getPatientProgress(userEmail, forceRefresh),
-        this.appointmentService.getNextAppointment(userEmail).catch(err => {
-          console.error('Error loading next appointment:', err);
-          return null;
-        })
-      ]);
-
-      if (currentPatient) {
-        const oldPatient = this.patient();
-        const menuChanged = oldPatient && (
-          oldPatient.menu_url !== currentPatient.menu_url || 
-          oldPatient.menu_created_at !== currentPatient.menu_created_at
-        );
-
-        this.patient.set(currentPatient);
-        this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Nutrilev`);
-        this.progress.set(history || []);
-
-        if (apt && apt.hasAppointment) {
-          this.nextAppointment.set(apt);
-        } else {
-          this.nextAppointment.set(null);
-        }
-
-        // Guardar en caché local para soporte offline-first
-        try {
-          localStorage.setItem(`portal_patient_${userEmail}`, JSON.stringify(currentPatient));
-          localStorage.setItem(`portal_progress_${userEmail}`, JSON.stringify(history || []));
-          localStorage.setItem(`portal_next_appointment_${userEmail}`, JSON.stringify(apt));
-        } catch (cacheErr) {
-          console.error('Failed to write portal data cache:', cacheErr);
-        }
-
-        // Cargar o reiniciar la lista de súper según corresponda
-        if (menuChanged) {
-          console.log('PWA: Menu changed! Resetting shopping list signal...');
-          this.shoppingList.set([]);
-          this.loadShoppingListFromCache(currentPatient);
-        } else if (!oldPatient) {
-          // Carga inicial
-          this.loadShoppingListFromCache(currentPatient);
-        }
-
-        // Cargar hábitos diarios
-        this.loadDailyHabits();
-
-        // Verificar si hay nuevos logros para celebrar
-        setTimeout(() => {
-          this.checkNewMilestones();
-        }, 1000);
-      }
-    } catch (err) {
-      console.error('Error loading portal data', err);
-    }
-  }
-
-  checkNewMilestones() {
-    const list = this.milestones();
-    if (list.length === 0) return;
-
-    // Cargar logros ya celebrados de localStorage
-    let celebrated: string[] = [];
-    try {
-      const stored = localStorage.getItem('celebrated_milestones');
-      if (stored) {
-        celebrated = JSON.parse(stored);
-      }
-    } catch (e) {
-      console.error('Error parsing celebrated_milestones', e);
-    }
-
-    // Buscar el primer logro desbloqueado que no haya sido celebrado
-    const toCelebrate = list.find(ms => ms.unlocked && !celebrated.includes(ms.id));
-    if (toCelebrate) {
-      // Lanzar celebración modal
-      this.activeCelebration.set(toCelebrate);
-      
-      // Guardar inmediatamente en celebrados para no volver a repetirse
-      celebrated.push(toCelebrate.id);
-      localStorage.setItem('celebrated_milestones', JSON.stringify(celebrated));
-      
-      // Detonar confeti premium
-      this.triggerCelebrationConfetti(toCelebrate.id);
-    }
-  }
-
-  triggerCelebrationConfetti(id: string) {
-    let colors = ['#D81B60', '#F5B041', '#4FACFE'];
-    if (id === '25-percent') colors = ['#CD7F32', '#E5A97C', '#9C5D30'];
-    else if (id === 'halfway') colors = ['#F5B041', '#FCE068', '#C0392B'];
-    else if (id === 'goal-reached') colors = ['#00F2FE', '#4FACFE', '#E0C3FC'];
-
-    const duration = 2.5 * 1000;
-    const end = Date.now() + duration;
-
-    const frame = () => {
-      confetti({
-        particleCount: 6,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.8 },
-        colors: colors,
-        zIndex: 9999
-      });
-      confetti({
-        particleCount: 6,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.8 },
-        colors: colors,
-        zIndex: 9999
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
-    frame();
-  }
-
-  openMilestoneModal(ms: any) {
-    if (!ms.unlocked) return;
-    this.activeCelebration.set(ms);
-    this.triggerCelebrationConfetti(ms.id);
-  }
-
-  generateBadgePng(svgElement: SVGElement, id: string, title: string): Promise<File | null> {
-    const svgString = new XMLSerializer().serializeToString(svgElement);
-    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const URL = window.URL || window.webkitURL || window;
-    const blobURL = URL.createObjectURL(svgBlob);
-
-    const logoImg = new Image();
-    logoImg.src = 'images/logo.png';
-
-    const svgImg = new Image();
-    svgImg.src = blobURL;
-
-    return new Promise((resolve) => {
-      let loadedCount = 0;
-      const checkLoaded = () => {
-        loadedCount++;
-        if (loadedCount === 2) {
-          const canvas = document.createElement('canvas');
-          canvas.width = 480;
-          canvas.height = 640;
-          const context = canvas.getContext('2d');
-          if (!context) {
-            resolve(null);
-            return;
-          }
-
-          // 1. Tarjeta con bordes redondeados
-          context.beginPath();
-          const r = 40;
-          context.moveTo(r, 0);
-          context.lineTo(480 - r, 0);
-          context.quadraticCurveTo(480, 0, 480, r);
-          context.lineTo(480, 640 - r);
-          context.quadraticCurveTo(480, 640, 480 - r, 640);
-          context.lineTo(r, 640);
-          context.quadraticCurveTo(0, 640, 0, 640 - r);
-          context.lineTo(0, r);
-          context.quadraticCurveTo(0, 0, r, 0);
-          context.closePath();
-          
-          // Gradiente de fondo radial coincidiendo con los colores de la celebración
-          const gradient = context.createRadialGradient(240, 320, 50, 240, 320, 380);
-          if (id === '25-percent') {
-            gradient.addColorStop(0, '#f97316');
-            gradient.addColorStop(1, '#d97706');
-          } else if (id === 'halfway') {
-            gradient.addColorStop(0, '#facc15');
-            gradient.addColorStop(1, '#f97316');
-          } else {
-            gradient.addColorStop(0, '#38bdf8');
-            gradient.addColorStop(1, '#4f46e5');
-          }
-          context.fillStyle = gradient;
-          context.fill();
-
-          // 2. Órbita circular blanca translúcida para el badge
-          context.fillStyle = 'rgba(255, 255, 255, 0.15)';
-          context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-          context.lineWidth = 1;
-          context.beginPath();
-          context.arc(240, 150, 64, 0, 2 * Math.PI);
-          context.fill();
-          context.stroke();
-
-          // Dibujar el SVG del logro centrado
-          context.drawImage(svgImg, 188, 98, 104, 104);
-
-          // 3. Textos alineados
-          context.textAlign = 'center';
-          
-          // Subtítulo "🏆 LOGRO ALCANZADO"
-          context.font = '900 11px system-ui, -apple-system, sans-serif';
-          context.fillStyle = 'rgba(255, 255, 255, 0.75)';
-          context.fillText('🏆 LOGRO ALCANZADO', 240, 260);
-
-          // Título del logro
-          context.font = 'bold 30px Georgia, serif';
-          context.fillStyle = '#ffffff';
-          context.fillText(title, 240, 305);
-
-          // Mensaje de felicitación
-          context.font = '500 13px system-ui, -apple-system, sans-serif';
-          context.fillStyle = 'rgba(255, 255, 255, 0.9)';
-          
-          const text = this.getCelebrationMessage(id);
-          const words = text.split(' ');
-          let line = '';
-          const lines = [];
-          const maxWidth = 380;
-          for (let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' ';
-            const metrics = context.measureText(testLine);
-            if (metrics.width > maxWidth && n > 0) {
-              lines.push(line);
-              line = words[n] + ' ';
-            } else {
-              line = testLine;
-            }
-          }
-          lines.push(line);
-          
-          let yPos = 350;
-          for (const l of lines) {
-            context.fillText(l.trim(), 240, yPos);
-            yPos += 22;
-          }
-
-          // 4. Línea divisoria decorativa
-          context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-          context.lineWidth = 1;
-          context.beginPath();
-          context.moveTo(40, 495);
-          context.lineTo(440, 495);
-          context.stroke();
-
-          // 5. Contenedor del Logo de Nutrilev (Pastilla ovalada blanca)
-          context.beginPath();
-          const pWidth = 220;
-          const pHeight = 64;
-          const px = 240 - (pWidth / 2);
-          const py = 530;
-          const pr = 32;
-          context.moveTo(px + pr, py);
-          context.lineTo(px + pWidth - pr, py);
-          context.quadraticCurveTo(px + pWidth, py, px + pWidth, py + pr);
-          context.lineTo(px + pWidth, py + pHeight - pr);
-          context.quadraticCurveTo(px + pWidth, py + pHeight, px + pWidth - pr, py + pHeight);
-          context.lineTo(px + pr, py + pHeight);
-          context.quadraticCurveTo(px, py + pHeight, px, py + pHeight - pr);
-          context.lineTo(px, py + pr);
-          context.quadraticCurveTo(px, py, px + pr, py);
-          context.closePath();
-          context.fillStyle = '#ffffff';
-          context.fill();
-
-          // Dibujar la imagen del Logo
-          const logoAspect = logoImg.width / logoImg.height;
-          const targetHeight = 44;
-          const targetWidth = targetHeight * logoAspect;
-          context.drawImage(logoImg, 240 - (targetWidth / 2), py + 10, targetWidth, targetHeight);
-
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const file = new File([blob], `logro-${id}.png`, { type: 'image/png' });
-              resolve(file);
-            } else {
-              resolve(null);
-            }
-          }, 'image/png');
-        }
-      };
-
-      logoImg.onload = checkLoaded;
-      logoImg.onerror = () => {
-        loadedCount++;
-        checkLoaded();
-      };
-      
-      svgImg.onload = checkLoaded;
-      svgImg.onerror = () => {
-        resolve(null);
-      };
-    });
-  }
-
-  async shareMilestone() {
-    const ms = this.activeCelebration();
-    if (!ms) return;
-
-    const trophy = '\u{1F3C6}';
-    const apple = '\u{1F34E}';
-    const sparkle = '\u{2728}';
-
-    const shareText = `¡He alcanzado un nuevo logro en mi plan de alimentación de Nutrilev! ${trophy}\n\n*${ms.title.toUpperCase()}*\n"${this.getCelebrationMessage(ms.id)}"\n\n${sparkle} Únete a un estilo de vida de élite con Nutrilev ${apple}`;
-
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        let files: File[] = [];
-        const svgElement = document.getElementById('celebration-svg') as SVGElement | null;
-        if (svgElement) {
-          const file = await this.generateBadgePng(svgElement, ms.id, ms.title);
-          if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-            files = [file];
-          }
-        }
-
-        if (files.length > 0) {
-          await navigator.share({
-            title: `Logro Alcanzado: ${ms.title}`,
-            text: shareText,
-            files: files
-          });
-        } else {
-          await navigator.share({
-            title: `Logro Alcanzado: ${ms.title}`,
-            text: shareText
-          });
-        }
-      } catch (err) {
-        console.log('Error sharing milestone:', err);
-      }
-    } else {
-      // Fallback a WhatsApp
-      const encodedText = encodeURIComponent(shareText);
-      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
-      window.open(whatsappUrl, '_blank', 'noopener');
-    }
-  }
-
-  getCelebrationMessage(id: string): string {
-    switch (id) {
-      case '25-percent':
-        return '¡Excelente inicio en este gran camino hacia tu bienestar! Cada pequeño cambio cuenta y tus hábitos ya están dando sus primeros frutos. ¡Sigue adelante con esa misma determinación!';
-      case 'halfway':
-        return '¡Un avance extraordinario! Estás oficialmente a la mitad del camino para alcanzar tu objetivo. Tu constancia es sumamente admirable y estás demostrando que sí se puede. ¡No te detengas!';
-      case 'goal-reached':
-        return '¡META CUMPLIDA! Has alcanzado el 100% de tu gran objetivo de salud. Tu disciplina y perseverancia son admirables, has transformado tu estilo de vida por completo. ¡Muchísimas felicidades por este gran triunfo!';
-      default:
-        return 'Sigue sumando logros en tu plan nutricional para alcanzar tus objetivos.';
-    }
-  }
-
   async ngOnInit() {
     const user = this.authService.user;
     if (user && user.email) {
       const userEmail = user.email.toLowerCase();
       try {
-        // Carga offline-first: restaurar caché local antes de conectar con el servidor
-        this.loadPortalDataFromCache(userEmail);
-
-        // Cargar datos frescos en segundo plano
-        await this.loadPortalData(userEmail, true); 
-
-        // Solicitar suscripción de notificaciones push
+        this.state.loadPortalDataFromCache(userEmail);
+        await this.state.loadPortalData(userEmail, true); 
         this.pushService.requestSubscription(userEmail);
-
-        // Verificar si hay alguna acción desde notificaciones en la URL
         this.handleUrlActions();
 
-        // Listen for visibility and focus events to refresh data if user resumes PWA
         if (typeof window !== 'undefined') {
           this.focusListener = () => this.refreshDataIfVisible(userEmail);
           this.visibilityListener = () => this.refreshDataIfVisible(userEmail);
-
           window.addEventListener('focus', this.focusListener);
           document.addEventListener('visibilitychange', this.visibilityListener);
         }
@@ -1131,11 +500,9 @@ export class PortalPage implements OnInit, OnDestroy {
   refreshDataIfVisible(userEmail: string) {
     if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
       const now = Date.now();
-      // Refrescar al menos cada 15 segundos si se enfoca el PWA
       if (now - this.lastFocusTime > 15000) {
         this.lastFocusTime = now;
-        console.log('PWA focused/visible: Refreshing portal data from backend...');
-        this.loadPortalData(userEmail, true);
+        this.state.loadPortalData(userEmail, true);
       }
     }
   }
@@ -1149,8 +516,8 @@ export class PortalPage implements OnInit, OnDestroy {
         document.removeEventListener('visibilitychange', this.visibilityListener);
       }
     }
-    if (this.shoppingListInterval) {
-      clearInterval(this.shoppingListInterval);
+    if (this.state.shoppingListInterval) {
+      clearInterval(this.state.shoppingListInterval);
     }
   }
 
@@ -1162,12 +529,10 @@ export class PortalPage implements OnInit, OnDestroy {
       const tab = params.get('tab');
 
       if (tab && ['dashboard', 'plan', 'analysis', 'history'].includes(tab)) {
-        console.log(`PWA: Navigating to tab ${tab} via shortcut/URL param...`);
         this.setActiveTab(tab as any);
       }
 
       if (action === 'habits') {
-        console.log('PWA: Opening habits tracker floating modal via shortcut...');
         setTimeout(() => {
           this.habitsTracker?.showHabitsFloatingModal.set(true);
         }, 300);
@@ -1175,21 +540,15 @@ export class PortalPage implements OnInit, OnDestroy {
 
       if (action && id) {
         const apt = this.nextAppointment();
-        if (!apt || apt.eventId !== id) {
-          console.warn('Notification action eventId mismatch or no appointment found.', { action, id, aptId: apt?.eventId });
-          return;
-        }
+        if (!apt || apt.eventId !== id) return;
 
         if (action === 'confirm') {
-          console.log('Automatically confirming appointment via notification action...');
           await this.confirmAppointment();
         } else if (action === 'cancel') {
-          console.log('Automatically opening cancel confirmation modal via notification action...');
           this.cancelAppointment();
         }
       }
 
-      // Clean query parameters from URL so refreshes don't re-trigger the action
       if (action || id || tab) {
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
@@ -1199,42 +558,21 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   }
 
-  async loadNextAppointment(email: string) {
-    try {
-      const apt = await this.appointmentService.getNextAppointment(email);
-      if (apt && apt.hasAppointment) {
-        this.nextAppointment.set(apt);
-      } else {
-        this.nextAppointment.set(null);
-      }
-    } catch (err) {
-      console.error('Error loading next appointment:', err);
+  openMenu(url?: string) {
+    const targetUrl = url || this.getActiveMenu()?.url;
+    if (targetUrl) {
+      window.open(targetUrl, '_blank', 'noopener');
     }
   }
 
-  async confirmAppointment() {
-    const apt = this.nextAppointment();
-    const p = this.patient();
-    if (!apt || !apt.eventId || !p || !p.email) return;
+  openMilestoneModal(ms: any) {
+    if (!ms.unlocked) return;
+    this.activeCelebration.set(ms);
+    this.state.triggerCelebrationConfetti(ms.id);
+  }
 
-    this.loadingAppointmentAction.set(true);
-    try {
-      const res = await this.appointmentService.confirmAppointment(p.email, apt.eventId);
-      if (res && res.success) {
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-          navigator.vibrate([40, 45, 40]); // Double micro-vibration
-        }
-        this.nextAppointment.set({
-          ...apt,
-          status: 'confirmed',
-          colorId: res.colorId || '10'
-        });
-      }
-    } catch (err) {
-      console.error('Error confirming appointment:', err);
-    } finally {
-      this.loadingAppointmentAction.set(false);
-    }
+  async confirmAppointment() {
+    await this.state.confirmAppointment();
   }
 
   cancelAppointment() {
@@ -1242,29 +580,7 @@ export class PortalPage implements OnInit, OnDestroy {
   }
 
   async confirmCancelAppointment() {
-    const apt = this.nextAppointment();
-    const p = this.patient();
-    if (!apt || !apt.eventId || !p || !p.email) return;
-
-    this.showCancelConfirmModal.set(false);
-    this.loadingAppointmentAction.set(true);
-    try {
-      const res = await this.appointmentService.cancelAppointment(p.email, apt.eventId);
-      if (res && res.success) {
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-          navigator.vibrate(60); // Single longer alert-like vibration
-        }
-        this.nextAppointment.set({
-          ...apt,
-          status: 'cancelled',
-          colorId: '11'
-        });
-      }
-    } catch (err) {
-      console.error('Error cancelling appointment:', err);
-    } finally {
-      this.loadingAppointmentAction.set(false);
-    }
+    await this.state.confirmCancelAppointment();
   }
 
   logout() {
@@ -1275,33 +591,17 @@ export class PortalPage implements OnInit, OnDestroy {
     this.showShoppingModal.set(true);
     if (this.shoppingList().length === 0 || this.hasShoppingError()) {
       const p = this.patient();
-      if (p) this.loadShoppingListFromCache(p);
-      
-      // Si después de intentar cargar del caché sigue vacía o tiene error, pedimos a la IA
+      if (p) this.state.loadShoppingListFromCache(p);
       if (this.shoppingList().length === 0 || this.hasShoppingError()) {
         await this.fetchShoppingList();
       }
     }
   }
 
-  loadShoppingListFromCache(p: Patient) {
-    const menu = this.getActiveMenu();
-    if (!menu || !menu.created_at) return;
-    const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
-    const cached = this.storageService.getItem<ShoppingCategory[]>(cacheKey);
-    // Solo cargamos la caché si no es una lista que represente un error
-    if (cached && !cached.some(cat => cat.category.includes('ERROR'))) {
-      const sorted = this.sortShoppingCategoryItems(cached);
-      this.shoppingList.set(sorted);
-      console.log('Shopping list loaded from cache');
-    }
-  }
-
   async fetchShoppingList() {
     if (this.loadingShoppingList()) return;
-
-    if (this.shoppingListInterval) {
-      clearInterval(this.shoppingListInterval);
+    if (this.state.shoppingListInterval) {
+      clearInterval(this.state.shoppingListInterval);
     }
 
     const p = this.patient();
@@ -1329,16 +629,14 @@ export class PortalPage implements OnInit, OnDestroy {
       }
     };
 
-    // Simulate smooth progress over time, decelerating as it approaches 95%
-    this.shoppingListInterval = setInterval(() => {
+    this.state.shoppingListInterval = setInterval(() => {
       if (currentProgress < 95) {
-        let increment = 1.8; // Starts relatively fast
+        let increment = 1.8;
         if (currentProgress >= 40 && currentProgress < 75) {
-          increment = 0.9;   // Slows down in the middle
+          increment = 0.9;
         } else if (currentProgress >= 75) {
-          increment = 0.3;   // Very slow near the end
+          increment = 0.3;
         }
-        
         currentProgress = Math.min(95, currentProgress + increment);
         const roundedProgress = Math.round(currentProgress);
         this.shoppingListProgress.set(roundedProgress);
@@ -1348,20 +646,16 @@ export class PortalPage implements OnInit, OnDestroy {
 
     try {
       const list = await this.patientService.getShoppingList(menu.url);
-      
-      // Stop simulator, set immediately to 100%
-      clearInterval(this.shoppingListInterval);
+      clearInterval(this.state.shoppingListInterval);
       this.shoppingListProgress.set(100);
       this.shoppingListLoadingMessage.set('¡Lista generada con éxito!');
 
-      // Analytics
       this.analytics.logEvent('generate_shopping_list', {
         patient_email: p.email,
         patient_name: p.nombre,
         items_count: list.reduce((acc: number, c: any) => acc + (c.items ? c.items.length : 0), 0)
       });
       
-      // Persistencia: Guardar marcados vinculados al email y fecha del menú
       const storageKey = `nutri_shop_${p.email}_${menu.created_at}`;
       const savedChecked = this.storageService.getItem<string[]>(storageKey) || [];
       
@@ -1373,20 +667,18 @@ export class PortalPage implements OnInit, OnDestroy {
         }))
       }));
       
-      // Wait briefly (600ms) for the user to see the 100% completion before rendering
       await new Promise(resolve => setTimeout(resolve, 600));
       
-      const sorted = this.sortShoppingCategoryItems(enrichedList);
+      const sorted = this.state.sortShoppingCategoryItems(enrichedList);
       this.shoppingList.set(sorted);
       
-      // Guardar lista completa en caché únicamente si no contiene errores
       const hasError = enrichedList.some(cat => cat.category.includes('ERROR'));
       if (!hasError) {
         const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
         this.storageService.setItem(cacheKey, sorted);
       }
     } catch (err) {
-      clearInterval(this.shoppingListInterval);
+      clearInterval(this.state.shoppingListInterval);
       console.error('Error fetching shopping list', err);
       this.shoppingListProgress.set(0);
       this.shoppingList.set([
@@ -1431,37 +723,214 @@ export class PortalPage implements OnInit, OnDestroy {
     });
     this.shoppingList.set(updated);
     
-    // Save checked state
     const storageKey = `nutri_shop_${p.email}_${menu.created_at}`;
     const allChecked = updated.flatMap(cat => 
       cat.items.filter((i: ShoppingItem) => i.checked).map((i: ShoppingItem) => `${cat.category}-${i.name}`)
     );
     this.storageService.setItem(storageKey, allChecked);
 
-    // Update full list cache
     const cacheKey = `nutri_shop_list_${p.email}_${menu.created_at}`;
     this.storageService.setItem(cacheKey, updated);
 
-    // Wait 350ms for premium transition visualization before sorting
     setTimeout(() => {
       const latest = this.shoppingList();
-      const sorted = this.sortShoppingCategoryItems(latest);
+      const sorted = this.state.sortShoppingCategoryItems(latest);
       this.shoppingList.set(sorted);
       this.storageService.setItem(cacheKey, sorted);
     }, 350);
   }
 
-  sortShoppingCategoryItems(list: ShoppingCategory[]): ShoppingCategory[] {
-    return list.map(cat => ({
-      ...cat,
-      items: [
-        ...cat.items.filter(i => !i.checked),
-        ...cat.items.filter(i => i.checked)
-      ]
-    }));
+  toggleHabit(habitKey: 'water' | 'activity' | 'diet' | 'sleep') {
+    const key = this.state.getHabitsStorageKey();
+    if (!key) return;
+    const current = this.state.dailyHabits();
+    const updated = {
+      ...current,
+      [habitKey]: !current[habitKey]
+    };
+    this.state.saveDailyHabits(updated);
+
+    const user = this.authService.user;
+    this.analytics.logEvent('toggle_habit', {
+      patient_email: user?.email,
+      habit_key: habitKey,
+      completed: updated[habitKey]
+    });
+
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(30);
+    }
   }
 
   closeShoppingModal() {
     this.showShoppingModal.set(false);
+  }
+
+  generateBadgePng(svgElement: SVGElement, id: string, title: string): Promise<File | null> {
+    const svgString = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
+
+    const logoImg = new Image();
+    logoImg.src = 'images/logo.png';
+
+    const svgImg = new Image();
+    svgImg.src = blobURL;
+
+    return new Promise((resolve) => {
+      let loadedCount = 0;
+      const checkLoaded = () => {
+        loadedCount++;
+        if (loadedCount === 2) {
+          const canvas = document.createElement('canvas');
+          canvas.width = 480;
+          canvas.height = 640;
+          const context = canvas.getContext('2d');
+          if (!context) {
+            resolve(null);
+            return;
+          }
+
+          context.beginPath();
+          const r = 40;
+          context.moveTo(r, 0);
+          context.lineTo(480 - r, 0);
+          context.quadraticCurveTo(480, 0, 480, r);
+          context.lineTo(480, 640 - r);
+          context.quadraticCurveTo(480, 640, 480 - r, 640);
+          context.lineTo(r, 640);
+          context.quadraticCurveTo(0, 640, 0, 640 - r);
+          context.lineTo(0, r);
+          context.quadraticCurveTo(0, 0, r, 0);
+          context.closePath();
+          
+          const gradient = context.createRadialGradient(240, 320, 50, 240, 320, 380);
+          if (id === '25-percent') {
+            gradient.addColorStop(0, '#f97316');
+            gradient.addColorStop(1, '#d97706');
+          } else if (id === 'halfway') {
+            gradient.addColorStop(0, '#facc15');
+            gradient.addColorStop(1, '#f97316');
+          } else {
+            gradient.addColorStop(0, '#38bdf8');
+            gradient.addColorStop(1, '#4f46e5');
+          }
+          context.fillStyle = gradient;
+          context.fill();
+
+          context.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          context.lineWidth = 1;
+          context.beginPath();
+          context.arc(240, 150, 64, 0, 2 * Math.PI);
+          context.fill();
+          context.stroke();
+
+          context.drawImage(svgImg, 188, 98, 104, 104);
+
+          context.textAlign = 'center';
+          context.font = '900 11px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.75)';
+          context.fillText('🏆 LOGRO ALCANZADO', 240, 260);
+
+          context.font = '800 24px system-ui, -apple-system, sans-serif';
+          context.fillStyle = '#ffffff';
+          context.fillText(title.toUpperCase(), 240, 295);
+
+          context.font = '500 14px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.85)';
+          
+          const words = '¡He desbloqueado esta medalla en mi plan de nutrición!'.split(' ');
+          let line = '';
+          let y = 330;
+          for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            if (metrics.width > 380 && n > 0) {
+              context.fillText(line, 240, y);
+              line = words[n] + ' ';
+              y += 20;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, 240, y);
+
+          context.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          context.fillRect(40, 480, 400, 2);
+
+          context.drawImage(logoImg, 240 - 24, 505, 48, 48);
+
+          context.font = '800 14px system-ui, -apple-system, sans-serif';
+          context.fillStyle = '#ffffff';
+          context.fillText('CLÍNICA NUTRILEV', 240, 575);
+
+          context.font = '500 10px system-ui, -apple-system, sans-serif';
+          context.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          context.fillText('Tu salud en equilibrio', 240, 595);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], `logro_${id}.png`, { type: 'image/png' });
+              resolve(file);
+            } else {
+              resolve(null);
+            }
+          }, 'image/png');
+        }
+      };
+      logoImg.onload = checkLoaded;
+      svgImg.onload = checkLoaded;
+      logoImg.onerror = () => resolve(null);
+      svgImg.onerror = () => resolve(null);
+    });
+  }
+
+  async shareMilestone() {
+    const ms = this.activeCelebration();
+    if (!ms) return;
+
+    this.toastService.show('Generando imagen del logro...', undefined, 2000);
+    try {
+      const svgElement = document.getElementById('celebration-svg') as SVGElement | null;
+      if (!svgElement) {
+        this.toastService.show('No se encontró el elemento visual del logro.', 'error', 3000);
+        return;
+      }
+
+      const file = await this.generateBadgePng(svgElement, ms.id, ms.title);
+      const trophy = '\u{1F3C6}';
+      const apple = '\u{1F34E}';
+      const sparkle = '\u{2728}';
+      const shareText = `¡He alcanzado un nuevo logro en mi plan de alimentación de Nutrilev! ${trophy}\n\n*${ms.title.toUpperCase()}*\n"${this.getCelebrationMessage(ms.id)}"\n\n${sparkle} Únete a un estilo de vida de élite con Nutrilev ${apple}`;
+
+      if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `Logro Nutrilev: ${ms.title}`,
+          text: shareText
+        });
+        this.analytics.logEvent('share_milestone_success', { milestone_id: ms.id });
+      } else {
+        this.toastService.show('La función de compartir archivos no es soportada en este navegador.', 'error', 4000);
+      }
+    } catch (err) {
+      console.error('Error sharing milestone:', err);
+      this.toastService.show('No se pudo compartir la medalla.', 'error', 3000);
+    }
+  }
+
+  getCelebrationMessage(id: string): string {
+    switch (id) {
+      case '25-percent':
+        return '¡Excelente inicio en este gran camino hacia tu bienestar! Cada pequeño cambio cuenta y tus hábitos ya están dando sus primeros frutos. ¡Sigue adelante con esa misma determinación!';
+      case 'halfway':
+        return '¡Un avance extraordinario! Estás oficialmente a la mitad del camino para alcanzar tu objetivo. Tu constancia es sumamente admirable y estás demostrando que sí se puede. ¡No te detengas!';
+      case 'goal-reached':
+        return '¡META CUMPLIDA! Has alcanzado el 100% de tu gran objetivo de salud. Tu disciplina y perseverancia son admirables, has transformado tu estilo de vida por completo. ¡Muchísimas felicidades por este gran triunfo!';
+      default:
+        return 'Sigue sumando logros en tu plan nutricional para alcanzar tus objetivos.';
+    }
   }
 }

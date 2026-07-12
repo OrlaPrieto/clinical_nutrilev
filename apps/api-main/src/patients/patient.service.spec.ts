@@ -5,6 +5,10 @@ import { PatientUpdate, PatientProgressInsert } from '@shared/index';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 
+import { PatientRepository } from './patient.repository';
+import { StorageService } from '../common/services/storage.service';
+import { AiGatewayService } from '../common/services/ai-gateway.service';
+
 describe('PatientService', () => {
   let service: PatientService;
 
@@ -19,6 +23,7 @@ describe('PatientService', () => {
     or: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
     single: jest.fn(),
+    maybeSingle: jest.fn(),
   };
 
   const mockSupabaseService = {
@@ -27,6 +32,7 @@ describe('PatientService', () => {
 
   const mockHttpService = {
     post: jest.fn(),
+    get: jest.fn(),
   };
 
   const mockConfigService = {
@@ -36,9 +42,13 @@ describe('PatientService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     mockSupabaseClient.select.mockReturnValue(mockSupabaseClient);
+    mockSupabaseClient.maybeSingle.mockReturnValue(mockSupabaseClient);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PatientService,
+        PatientRepository,
+        StorageService,
+        AiGatewayService,
         { provide: SupabaseService, useValue: mockSupabaseService },
         { provide: HttpService, useValue: mockHttpService },
         { provide: ConfigService, useValue: mockConfigService },

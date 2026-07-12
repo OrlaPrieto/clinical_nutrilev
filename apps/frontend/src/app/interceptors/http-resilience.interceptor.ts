@@ -18,13 +18,21 @@ export const httpResilienceInterceptor: HttpInterceptorFn = (req, next) => {
       count: 2,
       delay: (error: HttpErrorResponse, count: number) => {
         // Only retry on typical transient server errors or connection resets (0)
-        const transientErrors = [0, 500, 502, 503, 504];
+        const transientErrors = [0, 429, 500, 502, 503, 504];
         if (!transientErrors.includes(error.status)) {
           return throwError(() => error);
         }
         
+        if (error.status === 429) {
+          toastService.show(
+            'El servidor de IA está bajo alta demanda. Reintentando de forma automática...',
+            undefined,
+            3000
+          );
+        }
+        
         console.warn(`Auth: Transient error ${error.status}. Retry attempt ${count}/2...`);
-        return timer(count * 1000); // Exponential-ish backoff
+        return timer(count * 2500); // Wait longer for rate limits
       }
     }),
     catchError((error: HttpErrorResponse) => {

@@ -1,6 +1,8 @@
 import io
 import json
 import traceback
+import threading
+import uuid
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, request, send_file, jsonify
@@ -228,20 +230,10 @@ def get_shopping_list():
         return jsonify({"error": str(e)}), 500
 
 
-@menu_bp.route('/parsed-menu', methods=['POST', 'OPTIONS'])
-# @limiter.limit("10 per hour")  # Removed to prevent rate limit blocks on Render
-def get_parsed_menu():
-    if request.method == 'OPTIONS':
-        return '', 200
+tasks = {}
+tasks_lock = threading.Lock()
 
-    data = request.json
-    menu_url = data.get('menu_url')
-
-    if not menu_url or not is_safe_url(menu_url):
-        return jsonify({"error": "Invalid or restricted menu URL"}), 400
-
-    gemini_key = GEMINI_API_KEY # Strictly from environment
-
+def parse_menu_worker(task_id, menu_url, gemini_key):
     try:
         from services.ai_service import parse_menu_document_to_json
         parsed_json = parse_menu_document_to_json(menu_url, gemini_key)
@@ -263,19 +255,76 @@ def get_parsed_menu():
         if meals_to_enrich:
             with ThreadPoolExecutor(max_workers=10) as executor:
                 executor.map(enrich_meal, meals_to_enrich)
-
-        return jsonify(parsed_json)
+                
+        with tasks_lock:
+            tasks[task_id] = {
+                "status": "completed",
+                "result": parsed_json,
+                "error": None
+            }
     except Exception as e:
-        print(f"Error parsing menu document: {e}")
+        import traceback
+        print(f"Error in parse_menu_worker: {e}")
         traceback.print_exc()
         
         err_msg = str(e)
-        if any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"]):
+        is_transient = any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"])
+        
+        with tasks_lock:
+            tasks[task_id] = {
+                "status": "failed",
+                "result": None,
+                "error": err_msg,
+                "is_transient": is_transient
+            }
+
+@menu_bp.route('/parsed-menu', methods=['POST', 'OPTIONS'])
+def get_parsed_menu():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    data = request.json
+    menu_url = data.get('menu_url')
+
+    if not menu_url or not is_safe_url(menu_url):
+        return jsonify({"error": "Invalid or restricted menu URL"}), 400
+
+    gemini_key = GEMINI_API_KEY # Strictly from environment
+    
+    task_id = str(uuid.uuid4())
+    with tasks_lock:
+        tasks[task_id] = {
+            "status": "pending",
+            "result": None,
+            "error": None
+        }
+        
+    t = threading.Thread(target=parse_menu_worker, args=(task_id, menu_url, gemini_key))
+    t.daemon = True
+    t.start()
+    
+    return jsonify({"task_id": task_id, "status": "pending"}), 202
+
+@menu_bp.route('/tasks/<task_id>', methods=['GET', 'OPTIONS'])
+def get_task_status(task_id):
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    with tasks_lock:
+        task = tasks.get(task_id)
+        
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+        
+    if task["status"] == "failed":
+        if task.get("is_transient"):
             return jsonify({
                 "error": "AI_SERVICE_TEMPORARILY_UNAVAILABLE",
-                "message": "El servicio de IA de Gemini está experimentando alta demanda o límites de cuota. Por favor, espera unos segundos e intenta nuevamente."
+                "message": "El servicio de IA de Gemini está experimentando alta demanda o límites de cuota. Por favor, espera unos segundos e intenta nuevamente.",
+                "details": task["error"]
             }), 429
-
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": task["error"]}), 500
+        
+    return jsonify(task)
 
 
