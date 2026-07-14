@@ -412,6 +412,9 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
                     rate_limit_exception = e
                     retry_delay = extract_retry_delay(e)
                     sleep_time = retry_delay + 1.0 if retry_delay > 0 else 5.0 * (2 ** attempt)
+                    if sleep_time > 10.0:
+                        print(f"[MenuParser AI] Gemini Rate Limit delay ({sleep_time:.2f}s) is too long. Failing model {model} to prevent timeouts.")
+                        break
                     print(f"[MenuParser AI] Gemini Rate Limit hit. Sleeping for {sleep_time:.2f}s before retrying...")
                     time.sleep(sleep_time)
                     continue
