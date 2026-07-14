@@ -111,6 +111,11 @@ export class AiGatewayService {
         if (error && error.response) {
           const status = error.response.status;
           const data = error.response.data;
+          // Si es un error 502, 503 o 504 de proxy/gateway (común en Render), no fallamos inmediatamente
+          if (status === 502 || status === 503 || status === 504) {
+            console.warn(`[AiGateway] Polling task ${taskId} encountered proxy/gateway error ${status} on attempt ${attempt + 1}. Retrying...`);
+            continue;
+          }
           throw new HttpException(
             data?.error || data?.message || 'Error al obtener estado de la tarea de IA',
             status || 502,

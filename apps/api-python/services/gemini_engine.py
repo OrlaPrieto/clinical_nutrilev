@@ -64,7 +64,8 @@ NOTAS: {notas}
 
 def _resolve_model(client=None) -> list:
     # Retornamos la lista de modelos de forma directa para evitar llamadas de red lentas o fallidas.
-    return ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    # Excluimos modelos antiguos descatalogados o sin cuota (gemini-2.0-flash limit:0, gemini-1.5-flash 404).
+    return ["gemini-2.5-flash", "gemini-3.1-flash-lite"]
 
 def _call_gemini(historial: dict, calorias: int, notas: str, menu_base_texto: str, gemini_key: str) -> dict:
     client = genai.Client(api_key=gemini_key)
