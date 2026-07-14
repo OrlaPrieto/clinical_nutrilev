@@ -1,8 +1,15 @@
+import sys
+# Asegurar que stdout y stderr estén sin buffering en entornos como Render
+try:
+    sys.stdout.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(line_buffering=True)
+except AttributeError:
+    pass # Por si se ejecuta en un entorno que no lo soporte
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 import os
 import traceback
-import sys
 from google import genai
 from config import GEMINI_API_KEY, ALLOWED_ORIGINS, MAX_CONTENT_LENGTH
 from routes.menu_routes import menu_bp

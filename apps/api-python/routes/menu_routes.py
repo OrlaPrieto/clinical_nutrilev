@@ -257,11 +257,12 @@ def parse_menu_worker(task_id, menu_url, gemini_key):
                 executor.map(enrich_meal, meals_to_enrich)
                 
         with tasks_lock:
-            tasks[task_id] = {
-                "status": "completed",
-                "result": parsed_json,
-                "error": None
-            }
+            if task_id in tasks:
+                tasks[task_id].update({
+                    "status": "completed",
+                    "result": parsed_json,
+                    "error": None
+                })
     except Exception as e:
         import traceback
         print(f"Error in parse_menu_worker: {e}")
@@ -271,12 +272,13 @@ def parse_menu_worker(task_id, menu_url, gemini_key):
         is_transient = any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"])
         
         with tasks_lock:
-            tasks[task_id] = {
-                "status": "failed",
-                "result": None,
-                "error": err_msg,
-                "is_transient": is_transient
-            }
+            if task_id in tasks:
+                tasks[task_id].update({
+                    "status": "failed",
+                    "result": None,
+                    "error": err_msg,
+                    "is_transient": is_transient
+                })
 
 @menu_bp.route('/parsed-menu', methods=['POST', 'OPTIONS'])
 def get_parsed_menu():
@@ -291,10 +293,17 @@ def get_parsed_menu():
 
     gemini_key = GEMINI_API_KEY # Strictly from environment
     
-    task_id = str(uuid.uuid4())
     with tasks_lock:
+        # Check if there is already a pending task for this menu_url to prevent duplicate threads
+        for tid, t_data in list(tasks.items()):
+            if t_data.get("menu_url") == menu_url and t_data.get("status") == "pending":
+                print(f"[MenuParser AI] Reusing existing pending task {tid} for URL: {menu_url}")
+                return jsonify({"task_id": tid, "status": "pending"}), 202
+
+        task_id = str(uuid.uuid4())
         tasks[task_id] = {
             "status": "pending",
+            "menu_url": menu_url,
             "result": None,
             "error": None
         }

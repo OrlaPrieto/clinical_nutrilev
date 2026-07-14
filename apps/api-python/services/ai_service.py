@@ -404,7 +404,11 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
                 err_str = str(e).lower()
                 
                 # If it's a rate limit or transient service error, sleep and retry
-                if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
+                # However, if limit is 0, it is a permanent quota limit block, so we should skip retries.
+                is_transient = any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"])
+                is_zero_quota = "limit: 0" in err_str or "limit:0" in err_str
+                
+                if is_transient and not is_zero_quota:
                     rate_limit_exception = e
                     retry_delay = extract_retry_delay(e)
                     sleep_time = retry_delay + 1.0 if retry_delay > 0 else 5.0 * (2 ** attempt)
