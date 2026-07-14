@@ -57,7 +57,6 @@ export class AiGatewayService {
       headers['x-forwarded-for'] = clientIp;
     }
 
-    let taskId = '';
     try {
       const response = await firstValueFrom(
         this.httpService.post(
@@ -67,65 +66,14 @@ export class AiGatewayService {
           },
           {
             headers,
-            timeout: 15000,
+            timeout: 240000, // 4 minutos de timeout para resiliencia ante rate limits
           },
         ),
       );
-      taskId = response.data?.task_id;
-      if (!taskId) {
-        throw new Error('Python AI service did not return a task ID');
-      }
+      return response.data;
     } catch (error: any) {
-      this.handleError(error, 'Error al iniciar análisis de menú');
+      this.handleError(error, 'Error al analizar el menú clínico');
     }
-
-    const maxRetries = 80;
-    const pollIntervalMs = 3000;
-    
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
-      
-      try {
-        const response = await firstValueFrom(
-          this.httpService.get(
-            `${flaskApiUrl.replace(/\/$/, '')}/api/tasks/${taskId}`,
-            {
-              headers,
-              timeout: 10000,
-            },
-          ),
-        );
-        const task = response.data;
-        if (task.status === 'completed') {
-          return task.result;
-        } else if (task.status === 'failed') {
-          throw new HttpException(
-            task.error || 'Error en el procesamiento de IA',
-            task.is_transient ? 429 : 500,
-          );
-        }
-      } catch (error: any) {
-        if (error instanceof HttpException) {
-          throw error;
-        }
-        if (error && error.response) {
-          const status = error.response.status;
-          const data = error.response.data;
-          // Si es un error 502, 503 o 504 de proxy/gateway (común en Render), no fallamos inmediatamente
-          if (status === 502 || status === 503 || status === 504) {
-            console.warn(`[AiGateway] Polling task ${taskId} encountered proxy/gateway error ${status} on attempt ${attempt + 1}. Retrying...`);
-            continue;
-          }
-          throw new HttpException(
-            data?.error || data?.message || 'Error al obtener estado de la tarea de IA',
-            status || 502,
-          );
-        }
-        console.warn(`[AiGateway] Polling task ${taskId} failed on attempt ${attempt + 1}: ${error.message}`);
-      }
-    }
-    
-    throw new HttpException('Tiempo de espera agotado para el procesamiento del menú', 504);
   }
 
   private handleError(error: any, defaultMsg: string) {

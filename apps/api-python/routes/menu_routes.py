@@ -293,26 +293,47 @@ def get_parsed_menu():
 
     gemini_key = GEMINI_API_KEY # Strictly from environment
     
-    with tasks_lock:
-        # Check if there is already a pending task for this menu_url to prevent duplicate threads
-        for tid, t_data in list(tasks.items()):
-            if t_data.get("menu_url") == menu_url and t_data.get("status") == "pending":
-                print(f"[MenuParser AI] Reusing existing pending task {tid} for URL: {menu_url}")
-                return jsonify({"task_id": tid, "status": "pending"}), 202
-
-        task_id = str(uuid.uuid4())
-        tasks[task_id] = {
-            "status": "pending",
-            "menu_url": menu_url,
-            "result": None,
-            "error": None
-        }
+    try:
+        from services.ai_service import parse_menu_document_to_json
+        parsed_json = parse_menu_document_to_json(menu_url, gemini_key)
         
-    t = threading.Thread(target=parse_menu_worker, args=(task_id, menu_url, gemini_key))
-    t.daemon = True
-    t.start()
-    
-    return jsonify({"task_id": task_id, "status": "pending"}), 202
+        # Enriquecer con imágenes de Pexels si está configurado en el entorno
+        import os
+        pexels_key = os.getenv("PEXELS_API_KEY")
+        
+        def enrich_meal(meal):
+            query = meal.get("termino_busqueda_imagen") or meal.get("platillo", "")
+            from services.ai_service import fetch_dish_image_url
+            meal["platillo_imagen_url"] = fetch_dish_image_url(query, pexels_key)
+
+        meals_to_enrich = []
+        for sec in parsed_json.get("secciones", []):
+            for meal in sec.get("tiempos_comida", []):
+                meals_to_enrich.append(meal)
+                
+        if meals_to_enrich:
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                # Convertir a lista para forzar la evaluación sincrónica de map
+                list(executor.map(enrich_meal, meals_to_enrich))
+                
+        return jsonify(parsed_json)
+
+    except Exception as e:
+        import traceback
+        print(f"Error in synchronous get_parsed_menu: {e}")
+        traceback.print_exc()
+        
+        err_msg = str(e)
+        is_transient = any(kw in err_msg.lower() for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"])
+        
+        if is_transient:
+            return jsonify({
+                "error": "AI_SERVICE_TEMPORARILY_UNAVAILABLE",
+                "message": "El servicio de IA de Gemini está experimentando alta demanda o límites de cuota. Por favor, espera unos segundos e intenta nuevamente.",
+                "details": err_msg
+            }), 429
+            
+        return jsonify({"error": err_msg}), 500
 
 @menu_bp.route('/tasks/<task_id>', methods=['GET', 'OPTIONS'])
 def get_task_status(task_id):
