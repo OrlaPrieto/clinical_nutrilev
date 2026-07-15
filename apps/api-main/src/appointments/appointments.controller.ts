@@ -41,8 +41,8 @@ export class AppointmentsController {
       }
 
       // Map colorId to a standard status string
-      // Menta '2' -> pending
-      // Morado '3' or Verde Musgo '10' -> confirmed
+      // Esmeralda '7' u otros -> pending
+      // Morado '3' o Verde Musgo '10' -> confirmed
       // Rojo '11' -> cancelled
       let status = 'pending';
       const colorId = event.colorId;
@@ -87,10 +87,10 @@ export class AppointmentsController {
       const currentColor = event.colorId;
       const currentDescription = event.description || '';
 
-      // Sigue la misma regla de color que el bot de automation_nutrilev:
-      // Si Menta '2' (Salvia), cambiar a Morado '3' (Uva)
-      // Si es otro, cambiar a Verde Musgo '10' (Albahaca)
-      const newColorId = currentColor === '2' ? '3' : '10';
+      // Sigue la regla de color de la cita pagada:
+      // - Si es Verde Esmeralda ('7' o '2' según la traducción/dispositivo), cambiar a Morado Intenso '3' (Uva)
+      // - Cualquier otro color cambiar a Verde Musgo '10' (Albahaca)
+      const newColorId = (currentColor === '2' || currentColor === '7') ? '3' : '10';
 
       const note = '\n\n[Cita confirmada mediante la aplicación Nutrilev]';
       let newDescription = currentDescription;
