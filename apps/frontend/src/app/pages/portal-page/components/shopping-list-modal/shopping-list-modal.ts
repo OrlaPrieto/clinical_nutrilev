@@ -115,35 +115,12 @@ export class ShoppingListModalComponent {
     return catName;
   }
 
-  printShoppingList() {
+  async printShoppingList() {
     const list = this.shoppingList();
     const p = this.patient();
     if (!list || list.length === 0 || !p) return;
 
-    // Generate categories HTML
-    const categoriesHTML = list.map(cat => {
-      const itemsHTML = cat.items.map((item: any) => `
-        <div class="item-card">
-          <div class="checkbox"></div>
-          <div class="item-content">
-            <div class="item-header">
-              <span class="item-name">${item.icon} ${item.name}</span>
-              ${item.amount ? `<span class="item-amount">${item.amount}</span>` : ''}
-            </div>
-            ${item.tip ? `<div class="item-tip">${item.tip}</div>` : ''}
-          </div>
-        </div>
-      `).join('');
-
-      return `
-        <div class="category-group">
-          <div class="category-title">${cat.category}</div>
-          <div class="items-list">
-            ${itemsHTML}
-          </div>
-        </div>
-      `;
-    }).join('');
+    this.toastService.show('Generando PDF de la lista...', 'info');
 
     const formattedDate = new Date().toLocaleDateString('es-MX', {
       day: 'numeric',
@@ -151,67 +128,67 @@ export class ShoppingListModalComponent {
       year: 'numeric'
     });
 
-    // Create a print container in the main document
-    let printContainer = document.getElementById('shopping-list-print-container');
-    if (!printContainer) {
-      printContainer = document.createElement('div');
-      printContainer.id = 'shopping-list-print-container';
-      document.body.appendChild(printContainer);
-    }
+    // Create parent wrapper to clip child off-screen but keep it paintable
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'fixed';
+    wrapper.style.left = '0';
+    wrapper.style.top = '0';
+    wrapper.style.width = '0';
+    wrapper.style.height = '0';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.zIndex = '-9999';
+    wrapper.style.pointerEvents = 'none';
+    document.body.appendChild(wrapper);
 
-    const htmlContent = `
+    // CSS styles shared by all elements
+    const sharedStyles = `
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        #shopping-list-print-container {
-          display: none;
+        .pdf-box {
           font-family: 'Inter', sans-serif;
           color: #334155;
           padding: 20px 40px;
           background-color: #ffffff;
-          font-size: 11px;
+          font-size: 13px;
           line-height: 1.5;
+          width: 800px;
+          box-sizing: border-box;
         }
-        #shopping-list-print-container .header {
+        .header {
           border-bottom: 2px solid #e2e8f0;
           padding-bottom: 15px;
-          margin-bottom: 25px;
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
-        #shopping-list-print-container .title {
-          font-size: 22px;
+        .title {
+          font-size: 24px;
           font-weight: 900;
           color: #0f172a;
           letter-spacing: -0.025em;
         }
-        #shopping-list-print-container .subtitle {
-          font-size: 9px;
+        .subtitle {
+          font-size: 10px;
           text-transform: uppercase;
           font-weight: 700;
           color: #d11b60; /* nutri-rose */
           margin-top: 4px;
           letter-spacing: 0.1em;
         }
-        #shopping-list-print-container .meta-info {
+        .meta-info {
           text-align: right;
-          font-size: 10px;
+          font-size: 11px;
           color: #64748b;
         }
-        #shopping-list-print-container .meta-info strong {
+        .meta-info strong {
           color: #0f172a;
         }
-        #shopping-list-print-container .grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 25px 35px;
+        .category-group {
+          margin-top: 15px;
+          width: 100%;
         }
-        #shopping-list-print-container .category-group {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        #shopping-list-print-container .category-title {
-          font-size: 11px;
+        .category-title {
+          font-size: 13px;
           font-weight: 900;
           text-transform: uppercase;
           color: #0f172a;
@@ -220,39 +197,41 @@ export class ShoppingListModalComponent {
           margin-bottom: 10px;
           letter-spacing: 0.05em;
         }
-        #shopping-list-print-container .items-list {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
+        .items-list {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px 25px;
         }
-        #shopping-list-print-container .item-card {
+        .item-card {
           display: flex;
           align-items: flex-start;
           gap: 8px;
+          page-break-inside: avoid;
+          break-inside: avoid;
         }
-        #shopping-list-print-container .checkbox {
-          width: 12px;
-          height: 12px;
+        .checkbox {
+          width: 13px;
+          height: 13px;
           border: 1.5px solid #94a3b8;
           border-radius: 3px;
           margin-top: 2px;
           flex-shrink: 0;
         }
-        #shopping-list-print-container .item-content {
+        .item-content {
           flex: 1;
         }
-        #shopping-list-print-container .item-header {
+        .item-header {
           display: flex;
           justify-content: space-between;
           align-items: baseline;
           gap: 10px;
         }
-        #shopping-list-print-container .item-name {
+        .item-name {
           font-weight: 700;
           color: #1e293b;
         }
-        #shopping-list-print-container .item-amount {
-          font-size: 8px;
+        .item-amount {
+          font-size: 9px;
           font-weight: 900;
           background-color: #f1f5f9;
           color: #475569;
@@ -261,69 +240,151 @@ export class ShoppingListModalComponent {
           text-transform: uppercase;
           white-space: nowrap;
         }
-        #shopping-list-print-container .item-tip {
-          font-size: 9.5px;
+        .item-tip {
+          font-size: 10.5px;
           color: #64748b;
           font-style: italic;
           margin-top: 1px;
         }
-        #shopping-list-print-container .footer {
-          border-top: 1px solid #e2e8f0;
-          padding-top: 10px;
-          margin-top: 30px;
-          text-align: center;
-          font-size: 8.5px;
-          color: #94a3b8;
-        }
-
-        @media print {
-          body.printing-shopping-list > * {
-            display: none !important;
-          }
-          body.printing-shopping-list #shopping-list-print-container {
-            display: block !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: auto;
-            background: white !important;
-          }
-        }
       </style>
-
-      <div class="header">
-        <div>
-          <div class="title">Lista de Súper</div>
-          <div class="subtitle">Nutrilev · Nutrición Especializada</div>
-        </div>
-        <div class="meta-info">
-          <div>Paciente: <strong>${p.nombre}</strong></div>
-          <div>Fecha: <strong>${formattedDate}</strong></div>
-        </div>
-      </div>
-
-      <div class="grid">
-        ${categoriesHTML}
-      </div>
-
-      <div class="footer">
-        Plan de Alimentación de Élite · Generado de forma personalizada por IA
-      </div>
     `;
 
-    printContainer.innerHTML = htmlContent;
+    try {
+      const { toPng } = await import('html-to-image');
 
-    // Add printing class to body
-    document.body.classList.add('printing-shopping-list');
+      // Helper function to capture an HTML block
+      const captureBlock = async (html: string): Promise<{ dataUrl: string, heightMm: number }> => {
+        const container = document.createElement('div');
+        container.className = 'pdf-box';
+        container.innerHTML = sharedStyles + html;
+        wrapper.appendChild(container);
+        
+        // Wait for rendering
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        const dataUrl = await toPng(container, {
+          backgroundColor: '#ffffff',
+          style: {
+            transform: 'scale(1)',
+            transformOrigin: 'top left',
+            width: '800px'
+          }
+        });
+        
+        const heightPx = container.offsetHeight || 100;
+        const heightMm = (heightPx * 210) / 800;
+        
+        container.remove();
+        return { dataUrl, heightMm };
+      };
 
-    // Trigger printing
-    setTimeout(() => {
-      window.print();
-      // Remove class and container after print dialog closes
-      document.body.classList.remove('printing-shopping-list');
-      printContainer?.remove();
-    }, 150);
+      // 1. Capture Header
+      const headerHtml = `
+        <div class="header">
+          <div>
+            <div class="title">Lista de Súper</div>
+            <div class="subtitle">Nutrilev · Nutrición Especializada</div>
+          </div>
+          <div class="meta-info">
+            <div>Paciente: <strong>${p.nombre}</strong></div>
+            <div>Fecha: <strong>${formattedDate}</strong></div>
+          </div>
+        </div>
+      `;
+      const header = await captureBlock(headerHtml);
+
+      // 2. Capture each Category separately
+      const categories: { dataUrl: string, heightMm: number }[] = [];
+      for (const cat of list) {
+        const itemsHTML = cat.items.map((item: any) => `
+          <div class="item-card">
+            <div class="checkbox"></div>
+            <div class="item-content">
+              <div class="item-header">
+                <span class="item-name">${item.icon} ${item.name}</span>
+                ${item.amount ? `<span class="item-amount">${item.amount}</span>` : ''}
+              </div>
+              ${item.tip ? `<div class="item-tip">${item.tip}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+
+        const categoryHtml = `
+          <div class="category-group">
+            <div class="category-title">${cat.category}</div>
+            <div class="items-list">
+              ${itemsHTML}
+            </div>
+          </div>
+        `;
+        const capturedCat = await captureBlock(categoryHtml);
+        categories.push(capturedCat);
+      }
+
+      // 3. Compile PDF with jsPDF
+      const { jsPDF } = await import('jspdf');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const margin = 15;
+      const maxContentHeight = 265; // Leave space for footer
+      
+      let y = margin;
+      let pageNumber = 1;
+
+      // Draw footer helper
+      const drawFooter = (pageNum: number) => {
+        pdf.setFont('Helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(148, 163, 184); // slate-400
+        pdf.text('Plan de Alimentación de Élite · Generado de forma personalizada por IA', 105, 287, { align: 'center' });
+        pdf.text(`Página ${pageNum}`, 195, 287, { align: 'right' });
+      };
+
+      // Draw running header on page 2+
+      const drawRunningHeader = () => {
+        pdf.setFont('Helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(209, 27, 96); // nutri-rose
+        pdf.text('NUTRILEV · LISTA DE SÚPER', 15, 12);
+        pdf.setDrawColor(226, 232, 240); // slate-200
+        pdf.setLineWidth(0.5);
+        pdf.line(15, 14, 195, 14);
+      };
+
+      // Place main header on page 1
+      pdf.addImage(header.dataUrl, 'PNG', 0, y, 210, header.heightMm, undefined, 'FAST');
+      y += header.heightMm + 5; // Add spacing
+
+      // Place categories
+      for (let i = 0; i < categories.length; i++) {
+        const cat = categories[i];
+        
+        // Check if category fits on current page
+        // If it doesn't fit, start a new page
+        if (y + cat.heightMm > maxContentHeight) {
+          drawFooter(pageNumber);
+          pdf.addPage();
+          pageNumber++;
+          y = margin + 5; // Spacing after running header
+          drawRunningHeader();
+        }
+        
+        pdf.addImage(cat.dataUrl, 'PNG', 0, y, 210, cat.heightMm, undefined, 'FAST');
+        y += cat.heightMm + 5; // Spacing between categories
+      }
+
+      // Draw footer on the last page
+      drawFooter(pageNumber);
+
+      pdf.save(`Lista_Super_Nutrilev_${p.nombre.replace(/\s+/g, '_')}.pdf`);
+      this.toastService.show('¡PDF descargado con éxito!', 'success');
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      this.toastService.show('Error al generar el PDF de la lista', 'error');
+    } finally {
+      wrapper.remove();
+    }
   }
 
   shareShoppingList() {
