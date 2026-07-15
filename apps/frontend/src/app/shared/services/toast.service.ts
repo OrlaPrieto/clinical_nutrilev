@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 
 export interface ToastState {
   message: string;
-  type: 'success' | 'error' | null;
+  type: 'success' | 'error' | 'info' | null;
 }
 
 @Injectable({
@@ -12,7 +12,7 @@ export class ToastService {
   public toast = signal<ToastState>({ message: '', type: null });
   private timeoutId: any;
 
-  show(message: string, type: 'success' | 'error' = 'success', duration: number = 3000) {
+  show(message: string, type: 'success' | 'error' | 'info' = 'success', duration: number = 3000) {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

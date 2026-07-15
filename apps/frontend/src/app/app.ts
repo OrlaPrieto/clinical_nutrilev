@@ -52,8 +52,10 @@ import { IconComponent } from './shared/components/atoms/icon/icon';
 
     @if (toastService.toast().type) {
       <div class="fixed top-6 left-1/2 -translate-x-1/2 w-max max-w-[90vw] z-[100000] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border border-white/10 animate-fade-in transition-all"
-           [ngClass]="toastService.toast().type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
-          <app-a-icon [name]="toastService.toast().type === 'success' ? 'check_circle' : 'error'" size="20px"></app-a-icon>
+           [ngClass]="toastService.toast().type === 'success' ? 'bg-emerald-500 text-white' : toastService.toast().type === 'info' ? 'bg-blue-600 text-white' : 'bg-rose-500 text-white'">
+          <span [class.animate-spin]="toastService.toast().type === 'info'" class="flex items-center justify-center">
+            <app-a-icon [name]="toastService.toast().type === 'success' ? 'check_circle' : toastService.toast().type === 'info' ? 'sync' : 'error'" size="20px"></app-a-icon>
+          </span>
           <span class="text-sm font-bold">{{ toastService.toast().message }}</span>
       </div>
     }
