@@ -275,6 +275,7 @@ export class PortalStateService {
       }
     } catch (err) {
       console.error('Error loading portal data', err);
+      this.toastService.show('No se pudo actualizar el plan clínico. Mostrando última copia guardada.', 'error');
     }
   }
 

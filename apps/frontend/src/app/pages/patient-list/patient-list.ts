@@ -17,6 +17,7 @@ import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { APP_VERSION } from '../../version';
 import { Title } from '@angular/platform-browser';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-patient-list-page',
@@ -42,6 +43,7 @@ export class PatientListPage implements OnInit {
   private patientService = inject(PatientService);
   private router = inject(Router);
   private titleService = inject(Title);
+  private toastService = inject(ToastService);
 
   // Signals
   uniquePatients = signal<Patient[]>([]);
@@ -142,6 +144,7 @@ export class PatientListPage implements OnInit {
       this.processPatients(data);
     } catch (err) {
       console.error('Error loading patients', err);
+      this.toastService.show('Error al conectar con el servidor clínico.', 'error');
     } finally {
       this.loading.set(false);
     }
@@ -228,7 +231,7 @@ export class PatientListPage implements OnInit {
       this.cancelDelete();
     } catch (err) {
       console.error('Error deleting patient', err);
-      alert('Error al eliminar paciente');
+      this.toastService.show('No se pudo eliminar al paciente en este momento.', 'error');
     }
   }
 

@@ -3,12 +3,15 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
+  private readonly logger = new Logger(AdminGuard.name);
+
   constructor(private authService: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -29,7 +32,7 @@ export class AdminGuard implements CanActivate {
     } = await this.authService.verifyToken(token);
 
     if (error || !user) {
-      console.error('AdminGuard: JWT Verification failed:', error);
+      this.logger.warn(`JWT Verification failed: ${error?.message || 'No user found'}`);
       throw new UnauthorizedException('Invalid or expired token');
     }
 
