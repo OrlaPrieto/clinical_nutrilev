@@ -151,184 +151,179 @@ export class ShoppingListModalComponent {
       year: 'numeric'
     });
 
-    // Create a hidden iframe for print isolation
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
+    // Create a print container in the main document
+    let printContainer = document.getElementById('shopping-list-print-container');
+    if (!printContainer) {
+      printContainer = document.createElement('div');
+      printContainer.id = 'shopping-list-print-container';
+      document.body.appendChild(printContainer);
+    }
 
     const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Lista de Súper - Nutrilev</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-    body {
-      font-family: 'Inter', sans-serif;
-      color: #334155;
-      padding: 20px 40px;
-      background-color: #ffffff;
-      font-size: 11px;
-      line-height: 1.5;
-    }
-    .header {
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 15px;
-      margin-bottom: 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .title {
-      font-size: 22px;
-      font-weight: 900;
-      color: #0f172a;
-      letter-spacing: -0.025em;
-    }
-    .subtitle {
-      font-size: 9px;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: #d11b60; /* nutri-rose */
-      margin-top: 4px;
-      letter-spacing: 0.1em;
-    }
-    .meta-info {
-      text-align: right;
-      font-size: 10px;
-      color: #64748b;
-    }
-    .meta-info strong {
-      color: #0f172a;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 25px 35px;
-    }
-    .category-group {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    .category-title {
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: #0f172a;
-      border-bottom: 1.5px solid #cbd5e1;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
-      letter-spacing: 0.05em;
-    }
-    .items-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .item-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .checkbox {
-      width: 12px;
-      height: 12px;
-      border: 1.5px solid #94a3b8;
-      border-radius: 3px;
-      margin-top: 2px;
-      flex-shrink: 0;
-    }
-    .item-content {
-      flex: 1;
-    }
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
-    }
-    .item-name {
-      font-weight: 700;
-      color: #1e293b;
-    }
-    .item-amount {
-      font-size: 8px;
-      font-weight: 900;
-      background-color: #f1f5f9;
-      color: #475569;
-      padding: 1px 5px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .item-tip {
-      font-size: 9.5px;
-      color: #64748b;
-      font-style: italic;
-      margin-top: 1px;
-    }
-    .footer {
-      border-top: 1px solid #e2e8f0;
-      padding-top: 10px;
-      margin-top: 30px;
-      text-align: center;
-      font-size: 8.5px;
-      color: #94a3b8;
-    }
-    @media print {
-      body {
-        padding: 0 !important;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div>
-      <div class="title">Lista de Súper</div>
-      <div class="subtitle">Nutrilev · Nutrición Especializada</div>
-    </div>
-    <div class="meta-info">
-      <div>Paciente: <strong>${p.nombre}</strong></div>
-      <div>Fecha: <strong>${formattedDate}</strong></div>
-    </div>
-  </div>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        #shopping-list-print-container {
+          display: none;
+          font-family: 'Inter', sans-serif;
+          color: #334155;
+          padding: 20px 40px;
+          background-color: #ffffff;
+          font-size: 11px;
+          line-height: 1.5;
+        }
+        #shopping-list-print-container .header {
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 15px;
+          margin-bottom: 25px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        #shopping-list-print-container .title {
+          font-size: 22px;
+          font-weight: 900;
+          color: #0f172a;
+          letter-spacing: -0.025em;
+        }
+        #shopping-list-print-container .subtitle {
+          font-size: 9px;
+          text-transform: uppercase;
+          font-weight: 700;
+          color: #d11b60; /* nutri-rose */
+          margin-top: 4px;
+          letter-spacing: 0.1em;
+        }
+        #shopping-list-print-container .meta-info {
+          text-align: right;
+          font-size: 10px;
+          color: #64748b;
+        }
+        #shopping-list-print-container .meta-info strong {
+          color: #0f172a;
+        }
+        #shopping-list-print-container .grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 25px 35px;
+        }
+        #shopping-list-print-container .category-group {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        #shopping-list-print-container .category-title {
+          font-size: 11px;
+          font-weight: 900;
+          text-transform: uppercase;
+          color: #0f172a;
+          border-bottom: 1.5px solid #cbd5e1;
+          padding-bottom: 5px;
+          margin-bottom: 10px;
+          letter-spacing: 0.05em;
+        }
+        #shopping-list-print-container .items-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        #shopping-list-print-container .item-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        #shopping-list-print-container .checkbox {
+          width: 12px;
+          height: 12px;
+          border: 1.5px solid #94a3b8;
+          border-radius: 3px;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+        #shopping-list-print-container .item-content {
+          flex: 1;
+        }
+        #shopping-list-print-container .item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          gap: 10px;
+        }
+        #shopping-list-print-container .item-name {
+          font-weight: 700;
+          color: #1e293b;
+        }
+        #shopping-list-print-container .item-amount {
+          font-size: 8px;
+          font-weight: 900;
+          background-color: #f1f5f9;
+          color: #475569;
+          padding: 1px 5px;
+          border-radius: 4px;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+        #shopping-list-print-container .item-tip {
+          font-size: 9.5px;
+          color: #64748b;
+          font-style: italic;
+          margin-top: 1px;
+        }
+        #shopping-list-print-container .footer {
+          border-top: 1px solid #e2e8f0;
+          padding-top: 10px;
+          margin-top: 30px;
+          text-align: center;
+          font-size: 8.5px;
+          color: #94a3b8;
+        }
 
-  <div class="grid">
-    ${categoriesHTML}
-  </div>
+        @media print {
+          body.printing-shopping-list > * {
+            display: none !important;
+          }
+          body.printing-shopping-list #shopping-list-print-container {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: auto;
+            background: white !important;
+          }
+        }
+      </style>
 
-  <div class="footer">
-    Plan de Alimentación de Élite · Generado de forma personalizada por IA
-  </div>
-</body>
-</html>
+      <div class="header">
+        <div>
+          <div class="title">Lista de Súper</div>
+          <div class="subtitle">Nutrilev · Nutrición Especializada</div>
+        </div>
+        <div class="meta-info">
+          <div>Paciente: <strong>${p.nombre}</strong></div>
+          <div>Fecha: <strong>${formattedDate}</strong></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        ${categoriesHTML}
+      </div>
+
+      <div class="footer">
+        Plan de Alimentación de Élite · Generado de forma personalizada por IA
+      </div>
     `;
 
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (doc) {
-      doc.open();
-      doc.write(htmlContent);
-      doc.close();
+    printContainer.innerHTML = htmlContent;
 
-      // Trigger printing once the iframe renders
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        // Remove iframe safely after print dialog closes
-        setTimeout(() => {
-          iframe.remove();
-        }, 1000);
-      }, 500);
-    } else {
-      iframe.remove();
-    }
+    // Add printing class to body
+    document.body.classList.add('printing-shopping-list');
+
+    // Trigger printing
+    setTimeout(() => {
+      window.print();
+      // Remove class and container after print dialog closes
+      document.body.classList.remove('printing-shopping-list');
+      printContainer?.remove();
+    }, 150);
   }
 
   shareShoppingList() {
