@@ -29,13 +29,27 @@ This document contains rules and standards for AI coding assistants working in t
 
 ---
 
-## ⚙️ Backend & AI Service Architecture
+## 🎨 Frontend (Angular) Component & Styling Standards
 
+* **Angular Features:** Since we use Angular 21, always write standalone components and use **Signals** (`signal`, `computed`, `effect`) for state management instead of traditional class properties.
+* **Component Placement:** Adhere strictly to the Atomic Design component hierarchy under `shared/components/`:
+  * `atoms/`: Base elements (buttons, inputs, icons, badges).
+  * `molecules/`: Assemblies of elements (search inputs, notification banners).
+  * `organisms/`: Complex page sections (tables, detailed records, plans).
+* **Routing:** All route components must be loaded lazily in `app.routes.ts` using `loadComponent: () => import(...)`.
+* **Styling:** Use Tailwind CSS for standard grid/flex layout and spacing. Scoped component `.css` sheets should be used only for advanced animations or highly custom visuals.
+
+---
+
+## ⚙️ Backend & AI Service Architecture (NestJS & Flask)
+
+* **Supabase Queries (NestJS):** Due to the possibility of historical duplicate emails in tables like `patients`, avoid using `.single()` or `.maybeSingle()` queries on email filters. Use `.select()` and programmatically filter/handle the array inside services to prevent `406 Not Acceptable` or `400` query crashes.
 * **Stateless API endpoints:** In multi-worker backend deployment environments (like Render workers/Gunicorn), never use in-memory dictionaries or thread-local variables to track long-running background tasks. Multi-worker systems do not share memory, resulting in random `404 Task not found` errors during polling. All long-running parsed-menu analyses must be stateless synchronous calls or tracked via a database (Supabase).
 * **Gemini API Resilience:**
   * The free-tier Gemini API can request backoffs of up to 55 seconds during rate limits.
   * In [ai_service.py](file:///Users/orla09i/Desktop/Projects/clinical_nutrilev/apps/api-python/services/ai_service.py), always cap the wait time for rate limits at **10 seconds**.
   * If the rate limit requests a longer wait, discard the current model immediately and fall back to a lighter model (like `gemini-3.1-flash-lite`) to prevent keeping the connection socket hanging, which triggers Render/Cloudflare proxy timeouts (120s).
+* **Google GenAI SDK:** In Python scripts, always use the new `google-genai` SDK (`from google import genai` and `client = genai.Client()`). Do NOT use the deprecated `google-generativeai` package.
 
 ---
 
