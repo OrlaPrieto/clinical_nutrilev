@@ -1,0 +1,47 @@
+[
+  {
+    "category": "🥩 PROTEÍNAS",
+    "items": [
+      {
+        "icon": "🍗",
+        "name": "Pechuga de pollo limpia",
+        "amount": "1.4 kg",
+        "tip": "Comprar en pechugas enteras y pedir que limpien la grasa sobrante."
+      },
+      {
+        "icon": "🥚",
+        "name": "Claras de huevo líquidas",
+        "amount": "1 cartón (1 L)",
+        "tip": "Revisar que no contengan sodio ni conservadores añadidos."
+      }
+    ]
+  },
+  {
+    "category": "🥦 VERDURAS Y HORTALIZAS",
+    "items": [
+      {
+        "icon": "🥬",
+        "name": "Espinaca baby fresca",
+        "amount": "2 bolsas",
+        "tip": "Desinfectar y secar bien antes de almacenar para que duren más."
+      },
+      {
+        "icon": "🥦",
+        "name": "Brócoli entero",
+        "amount": "2 piezas medianas",
+        "tip": "Elegir piezas con floretes verdes y firmes, evitando tonos amarillentos."
+      }
+    ]
+  },
+  {
+    "category": "🍞 CEREALES Y TUBÉRCULOS",
+    "items": [
+      {
+        "icon": "🍚",
+        "name": "Arroz blanco o integral",
+        "amount": "1 kg",
+        "tip": "Preferir granos enteros para obtener mayor aporte de fibra clínica."
+      }
+    ]
+  }
+]

@@ -1,0 +1,71 @@
+{
+  "paciente_nombre": "Juan Pérez",
+  "fecha_elaboracion": "15 de Julio de 2026",
+  "calorias_totales": 1800,
+  "macronutrientes": {
+    "proteinas_g": 130,
+    "carbohidratos_g": 180,
+    "grasas_g": 60
+  },
+  "tipo_plan": "semanal",
+  "secciones": [
+    {
+      "nombre": "Lunes / Sábado",
+      "tiempos_comida": [
+        {
+          "tiempo": "Desayuno",
+          "platillo": "Omelette de claras con espinaca",
+          "emoji": "🍳",
+          "hora_sugerida": "08:30 AM",
+          "preparacion": "Batir las claras, cocinar en sartén con espinacas y doblar.",
+          "termino_busqueda_imagen": "egg spinach omelette",
+          "ingredientes": [
+            {
+              "nombre": "Claras de huevo",
+              "cantidad": "4 piezas",
+              "grupo": "Origen animal muy bajo aporte graso",
+              "reemplazos": ["100g de pechuga de pollo deshebrada", "120g de atún en agua"]
+            },
+            {
+              "nombre": "Espinaca picada",
+              "cantidad": "1 taza",
+              "grupo": "Verduras",
+              "reemplazos": ["1 taza de champiñones rebanados"]
+            }
+          ]
+        },
+        {
+          "tiempo": "Comida",
+          "platillo": "Pechuga de pollo con arroz y brócoli",
+          "emoji": "🍗",
+          "hora_sugerida": "02:30 PM",
+          "preparacion": "Asar el pollo en sartén. Cocer el brócoli al vapor y servir junto con el arroz cocido.",
+          "termino_busqueda_imagen": "grilled chicken rice",
+          "ingredientes": [
+            {
+              "nombre": "Pechuga de pollo",
+              "cantidad": "120g",
+              "grupo": "Origen animal bajo aporte graso",
+              "peso_cocido_crudo": "120g crudo ≈ 90g cocido"
+            },
+            {
+              "nombre": "Arroz blanco cocido",
+              "cantidad": "1/2 taza",
+              "grupo": "Cereales sin grasa",
+              "peso_cocido_crudo": "1/2 taza cocido ≈ 40g crudo"
+            },
+            {
+              "nombre": "Brócoli al vapor",
+              "cantidad": "1 taza",
+              "grupo": "Verduras"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "recomendaciones_generales": [
+    "Tomar al menos 2 litros de agua natural al día.",
+    "Evitar agregar aceites refinados adicionales a la cocción."
+  ]
+}
