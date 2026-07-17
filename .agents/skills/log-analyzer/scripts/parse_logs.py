@@ -21,7 +21,7 @@ def analyze_logs(log_content):
     pdf_url_re = re.compile(r"/menu_(.+?)\.pdf")
     push_sent_re = re.compile(r"\[Push Sent\] (?:30m )?Notification sent to (.+?) \((.+?)\) for appointment at (.+)|\[Push Sent\] Notified (.+?) \((.+?)\) for (.+)")
     skip_event_re = re.compile(r"Skipping event \"(.+?)\": (.+)")
-    db_err_re = re.compile(r"Could not find patient in DB by email: (.+?)\.")
+    db_err_re = re.compile(r"Could not find patient in DB by email: (\S+?)\.\s*Fallback")
 
     current_orig = None
     
