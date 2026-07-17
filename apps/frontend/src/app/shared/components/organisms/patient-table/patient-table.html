@@ -120,9 +120,9 @@
               <div (click)="onObjetivoClick(patient, $event)"
                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl cursor-pointer transition-all hover:scale-105 active:scale-95 group/badge shadow-sm border"
                    [ngClass]="{
-                     'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400': patient.meta_objetivo === 'bajar_peso',
-                     'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400': patient.meta_objetivo === 'bajar_grasa',
-                     'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400': patient.meta_objetivo === 'subir_musculo',
+                     'bg-violet-500/10 border-violet-500/20 text-violet-600 dark:text-violet-400': patient.meta_objetivo === 'bajar_peso',
+                     'bg-fuchsia-500/10 border-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400': patient.meta_objetivo === 'bajar_grasa',
+                     'bg-cyan-500/10 border-cyan-500/20 text-cyan-600 dark:text-cyan-400': patient.meta_objetivo === 'subir_musculo',
                      'bg-slate-500/10 border-slate-500/20 border-dashed text-slate-500 dark:text-slate-400': !patient.meta_objetivo
                    }">
                 <app-a-icon [name]="patient.meta_objetivo === 'bajar_peso' ? 'trending_down' : 
@@ -215,13 +215,13 @@
               <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>
               <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>
               @if (patient.meta_objetivo === 'bajar_peso') {
-                <app-a-badge label="Bajar Peso" variant="danger" size="sm" icon="trending_down" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
+                <app-a-badge label="Bajar Peso" size="sm" icon="trending_down" class="cursor-pointer active:scale-95 transition-all block" customClass="!bg-violet-500/10 !text-violet-600 !border-violet-500/20" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               } @else if (patient.meta_objetivo === 'bajar_grasa') {
-                <app-a-badge label="Bajar Grasa" variant="warning" size="sm" icon="local_fire_department" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
+                <app-a-badge label="Bajar Grasa" size="sm" icon="local_fire_department" class="cursor-pointer active:scale-95 transition-all block" customClass="!bg-fuchsia-500/10 !text-fuchsia-600 !border-fuchsia-500/20" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               } @else if (patient.meta_objetivo === 'subir_musculo') {
-                <app-a-badge label="Subir Músculo" variant="info" size="sm" icon="fitness_center" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
+                <app-a-badge label="Subir Músculo" size="sm" icon="fitness_center" class="cursor-pointer active:scale-95 transition-all block" customClass="!bg-cyan-500/10 !text-cyan-600 !border-cyan-500/20" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               } @else {
-                <app-a-badge label="Definir Meta" variant="ghost" size="sm" icon="add" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
+                <app-a-badge label="Definir Meta" size="sm" icon="add" class="cursor-pointer active:scale-95 transition-all block" customClass="!bg-slate-500/10 !text-slate-500 !border-slate-500/20 border-dashed" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               }
               @if (patient.plan_citas) {
                 <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>

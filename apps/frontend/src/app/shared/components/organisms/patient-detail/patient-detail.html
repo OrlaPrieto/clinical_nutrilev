@@ -677,10 +677,6 @@
                                 <p class="text-[8px] md:text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Ingrese los datos de la medición actual</p>
                             </div>
                         </div>
-                        <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
-                                    label="Guardar" variant="primary" size="sm"
-                                    customClass="!px-6 md:!px-8 !rounded-xl !text-[9px] !uppercase !tracking-[0.1em] !shadow-lg !shadow-nutri-rose/20">
-                        </app-a-button>
                     </div>
 
                     <!-- Grid Principal de Datos -->
@@ -1129,7 +1125,7 @@
                             <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg dark:bg-white/5 dark:text-slate-200 rounded-2xl px-4 py-3 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Anotaciones adicionales sobre la evolución del paciente..."></textarea>
                         </div>
 
-                        <!-- Botón de guardar secundario al final del formulario -->
+                        <!-- Botón principal para guardar al final del formulario -->
                         <div class="flex justify-end pt-2">
                             <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
                                         label="Guardar Registro" variant="primary" size="md"
@@ -1161,24 +1157,27 @@
             </div>
         }
 
-        <!-- Tab 5: Notas Persistentes Optimizadas -->
+        <!-- Tab 5: Notas -->
         @if (activeTab() === 5) {
             <div class="space-y-4 animate-fade-up h-full flex flex-col">
-                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                     <div class="space-y-0.5">
                         <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
-                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Sincronización automática activa</p>
+                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Edición centralizada. Pulsa "Editar" arriba para modificar.</p>
                     </div>
-                    <button class="btn-primary" [disabled]="saving()" (click)="saveChanges()">
-                        <app-a-icon [name]="saving() ? 'sync' : 'save'" customClass="mr-2" [ngClass]="{'animate-spin': saving()}"></app-a-icon>
-                        <span class="text-[10px]">{{ saving() ? 'GUARDANDO...' : 'GUARDAR' }}</span>
-                    </button>
+                    @if (isEditing()) {
+                        <app-a-badge label="Modo Edición Activo" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
+                    } @else {
+                        <app-a-badge label="Vista de Lectura" variant="ghost" size="sm" icon="lock"></app-a-badge>
+                    }
                 </div>
                 
                 <div class="relative flex-1">
                     <textarea [(ngModel)]="patient().notas" 
+                              [disabled]="!isEditing()"
                               placeholder="Escribe aquí las notas, seguimiento o evolución..."
-                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"></textarea>
+                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"
+                              [ngClass]="!isEditing() ? 'cursor-default opacity-85 bg-slate-50/50 dark:bg-white/[0.02]' : 'bg-white dark:bg-white/5 shadow-none ring-1 ring-nutri-rose/20'"></textarea>
                     
                     <div class="absolute bottom-4 right-6 text-[8px] text-nutri-rose/20 font-bold uppercase tracking-[0.4em]">
                         Nutrilev Management System
