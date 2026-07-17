@@ -116,9 +116,9 @@
               </div>
             </td>
 
-            <td class="w-[13%] px-4 py-5 text-center cursor-pointer hover:bg-nutri-rose/[0.05] transition-all duration-200 group/cell"
-                (click)="onObjetivoClick(patient, $event)">
-              <div class="inline-flex items-center gap-1 group-hover/cell:scale-105 active:scale-95 transition-all">
+            <td class="w-[13%] p-2 text-center">
+              <div class="cursor-pointer hover:bg-nutri-rose/[0.05] dark:hover:bg-nutri-rose/10 rounded-2xl p-3 inline-flex items-center justify-center gap-1 group/cell w-full h-full min-h-[50px] transition-all duration-200 active:scale-95"
+                   (click)="onObjetivoClick(patient, $event)">
                 @if (patient.meta_objetivo === 'bajar_peso') {
                   <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="sm"></app-a-badge>
                 } @else if (patient.meta_objetivo === 'bajar_grasa') {
@@ -131,9 +131,9 @@
               </div>
             </td>
 
-            <td class="w-[13%] px-4 py-5 text-center cursor-pointer hover:bg-emerald-500/[0.05] transition-all duration-200 group/cell"
-                (click)="onPaqueteClick(patient, $event)">
-              <div class="inline-flex flex-col items-center gap-1.5 group-hover/cell:scale-105 active:scale-95 transition-all">
+            <td class="w-[13%] p-2 text-center">
+              <div class="cursor-pointer hover:bg-emerald-500/[0.05] dark:hover:bg-emerald-500/10 rounded-2xl p-3 inline-flex flex-col items-center justify-center gap-1.5 group/cell w-full h-full min-h-[50px] transition-all duration-200 active:scale-95"
+                   (click)="onPaqueteClick(patient, $event)">
                 @if (patient.plan_citas) {
                   <span class="text-[10px] font-black text-nutri-text dark:text-slate-300 leading-none">
                     {{ patient.plan_citas_completadas || 0 }} de {{ patient.plan_citas }}
