@@ -20,6 +20,18 @@ export class PatientTableOrganism {
 
   view = output<Patient>();
   delete = output<Patient>();
+  editObjetivo = output<Patient>();
+  editPaquete = output<Patient>();
+
+  onObjetivoClick(patient: Patient, event: Event) {
+    event.stopPropagation();
+    this.editObjetivo.emit(patient);
+  }
+
+  onPaqueteClick(patient: Patient, event: Event) {
+    event.stopPropagation();
+    this.editPaquete.emit(patient);
+  }
 
   toggleExpand(patientId: string, event: Event) {
     event.stopPropagation();

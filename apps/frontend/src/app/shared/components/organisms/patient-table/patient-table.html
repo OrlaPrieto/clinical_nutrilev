@@ -116,21 +116,25 @@
               </div>
             </td>
 
-            <td class="w-[13%] px-4 py-5 text-center">
-              @if (patient.meta_objetivo === 'bajar_peso') {
-                <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="sm"></app-a-badge>
-              } @else if (patient.meta_objetivo === 'bajar_grasa') {
-                <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="sm"></app-a-badge>
-              } @else if (patient.meta_objetivo === 'subir_musculo') {
-                <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="sm"></app-a-badge>
-              } @else {
-                <span class="text-[9px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-widest">---</span>
-              }
+            <td class="w-[13%] px-4 py-5 text-center cursor-pointer hover:bg-nutri-rose/[0.05] transition-all duration-200 group/cell"
+                (click)="onObjetivoClick(patient, $event)">
+              <div class="inline-flex items-center gap-1 group-hover/cell:scale-105 active:scale-95 transition-all">
+                @if (patient.meta_objetivo === 'bajar_peso') {
+                  <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="sm"></app-a-badge>
+                } @else if (patient.meta_objetivo === 'bajar_grasa') {
+                  <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="sm"></app-a-badge>
+                } @else if (patient.meta_objetivo === 'subir_musculo') {
+                  <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="sm"></app-a-badge>
+                } @else {
+                  <span class="text-[9px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-widest group-hover/cell:text-nutri-rose transition-colors">Definir</span>
+                }
+              </div>
             </td>
 
-            <td class="w-[13%] px-4 py-5 text-center">
-              @if (patient.plan_citas) {
-                <div class="inline-flex flex-col items-center gap-1.5">
+            <td class="w-[13%] px-4 py-5 text-center cursor-pointer hover:bg-emerald-500/[0.05] transition-all duration-200 group/cell"
+                (click)="onPaqueteClick(patient, $event)">
+              <div class="inline-flex flex-col items-center gap-1.5 group-hover/cell:scale-105 active:scale-95 transition-all">
+                @if (patient.plan_citas) {
                   <span class="text-[10px] font-black text-nutri-text dark:text-slate-300 leading-none">
                     {{ patient.plan_citas_completadas || 0 }} de {{ patient.plan_citas }}
                   </span>
@@ -138,10 +142,10 @@
                     <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" 
                          [style.width.%]="((patient.plan_citas_completadas || 0) / patient.plan_citas) * 100"></div>
                   </div>
-                </div>
-              } @else {
-                <app-a-badge label="Única" variant="ghost" size="sm" icon="event"></app-a-badge>
-              }
+                } @else {
+                  <app-a-badge label="Única" variant="ghost" size="sm" icon="event"></app-a-badge>
+                }
+              </div>
             </td>
 
             <td class="w-[10%] px-8 py-5 text-right">
@@ -211,15 +215,20 @@
               <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>
               <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>
               @if (patient.meta_objetivo === 'bajar_peso') {
-                <app-a-badge label="Bajar Peso" variant="danger" size="sm" icon="trending_down"></app-a-badge>
+                <app-a-badge label="Bajar Peso" variant="danger" size="sm" icon="trending_down" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               } @else if (patient.meta_objetivo === 'bajar_grasa') {
-                <app-a-badge label="Bajar Grasa" variant="warning" size="sm" icon="local_fire_department"></app-a-badge>
+                <app-a-badge label="Bajar Grasa" variant="warning" size="sm" icon="local_fire_department" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               } @else if (patient.meta_objetivo === 'subir_musculo') {
-                <app-a-badge label="Subir Músculo" variant="info" size="sm" icon="fitness_center"></app-a-badge>
+                <app-a-badge label="Subir Músculo" variant="info" size="sm" icon="fitness_center" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
+              } @else {
+                <app-a-badge label="Definir Meta" variant="ghost" size="sm" icon="add" class="cursor-pointer active:scale-95 transition-all block" (click)="onObjetivoClick(patient, $event)"></app-a-badge>
               }
               @if (patient.plan_citas) {
                 <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>
-                <app-a-badge [label]="(patient.plan_citas_completadas || 0) + '/' + patient.plan_citas + ' Citas'" variant="success" size="sm" icon="event_repeat"></app-a-badge>
+                <app-a-badge [label]="(patient.plan_citas_completadas || 0) + '/' + patient.plan_citas + ' Citas'" variant="success" size="sm" icon="event_repeat" class="cursor-pointer active:scale-95 transition-all block" (click)="onPaqueteClick(patient, $event)"></app-a-badge>
+              } @else {
+                <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>
+                <app-a-badge label="Sin Paquete" variant="ghost" size="sm" icon="event" class="cursor-pointer active:scale-95 transition-all block" (click)="onPaqueteClick(patient, $event)"></app-a-badge>
               }
             </div>
           </div>

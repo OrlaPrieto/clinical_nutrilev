@@ -235,4 +235,93 @@ export class PatientListPage implements OnInit {
     }
   }
 
+  // Quick edit modal signals
+  showQuickObjetivoModal = signal<boolean>(false);
+  showQuickPaqueteModal = signal<boolean>(false);
+  quickEditPatient = signal<any | null>(null);
+
+  toNumber(val: any): number {
+    return val === null || val === undefined ? 0 : Number(val);
+  }
+
+  onEditObjetivo(patient: Patient) {
+    this.quickEditPatient.set(JSON.parse(JSON.stringify(patient)));
+    this.showQuickObjetivoModal.set(true);
+  }
+
+  onEditPaquete(patient: Patient) {
+    this.quickEditPatient.set(JSON.parse(JSON.stringify(patient)));
+    this.showQuickPaqueteModal.set(true);
+  }
+
+  closeQuickEdit() {
+    this.showQuickObjetivoModal.set(false);
+    this.showQuickPaqueteModal.set(false);
+    this.quickEditPatient.set(null);
+  }
+
+  async saveQuickObjetivo() {
+    const p = this.quickEditPatient();
+    if (!p) return;
+
+    this.loading.set(true);
+    try {
+      p.ultima_actualizacion = new Date().toISOString();
+      const payload = {
+        ...p,
+        originalEmail: p.email,
+        action: 'update'
+      };
+      await this.patientService.addPatientEntry(payload);
+      this.toastService.show('Objetivo y metas del paciente actualizados', 'success');
+      this.closeQuickEdit();
+      await this.loadPatients(true);
+    } catch (err) {
+      console.error('Error saving quick goal', err);
+      this.toastService.show('No se pudo guardar la meta del paciente.', 'error');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async saveQuickPaquete() {
+    const p = this.quickEditPatient();
+    if (!p) return;
+
+    this.loading.set(true);
+    try {
+      p.ultima_actualizacion = new Date().toISOString();
+      const payload = {
+        ...p,
+        originalEmail: p.email,
+        action: 'update'
+      };
+      await this.patientService.addPatientEntry(payload);
+      this.toastService.show('Plan de citas y pagos actualizado', 'success');
+      this.closeQuickEdit();
+      await this.loadPatients(true);
+    } catch (err) {
+      console.error('Error saving quick package', err);
+      this.toastService.show('No se pudo guardar el plan de citas.', 'error');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  quickIncrementAppointment() {
+    const p = this.quickEditPatient();
+    if (!p) return;
+    const currentCompleted = p.plan_citas_completadas || 0;
+    const totalPlan = p.plan_citas || 0;
+    if (currentCompleted < totalPlan) {
+      p.plan_citas_completadas = currentCompleted + 1;
+    }
+  }
+
+  quickResetPaymentPlanProgress() {
+    const p = this.quickEditPatient();
+    if (p) {
+      p.plan_citas_completadas = 0;
+    }
+  }
 }
