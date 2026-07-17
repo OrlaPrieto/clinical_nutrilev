@@ -4,12 +4,13 @@
     <table class="w-full text-left border-collapse min-w-[800px] table-fixed">
       <thead class="sticky top-0 z-[60] bg-white dark:bg-[#111111]">
         <tr class="bg-nutri-rose/[0.04] dark:bg-white/5 border-b border-nutri-rose/10 dark:border-white/10">
-          <th class="w-[40%] pl-6 pr-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
+          <th class="w-[32%] pl-6 pr-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest">Paciente</th>
           <th class="w-[10%] px-6 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Menú</th>
           <th class="w-[15%] px-6 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Nacimiento</th>
           <th class="w-[7%] px-6 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Prefs</th>
-          <th class="w-[8%] px-6 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Notas</th>
-          <th class="w-[20%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
+          <th class="w-[13%] px-6 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Objetivo</th>
+          <th class="w-[13%] px-6 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-center">Paquete</th>
+          <th class="w-[10%] px-8 py-5 text-[10px] font-black text-nutri-rose/60 dark:text-nutri-rose/80 uppercase tracking-widest text-right">Acciones</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-nutri-rose/[0.03] dark:divide-white/5">
@@ -19,8 +20,7 @@
                   'grayscale opacity-70 !bg-gray-200/70 dark:!bg-gray-800/40': patient.dado_de_baja,
                   '!bg-amber-50/40 dark:!bg-amber-500/5': !patient.acceso_portal && !patient.dado_de_baja
               }">
-            
-            <td class="w-[40%] pl-6 pr-8 py-5 border-l-4 transition-all duration-300"
+                        <td class="w-[32%] pl-6 pr-8 py-5 border-l-4 transition-all duration-300"
                 [ngClass]="{
                   'border-l-transparent group-hover:border-l-nutri-rose': !patient.dado_de_baja && patient.acceso_portal,
                   'border-l-gray-400': patient.dado_de_baja,
@@ -116,42 +116,35 @@
               </div>
             </td>
 
-            <td class="w-[8%] px-4 py-5 text-center">
-              <div class="relative group/tooltip inline-block">
-                <app-a-button (onClick)="toggleTooltip(i + '-notes', $event)" [disabled]="!patient.notas"
-                        variant="ghost" icon="edit_note" size="sm"
-                        class="block"
-                        customClass="!w-9 !h-9 !rounded-xl !bg-nutri-bg/50 dark:!bg-white/5 !text-emerald-500 hover:!bg-emerald-500 hover:!text-white disabled:!opacity-20 active:scale-95 transition-all">
-                </app-a-button>
-
-                <div (click)="$event.stopPropagation()"
-                     [class.opacity-100]="activeTooltipId() === i + '-notes'"
-                     [class.visible]="activeTooltipId() === i + '-notes'"
-                     [class.translate-x-0]="activeTooltipId() === i + '-notes'"
-                     [ngClass]="{
-                        'top-[-1rem] translate-y-0': i < 2,
-                        'bottom-[-1rem] translate-y-0 shadow-[-10px_-10px_30px_rgba(0,0,0,0.1)]': i >= patients().length - 3,
-                        'top-1/2 -translate-y-1/2 translate-x-2': i >= 2 && i < patients().length - 3
-                     }"
-                     class="absolute right-full mr-4 w-72 p-6 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[200] group-hover/tooltip:translate-x-0 text-left pointer-events-auto transition-colors duration-500">
-                    <div class="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-premium">
-                      <div class="flex items-center gap-2 mb-2">
-                        <app-a-icon name="description" customClass="text-emerald-500 text-sm"></app-a-icon>
-                        <h4 class="text-[9px] font-black text-nutri-text dark:text-slate-200 uppercase tracking-[0.2em]">Notas Clínicas</h4>
-                      </div>
-                      <p class="text-[11px] text-nutri-text/60 dark:text-slate-400 font-medium leading-relaxed italic bg-nutri-bg/30 dark:bg-white/5 p-4 rounded-2xl border border-nutri-rose/5 dark:border-white/5">{{ patient.notas || 'Sin notas registradas.' }}</p>
-                    </div>
-                    <div [ngClass]="{
-                            'top-4 !translate-y-0 rotate-[135deg]': i < 2,
-                            'bottom-4 !translate-y-0 rotate-[225deg] top-auto': i >= patients().length - 3,
-                            'top-1/2 -translate-y-1/2 rotate-45': i >= 2 && i < patients().length - 3
-                         }"
-                         class="absolute -right-2 w-4 h-4 bg-white dark:bg-[#1a1a1a] border-t border-r border-nutri-rose/10 dark:border-white/10 transition-all"></div>
-                </div>
-              </div>
+            <td class="w-[13%] px-4 py-5 text-center">
+              @if (patient.meta_objetivo === 'bajar_peso') {
+                <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="sm"></app-a-badge>
+              } @else if (patient.meta_objetivo === 'bajar_grasa') {
+                <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="sm"></app-a-badge>
+              } @else if (patient.meta_objetivo === 'subir_musculo') {
+                <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="sm"></app-a-badge>
+              } @else {
+                <span class="text-[9px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-widest">---</span>
+              }
             </td>
 
-            <td class="w-[20%] px-8 py-5 text-right">
+            <td class="w-[13%] px-4 py-5 text-center">
+              @if (patient.plan_citas) {
+                <div class="inline-flex flex-col items-center gap-1.5">
+                  <span class="text-[10px] font-black text-nutri-text dark:text-slate-300 leading-none">
+                    {{ patient.plan_citas_completadas || 0 }} de {{ patient.plan_citas }}
+                  </span>
+                  <div class="w-16 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" 
+                         [style.width.%]="((patient.plan_citas_completadas || 0) / patient.plan_citas) * 100"></div>
+                  </div>
+                </div>
+              } @else {
+                <app-a-badge label="Única" variant="ghost" size="sm" icon="event"></app-a-badge>
+              }
+            </td>
+
+            <td class="w-[10%] px-8 py-5 text-right">
               <div class="flex items-center justify-end gap-2 px-2">
                 <app-a-button 
                   variant="primary" 
@@ -214,7 +207,21 @@
                 <app-a-badge label="PENDIENTE" variant="warning" size="sm" icon="schedule" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
               }
             </div>
-            <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5">{{ patient.fecha_nacimiento || '---' }}</p>
+            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-bold uppercase tracking-widest">{{ patient.fecha_nacimiento || '---' }}</p>
+              <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>
+              @if (patient.meta_objetivo === 'bajar_peso') {
+                <app-a-badge label="Bajar Peso" variant="danger" size="sm" icon="trending_down"></app-a-badge>
+              } @else if (patient.meta_objetivo === 'bajar_grasa') {
+                <app-a-badge label="Bajar Grasa" variant="warning" size="sm" icon="local_fire_department"></app-a-badge>
+              } @else if (patient.meta_objetivo === 'subir_musculo') {
+                <app-a-badge label="Subir Músculo" variant="info" size="sm" icon="fitness_center"></app-a-badge>
+              }
+              @if (patient.plan_citas) {
+                <span class="text-nutri-text/20 dark:text-white/10 text-[9px]">•</span>
+                <app-a-badge [label]="(patient.plan_citas_completadas || 0) + '/' + patient.plan_citas + ' Citas'" variant="success" size="sm" icon="event_repeat"></app-a-badge>
+              }
+            </div>
           </div>
         </div>
       </div>

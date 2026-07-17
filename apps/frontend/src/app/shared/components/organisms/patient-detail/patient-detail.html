@@ -296,18 +296,82 @@
                             (valueChange)="patient().recomendacion_fuente = $event">
                         </app-m-detail-field>
                     </div>
+
+                    <!-- Objetivo Principal del Paciente -->
+                    <div class="pt-4 border-t border-nutri-rose/5 space-y-3">
+                        <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Objetivo Principal de Salud</label>
+                        @if (isEditing()) {
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <!-- Bajar Peso Card -->
+                                <div (click)="patient().meta_objetivo = 'bajar_peso'" 
+                                     class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-2 group hover:scale-[1.02] active:scale-95 duration-300"
+                                     [ngClass]="patient().meta_objetivo === 'bajar_peso' 
+                                                ? 'bg-rose-500/10 border-rose-500 text-rose-600 dark:text-rose-400' 
+                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-rose-500/5 hover:border-rose-500/30'">
+                                    <app-a-icon name="trending_down" customClass="text-2xl group-hover:animate-bounce"></app-a-icon>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Bajar Peso</span>
+                                </div>
+
+                                <!-- Bajar Grasa Card -->
+                                <div (click)="patient().meta_objetivo = 'bajar_grasa'" 
+                                     class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-2 group hover:scale-[1.02] active:scale-95 duration-300"
+                                     [ngClass]="patient().meta_objetivo === 'bajar_grasa' 
+                                                ? 'bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400' 
+                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-amber-500/5 hover:border-amber-500/30'">
+                                    <app-a-icon name="local_fire_department" customClass="text-2xl group-hover:animate-pulse"></app-a-icon>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Bajar Grasa</span>
+                                </div>
+
+                                <!-- Subir Músculo Card -->
+                                <div (click)="patient().meta_objetivo = 'subir_musculo'" 
+                                     class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-2 group hover:scale-[1.02] active:scale-95 duration-300"
+                                     [ngClass]="patient().meta_objetivo === 'subir_musculo' 
+                                                ? 'bg-blue-500/10 border-blue-500 text-blue-600 dark:text-blue-400' 
+                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-blue-500/5 hover:border-blue-500/30'">
+                                    <app-a-icon name="fitness_center" customClass="text-2xl group-hover:rotate-12"></app-a-icon>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Subir Músculo</span>
+                                </div>
+                            </div>
+                        } @else {
+                            <div class="flex items-center gap-3">
+                                @if (patient()?.meta_objetivo === 'bajar_peso') {
+                                    <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                } @else if (patient()?.meta_objetivo === 'bajar_grasa') {
+                                    <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                } @else if (patient()?.meta_objetivo === 'subir_musculo') {
+                                    <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                } @else {
+                                    <app-a-badge label="Sin Objetivo Definido" variant="ghost" icon="help" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
 
                 <!-- Paquete de Citas Card -->
-                <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
+                <div class="bg-gradient-to-br from-white to-nutri-rose/[0.01] dark:from-[#111111] dark:to-white/[0.01] p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-lg shadow-nutri-rose/[0.02] space-y-6 transition-all relative overflow-hidden">
+                    <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-nutri-bg dark:bg-[#080808] border border-nutri-rose/10 dark:border-white/10 hidden md:block"></div>
+                    <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-nutri-bg dark:bg-[#080808] border border-nutri-rose/10 dark:border-white/10 hidden md:block"></div>
+
                     <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
                         <div class="flex items-center gap-3">
                             <app-a-icon name="payments" customClass="text-nutri-rose text-xl"></app-a-icon>
-                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Configuración de Plan y Citas</h4>
+                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Plan de Pagos y Citas</h4>
                         </div>
-                        @if (isEditing()) {
-                            <app-a-badge label="Modo Edición" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
-                        }
+                        <div class="flex items-center gap-2">
+                            @if (patient()?.plan_citas) {
+                                @if (patient()?.plan_citas_completadas === patient()?.plan_citas) {
+                                    <app-a-badge label="COMPLETADO" variant="success" size="sm"></app-a-badge>
+                                } @else {
+                                    <app-a-badge label="ACTIVO" variant="info" size="sm"></app-a-badge>
+                                }
+                            } @else {
+                                <app-a-badge label="SIN PAQUETE" variant="ghost" size="sm"></app-a-badge>
+                            }
+                            @if (isEditing()) {
+                                <app-a-badge label="Modo Edición" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
+                            }
+                        </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -317,14 +381,15 @@
                             @if (isEditing()) {
                                 <select [ngModel]="patient()?.plan_citas" 
                                         (ngModelChange)="onPlanCitasChange($event)"
-                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
+                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none cursor-pointer">
                                     <option [value]="null">Cita única (Sin paquete)</option>
                                     <option [value]="2">Paquete de 2 citas</option>
                                     <option [value]="3">Paquete de 3 citas</option>
                                     <option [value]="4">Paquete de 4 citas</option>
                                 </select>
                             } @else {
-                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
+                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200 flex items-center gap-2">
+                                    <app-a-icon name="confirmation_number" customClass="text-slate-400 dark:text-slate-500"></app-a-icon>
                                     {{ patient()?.plan_citas ? 'Paquete de ' + patient()?.plan_citas + ' citas' : 'Cita única (Sin paquete)' }}
                                 </div>
                             }
@@ -336,7 +401,7 @@
                             @if (isEditing()) {
                                 <select [ngModel]="patient()?.plan_duration_days || 7" 
                                         (ngModelChange)="onPlanDurationChange($event)"
-                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
+                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none cursor-pointer">
                                     <option [value]="7">7 días (Semanal)</option>
                                     <option [value]="15">15 días (Quincenal)</option>
                                     <option [value]="21">21 días (Tres semanas)</option>
@@ -344,7 +409,8 @@
                                     <option [value]="9999">Acceso Ilimitado</option>
                                 </select>
                             } @else {
-                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
+                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200 flex items-center gap-2">
+                                    <app-a-icon name="hourglass_empty" customClass="text-slate-400 dark:text-slate-500"></app-a-icon>
                                     {{ getPlanDurationLabel(patient()?.plan_duration_days) }}
                                 </div>
                             }
@@ -352,48 +418,53 @@
 
                         <!-- Citas Completadas -->
                         @if (patient()?.plan_citas) {
-                            <div class="space-y-2 md:col-span-2">
-                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Citas Tomadas en Paquete Actual</label>
+                            <div class="space-y-2 md:col-span-2 bg-slate-50 dark:bg-white/[0.01] p-6 rounded-2xl border border-nutri-rose/5 dark:border-white/5">
+                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block mb-1">Citas Tomadas en Paquete Actual</label>
                                 <div class="flex flex-col gap-3">
                                     @if (isEditing()) {
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-3">
                                             <select [ngModel]="patient()?.plan_citas_completadas" 
                                                     (ngModelChange)="patient().plan_citas_completadas = toNumber($event)"
-                                                    class="flex-1 bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
+                                                    class="flex-1 bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none cursor-pointer">
                                                 @for (i of [0, 1, 2, 3, 4].slice(0, toNumber(patient()?.plan_citas) + 1); track i) {
-                                                    <option [value]="i">{{ i }} citas</option>
+                                                    <option [value]="i">{{ i }} citas tomadas</option>
                                                 }
                                             </select>
                                             
                                             <button type="button" 
                                                     (click)="resetPaymentPlanProgress()"
-                                                    class="px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl font-bold text-xs transition-colors shrink-0">
+                                                    class="px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl font-bold text-xs transition-colors shrink-0 cursor-pointer">
                                                 Reiniciar a 0
                                             </button>
                                         </div>
                                     } @else {
-                                        <div class="flex flex-col gap-2">
+                                        <div class="flex flex-col gap-3">
                                             <div class="flex items-center justify-between">
-                                                <span class="text-base font-extrabold text-nutri-text dark:text-slate-200">
+                                                <span class="text-base font-extrabold text-nutri-text dark:text-slate-200 flex items-center gap-2">
+                                                    <app-a-icon name="event_available" customClass="text-emerald-500"></app-a-icon>
                                                     {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} citas tomadas
                                                 </span>
-                                                <span class="text-xs font-bold text-emerald-500">
-                                                    (Quedan {{ (patient()?.plan_citas || 0) - (patient()?.plan_citas_completadas || 0) }})
+                                                <span class="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-lg">
+                                                    Quedan {{ (patient()?.plan_citas || 0) - (patient()?.plan_citas_completadas || 0) }}
                                                 </span>
                                             </div>
                                             
-                                            <div class="w-full h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                                <div class="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                                            <div class="w-full h-3 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden p-0.5">
+                                                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700 shadow-inner"
                                                      [style.width.%]="((patient()?.plan_citas_completadas || 0) / (patient()?.plan_citas || 1)) * 100">
                                                 </div>
                                             </div>
-                                            
-                                            @if (patient()?.plan_citas_completadas === patient()?.plan_citas) {
-                                                <button type="button"
-                                                        (click)="resetPaymentPlanProgress(); saveChanges()"
-                                                        class="w-full mt-2 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl font-bold text-xs tracking-wider uppercase transition-colors">
-                                                    Iniciar Nuevo Paquete (Reiniciar)
-                                                </button>
+
+                                            <!-- Botón de Registro Rápido -->
+                                            @if ((patient()?.plan_citas_completadas || 0) < patient()?.plan_citas) {
+                                                <div class="pt-2 flex justify-end">
+                                                    <button type="button" 
+                                                            (click)="incrementAppointmentProgress()"
+                                                            class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-emerald-500/25 hover:shadow-lg active:scale-95 duration-200 cursor-pointer">
+                                                        <app-a-icon name="add" size="14px"></app-a-icon>
+                                                        Registrar Cita Tomada
+                                                    </button>
+                                                </div>
                                             }
                                         </div>
                                     }

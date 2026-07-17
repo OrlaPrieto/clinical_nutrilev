@@ -447,6 +447,28 @@ export class PatientDetailComponent implements OnInit {
     }
   }
 
+  async incrementAppointmentProgress() {
+    const p = this.patient();
+    if (!p) return;
+
+    const currentCompleted = p.plan_citas_completadas || 0;
+    const totalPlan = p.plan_citas || 0;
+
+    if (currentCompleted < totalPlan) {
+      const nextCompleted = currentCompleted + 1;
+      p.plan_citas_completadas = nextCompleted;
+
+      const updatePayload = {
+        ...p,
+        originalEmail: p.email,
+        action: 'update',
+      };
+
+      this.saving.set(true);
+      await this.sendUpdate(updatePayload, false, `Cita ${nextCompleted} de ${totalPlan} registrada con éxito`);
+    }
+  }
+
   toggleEdit() {
     if (!this.isEditing()) {
       this.originalEmail = this.patient()?.email;
