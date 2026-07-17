@@ -20,5 +20,11 @@
   },
   "dependencies": {
     "html-to-image": "^1.11.13"
+  },
+  "overrides": {
+    "dompurify": "^3.4.12",
+    "jspdf": {
+      "dompurify": "^3.4.12"
+    }
   }
 }
