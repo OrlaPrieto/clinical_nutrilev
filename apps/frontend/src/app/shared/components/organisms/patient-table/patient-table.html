@@ -117,34 +117,34 @@
             </td>
 
             <td class="w-[15%] p-2 text-center">
-              <div class="cursor-pointer hover:bg-nutri-rose/[0.05] dark:hover:bg-nutri-rose/10 rounded-2xl p-3 inline-flex items-center justify-center gap-1 group/cell w-full h-full min-h-[50px] transition-all duration-200 active:scale-95"
-                   (click)="onObjetivoClick(patient, $event)">
-                @if (patient.meta_objetivo === 'bajar_peso') {
-                  <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="sm"></app-a-badge>
-                } @else if (patient.meta_objetivo === 'bajar_grasa') {
-                  <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="sm"></app-a-badge>
-                } @else if (patient.meta_objetivo === 'subir_musculo') {
-                  <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="sm"></app-a-badge>
-                } @else {
-                  <span class="text-[9px] font-bold text-nutri-text/20 dark:text-white/10 uppercase tracking-widest group-hover/cell:text-nutri-rose transition-colors">Definir</span>
-                }
+              <div (click)="onObjetivoClick(patient, $event)"
+                   class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl cursor-pointer transition-all hover:scale-105 active:scale-95 group/badge shadow-sm border"
+                   [ngClass]="{
+                     'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400': patient.meta_objetivo === 'bajar_peso',
+                     'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400': patient.meta_objetivo === 'bajar_grasa',
+                     'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400': patient.meta_objetivo === 'subir_musculo',
+                     'bg-slate-500/10 border-slate-500/20 border-dashed text-slate-500 dark:text-slate-400': !patient.meta_objetivo
+                   }">
+                <app-a-icon [name]="patient.meta_objetivo === 'bajar_peso' ? 'trending_down' : 
+                                    patient.meta_objetivo === 'bajar_grasa' ? 'local_fire_department' : 
+                                    patient.meta_objetivo === 'subir_musculo' ? 'fitness_center' : 'add'" 
+                            size="14px"></app-a-icon>
+                <span class="text-[9px] font-black uppercase tracking-widest">
+                  {{ patient.meta_objetivo === 'bajar_peso' ? 'Bajar Peso' : 
+                     patient.meta_objetivo === 'bajar_grasa' ? 'Bajar Grasa' : 
+                     patient.meta_objetivo === 'subir_musculo' ? 'Músculo' : 'Definir' }}
+                </span>
               </div>
             </td>
 
             <td class="w-[15%] p-2 text-center">
-              <div class="cursor-pointer hover:bg-emerald-500/[0.05] dark:hover:bg-emerald-500/10 rounded-2xl p-3 inline-flex flex-col items-center justify-center gap-1.5 group/cell w-full h-full min-h-[50px] transition-all duration-200 active:scale-95"
-                   (click)="onPaqueteClick(patient, $event)">
-                @if (patient.plan_citas) {
-                  <span class="text-[10px] font-black text-nutri-text dark:text-slate-300 leading-none">
-                    {{ patient.plan_citas_completadas || 0 }} de {{ patient.plan_citas }}
-                  </span>
-                  <div class="w-16 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-                    <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" 
-                         [style.width.%]="((patient.plan_citas_completadas || 0) / patient.plan_citas) * 100"></div>
-                  </div>
-                } @else {
-                  <app-a-badge label="Única" variant="ghost" size="sm" icon="event"></app-a-badge>
-                }
+              <div (click)="onPaqueteClick(patient, $event)"
+                   class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl cursor-pointer transition-all hover:scale-105 active:scale-95 group/badge shadow-sm border"
+                   [ngClass]="patient.plan_citas ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-slate-500/10 border-slate-500/20 text-slate-500 dark:text-slate-400'">
+                <app-a-icon [name]="patient.plan_citas ? 'event_repeat' : 'event'" size="14px"></app-a-icon>
+                <span class="text-[9px] font-black uppercase tracking-widest">
+                  {{ patient.plan_citas ? (patient.plan_citas_completadas || 0) + ' de ' + patient.plan_citas : 'Única' }}
+                </span>
               </div>
             </td>
 
