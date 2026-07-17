@@ -296,56 +296,6 @@
                             (valueChange)="patient().recomendacion_fuente = $event">
                         </app-m-detail-field>
                     </div>
-
-                    <!-- Objetivo Principal del Paciente -->
-                    <div class="pt-4 border-t border-nutri-rose/5 space-y-3">
-                        <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Objetivo Principal de Salud</label>
-                        @if (isEditing()) {
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <!-- Bajar Peso Card -->
-                                <div (click)="patient().meta_objetivo = 'bajar_peso'" 
-                                     class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-2 group hover:scale-[1.02] active:scale-95 duration-300"
-                                     [ngClass]="patient().meta_objetivo === 'bajar_peso' 
-                                                ? 'bg-rose-500/10 border-rose-500 text-rose-600 dark:text-rose-400' 
-                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-rose-500/5 hover:border-rose-500/30'">
-                                    <app-a-icon name="trending_down" customClass="text-2xl group-hover:animate-bounce"></app-a-icon>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Bajar Peso</span>
-                                </div>
-
-                                <!-- Bajar Grasa Card -->
-                                <div (click)="patient().meta_objetivo = 'bajar_grasa'" 
-                                     class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-2 group hover:scale-[1.02] active:scale-95 duration-300"
-                                     [ngClass]="patient().meta_objetivo === 'bajar_grasa' 
-                                                ? 'bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400' 
-                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-amber-500/5 hover:border-amber-500/30'">
-                                    <app-a-icon name="local_fire_department" customClass="text-2xl group-hover:animate-pulse"></app-a-icon>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Bajar Grasa</span>
-                                </div>
-
-                                <!-- Subir Músculo Card -->
-                                <div (click)="patient().meta_objetivo = 'subir_musculo'" 
-                                     class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-2 group hover:scale-[1.02] active:scale-95 duration-300"
-                                     [ngClass]="patient().meta_objetivo === 'subir_musculo' 
-                                                ? 'bg-blue-500/10 border-blue-500 text-blue-600 dark:text-blue-400' 
-                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-blue-500/5 hover:border-blue-500/30'">
-                                    <app-a-icon name="fitness_center" customClass="text-2xl group-hover:rotate-12"></app-a-icon>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Subir Músculo</span>
-                                </div>
-                            </div>
-                        } @else {
-                            <div class="flex items-center gap-3">
-                                @if (patient()?.meta_objetivo === 'bajar_peso') {
-                                    <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
-                                } @else if (patient()?.meta_objetivo === 'bajar_grasa') {
-                                    <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
-                                } @else if (patient()?.meta_objetivo === 'subir_musculo') {
-                                    <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
-                                } @else {
-                                    <app-a-badge label="Sin Objetivo Definido" variant="ghost" icon="help" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
-                                }
-                            </div>
-                        }
-                    </div>
                 </div>
 
                 <!-- Paquete de Citas Card -->
@@ -837,9 +787,159 @@
             </div>
         }
 
-        <!-- Tab 4: Seguimiento / Antropometría -->
+        <!-- Tab 4: Metas y Avances -->
         @if (activeTab() === 4) {
             <div class="space-y-6 animate-fade-up">
+                <!-- Seccion Unificada de Objetivo y Metas -->
+                <div class="bg-white dark:bg-[#111111] p-6 md:p-8 rounded-[1.75rem] md:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-nutri-rose/5 pb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
+                                <app-a-icon name="ads_click"></app-a-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold serif dark:text-slate-200">Objetivo y Metas de Salud</h3>
+                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Define el enfoque y los valores objetivos del paciente</p>
+                            </div>
+                        </div>
+
+                        <!-- Objetivo Principal interactivo con tarjetas en modo edición, o badges en modo vista -->
+                        @if (isEditing()) {
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto md:min-w-[400px]">
+                                <!-- Bajar Peso Card -->
+                                <div (click)="patient().meta_objetivo = 'bajar_peso'" 
+                                     class="flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all cursor-pointer select-none text-center gap-1.5 group hover:scale-[1.02] active:scale-95 duration-300"
+                                     [ngClass]="patient().meta_objetivo === 'bajar_peso' 
+                                                ? 'bg-rose-500/10 border-rose-500 text-rose-600 dark:text-rose-400' 
+                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-rose-500/5 hover:border-rose-500/30'">
+                                    <app-a-icon name="trending_down" customClass="text-xl group-hover:animate-bounce"></app-a-icon>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider">Bajar Peso</span>
+                                </div>
+
+                                <!-- Bajar Grasa Card -->
+                                <div (click)="patient().meta_objetivo = 'bajar_grasa'" 
+                                     class="flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all cursor-pointer select-none text-center gap-1.5 group hover:scale-[1.02] active:scale-95 duration-300"
+                                     [ngClass]="patient().meta_objetivo === 'bajar_grasa' 
+                                                ? 'bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400' 
+                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-amber-500/5 hover:border-amber-500/30'">
+                                    <app-a-icon name="local_fire_department" customClass="text-xl group-hover:animate-pulse"></app-a-icon>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider">Bajar Grasa</span>
+                                </div>
+
+                                <!-- Subir Músculo Card -->
+                                <div (click)="patient().meta_objetivo = 'subir_musculo'" 
+                                     class="flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all cursor-pointer select-none text-center gap-1.5 group hover:scale-[1.02] active:scale-95 duration-300"
+                                     [ngClass]="patient().meta_objetivo === 'subir_musculo' 
+                                                ? 'bg-blue-500/10 border-blue-500 text-blue-600 dark:text-blue-400' 
+                                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-blue-500/5 hover:border-blue-500/30'">
+                                    <app-a-icon name="fitness_center" customClass="text-xl group-hover:rotate-12"></app-a-icon>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider">Subir Músculo</span>
+                                </div>
+                            </div>
+                        } @else {
+                            <div class="flex items-center gap-2">
+                                @if (patient()?.meta_objetivo === 'bajar_peso') {
+                                    <app-a-badge label="Bajar Peso" variant="danger" icon="trending_down" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                } @else if (patient()?.meta_objetivo === 'bajar_grasa') {
+                                    <app-a-badge label="Bajar Grasa" variant="warning" icon="local_fire_department" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                } @else if (patient()?.meta_objetivo === 'subir_musculo') {
+                                    <app-a-badge label="Subir Músculo" variant="info" icon="fitness_center" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                } @else {
+                                    <app-a-badge label="Sin Objetivo Definido" variant="ghost" icon="help" size="md" customClass="!text-xs !py-1.5 !px-4 !rounded-xl"></app-a-badge>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Milestones de Progreso -->
+                    @if (currentGoal()) {
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-[0.2em]">Hitos y Progreso Logrado</span>
+                                <span class="text-xs font-black text-nutri-rose">{{ progressPercentage() }}%</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                @for (m of milestones(); track m.label) {
+                                    <div class="relative group">
+                                        <div class="h-2 rounded-full transition-all duration-700 overflow-hidden"
+                                             [ngClass]="m.achieved ? 'bg-nutri-rose shadow-[0_0_10px_rgba(235,126,122,0.3)]' : 'bg-nutri-rose/10 dark:bg-white/5'">
+                                        </div>
+                                        <div class="mt-2 flex flex-col items-center">
+                                            <span class="text-[9px] font-black transition-colors duration-300"
+                                                  [ngClass]="m.achieved ? 'text-nutri-rose' : 'text-nutri-text/30 dark:text-slate-600'">
+                                                {{ m.label }}
+                                            </span>
+                                            @if (m.achieved) {
+                                                <app-a-icon name="star" customClass="text-[8px] text-nutri-rose mt-0.5 animate-bounce"></app-a-icon>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Grid de Metas Métricas -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-nutri-rose/5">
+                        <!-- Peso Habitual -->
+                        <div class="bg-nutri-bg/20 dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 flex flex-col items-center justify-center text-center transition-colors">
+                            <span class="text-[9px] font-black text-nutri-rose/70 dark:text-nutri-rose/90 uppercase tracking-widest block mb-1">Peso Habitual</span>
+                            @if (!isEditing()) {
+                                <p class="text-xl font-bold serif text-nutri-text dark:text-slate-200">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/50">kg</span></p>
+                            }
+                            @if (isEditing()) {
+                                <div class="flex items-center gap-2">
+                                    <input [(ngModel)]="patient().peso_habitual" type="number" class="w-20 bg-white dark:bg-white/5 rounded-lg border border-nutri-rose/10 px-2 py-1 text-base font-bold serif outline-none text-center dark:text-slate-200">
+                                    <span class="text-xs font-normal text-nutri-text/50">kg</span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Peso/Grasa/Músculo Meta -->
+                        <div class="bg-nutri-bg/20 dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 flex flex-col items-center justify-center text-center transition-colors">
+                            <span class="text-[9px] font-black text-nutri-rose/70 dark:text-nutri-rose/90 uppercase tracking-widest block mb-1">
+                                {{ patient()?.meta_objetivo === 'bajar_grasa' ? 'Grasa Meta (%)' : 
+                                   patient()?.meta_objetivo === 'subir_musculo' ? 'Músculo Meta (kg)' : 'Peso Meta (kg)' }}
+                            </span>
+                            @if (!isEditing()) {
+                                <p class="text-xl font-bold serif text-nutri-rose">
+                                    {{ (patient()?.meta_objetivo === 'bajar_grasa' ? patient()?.grasa_meta : 
+                                        patient()?.meta_objetivo === 'subir_musculo' ? patient()?.musculo_meta : 
+                                        patient()?.peso_meta) || '---' }}
+                                    <span class="text-xs font-normal text-nutri-rose/40">
+                                        {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
+                                    </span>
+                                </p>
+                            }
+                            @if (isEditing()) {
+                                <div class="flex items-center gap-2">
+                                    @if (patient()?.meta_objetivo === 'bajar_grasa') {
+                                        <input [(ngModel)]="patient().grasa_meta" type="number" class="w-20 bg-white dark:bg-white/5 rounded-lg border border-nutri-rose/10 px-2 py-1 text-base font-bold serif outline-none text-center text-nutri-rose">
+                                    } @else if (patient()?.meta_objetivo === 'subir_musculo') {
+                                        <input [(ngModel)]="patient().musculo_meta" type="number" class="w-20 bg-white dark:bg-white/5 rounded-lg border border-nutri-rose/10 px-2 py-1 text-base font-bold serif outline-none text-center text-nutri-rose">
+                                    } @else {
+                                        <input [(ngModel)]="patient().peso_meta" type="number" class="w-20 bg-white dark:bg-white/5 rounded-lg border border-nutri-rose/10 px-2 py-1 text-base font-bold serif outline-none text-center text-nutri-rose">
+                                    }
+                                    <span class="text-xs font-normal text-nutri-rose/40">
+                                        {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
+                                    </span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Cambios Recientes -->
+                        <div class="bg-nutri-bg/20 dark:bg-white/5 p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 flex flex-col items-center justify-center text-center transition-colors">
+                            <span class="text-[9px] font-black text-nutri-rose/70 dark:text-nutri-rose/90 uppercase tracking-widest block mb-1">Cambios Recientes</span>
+                            @if (!isEditing()) {
+                                <p class="text-xs font-semibold text-nutri-text dark:text-slate-300 max-h-12 overflow-y-auto">{{patient()?.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
+                            }
+                            @if (isEditing()) {
+                                <textarea [(ngModel)]="patient().cambios_peso_detalle" class="w-full bg-white dark:bg-white/5 rounded-lg border border-nutri-rose/10 px-2 py-1 text-xs font-medium outline-none resize-none min-h-[40px] text-center dark:text-slate-200" placeholder="Detalles de cambios..."></textarea>
+                            }
+                        </div>
+                    </div>
+                </div>
+
                 @if (!historyComp?.selectedRecordForDetail?.()) {
                 <!-- NEW RECORD FORM AT THE TOP -->
                 <div class="bg-white dark:bg-[#111111] p-4 md:p-8 rounded-[1.75rem] md:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-4 md:space-y-6 transition-colors">
@@ -1314,123 +1414,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Goal Selection Header -->
-                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
-                                <app-a-icon name="ads_click"></app-a-icon>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold serif dark:text-slate-200">Objetivo Principal</h3>
-                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Define la meta del paciente</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            @if (!isEditing()) {
-                                <app-a-badge [label]="patient()?.meta_objetivo === 'bajar_peso' ? 'Bajar Peso' : 
-                                                   patient()?.meta_objetivo === 'bajar_grasa' ? 'Bajar Grasa' : 
-                                                   patient()?.meta_objetivo === 'subir_musculo' ? 'Subir Músculo' : 'Sin Objetivo'"
-                                            [variant]="patient()?.meta_objetivo ? 'primary' : 'ghost'"
-                                            size="md">
-                                </app-a-badge>
-                            } @else {
-                                <select [(ngModel)]="patient().meta_objetivo" 
-                                        class="bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-xl px-4 py-2 text-sm font-bold outline-none border border-nutri-rose/10 focus:ring-2 focus:ring-nutri-rose/20 transition-all cursor-pointer">
-                                    <option [value]="null">Seleccionar Objetivo...</option>
-                                    <option value="bajar_peso">Bajar Peso</option>
-                                    <option value="bajar_grasa">Bajar Grasa</option>
-                                    <option value="subir_musculo">Subir Músculo</option>
-                                </select>
-                            }
-                        </div>
-                    </div>
-
-                    <!-- Achievement Milestones -->
-                    @if (currentGoal()) {
-                        <div class="pt-6 border-t border-nutri-rose/5">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-[0.2em]">Progreso del Objetivo</span>
-                                <span class="text-xs font-black text-nutri-rose">{{ progressPercentage() }}%</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2">
-                                @for (m of milestones(); track m.label) {
-                                    <div class="relative group">
-                                        <div class="h-2 rounded-full transition-all duration-700 overflow-hidden"
-                                             [ngClass]="m.achieved ? 'bg-nutri-rose shadow-[0_0_10px_rgba(235,126,122,0.3)]' : 'bg-nutri-rose/10 dark:bg-white/5'">
-                                        </div>
-                                        <div class="mt-2 flex flex-col items-center">
-                                            <span class="text-[9px] font-black transition-colors duration-300"
-                                                  [ngClass]="m.achieved ? 'text-nutri-rose' : 'text-nutri-text/30 dark:text-slate-600'">
-                                                {{ m.label }}
-                                            </span>
-                                            @if (m.achieved) {
-                                                <app-a-icon name="star" customClass="text-[8px] text-nutri-rose mt-0.5 animate-bounce"></app-a-icon>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Habitual</span>
-                        @if (!isEditing()) {
-                            <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/50">kg</span></p>
-                        }
-                        @if (isEditing()) {
-                            <div class="flex items-center gap-2">
-                                <input [(ngModel)]="patient().peso_habitual" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center">
-                                <span class="text-xs font-normal text-nutri-text/50">kg</span>
-                            </div>
-                        }
-                    </div>
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center transition-colors">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">
-                            {{ patient()?.meta_objetivo === 'bajar_grasa' ? 'Grasa Meta (%)' : 
-                               patient()?.meta_objetivo === 'subir_musculo' ? 'Músculo Meta (kg)' : 'Peso Meta (kg)' }}
-                        </span>
-                        @if (!isEditing()) {
-                            <p class="text-2xl font-bold serif text-nutri-rose">
-                                {{ (patient()?.meta_objetivo === 'bajar_grasa' ? patient()?.grasa_meta : 
-                                    patient()?.meta_objetivo === 'subir_musculo' ? patient()?.musculo_meta : 
-                                    patient()?.peso_meta) || '---' }}
-                                <span class="text-xs font-normal text-nutri-rose/40">
-                                    {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
-                                </span>
-                            </p>
-                        }
-                        @if (isEditing()) {
-                            <div class="flex items-center gap-2">
-                                @if (patient()?.meta_objetivo === 'bajar_grasa') {
-                                    <input [(ngModel)]="patient().grasa_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
-                                } @else if (patient()?.meta_objetivo === 'subir_musculo') {
-                                    <input [(ngModel)]="patient().musculo_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
-                                } @else {
-                                    <input [(ngModel)]="patient().peso_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
-                                }
-                                <span class="text-xs font-normal text-nutri-rose/40">
-                                    {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
-                                </span>
-                            </div>
-                        }
-                    </div>
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Cambios Recientes</span>
-                        @if (!isEditing()) {
-                            <p class="text-sm font-medium">{{patient()?.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <textarea [(ngModel)]="patient().cambios_peso_detalle" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs font-medium outline-none border-none resize-none min-h-[40px] text-center" placeholder="Detalles de cambios..."></textarea>
-                        }
-                    </div>
-                </div>
-
                 <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
