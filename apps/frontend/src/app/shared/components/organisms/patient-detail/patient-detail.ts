@@ -66,7 +66,7 @@ export class PatientDetailComponent implements OnInit {
     { label: 'Antecedentes', icon: 'history_edu' },
     { label: 'Estilo de Vida', icon: 'self_improvement' },
     { label: 'Nutrición', icon: 'restaurant' },
-    { label: 'Metas y Avances', icon: 'analytics' },
+    { label: 'Avances', icon: 'analytics' },
     { label: 'Notas', icon: 'description' }
   ]);
 
