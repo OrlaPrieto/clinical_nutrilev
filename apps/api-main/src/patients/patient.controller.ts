@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  Logger,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PatientService } from './patient.service';
@@ -23,6 +24,8 @@ import { PatientAuthGuard } from '../common/guards/patient-auth.guard';
 
 @Controller('api/patients')
 export class PatientController {
+  private readonly logger = new Logger(PatientController.name);
+
   constructor(private readonly patientService: PatientService) {}
 
   @Get()
@@ -57,6 +60,7 @@ export class PatientController {
   async addProgress(
     @Body() progressData: CreateProgressDto,
   ): Promise<PatientProgress> {
+    this.logger.log(`[PatientProgress] Adding new measurements for patient ID: ${progressData.patient_id}`);
     return this.patientService.addProgress(progressData);
   }
 
@@ -66,6 +70,7 @@ export class PatientController {
     @Param('id') id: string,
     @Body() progressData: UpdateProgressDto,
   ): Promise<PatientProgress> {
+    this.logger.log(`[PatientProgress] Updating measurements ID: ${id}`);
     return this.patientService.updateProgress(id, progressData);
   }
 
@@ -74,6 +79,7 @@ export class PatientController {
   async removeProgress(
     @Param('id') id: string,
   ): Promise<{ success: boolean }> {
+    this.logger.log(`[PatientProgress] Removing measurements ID: ${id}`);
     return this.patientService.removeProgress(id);
   }
 
