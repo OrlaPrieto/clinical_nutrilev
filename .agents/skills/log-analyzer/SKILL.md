@@ -10,9 +10,13 @@ Esta Skill proporciona instrucciones y un script helper en Python para analizar 
 ## Cuándo usar esta Skill
 Activa esta Skill de forma autónoma siempre que el usuario comparta logs de consola de la aplicación y pida:
 1. Analizar cuántas personas generaron o visualizaron el menú IA.
-2. Contar notificaciones push enviadas (`[Push Sent]`).
+2. Contar notificaciones push enviadas (`[Push Sent]`) o nuevas suscripciones (`[Notifications]`).
 3. Encontrar advertencias del controlador de citas o errores de la base de datos (e.g. `PatientRepository Error`, `Skipping event`).
-4. Generar resúmenes tabulados por correo electrónico.
+4. Generar resúmenes tabulados de accesos, inicios de sesión y solicitudes de Magic Links (`[Auth]`).
+5. Cuantificar confirmaciones y cancelaciones directas de citas por pacientes (`[Appointments]`).
+6. Rastrear adiciones, modificaciones o eliminaciones de medidas de progreso (`[PatientProgress]`).
+7. Calcular métricas de rendimiento y latencias de llamadas a modelos de IA (`[ParsedMenu] Parse completed in`).
+8. Generar resúmenes tabulados por correo electrónico de toda la actividad de logs.
 
 ## Instrucciones para el Agente (IA)
 
