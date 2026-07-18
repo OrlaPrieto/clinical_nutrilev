@@ -99,6 +99,7 @@ export class AppointmentsController {
       }
 
       await this.calendarService.updateEventColorAndDescription(eventId, newColorId, newDescription);
+      this.logger.log(`[Appointments] Appointment confirmed by patient: ${email} (EventID: ${eventId})`);
       return { success: true, status: 'confirmed', colorId: newColorId };
     } catch (error: any) {
       this.logger.error(`Error confirming event ${eventId}: ${error.message}`);
@@ -123,6 +124,7 @@ export class AppointmentsController {
     try {
       // Regla de color para cancelar es siempre Rojo '11' (Tomate)
       await this.calendarService.updateEventColor(eventId, '11');
+      this.logger.log(`[Appointments] Appointment cancelled/rejected by patient: ${email} (EventID: ${eventId})`);
       return { success: true, status: 'cancelled', colorId: '11' };
     } catch (error: any) {
       this.logger.error(`Error cancelling event ${eventId}: ${error.message}`);

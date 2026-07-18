@@ -67,8 +67,11 @@
                 }
 
                 @if (!loading() && filteredPatients().length > 0) {
-                <app-o-patient-table [patients]="paginatedPatients()" (view)="showDetail($event)"
-                    (delete)="openDeleteConfirm($event)">
+                <app-o-patient-table [patients]="paginatedPatients()" 
+                                     (view)="showDetail($event)"
+                                     (delete)="openDeleteConfirm($event)"
+                                     (editObjetivo)="onEditObjetivo($event)"
+                                     (editPaquete)="onEditPaquete($event)">
                 </app-o-patient-table>
                 }
             </div>
@@ -159,6 +162,201 @@
         <div class="flex flex-col gap-3">
             <app-a-button variant="danger" label="ELIMINAR AHORA" size="lg" (onClick)="confirmDelete()"></app-a-button>
             <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="cancelDelete()"></app-a-button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Rápido: Objetivo del Paciente -->
+@if (showQuickObjetivoModal() && quickEditPatient()) {
+<div class="fixed inset-0 z-[150] flex flex-col justify-end md:items-center md:justify-center p-0 md:p-4 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
+    (click)="closeQuickEdit()">
+    <div class="bg-white dark:bg-[#111111] w-full max-w-lg rounded-t-[3rem] md:rounded-[3rem] p-8 md:p-10 pb-12 shadow-2xl border border-nutri-rose/10 dark:border-white/5 pointer-events-auto animate-scale-up space-y-6"
+        (click)="$event.stopPropagation()">
+        
+        <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
+                    <app-a-icon name="ads_click"></app-a-icon>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-xl font-bold dark:text-slate-200 serif">Actualizar Objetivo</h3>
+                    <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest">{{ quickEditPatient().nombre }}</p>
+                </div>
+            </div>
+            <button (click)="closeQuickEdit()" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-nutri-rose transition-colors cursor-pointer">
+                <app-a-icon name="close" size="18px"></app-a-icon>
+            </button>
+        </div>
+
+        <!-- Tarjetas de Selección de Objetivo -->
+        <div class="space-y-2.5 text-left">
+            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Objetivo Principal</label>
+            <div class="grid grid-cols-3 gap-3">
+                <!-- Bajar Peso Card -->
+                <div (click)="quickEditPatient().meta_objetivo = 'bajar_peso'" 
+                     class="flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-1.5 group hover:scale-[1.02] active:scale-95 duration-200"
+                     [ngClass]="quickEditPatient().meta_objetivo === 'bajar_peso' 
+                                ? 'bg-violet-500/10 border-violet-500 text-violet-600 dark:text-violet-400' 
+                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-violet-500/5 hover:border-violet-500/30'">
+                    <app-a-icon name="trending_down" customClass="text-xl group-hover:animate-bounce"></app-a-icon>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">Bajar Peso</span>
+                </div>
+
+                <!-- Bajar Grasa Card -->
+                <div (click)="quickEditPatient().meta_objetivo = 'bajar_grasa'" 
+                     class="flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-1.5 group hover:scale-[1.02] active:scale-95 duration-200"
+                     [ngClass]="quickEditPatient().meta_objetivo === 'bajar_grasa' 
+                                ? 'bg-fuchsia-500/10 border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400' 
+                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-fuchsia-500/5 hover:border-fuchsia-500/30'">
+                    <app-a-icon name="local_fire_department" customClass="text-xl group-hover:animate-pulse"></app-a-icon>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">Bajar Grasa</span>
+                </div>
+
+                <!-- Subir Músculo Card -->
+                <div (click)="quickEditPatient().meta_objetivo = 'subir_musculo'" 
+                     class="flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all cursor-pointer select-none text-center gap-1.5 group hover:scale-[1.02] active:scale-95 duration-200"
+                     [ngClass]="quickEditPatient().meta_objetivo === 'subir_musculo' 
+                                ? 'bg-cyan-500/10 border-cyan-500 text-cyan-600 dark:text-cyan-400' 
+                                : 'bg-nutri-bg/30 dark:bg-white/5 border-transparent text-nutri-text/50 dark:text-slate-400 hover:bg-cyan-500/5 hover:border-cyan-500/30'">
+                    <app-a-icon name="fitness_center" customClass="text-xl group-hover:rotate-12"></app-a-icon>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">Subir Músculo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parámetros numéricos -->
+        <div class="grid grid-cols-2 gap-4 text-left">
+            <div class="space-y-1">
+                <label class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Peso Habitual (kg)</label>
+                <input [(ngModel)]="quickEditPatient().peso_habitual" type="number" 
+                       class="w-full bg-slate-50 dark:bg-white/5 rounded-xl border border-nutri-rose/10 p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-nutri-rose/20 dark:text-slate-200">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">
+                    {{ quickEditPatient().meta_objetivo === 'bajar_grasa' ? 'Grasa Meta (%)' : 
+                       quickEditPatient().meta_objetivo === 'subir_musculo' ? 'Músculo Meta (kg)' : 'Peso Meta (kg)' }}
+                </label>
+                @if (quickEditPatient().meta_objetivo === 'bajar_grasa') {
+                    <input [(ngModel)]="quickEditPatient().grasa_meta" type="number" 
+                           class="w-full bg-slate-50 dark:bg-white/5 rounded-xl border border-nutri-rose/10 p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-nutri-rose/20 dark:text-slate-200">
+                } @else if (quickEditPatient().meta_objetivo === 'subir_musculo') {
+                    <input [(ngModel)]="quickEditPatient().musculo_meta" type="number" 
+                           class="w-full bg-slate-50 dark:bg-white/5 rounded-xl border border-nutri-rose/10 p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-nutri-rose/20 dark:text-slate-200">
+                } @else {
+                    <input [(ngModel)]="quickEditPatient().peso_meta" type="number" 
+                           class="w-full bg-slate-50 dark:bg-white/5 rounded-xl border border-nutri-rose/10 p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-nutri-rose/20 dark:text-slate-200">
+                }
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3 pt-2">
+            <app-a-button variant="primary" label="GUARDAR OBJETIVO" size="lg" (onClick)="saveQuickObjetivo()"></app-a-button>
+            <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="closeQuickEdit()"></app-a-button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Rápido: Plan de Pagos / Paquete de Citas -->
+@if (showQuickPaqueteModal() && quickEditPatient()) {
+<div class="fixed inset-0 z-[150] flex flex-col justify-end md:items-center md:justify-center p-0 md:p-4 bg-nutri-text/60 dark:bg-black/60 backdrop-blur-md animate-fade-in"
+    (click)="closeQuickEdit()">
+    <div class="bg-gradient-to-br from-white to-nutri-rose/[0.01] dark:from-[#111111] dark:to-white/[0.01] w-full max-w-lg rounded-t-[3rem] md:rounded-[3rem] p-8 md:p-10 pb-12 shadow-2xl border border-nutri-rose/10 dark:border-white/5 pointer-events-auto animate-scale-up space-y-6 relative overflow-hidden"
+        (click)="$event.stopPropagation()">
+        
+        <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-nutri-bg dark:bg-[#080808] border border-nutri-rose/10 dark:border-white/5 hidden md:block"></div>
+        <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-nutri-bg dark:bg-[#080808] border border-nutri-rose/10 dark:border-white/5 hidden md:block"></div>
+
+        <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <app-a-icon name="payments"></app-a-icon>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-xl font-bold dark:text-slate-200 serif">Actualizar Paquete</h3>
+                    <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest">{{ quickEditPatient().nombre }}</p>
+                </div>
+            </div>
+            <button (click)="closeQuickEdit()" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-nutri-rose transition-colors cursor-pointer">
+                <app-a-icon name="close" size="18px"></app-a-icon>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-left">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Paquete de Citas</label>
+                <select [ngModel]="quickEditPatient().plan_citas" 
+                        (ngModelChange)="quickEditPatient().plan_citas = $event ? toNumber($event) : null"
+                        class="w-full bg-slate-50 dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none cursor-pointer">
+                    <option [value]="null">Cita única (Sin paquete)</option>
+                    <option [value]="2">Paquete de 2 citas</option>
+                    <option [value]="3">Paquete de 3 citas</option>
+                    <option [value]="4">Paquete de 4 citas</option>
+                </select>
+            </div>
+            
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Vigencia del Menú</label>
+                <select [ngModel]="quickEditPatient().plan_duration_days || 7" 
+                        (ngModelChange)="quickEditPatient().plan_duration_days = toNumber($event)"
+                        class="w-full bg-slate-50 dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none cursor-pointer">
+                    <option [value]="7">7 días (Semanal)</option>
+                    <option [value]="15">15 días (Quincenal)</option>
+                    <option [value]="21">21 días (Tres semanas)</option>
+                    <option [value]="30">30 días (Mensual)</option>
+                    <option [value]="9999">Acceso Ilimitado</option>
+                </select>
+            </div>
+        </div>
+
+        @if (quickEditPatient().plan_citas) {
+            <div class="bg-slate-50 dark:bg-white/[0.01] p-5 rounded-2xl border border-nutri-rose/5 dark:border-white/5 text-left space-y-3">
+                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Progreso de Citas</label>
+                
+                <div class="flex items-center gap-3">
+                    <select [ngModel]="quickEditPatient().plan_citas_completadas" 
+                            (ngModelChange)="quickEditPatient().plan_citas_completadas = toNumber($event)"
+                            class="flex-1 bg-white dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-2.5 text-xs font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none cursor-pointer">
+                        @for (i of [0, 1, 2, 3, 4].slice(0, toNumber(quickEditPatient().plan_citas) + 1); track i) {
+                            <option [value]="i">{{ i }} citas tomadas</option>
+                        }
+                    </select>
+                    
+                    <button type="button" 
+                            (click)="quickResetPaymentPlanProgress()"
+                            class="px-3.5 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl font-bold text-xs transition-colors shrink-0 cursor-pointer">
+                        Reiniciar
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between text-xs font-bold text-emerald-500 pt-1">
+                    <span>{{ quickEditPatient().plan_citas_completadas || 0 }} de {{ quickEditPatient().plan_citas }} completadas</span>
+                    <span>Quedan {{ (quickEditPatient().plan_citas || 0) - (quickEditPatient().plan_citas_completadas || 0) }}</span>
+                </div>
+                
+                <div class="w-full h-2.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
+                         [style.width.%]="((quickEditPatient().plan_citas_completadas || 0) / (quickEditPatient().plan_citas || 1)) * 100">
+                    </div>
+                </div>
+
+                @if ((quickEditPatient().plan_citas_completadas || 0) < quickEditPatient().plan_citas) {
+                    <div class="pt-1 flex justify-end">
+                        <button type="button" 
+                                (click)="quickIncrementAppointment()"
+                                class="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-[10px] transition-all shadow-md shadow-emerald-500/25 active:scale-95 duration-200 cursor-pointer">
+                            <app-a-icon name="add" size="12px"></app-a-icon>
+                            Registrar Cita Tomada
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="flex flex-col gap-3 pt-2">
+            <app-a-button variant="primary" label="GUARDAR PLAN" size="lg" (onClick)="saveQuickPaquete()"></app-a-button>
+            <app-a-button variant="ghost" label="CANCELAR" size="md" (onClick)="closeQuickEdit()"></app-a-button>
         </div>
     </div>
 </div>

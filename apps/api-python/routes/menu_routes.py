@@ -285,6 +285,9 @@ def get_parsed_menu():
     if request.method == 'OPTIONS':
         return '', 200
 
+    import time
+    start_time = time.time()
+
     data = request.json
     menu_url = data.get('menu_url')
 
@@ -316,6 +319,8 @@ def get_parsed_menu():
                 # Convertir a lista para forzar la evaluación sincrónica de map
                 list(executor.map(enrich_meal, meals_to_enrich))
                 
+        duration = time.time() - start_time
+        print(f"[ParsedMenu] Parse completed in {duration:.2f} seconds for URL: {menu_url}")
         return jsonify(parsed_json)
 
     except Exception as e:

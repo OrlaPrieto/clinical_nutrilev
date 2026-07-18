@@ -66,7 +66,7 @@ export class PatientDetailComponent implements OnInit {
     { label: 'Antecedentes', icon: 'history_edu' },
     { label: 'Estilo de Vida', icon: 'self_improvement' },
     { label: 'Nutrición', icon: 'restaurant' },
-    { label: 'Seguimiento', icon: 'analytics' },
+    { label: 'Avances', icon: 'analytics' },
     { label: 'Notas', icon: 'description' }
   ]);
 
@@ -444,6 +444,28 @@ export class PatientDetailComponent implements OnInit {
     if (p) {
       p.plan_citas_completadas = 0;
       this.toastService.show('Contador de citas completadas reiniciado a 0', 'success');
+    }
+  }
+
+  async incrementAppointmentProgress() {
+    const p = this.patient();
+    if (!p) return;
+
+    const currentCompleted = p.plan_citas_completadas || 0;
+    const totalPlan = p.plan_citas || 0;
+
+    if (currentCompleted < totalPlan) {
+      const nextCompleted = currentCompleted + 1;
+      p.plan_citas_completadas = nextCompleted;
+
+      const updatePayload = {
+        ...p,
+        originalEmail: p.email,
+        action: 'update',
+      };
+
+      this.saving.set(true);
+      await this.sendUpdate(updatePayload, false, `Cita ${nextCompleted} de ${totalPlan} registrada con éxito`);
     }
   }
 

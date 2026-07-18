@@ -297,111 +297,6 @@
                         </app-m-detail-field>
                     </div>
                 </div>
-
-                <!-- Paquete de Citas Card -->
-                <div class="bg-white dark:bg-[#111111] p-8 rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-6 transition-colors">
-                    <div class="flex items-center justify-between border-b border-nutri-rose/5 pb-4">
-                        <div class="flex items-center gap-3">
-                            <app-a-icon name="payments" customClass="text-nutri-rose text-xl"></app-a-icon>
-                            <h4 class="text-nutri-rose font-black text-xs uppercase tracking-[0.2em]">Configuración de Plan y Citas</h4>
-                        </div>
-                        @if (isEditing()) {
-                            <app-a-badge label="Modo Edición" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
-                        }
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Selector de Paquete -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Paquete de Citas del Paciente</label>
-                            @if (isEditing()) {
-                                <select [ngModel]="patient()?.plan_citas" 
-                                        (ngModelChange)="onPlanCitasChange($event)"
-                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
-                                    <option [value]="null">Cita única (Sin paquete)</option>
-                                    <option [value]="2">Paquete de 2 citas</option>
-                                    <option [value]="3">Paquete de 3 citas</option>
-                                    <option [value]="4">Paquete de 4 citas</option>
-                                </select>
-                            } @else {
-                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
-                                    {{ patient()?.plan_citas ? 'Paquete de ' + patient()?.plan_citas + ' citas' : 'Cita única (Sin paquete)' }}
-                                </div>
-                            }
-                        </div>
-
-                        <!-- Selector de Duración del Plan -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Vigencia del Menú (Expiración)</label>
-                            @if (isEditing()) {
-                                <select [ngModel]="patient()?.plan_duration_days || 7" 
-                                        (ngModelChange)="onPlanDurationChange($event)"
-                                        class="w-full bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
-                                    <option [value]="7">7 días (Semanal)</option>
-                                    <option [value]="15">15 días (Quincenal)</option>
-                                    <option [value]="21">21 días (Tres semanas)</option>
-                                    <option [value]="30">30 días (Mensual)</option>
-                                    <option [value]="9999">Acceso Ilimitado</option>
-                                </select>
-                            } @else {
-                                <div class="text-base font-extrabold text-nutri-text dark:text-slate-200">
-                                    {{ getPlanDurationLabel(patient()?.plan_duration_days) }}
-                                </div>
-                            }
-                        </div>
-
-                        <!-- Citas Completadas -->
-                        @if (patient()?.plan_citas) {
-                            <div class="space-y-2 md:col-span-2">
-                                <label class="text-[10px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-wider block">Citas Tomadas en Paquete Actual</label>
-                                <div class="flex flex-col gap-3">
-                                    @if (isEditing()) {
-                                        <div class="flex items-center gap-2">
-                                            <select [ngModel]="patient()?.plan_citas_completadas" 
-                                                    (ngModelChange)="patient().plan_citas_completadas = toNumber($event)"
-                                                    class="flex-1 bg-nutri-bg dark:bg-white/5 rounded-xl border border-nutri-rose/10 dark:border-white/10 p-3 text-sm font-bold text-nutri-text dark:text-slate-200 focus:ring-2 focus:ring-nutri-rose/20 outline-none">
-                                                @for (i of [0, 1, 2, 3, 4].slice(0, toNumber(patient()?.plan_citas) + 1); track i) {
-                                                    <option [value]="i">{{ i }} citas</option>
-                                                }
-                                            </select>
-                                            
-                                            <button type="button" 
-                                                    (click)="resetPaymentPlanProgress()"
-                                                    class="px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl font-bold text-xs transition-colors shrink-0">
-                                                Reiniciar a 0
-                                            </button>
-                                        </div>
-                                    } @else {
-                                        <div class="flex flex-col gap-2">
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-base font-extrabold text-nutri-text dark:text-slate-200">
-                                                    {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} citas tomadas
-                                                </span>
-                                                <span class="text-xs font-bold text-emerald-500">
-                                                    (Quedan {{ (patient()?.plan_citas || 0) - (patient()?.plan_citas_completadas || 0) }})
-                                                </span>
-                                            </div>
-                                            
-                                            <div class="w-full h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                                <div class="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                                                     [style.width.%]="((patient()?.plan_citas_completadas || 0) / (patient()?.plan_citas || 1)) * 100">
-                                                </div>
-                                            </div>
-                                            
-                                            @if (patient()?.plan_citas_completadas === patient()?.plan_citas) {
-                                                <button type="button"
-                                                        (click)="resetPaymentPlanProgress(); saveChanges()"
-                                                        class="w-full mt-2 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl font-bold text-xs tracking-wider uppercase transition-colors">
-                                                    Iniciar Nuevo Paquete (Reiniciar)
-                                                </button>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
             </div>
         }
 
@@ -766,7 +661,7 @@
             </div>
         }
 
-        <!-- Tab 4: Seguimiento / Antropometría -->
+        <!-- Tab 4: Avances -->
         @if (activeTab() === 4) {
             <div class="space-y-6 animate-fade-up">
                 @if (!historyComp?.selectedRecordForDetail?.()) {
@@ -782,10 +677,6 @@
                                 <p class="text-[8px] md:text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Ingrese los datos de la medición actual</p>
                             </div>
                         </div>
-                        <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
-                                    label="Guardar" variant="primary" size="sm"
-                                    customClass="!px-6 md:!px-8 !rounded-xl !text-[9px] !uppercase !tracking-[0.1em] !shadow-lg !shadow-nutri-rose/20">
-                        </app-a-button>
                     </div>
 
                     <!-- Grid Principal de Datos -->
@@ -1234,7 +1125,7 @@
                             <textarea [(ngModel)]="newProgress().notes" class="w-full bg-nutri-bg dark:bg-white/5 dark:text-slate-200 rounded-2xl px-4 py-3 text-xs font-medium border-none outline-none focus:ring-2 focus:ring-nutri-rose/10 resize-none h-20" placeholder="Anotaciones adicionales sobre la evolución del paciente..."></textarea>
                         </div>
 
-                        <!-- Botón de guardar secundario al final del formulario -->
+                        <!-- Botón principal para guardar al final del formulario -->
                         <div class="flex justify-end pt-2">
                             <app-a-button (onClick)="addProgressRecord()" [disabled]="addingProgress() || !newProgress().weight" [loading]="addingProgress()"
                                         label="Guardar Registro" variant="primary" size="md"
@@ -1243,123 +1134,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Goal Selection Header -->
-                <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-nutri-rose text-white flex items-center justify-center shadow-lg shadow-nutri-rose/20">
-                                <app-a-icon name="ads_click"></app-a-icon>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold serif dark:text-slate-200">Objetivo Principal</h3>
-                                <p class="text-[9px] font-bold text-nutri-text/50 uppercase tracking-widest">Define la meta del paciente</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            @if (!isEditing()) {
-                                <app-a-badge [label]="patient()?.meta_objetivo === 'bajar_peso' ? 'Bajar Peso' : 
-                                                   patient()?.meta_objetivo === 'bajar_grasa' ? 'Bajar Grasa' : 
-                                                   patient()?.meta_objetivo === 'subir_musculo' ? 'Subir Músculo' : 'Sin Objetivo'"
-                                            [variant]="patient()?.meta_objetivo ? 'primary' : 'ghost'"
-                                            size="md">
-                                </app-a-badge>
-                            } @else {
-                                <select [(ngModel)]="patient().meta_objetivo" 
-                                        class="bg-nutri-rose/5 dark:bg-white/5 dark:text-slate-300 rounded-xl px-4 py-2 text-sm font-bold outline-none border border-nutri-rose/10 focus:ring-2 focus:ring-nutri-rose/20 transition-all cursor-pointer">
-                                    <option [value]="null">Seleccionar Objetivo...</option>
-                                    <option value="bajar_peso">Bajar Peso</option>
-                                    <option value="bajar_grasa">Bajar Grasa</option>
-                                    <option value="subir_musculo">Subir Músculo</option>
-                                </select>
-                            }
-                        </div>
-                    </div>
-
-                    <!-- Achievement Milestones -->
-                    @if (currentGoal()) {
-                        <div class="pt-6 border-t border-nutri-rose/5">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-[10px] font-bold text-nutri-text/40 uppercase tracking-[0.2em]">Progreso del Objetivo</span>
-                                <span class="text-xs font-black text-nutri-rose">{{ progressPercentage() }}%</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2">
-                                @for (m of milestones(); track m.label) {
-                                    <div class="relative group">
-                                        <div class="h-2 rounded-full transition-all duration-700 overflow-hidden"
-                                             [ngClass]="m.achieved ? 'bg-nutri-rose shadow-[0_0_10px_rgba(235,126,122,0.3)]' : 'bg-nutri-rose/10 dark:bg-white/5'">
-                                        </div>
-                                        <div class="mt-2 flex flex-col items-center">
-                                            <span class="text-[9px] font-black transition-colors duration-300"
-                                                  [ngClass]="m.achieved ? 'text-nutri-rose' : 'text-nutri-text/30 dark:text-slate-600'">
-                                                {{ m.label }}
-                                            </span>
-                                            @if (m.achieved) {
-                                                <app-a-icon name="star" customClass="text-[8px] text-nutri-rose mt-0.5 animate-bounce"></app-a-icon>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Peso Habitual</span>
-                        @if (!isEditing()) {
-                            <p class="text-2xl font-bold serif">{{patient()?.peso_habitual || '---'}} <span class="text-xs font-normal text-nutri-text/50">kg</span></p>
-                        }
-                        @if (isEditing()) {
-                            <div class="flex items-center gap-2">
-                                <input [(ngModel)]="patient().peso_habitual" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center">
-                                <span class="text-xs font-normal text-nutri-text/50">kg</span>
-                            </div>
-                        }
-                    </div>
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm border-b-2 border-b-nutri-rose/20 flex flex-col items-center justify-center text-center transition-colors">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">
-                            {{ patient()?.meta_objetivo === 'bajar_grasa' ? 'Grasa Meta (%)' : 
-                               patient()?.meta_objetivo === 'subir_musculo' ? 'Músculo Meta (kg)' : 'Peso Meta (kg)' }}
-                        </span>
-                        @if (!isEditing()) {
-                            <p class="text-2xl font-bold serif text-nutri-rose">
-                                {{ (patient()?.meta_objetivo === 'bajar_grasa' ? patient()?.grasa_meta : 
-                                    patient()?.meta_objetivo === 'subir_musculo' ? patient()?.musculo_meta : 
-                                    patient()?.peso_meta) || '---' }}
-                                <span class="text-xs font-normal text-nutri-rose/40">
-                                    {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
-                                </span>
-                            </p>
-                        }
-                        @if (isEditing()) {
-                            <div class="flex items-center gap-2">
-                                @if (patient()?.meta_objetivo === 'bajar_grasa') {
-                                    <input [(ngModel)]="patient().grasa_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
-                                } @else if (patient()?.meta_objetivo === 'subir_musculo') {
-                                    <input [(ngModel)]="patient().musculo_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
-                                } @else {
-                                    <input [(ngModel)]="patient().peso_meta" type="number" class="w-20 bg-nutri-rose/5 rounded-lg px-2 py-1 text-xl font-bold serif outline-none border-none text-center text-nutri-rose">
-                                }
-                                <span class="text-xs font-normal text-nutri-rose/40">
-                                    {{ patient()?.meta_objetivo === 'bajar_grasa' ? '%' : 'kg' }}
-                                </span>
-                            </div>
-                        }
-                    </div>
-                    <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center transition-colors">
-                        <span class="text-[10px] font-bold text-nutri-rose/70 uppercase tracking-widest block mb-2">Cambios Recientes</span>
-                        @if (!isEditing()) {
-                            <p class="text-sm font-medium">{{patient()?.cambios_peso_detalle || 'Sin cambios registrados'}}</p>
-                        }
-                        @if (isEditing()) {
-                            <textarea [(ngModel)]="patient().cambios_peso_detalle" class="w-full bg-nutri-rose/5 rounded-lg px-2 py-1 text-xs font-medium outline-none border-none resize-none min-h-[40px] text-center" placeholder="Detalles de cambios..."></textarea>
-                        }
-                    </div>
-                </div>
-
                 <div class="bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-nutri-rose/5 flex items-center justify-center text-nutri-rose">
@@ -1383,24 +1157,27 @@
             </div>
         }
 
-        <!-- Tab 5: Notas Persistentes Optimizadas -->
+        <!-- Tab 5: Notas -->
         @if (activeTab() === 5) {
             <div class="space-y-4 animate-fade-up h-full flex flex-col">
-                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                     <div class="space-y-0.5">
                         <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
-                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Sincronización automática activa</p>
+                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Edición centralizada. Pulsa "Editar" arriba para modificar.</p>
                     </div>
-                    <button class="btn-primary" [disabled]="saving()" (click)="saveChanges()">
-                        <app-a-icon [name]="saving() ? 'sync' : 'save'" customClass="mr-2" [ngClass]="{'animate-spin': saving()}"></app-a-icon>
-                        <span class="text-[10px]">{{ saving() ? 'GUARDANDO...' : 'GUARDAR' }}</span>
-                    </button>
+                    @if (isEditing()) {
+                        <app-a-badge label="Modo Edición Activo" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
+                    } @else {
+                        <app-a-badge label="Vista de Lectura" variant="ghost" size="sm" icon="lock"></app-a-badge>
+                    }
                 </div>
                 
                 <div class="relative flex-1">
                     <textarea [(ngModel)]="patient().notas" 
+                              [disabled]="!isEditing()"
                               placeholder="Escribe aquí las notas, seguimiento o evolución..."
-                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"></textarea>
+                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"
+                              [ngClass]="!isEditing() ? 'cursor-default opacity-85 bg-slate-50/50 dark:bg-white/[0.02]' : 'bg-white dark:bg-white/5 shadow-none ring-1 ring-nutri-rose/20'"></textarea>
                     
                     <div class="absolute bottom-4 right-6 text-[8px] text-nutri-rose/20 font-bold uppercase tracking-[0.4em]">
                         Nutrilev Management System
