@@ -94,6 +94,16 @@
                                         Actualizado: {{ patient()?.ultima_actualizacion | date:'dd/MM/yy' }}
                                     </span>
                                 }
+                                @if (patient()?.ultimo_login) {
+                                    <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest shrink-0 mt-0.5 flex items-center gap-1" title="Fecha de último inicio de sesión en el portal">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        Último acceso: {{ patient()?.ultimo_login | date:'dd/MM/yy HH:mm' }}
+                                    </span>
+                                } @else if (patient()?.acceso_portal) {
+                                    <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest shrink-0 mt-0.5">
+                                        Sin accesos registrados
+                                    </span>
+                                }
                             </div>
                         }
                     </div>

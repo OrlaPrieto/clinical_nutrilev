@@ -71,4 +71,25 @@ export class PatientTableOrganism {
       window.open(url, '_blank', 'noopener');
     }
   }
+
+  formatLastLoginDate(isoDate?: string | null): string {
+    if (!isoDate) return 'Nunca ha accedido';
+    try {
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) return 'Nunca ha accedido';
+      
+      const now = new Date();
+      const isToday = date.toDateString() === now.toDateString();
+      
+      const timeStr = date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
+      if (isToday) {
+        return `Hoy ${timeStr}`;
+      }
+      
+      const dateStr = date.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+      return `${dateStr}, ${timeStr}`;
+    } catch {
+      return 'Nunca ha accedido';
+    }
+  }
 }

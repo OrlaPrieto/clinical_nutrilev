@@ -29,7 +29,19 @@
               <div class="flex items-center gap-2">
                 <div class="max-w-full min-w-0">
                   <div class="flex items-center gap-2">
-                    <p class="font-bold text-nutri-text dark:text-slate-200 serif text-lg group-hover:text-nutri-rose transition-colors leading-tight">{{ patient.nombre }}</p>
+                    @if (!patient.dado_de_baja && patient.acceso_portal) {
+                      @if (patient.ultimo_login) {
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse shrink-0 cursor-help" 
+                              [title]="'Último acceso al portal: ' + formatLastLoginDate(patient.ultimo_login)"></span>
+                      } @else {
+                        <span class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0 cursor-help" 
+                              title="Sin accesos registrados al portal"></span>
+                      }
+                    }
+                    <p class="font-bold text-nutri-text dark:text-slate-200 serif text-lg group-hover:text-nutri-rose transition-colors leading-tight"
+                       [title]="patient.acceso_portal && patient.ultimo_login ? 'Último acceso al portal: ' + formatLastLoginDate(patient.ultimo_login) : ''">
+                      {{ patient.nombre }}
+                    </p>
                     @if (patient.dado_de_baja) {
                       <app-a-badge label="BAJA" variant="danger" size="sm"></app-a-badge>
                     } @else if (!patient.acceso_portal) {
@@ -204,6 +216,15 @@
 
           <div>
             <div class="flex items-center gap-2">
+              @if (!patient.dado_de_baja && patient.acceso_portal) {
+                @if (patient.ultimo_login) {
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse shrink-0 cursor-help" 
+                        [title]="'Último acceso al portal: ' + formatLastLoginDate(patient.ultimo_login)"></span>
+                } @else {
+                  <span class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0 cursor-help" 
+                        title="Sin accesos registrados al portal"></span>
+                }
+              }
               <p class="font-bold text-nutri-text dark:text-slate-200 serif text-base sm:text-lg leading-tight">{{ patient.nombre }}</p>
               @if (patient.dado_de_baja) {
                 <app-a-badge label="BAJA" variant="danger" size="sm" icon="person_off"></app-a-badge>
