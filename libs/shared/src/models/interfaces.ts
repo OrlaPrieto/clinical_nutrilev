@@ -54,6 +54,7 @@ export interface Patient {
   acceso_portal: boolean;
   created_at: string;
   ultima_actualizacion?: string | null;
+  ultimo_login?: string | null;
   foto_url?: string | null;
   plan_citas?: number | null;
   plan_citas_completadas?: number | null;

@@ -21,7 +21,49 @@ export class PatientService {
   ) {}
 
   async findAll(): Promise<Patient[]> {
-    return this.patientRepository.findAll();
+    const patients = await this.patientRepository.findAll();
+    try {
+      const supabase = this.supabaseService.getClient() as any;
+      const loginMap = new Map<string, string>();
+
+      // 1. Fetch real Supabase Auth users to get official last_sign_in_at timestamps
+      const { data: authData } = await supabase.auth.admin.listUsers();
+      if (authData && authData.users) {
+        authData.users.forEach((u: any) => {
+          if (u.email && u.last_sign_in_at) {
+            loginMap.set(u.email.toLowerCase(), u.last_sign_in_at);
+          }
+        });
+      }
+
+      // 2. Fetch push_subscriptions as secondary fallback/supplement
+      const { data: subs } = await supabase
+        .from('push_subscriptions')
+        .select('email, updated_at');
+        
+      if (subs && subs.length > 0) {
+        subs.forEach((s: any) => {
+          if (s.email && s.updated_at) {
+            const email = s.email.toLowerCase();
+            const existingTime = loginMap.get(email);
+            if (!existingTime || new Date(s.updated_at) > new Date(existingTime)) {
+              loginMap.set(email, s.updated_at);
+            }
+          }
+        });
+      }
+
+      // 3. Attach exact login timestamps to patients
+      patients.forEach((p: any) => {
+        const cleanEmail = p.email?.toLowerCase();
+        if (cleanEmail && loginMap.has(cleanEmail)) {
+          p.ultimo_login = loginMap.get(cleanEmail);
+        }
+      });
+    } catch (e) {
+      console.warn('[PatientService] Suppressed error in Supabase Auth login timestamp sync:', e);
+    }
+    return patients;
   }
 
   async findByEmail(email: string): Promise<Patient> {
