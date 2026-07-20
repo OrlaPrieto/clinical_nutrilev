@@ -89,17 +89,6 @@ export class AuthService {
   async getRole(email: string): Promise<{ role: string }> {
     const cleanEmail = email.toLowerCase();
 
-    // Asynchronously update ultimo_login in patients table if email exists as a patient
-    (this.supabaseService.getClient() as any)
-      .from('patients')
-      .update({ ultimo_login: new Date().toISOString() })
-      .ilike('email', cleanEmail)
-      .then(({ error: updateErr }) => {
-        if (updateErr) {
-          console.warn('[AuthService] Suppressed error updating ultimo_login:', updateErr.message);
-        }
-      });
-
     if (this.adminEmails.includes(cleanEmail)) {
       return { role: 'admin' };
     }
@@ -124,16 +113,6 @@ export class AuthService {
       const isPatient = results.some((p) => p.acceso_portal && !p.dado_de_baja);
       if (isPatient) {
         role = 'patient';
-        // Update last login timestamp for active patient
-        (this.supabaseService.getClient() as any)
-          .from('patients')
-          .update({ ultimo_login: new Date().toISOString() })
-          .ilike('email', cleanEmail)
-          .then(({ error: updateErr }) => {
-            if (updateErr) {
-              console.warn('[AuthService] Suppressed error updating ultimo_login:', updateErr.message);
-            }
-          });
       } else {
         const isPending = results.some(
           (p) => !p.acceso_portal && !p.dado_de_baja,

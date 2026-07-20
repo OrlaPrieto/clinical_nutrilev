@@ -30,13 +30,6 @@ export class NotificationsService {
   async saveSubscription(email: string, subscription: any): Promise<boolean> {
     const cleanEmail = email.toLowerCase();
     const supabase = this.supabaseService.getClient() as any;
-    
-    // Update ultimo_login in patients table as push subscription proves active portal access
-    supabase
-      .from('patients')
-      .update({ ultimo_login: new Date().toISOString() })
-      .ilike('email', cleanEmail)
-      .then(() => {});
 
     // Check if subscription already exists for this email and endpoint
     const { data: existing, error: getError } = await supabase
