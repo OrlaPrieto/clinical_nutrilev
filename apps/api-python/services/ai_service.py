@@ -1,8 +1,5 @@
-"""
-ai_service.py — Nutrilev AI Menu Orchestrator v4.0
-====================================================
-Orquestador principal que integra Gemini y la generación de DOCX.
-"""
+from __future__ import annotations
+from typing import Optional, List, Dict, Any
 
 from services.docx_utils import (
     Document, _build_docx, GRUPOS_PERMITIDOS, _norm_g
@@ -518,7 +515,7 @@ def get_fallback_image(query: str) -> str:
     return "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=800&auto=format&fit=crop"
 
 
-def fetch_unsplash_image(query: str, access_key: str) -> str | None:
+def fetch_unsplash_image(query: str, access_key: str) -> Optional[str]:
     """Consulta la API oficial de Unsplash buscando fotografías gastronómicas landscape."""
     import urllib.parse
     import requests
@@ -544,7 +541,7 @@ def fetch_unsplash_image(query: str, access_key: str) -> str | None:
     return None
 
 
-def fetch_pexels_image(query: str, pexels_key: str) -> str | None:
+def fetch_pexels_image(query: str, pexels_key: str) -> Optional[str]:
     """Consulta la API de Pexels buscando imágenes fotográficas landscape de alimentos."""
     import urllib.parse
     import requests
