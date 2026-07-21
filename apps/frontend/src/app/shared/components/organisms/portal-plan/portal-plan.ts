@@ -1,4 +1,4 @@
-import { Component, input, signal, effect, inject, OnInit, OnDestroy, HostListener, untracked, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, signal, computed, effect, inject, OnInit, OnDestroy, HostListener, untracked, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../../services/patient';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -38,6 +38,19 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   menuProgress = signal<number>(0);
   menuLoadingMessage = signal<string>('Iniciando lectura de tu plan...');
   showMealImages = signal<boolean>(true);
+
+  nutritionTips: string[] = [
+    '🥑 Tip Nutrilev: Las grasas saludables del aguacate ayudan a absorber mejor las vitaminas A, D, E y K.',
+    '🤖 NutriIA: Clasificando alimentos y calculando equivalencias del SMAE...',
+    '🥗 Tip Nutrilev: Mantenerte hidratado favorece el metabolismo y mejora la digestión.',
+    '✨ NutriIA: Estructurando tus tiempos de comida y porciones recomendadas...',
+    '🍳 Tip Nutrilev: Consumir suficiente proteína en el desayuno previene antojos vespertinos.',
+    '🍏 Tip Nutrilev: Combinar frutas con frutos secos o yogur ayuda a mantener la glucosa estable.',
+    '🚀 NutriIA: Finalizando detalles de tu menú digital personalizado...'
+  ];
+
+  currentTipIndex = signal<number>(0);
+  currentNutritionTip = computed(() => this.nutritionTips[this.currentTipIndex()]);
 
   toggleDayDropdown() {
     this.showDayDropdown.update(v => !v);
@@ -212,14 +225,17 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     this.menuLoadingMessage.set('Iniciando lectura de tu plan...');
 
     let currentProgress = 0;
+    let tipTimerCounter = 0;
+    this.currentTipIndex.set(0);
+
     const updateProgressMessage = (pct: number) => {
       if (pct < 20) {
         this.menuLoadingMessage.set('Descargando archivo del plan alimenticio...');
-      } else if (pct < 40) {
+      } else if (pct < 45) {
         this.menuLoadingMessage.set('Analizando texto y estructura del documento...');
-      } else if (pct < 65) {
+      } else if (pct < 75) {
         this.menuLoadingMessage.set('Clasificando comidas, ingredientes y porciones...');
-      } else if (pct < 85) {
+      } else if (pct < 90) {
         this.menuLoadingMessage.set('Procesando con Inteligencia Artificial...');
       } else {
         this.menuLoadingMessage.set('Estructurando recetas y equivalentes de intercambio...');
@@ -227,19 +243,26 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     };
 
     this.progressInterval = setInterval(() => {
-      if (currentProgress < 95) {
-        let increment = 1.8;
-        if (currentProgress >= 40 && currentProgress < 75) {
-          increment = 0.9;
-        } else if (currentProgress >= 75) {
-          increment = 0.3;
-        }
-        currentProgress = Math.min(95, currentProgress + increment);
-        const rounded = Math.round(currentProgress);
-        this.menuProgress.set(rounded);
-        updateProgressMessage(rounded);
+      // Curva asintótica suave: nunca se congela en 95%
+      if (currentProgress < 80) {
+        currentProgress += 2.4;
+      } else if (currentProgress < 90) {
+        currentProgress += 0.9;
+      } else if (currentProgress < 99) {
+        // Avance continuo asintótico hacia el 99%
+        currentProgress += (99.2 - currentProgress) * 0.07;
       }
-    }, 800);
+
+      const rounded = Math.min(99, Math.floor(currentProgress));
+      this.menuProgress.set(rounded);
+      updateProgressMessage(rounded);
+
+      // Rotar tip nutricional/estado cada 3.5 segundos (7 intervalos de 500ms)
+      tipTimerCounter++;
+      if (tipTimerCounter % 7 === 0) {
+        this.currentTipIndex.update(idx => (idx + 1) % this.nutritionTips.length);
+      }
+    }, 500);
 
     try {
       const data = await this.patientService.getParsedMenu(url);
