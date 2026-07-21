@@ -37,7 +37,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   showDayDropdown = signal<boolean>(false);
   menuProgress = signal<number>(0);
   menuLoadingMessage = signal<string>('Iniciando lectura de tu plan...');
-  showMealImages = signal<boolean>(true);
+  showMealImages = signal<boolean>(false);
 
   nutritionTips: string[] = [
     '🥑 Tip Nutrilev: Las grasas saludables del aguacate ayudan a absorber mejor las vitaminas A, D, E y K.',
