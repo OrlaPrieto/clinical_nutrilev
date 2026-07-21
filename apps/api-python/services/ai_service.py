@@ -301,7 +301,7 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
                                     "emoji": {"type": "STRING", "description": "Emoji representativo de la comida (ej. 🍳, 🍏, 🥗, ☕, 🌙)"},
                                     "platillo": {"type": "STRING", "description": "Nombre del platillo o preparación principal. Ej: 'Sándwich de Pollo' o 'Licuado Verde'"},
                                     "preparacion": {"type": "STRING", "description": "Instrucciones de preparación o receta detalladas si vienen en el texto. De lo contrario, dejar vacío."},
-                                    "termino_busqueda_imagen": {"type": "STRING", "description": "Término de búsqueda simple en inglés representativo del platillo (ej. 'oatmeal' para avena, 'chicken salad' para ensalada de pollo, 'green smoothie' para licuado verde) para buscar fotos en Pexels. Máximo 2 o 3 palabras."},
+                                    "termino_busqueda_imagen": {"type": "STRING", "description": "Término de búsqueda simple en inglés hiper-preciso optimizado para fotografía gastronómica mexicana o internacional en Unsplash/Pexels (ej. 'mexican chilaquiles green salsa', 'chicken fajitas skillet', 'oatmeal bowl berries', 'mexican enfrijoladas', 'nopal toast', 'beef picadillo', 'tuna avocado salad'). Si el platillo es mexicano o latinoamericano, DEBES incluir la palabra 'mexican' o términos culinarios auténticos. Máximo 3 a 4 palabras en inglés."},
                                     "ingredientes": {
                                         "type": "ARRAY",
                                         "description": "Lista de ingredientes o alimentos individuales.",
@@ -428,64 +428,166 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     raise ValueError("No se pudo extraer el menú digitalizado con ningún modelo de Gemini.")
 
 
+MEXICAN_DISH_SEARCH_MAP = {
+    "chilaquiles": "mexican green chilaquiles with chicken",
+    "enfrijoladas": "mexican enfrijoladas black bean sauce",
+    "enmoladas": "mexican chicken mole enmoladas",
+    "entomatadas": "mexican entomatadas tomato sauce",
+    "molletes": "mexican molletes refried beans cheese toast",
+    "nopal": "mexican nopal cactus salad tostada",
+    "nopales": "mexican cooked nopal cactus dish",
+    "sincronizada": "mexican ham cheese quesadilla panela",
+    "sincronizadas": "mexican ham cheese quesadilla panela",
+    "quesadilla": "mexican cheese quesadilla panela",
+    "quesadillas": "mexican cheese quesadillas panela",
+    "fajitas": "chicken beef fajitas skillet mexican",
+    "picadillo": "mexican ground beef picadillo vegetables",
+    "ceviche": "mexican fish ceviche tostada",
+    "salpicon": "shredded beef salad mexican salpicon",
+    "salpicón": "shredded beef salad mexican salpicon",
+    "tinga": "mexican chicken tinga tostadas",
+    "licuado": "healthy smoothie bowl oat fruit",
+    "batido": "healthy smoothie bowl oat fruit",
+    "avena": "oatmeal bowl berries cinnamon",
+    "huevo": "mexican scrambled eggs salsa",
+    "huevos": "mexican scrambled eggs salsa",
+    "caldo": "chicken soup mexican caldo de pollo",
+    "sopa": "vegetable chicken soup mexican",
+    "pozole": "mexican pozole soup",
+    "tacos": "mexican tacos guisado",
+    "tostada": "mexican tostada avocado salsa",
+    "tostadas": "mexican tostada avocado salsa",
+    "panela": "panela cheese salad mexican",
+    "atun": "tuna salad avocado bowl",
+    "atún": "tuna salad avocado bowl",
+    "pechuga": "grilled chicken breast salad",
+    "bistec": "mexican steak fajitas skillet",
+    "alambre": "mexican steak alambre skillet bell pepper",
+}
+
+
+def normalize_mexican_query(dish_name: str, search_term: str) -> str:
+    """
+    Normaliza y enriquece la consulta de búsqueda para asegurar que represente
+    de forma hiper-precisa la gastronomía mexicana o clínica.
+    """
+    combined = f"{dish_name or ''} {search_term or ''}".lower()
+    
+    # 1. Buscar coincidencias en el diccionario gastronómico mexicano
+    for key, mapped_query in MEXICAN_DISH_SEARCH_MAP.items():
+        if key in combined:
+            return mapped_query
+
+    # 2. Si ya viene un término formateado en inglés por la IA, asegurar contexto si es platillo mexicano
+    raw_term = (search_term or dish_name or "healthy food").lower()
+    mexican_keywords = ["taco", "tostada", "nopal", "salsa", "chile", "frijol", "panela", "tortilla", "tamal", "guacamole"]
+    if any(kw in combined for kw in mexican_keywords) and "mexican" not in raw_term:
+        return f"mexican {raw_term}"
+        
+    return raw_term
+
+
 def get_fallback_image(query: str) -> str:
     """
-    Devuelve una imagen de comida saludable de alta calidad desde Unsplash basada en
-    palabras clave dentro del platillo/búsqueda para dar variedad visual cuando no hay API key.
+    Devuelve una imagen de comida saludable y mexicana de alta calidad en HD desde Unsplash
+    cuando no hay API Keys configuradas o falla la red.
     """
     query_lower = (query or "").lower()
     
-    # 1. Smoothie / Licuados
+    # 1. Licuados / Batidos / Smoothies
     if any(kw in query_lower for kw in ["smoothie", "licuado", "batido", "juice", "jugo", "bebida"]):
         return "https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=800&auto=format&fit=crop"
     
-    # 2. Desayunos / Toast / Avena / Huevos
-    if any(kw in query_lower for kw in ["egg", "huevo", "toast", "avocado", "aguacate", "desayuno", "breakfast", "pan", "avena", "oatmeal", "hotcake", "waffle"]):
+    # 2. Desayunos Mexicanos / Huevos / Avena / Molletes / Toast
+    if any(kw in query_lower for kw in ["egg", "huevo", "chilaquiles", "mollete", "toast", "avocado", "aguacate", "desayuno", "breakfast", "pan", "avena", "oatmeal", "hotcake"]):
         return "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=800&auto=format&fit=crop"
     
-    # 3. Ensaladas / Bowls / Verduras
-    if any(kw in query_lower for kw in ["salad", "ensalada", "bowl", "verdura", "vegetal", "healthy"]):
+    # 3. Ensaladas / Bowls / Nopales / Ceviche / Panela
+    if any(kw in query_lower for kw in ["salad", "ensalada", "nopal", "bowl", "ceviche", "panela", "verdura", "vegetal"]):
         return "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800&auto=format&fit=crop"
         
     # 4. Yogurt / Snacks / Fruta / Colaciones
     if any(kw in query_lower for kw in ["yogurt", "yogur", "fruit", "fruta", "snack", "colacion", "colación", "berries", "fresa", "manzana"]):
         return "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=800&auto=format&fit=crop"
         
-    # 5. Carnes / Pollo / Tacos / Cena / Comida fuerte
-    if any(kw in query_lower for kw in ["chicken", "pollo", "beef", "carne", "fish", "pescado", "tacos", "tostadas", "comida", "lunch", "dinner", "cena"]):
+    # 5. Carnes / Pollo / Tacos / Fajitas / Picadillo / Tinga / Comida fuerte
+    if any(kw in query_lower for kw in ["chicken", "pollo", "beef", "carne", "fish", "pescado", "tacos", "fajitas", "picadillo", "tinga", "tostadas", "comida", "lunch", "dinner"]):
         return "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=800&auto=format&fit=crop"
         
-    # Default healthy food general
+    # Default fotografía culinaria general
     return "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=800&auto=format&fit=crop"
 
 
-def fetch_dish_image_url(query: str, pexels_key: str) -> str:
-    """
-    Realiza una búsqueda de imágenes en Pexels API para obtener una fotografía
-    estética y apaisada (landscape) del platillo. Devuelve una imagen de comida
-    apropiada por defecto si no se define la clave o si la búsqueda falla.
-    """
+def fetch_unsplash_image(query: str, access_key: str) -> str | None:
+    """Consulta la API oficial de Unsplash buscando fotografías gastronómicas landscape."""
     import urllib.parse
     import requests
-    
-    if not pexels_key or not query:
-        return get_fallback_image(query)
+
+    if not access_key or not query:
+        return None
 
     try:
-        # Codificar consulta y hacer request
+        safe_query = urllib.parse.quote(f"{query} food")
+        url = f"https://api.unsplash.com/search/photos?query={safe_query}&per_page=3&orientation=landscape"
+        headers = {"Authorization": f"Client-ID {access_key}"}
+        
+        resp = requests.get(url, headers=headers, timeout=4)
+        if resp.status_code == 200:
+            data = resp.json()
+            results = data.get("results", [])
+            if results:
+                urls = results[0].get("urls", {})
+                return urls.get("regular") or urls.get("small")
+    except Exception as e:
+        print(f"[MenuParser AI] Error consultando Unsplash API para '{query}': {e}")
+        
+    return None
+
+
+def fetch_pexels_image(query: str, pexels_key: str) -> str | None:
+    """Consulta la API de Pexels buscando imágenes fotográficas landscape de alimentos."""
+    import urllib.parse
+    import requests
+
+    if not pexels_key or not query:
+        return None
+
+    try:
         safe_query = urllib.parse.quote(query)
-        url = f"https://api.pexels.com/v1/search?query={safe_query}&per_page=1&orientation=landscape"
+        url = f"https://api.pexels.com/v1/search?query={safe_query}&per_page=3&orientation=landscape"
         headers = {"Authorization": pexels_key}
         
-        response = requests.get(url, headers=headers, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
+        resp = requests.get(url, headers=headers, timeout=4)
+        if resp.status_code == 200:
+            data = resp.json()
             photos = data.get("photos", [])
             if photos:
-                # Priorizar resolución landscape para cabeceras de tarjeta
                 srcs = photos[0].get("src", {})
-                return srcs.get("landscape", srcs.get("large", get_fallback_image(query)))
+                return srcs.get("landscape") or srcs.get("large")
     except Exception as e:
-        print(f"[MenuParser AI] Error consultando Pexels para '{query}': {e}")
-        
-    return get_fallback_image(query)
+        print(f"[MenuParser AI] Error consultando Pexels API para '{query}': {e}")
+
+    return None
+
+
+def fetch_dish_image_url(dish_name: str, search_term: str = "", unsplash_key: str = "", pexels_key: str = "") -> str:
+    """
+    Motor Híbrido de Imágenes (Unsplash + Pexels + Fallback Mexicano):
+    Obtiene la fotografía culinaria más precisa y estética del platillo.
+    """
+    final_query = normalize_mexican_query(dish_name, search_term)
+    
+    # 1. Intentar Unsplash API (máxima calidad en fotografía gastronómica)
+    if unsplash_key:
+        img_url = fetch_unsplash_image(final_query, unsplash_key)
+        if img_url:
+            return img_url
+
+    # 2. Intentar Pexels API (segundo nivel de respaldo)
+    if pexels_key:
+        img_url = fetch_pexels_image(final_query, pexels_key)
+        if img_url:
+            return img_url
+
+    # 3. Fallback categorizado HD si no hay claves o falla la conexión
+    return get_fallback_image(final_query)

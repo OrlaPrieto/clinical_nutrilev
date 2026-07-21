@@ -238,14 +238,21 @@ def parse_menu_worker(task_id, menu_url, gemini_key):
         from services.ai_service import parse_menu_document_to_json
         parsed_json = parse_menu_document_to_json(menu_url, gemini_key)
         
-        # Enriquecer con imágenes de Pexels si está configurado en el entorno
+        # Enriquecer con imágenes hiper-precisas (Unsplash + Pexels + Fallback Mexicano)
         import os
-        pexels_key = os.getenv("PEXELS_API_KEY")
+        unsplash_key = os.getenv("UNSPLASH_ACCESS_KEY") or os.getenv("UNSPLASH_KEY") or ""
+        pexels_key = os.getenv("PEXELS_API_KEY") or ""
         
         def enrich_meal(meal):
-            query = meal.get("termino_busqueda_imagen") or meal.get("platillo", "")
+            dish_name = meal.get("platillo", "")
+            search_term = meal.get("termino_busqueda_imagen", "")
             from services.ai_service import fetch_dish_image_url
-            meal["platillo_imagen_url"] = fetch_dish_image_url(query, pexels_key)
+            meal["platillo_imagen_url"] = fetch_dish_image_url(
+                dish_name=dish_name, 
+                search_term=search_term, 
+                unsplash_key=unsplash_key, 
+                pexels_key=pexels_key
+            )
 
         meals_to_enrich = []
         for sec in parsed_json.get("secciones", []):
@@ -300,14 +307,21 @@ def get_parsed_menu():
         from services.ai_service import parse_menu_document_to_json
         parsed_json = parse_menu_document_to_json(menu_url, gemini_key)
         
-        # Enriquecer con imágenes de Pexels si está configurado en el entorno
+        # Enriquecer con imágenes hiper-precisas (Unsplash + Pexels + Fallback Mexicano)
         import os
-        pexels_key = os.getenv("PEXELS_API_KEY")
+        unsplash_key = os.getenv("UNSPLASH_ACCESS_KEY") or os.getenv("UNSPLASH_KEY") or ""
+        pexels_key = os.getenv("PEXELS_API_KEY") or ""
         
         def enrich_meal(meal):
-            query = meal.get("termino_busqueda_imagen") or meal.get("platillo", "")
+            dish_name = meal.get("platillo", "")
+            search_term = meal.get("termino_busqueda_imagen", "")
             from services.ai_service import fetch_dish_image_url
-            meal["platillo_imagen_url"] = fetch_dish_image_url(query, pexels_key)
+            meal["platillo_imagen_url"] = fetch_dish_image_url(
+                dish_name=dish_name, 
+                search_term=search_term, 
+                unsplash_key=unsplash_key, 
+                pexels_key=pexels_key
+            )
 
         meals_to_enrich = []
         for sec in parsed_json.get("secciones", []):

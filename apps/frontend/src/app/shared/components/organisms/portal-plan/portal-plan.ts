@@ -37,7 +37,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   showDayDropdown = signal<boolean>(false);
   menuProgress = signal<number>(0);
   menuLoadingMessage = signal<string>('Iniciando lectura de tu plan...');
-  showMealImages = signal<boolean>(false);
+  showMealImages = signal<boolean>(true);
 
   toggleDayDropdown() {
     this.showDayDropdown.update(v => !v);
