@@ -74,7 +74,7 @@ export class PatientService {
     id: string,
     updateData: PatientUpdate & { action?: string; originalEmail?: string },
   ): Promise<Patient> {
-    const { action, originalEmail, id: _id, ...cleanData } = updateData;
+    const { action, originalEmail, id: _id, ultimo_login: _ultimo_login, ...cleanData } = updateData;
 
     const emailChanged =
       originalEmail &&

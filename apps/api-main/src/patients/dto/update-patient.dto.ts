@@ -249,6 +249,10 @@ export class UpdatePatientDto {
 
   @IsString()
   @IsOptional()
+  ultimo_login?: string;
+
+  @IsString()
+  @IsOptional()
   menu_url?: string;
 
   @IsString()
