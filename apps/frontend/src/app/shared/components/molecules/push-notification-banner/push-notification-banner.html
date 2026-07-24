@@ -177,17 +177,22 @@
       <!-- Body Instructions -->
       <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
         
-        <!-- Section 1: Android / Chrome / Edge -->
+        <!-- Section 1: Android (App PWA o Navegador) / PC -->
         <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 space-y-2.5">
           <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
-            <app-a-icon name="language" size="18px" class="text-nutri-rose"></app-a-icon>
-            <span>Chrome / Navegadores Android o PC</span>
+            <app-a-icon name="android" size="18px" class="text-nutri-rose"></app-a-icon>
+            <span>Android (App PWA o Navegador) / PC</span>
           </div>
-          <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 pl-5 list-decimal">
-            <li>Toca el icono del <strong>candado 🔒 / opciones</strong> junto a la dirección de esta página web.</li>
-            <li>Selecciona <strong>Permisos del sitio</strong> o <strong>Notificaciones</strong>.</li>
-            <li>Cambia el estado de <em>Bloqueado</em> a <strong>Permitir</strong>.</li>
-          </ol>
+          <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-2 pl-1 list-none">
+            <li class="flex items-start gap-1.5">
+              <span class="font-bold text-nutri-rose shrink-0">•</span>
+              <span><strong>Si usas la App instalada:</strong> Abre <strong>Ajustes</strong> de tu teléfono -> <strong>Aplicaciones</strong> -> busca <strong>Nutrilev</strong> -> <strong>Notificaciones</strong> -> activa <strong>Permitir</strong>.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="font-bold text-nutri-rose shrink-0">•</span>
+              <span><strong>Si estás en Chrome (Web):</strong> Toca el <strong>candado 🔒 / 3 puntos (⋮)</strong> en la barra de dirección -> <strong>Permisos del sitio</strong> -> <strong>Permitir notificaciones</strong>.</span>
+            </li>
+          </ul>
         </div>
 
         <!-- Section 2: iPhone / Safari -->
