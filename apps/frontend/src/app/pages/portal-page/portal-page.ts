@@ -29,6 +29,7 @@ import { ShoppingListModalComponent } from './components/shopping-list-modal/sho
 import { PortalPlanOrganism } from '../../shared/components/organisms/portal-plan/portal-plan';
 import { EquivalentsModalComponent } from './components/equivalents-modal/equivalents-modal';
 import { FreeCondimentsModalComponent } from './components/free-condiments-modal/free-condiments-modal';
+import { PushNotificationBannerComponent } from '../../shared/components/molecules/push-notification-banner/push-notification-banner';
 import { PortalStateService } from '../../services/portal-state.service';
 
 @Component({
@@ -50,7 +51,8 @@ import { PortalStateService } from '../../services/portal-state.service';
     ShoppingListModalComponent,
     PortalPlanOrganism,
     EquivalentsModalComponent,
-    FreeCondimentsModalComponent
+    FreeCondimentsModalComponent,
+    PushNotificationBannerComponent
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -480,7 +482,6 @@ export class PortalPage implements OnInit, OnDestroy {
       try {
         this.state.loadPortalDataFromCache(userEmail);
         await this.state.loadPortalData(userEmail, true); 
-        this.pushService.requestSubscription(userEmail);
         this.handleUrlActions();
 
         if (typeof window !== 'undefined') {

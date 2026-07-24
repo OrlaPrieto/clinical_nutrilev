@@ -1,0 +1,226 @@
+@if (!dismissed() && pushService.permissionStatus() !== 'unsupported') {
+  <div class="mt-6 sm:mt-8 mb-6 rounded-2xl bg-white dark:bg-[#121212] border border-nutri-rose/15 dark:border-white/10 p-4 sm:p-5 shadow-sm transition-all duration-300 animate-slide-down">
+    
+    <!-- State 1: iOS Safari Non-Standalone Notice -->
+    @if (pushService.isIos() && !pushService.isStandalone()) {
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <app-a-icon name="ios_share" size="22px"></app-a-icon>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              Activar notificaciones en iPhone
+              <span class="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">iOS PWA</span>
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Para recibir alertas en iOS, presiona el botón <strong class="text-slate-700 dark:text-slate-200 font-semibold">Compartir</strong> 
+              <app-a-icon name="ios_share" size="14px" class="inline align-middle"></app-a-icon> 
+              y selecciona <strong class="text-slate-700 dark:text-slate-200 font-semibold">"Agregar a inicio"</strong>.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+          <button (click)="dismissBanner()" class="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            Entendido
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- State 2: Permission is 'default' (Soft Prompt Banner) -->
+    @else if (pushService.permissionStatus() === 'default') {
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center shrink-0 shadow-sm">
+            <app-a-icon name="notifications_active" size="22px"></app-a-icon>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">
+              ¿Quieres recibir alertas de tus citas y plan?
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Te avisaremos sobre tus próximos turnos clínicos y cambios en tu menú nutricional.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+          <button (click)="dismissBanner()" 
+                  class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                  title="Descartar por ahora">
+            <app-a-icon name="close" size="18px"></app-a-icon>
+          </button>
+          <button (click)="handleToggle()" 
+                  [disabled]="pushService.loading()"
+                  class="px-4 py-2 bg-nutri-rose hover:bg-nutri-rose/90 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+            @if (pushService.loading()) {
+              <div class="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
+            } @else {
+              <app-a-icon name="notifications" size="16px"></app-a-icon>
+            }
+            <span>Activar notificaciones</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- State 3: Permission is 'denied' (Blocked Recovery Banner) -->
+    @else if (pushService.permissionStatus() === 'denied') {
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0">
+            <app-a-icon name="notifications_off" size="22px"></app-a-icon>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              Notificaciones bloqueadas en tu navegador
+              <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500">Bloqueado</span>
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Tu navegador tiene desactivados los permisos para este sitio. Toca abajo para ver cómo desbloquearlos.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+          <button (click)="dismissBanner()" 
+                  class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                  title="Descartar">
+            <app-a-icon name="close" size="18px"></app-a-icon>
+          </button>
+          <button (click)="openHelpModal()" 
+                  class="px-4 py-2 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1.5 cursor-pointer">
+            <app-a-icon name="help_outline" size="16px"></app-a-icon>
+            <span>Cómo activarlas</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- State 4: Permission is 'granted' (Option 4 Settings Control / Toggle) -->
+    @else if (pushService.permissionStatus() === 'granted') {
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div [class]="'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ' + 
+                       (pushService.isSubscribed() ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-white/5 text-slate-400')">
+            <app-a-icon [name]="pushService.isSubscribed() ? 'notifications_active' : 'notifications_paused'" size="22px"></app-a-icon>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">
+                Alertas Push del Portal
+              </h4>
+              <span [class]="'text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ' +
+                             (pushService.isSubscribed() ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-500/10 text-slate-500')">
+                {{ pushService.isSubscribed() ? 'Activa' : 'Desactivada' }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {{ pushService.isSubscribed() ? 'Recibirás avisos directos de citas y cambios de plan.' : 'Los permisos están otorgados. Puedes reactivarlas cuando gustes.' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+          <!-- Visual Toggle Switch -->
+          <button type="button" 
+                  (click)="handleToggle()" 
+                  [disabled]="pushService.loading()"
+                  class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-nutri-rose/40 disabled:opacity-50"
+                  [class.bg-emerald-500]="pushService.isSubscribed()"
+                  [class.bg-slate-300]="!pushService.isSubscribed()"
+                  [class.dark:bg-slate-700]="!pushService.isSubscribed()"
+                  [attr.aria-checked]="pushService.isSubscribed()"
+                  role="switch"
+                  [title]="pushService.isSubscribed() ? 'Desactivar notificaciones' : 'Activar notificaciones'">
+            <span class="sr-only">Notificaciones Push</span>
+            <span [class.translate-x-5]="pushService.isSubscribed()"
+                  [class.translate-x-0]="!pushService.isSubscribed()"
+                  class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out flex items-center justify-center">
+              @if (pushService.loading()) {
+                <div class="w-3 h-3 rounded-full border-2 border-slate-400 border-t-transparent animate-spin"></div>
+              }
+            </span>
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+}
+
+<!-- Modal: Instruction Guide for Unblocking Notifications -->
+@if (showHelpModal()) {
+  <div class="fixed inset-0 z-[150] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+       (click)="closeHelpModal()">
+    <div class="bg-white dark:bg-[#161616] w-full max-w-md rounded-3xl shadow-2xl border border-nutri-rose/10 dark:border-white/10 overflow-hidden"
+         (click)="$event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-nutri-rose/5 dark:bg-white/5">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center">
+            <app-a-icon name="settings_suggest" size="20px"></app-a-icon>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">Cómo activar notificaciones</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Guía rápida de configuración</p>
+          </div>
+        </div>
+        <button (click)="closeHelpModal()" 
+                class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-all">
+          <app-a-icon name="close" size="20px"></app-a-icon>
+        </button>
+      </div>
+
+      <!-- Body Instructions -->
+      <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+        
+        <!-- Section 1: Android / Chrome / Edge -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 space-y-2.5">
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+            <app-a-icon name="language" size="18px" class="text-nutri-rose"></app-a-icon>
+            <span>Chrome / Navegadores Android o PC</span>
+          </div>
+          <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 pl-5 list-decimal">
+            <li>Toca el icono del <strong>candado 🔒 / opciones</strong> junto a la dirección de esta página web.</li>
+            <li>Selecciona <strong>Permisos del sitio</strong> o <strong>Notificaciones</strong>.</li>
+            <li>Cambia el estado de <em>Bloqueado</em> a <strong>Permitir</strong>.</li>
+          </ol>
+        </div>
+
+        <!-- Section 2: iPhone / Safari -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 space-y-2.5">
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+            <app-a-icon name="smartphone" size="18px" class="text-nutri-rose"></app-a-icon>
+            <span>iPhone / Safari (iOS)</span>
+          </div>
+          <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 pl-5 list-decimal">
+            <li>Abre la aplicación <strong>Ajustes</strong> de tu iPhone.</li>
+            <li>Ve a <strong>Notificaciones</strong> y busca <strong>Nutrilev</strong>.</li>
+            <li>Activa la opción <strong>Permitir notificaciones</strong>.</li>
+          </ol>
+        </div>
+
+        <p class="text-[11px] text-center text-slate-400 dark:text-slate-500 italic">
+          Una vez activado en tu dispositivo, toca el botón de verificar abajo.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 flex items-center justify-end gap-2">
+        <button (click)="closeHelpModal()" 
+                class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+          Cerrar
+        </button>
+        <button (click)="recheckPermission()" 
+                class="px-4 py-2 bg-nutri-rose hover:bg-nutri-rose/90 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+          <app-a-icon name="sync" size="16px"></app-a-icon>
+          <span>Verificar estado</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
