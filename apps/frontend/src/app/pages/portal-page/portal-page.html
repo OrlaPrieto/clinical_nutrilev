@@ -923,6 +923,9 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Push Notification Banner / Settings (Exclusive to Mi Plan tab) -->
+                                <app-push-notification-banner [userEmail]="patient()?.email || ''" class="block mt-6 sm:mt-8"></app-push-notification-banner>
                         </div>
                     }
 
@@ -1099,9 +1102,6 @@
                         </div>
                     }
                 }
-
-                <!-- Push Notification Banner / Settings (Bottom of Tab) -->
-                <app-push-notification-banner [userEmail]="patient()?.email || ''" class="block mt-6 sm:mt-8"></app-push-notification-banner>
             </main>
         </div>
 
