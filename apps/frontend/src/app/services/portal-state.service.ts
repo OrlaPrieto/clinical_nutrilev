@@ -245,6 +245,9 @@ export class PortalStateService {
         this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Nutrilev`);
         this.progress.set(history || []);
 
+        // Silently renew Push Subscription in backend if active in browser
+        this.pushService.autoSyncSubscription(userEmail);
+
         if (apt && apt.hasAppointment) {
           this.nextAppointment.set(apt);
         } else {

@@ -28,14 +28,18 @@ export class NotificationsService {
   }
 
   async saveSubscription(email: string, subscription: any): Promise<boolean> {
-    const cleanEmail = email.toLowerCase();
+    const cleanEmail = email.toLowerCase().trim();
     const supabase = this.supabaseService.getClient() as any;
 
-    // Check if subscription already exists for this email and endpoint
+    if (!subscription || !subscription.endpoint) {
+      this.logger.warn(`[Push] Invalid subscription object received for ${cleanEmail}`);
+      return false;
+    }
+
+    // Check if subscription already exists for this endpoint (device)
     const { data: existing, error: getError } = await supabase
       .from('push_subscriptions')
       .select('id')
-      .eq('email', cleanEmail)
       .eq('endpoint', subscription.endpoint);
 
     if (getError) {
@@ -44,10 +48,11 @@ export class NotificationsService {
     }
 
     if (existing && existing.length > 0) {
-      // Update existing subscription
+      // Update existing subscription record with cleanEmail and latest subscription_json
       const { error: updateError } = await supabase
         .from('push_subscriptions')
         .update({
+          email: cleanEmail,
           subscription_json: subscription,
           updated_at: new Date().toISOString()
         })
@@ -78,7 +83,7 @@ export class NotificationsService {
   }
 
   async sendMenuPushNotification(email: string, patientName: string): Promise<void> {
-    const cleanEmail = email.toLowerCase();
+    const cleanEmail = email.toLowerCase().trim();
     const supabase = this.supabaseService.getClient() as any;
     
     // Fetch all active subscriptions for this patient
@@ -115,10 +120,15 @@ export class NotificationsService {
       }
     });
 
+    const pushOptions: webpush.RequestOptions = {
+      TTL: 86400, // 24 hours
+      urgency: 'high', // Immediate delivery on mobile sleep / Doze mode
+    };
+
     const sendPromises = subs.map(async (subRecord: any) => {
       const sub = subRecord.subscription_json;
       try {
-        await webpush.sendNotification(sub, payload);
+        await webpush.sendNotification(sub, payload, pushOptions);
       } catch (err: any) {
         // If the push service returns 410 (Gone) or 404, the subscription is dead
         if (err.statusCode === 410 || err.statusCode === 404) {
@@ -192,10 +202,15 @@ export class NotificationsService {
       },
     });
 
+    const pushOptions: webpush.RequestOptions = {
+      TTL: 86400,
+      urgency: 'high',
+    };
+
     const sendPromises = subs.map(async (subRecord: any) => {
       const sub = subRecord.subscription_json;
       try {
-        await webpush.sendNotification(sub, payload);
+        await webpush.sendNotification(sub, payload, pushOptions);
       } catch (err: any) {
         if (err.statusCode === 410 || err.statusCode === 404) {
           this.logger.warn(`Subscription expired or gone (endpoint: ${subRecord.endpoint}). Deleting...`);
@@ -254,10 +269,15 @@ export class NotificationsService {
       },
     });
 
+    const pushOptions: webpush.RequestOptions = {
+      TTL: 3600, // 1 hour TTL for short appointment reminder
+      urgency: 'high',
+    };
+
     const sendPromises = subs.map(async (subRecord: any) => {
       const sub = subRecord.subscription_json;
       try {
-        await webpush.sendNotification(sub, payload);
+        await webpush.sendNotification(sub, payload, pushOptions);
       } catch (err: any) {
         if (err.statusCode === 410 || err.statusCode === 404) {
           this.logger.warn(`Subscription expired or gone (endpoint: ${subRecord.endpoint}). Deleting...`);

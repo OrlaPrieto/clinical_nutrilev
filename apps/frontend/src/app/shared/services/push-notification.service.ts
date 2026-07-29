@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export type NotificationPermissionStatus = 'granted' | 'denied' | 'default' | 'unsupported';
@@ -30,6 +31,27 @@ export class PushNotificationService {
         this.isSubscribed.set(!!sub);
         this.checkPermission();
       });
+    }
+  }
+
+  /**
+   * Silently auto-syncs existing push subscription with NestJS backend.
+   * Ensures backend database always has valid endpoint for the patient even after cookie clear or DB cleanup.
+   */
+  async autoSyncSubscription(email: string): Promise<void> {
+    if (!email || typeof window === 'undefined' || !this.swPush.isEnabled) return;
+    try {
+      const sub = await firstValueFrom(this.swPush.subscription);
+      if (sub) {
+        await firstValueFrom(this.http.post(`${environment.apiUrl}/notifications/subscribe`, {
+          email: email.toLowerCase().trim(),
+          subscription: sub
+        }));
+        this.isSubscribed.set(true);
+        console.log('[Push] Silent auto-resync successful for:', email);
+      }
+    } catch (err) {
+      console.warn('[Push] Auto-resync failed silently:', err);
     }
   }
 
