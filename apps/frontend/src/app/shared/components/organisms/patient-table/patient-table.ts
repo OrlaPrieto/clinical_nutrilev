@@ -92,4 +92,42 @@ export class PatientTableOrganism {
       return 'Nunca ha accedido';
     }
   }
+
+  getLatestNoteInfo(patient: Patient): { text: string; category?: string; dateStr?: string; isRecent: boolean; count: number } | null {
+    if (!patient || !patient.notas) return null;
+    const raw = patient.notas.trim();
+    if (!raw) return null;
+
+    let latestNoteText = raw;
+    let category = 'general';
+    let dateStr: string | undefined = undefined;
+    let isRecent = false;
+    let count = 1;
+
+    if (raw.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          count = parsed.length;
+          const sorted = [...parsed].sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+          const latest = sorted[0];
+          latestNoteText = latest.text;
+          category = latest.category || 'general';
+          if (latest.created_at) {
+            const created = new Date(latest.created_at);
+            const diffHours = (Date.now() - created.getTime()) / (1000 * 60 * 60);
+            isRecent = diffHours <= 48;
+            dateStr = created.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+          }
+        }
+      } catch {}
+    } else if (patient.ultima_actualizacion) {
+      const updated = new Date(patient.ultima_actualizacion);
+      const diffHours = (Date.now() - updated.getTime()) / (1000 * 60 * 60);
+      isRecent = diffHours <= 48;
+      dateStr = updated.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+    }
+
+    return { text: latestNoteText, category, dateStr, isRecent, count };
+  }
 }

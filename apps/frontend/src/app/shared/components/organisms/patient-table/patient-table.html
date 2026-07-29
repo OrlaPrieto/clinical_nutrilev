@@ -314,9 +314,26 @@
           </div>
 
           <!-- Notas Clínicas -->
+          @let noteInfo = getLatestNoteInfo(patient);
           <div class="p-3.5 bg-nutri-bg/20 dark:bg-white/[0.02] border border-nutri-rose/5 dark:border-white/[0.02] rounded-xl space-y-1">
-            <span class="text-[7.5px] font-black text-nutri-rose/60 dark:text-nutri-rose/85 uppercase tracking-widest block border-b border-nutri-rose/5 dark:border-white/5 pb-1">Notas Clínicas del Paciente</span>
-            <p class="text-[11px] text-nutri-text/80 dark:text-slate-300 font-medium leading-relaxed whitespace-pre-wrap mt-1">{{ patient.notas || 'Sin notas registradas.' }}</p>
+            <div class="flex items-center justify-between border-b border-nutri-rose/5 dark:border-white/5 pb-1">
+              <span class="text-[7.5px] font-black text-nutri-rose/80 dark:text-nutri-rose uppercase tracking-widest block flex items-center gap-1.5">
+                <span>Notas Clínicas</span>
+                @if (noteInfo) {
+                  <span class="text-[8px] px-1.5 py-0.2 rounded-md bg-nutri-rose/10 text-nutri-rose font-bold">
+                    {{ noteInfo.count }}
+                  </span>
+                }
+              </span>
+              @if (noteInfo?.isRecent) {
+                <span class="text-[8px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full animate-pulse">
+                  🟢 Reciente {{ noteInfo?.dateStr ? '• ' + noteInfo?.dateStr : '' }}
+                </span>
+              }
+            </div>
+            <p class="text-[11px] text-nutri-text/80 dark:text-slate-300 font-medium leading-relaxed whitespace-pre-wrap mt-1">
+              {{ noteInfo?.text || 'Sin notas registradas.' }}
+            </p>
           </div>
         </div>
       }

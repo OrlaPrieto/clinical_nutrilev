@@ -61,6 +61,16 @@ export interface Patient {
   plan_duration_days?: number | null;
 }
 
+export type ClinicalNoteCategory = 'seguimiento' | 'dieta' | 'sintoma' | 'general';
+
+export interface ClinicalNote {
+  id: string;
+  text: string;
+  category: ClinicalNoteCategory;
+  created_at: string;
+  author?: string;
+}
+
 export interface AiResponse<T = unknown> {
   success: boolean;
   message: string;

@@ -1,4 +1,4 @@
-import { Component, OnInit, input, signal, computed, output, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, input, signal, computed, output, ViewChild, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../atoms/button/button';
@@ -15,6 +15,7 @@ import { AnalyticsService } from '../../../../shared/services/analytics.service'
 import { ToastService } from '../../../../shared/services/toast.service';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 import { ProgressHistoryComponent } from '../progress-history/progress-history';
+import { ClinicalNote, ClinicalNoteCategory } from '@shared/models/interfaces';
 
 @Component({
   selector: 'app-o-patient-detail',
@@ -38,15 +39,6 @@ export class PatientDetailComponent implements OnInit {
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34e/512.png', // Red Apple
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34f/512.png', // Green Apple
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f349/512.png', // Watermelon
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f955/512.png', // Carrot
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f345/512.png', // Tomato
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f951/512.png', // Avocado
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34a/512.png', // Orange
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f966/512.png', // Broccoli
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34c/512.png', // Banana
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f353/512.png', // Strawberry
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f347/512.png', // Grapes
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f350/512.png', // Pear
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f352/512.png', // Cherry
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f34b/512.png', // Lemon
     'https://fonts.gstatic.com/s/e/notoemoji/latest/1f96d/512.png', // Mango
@@ -61,13 +53,121 @@ export class PatientDetailComponent implements OnInit {
   ];
   
   randomFruit = signal(this.fruitImages[0]);
-  tabs = signal([
+
+  // --- Clinical Notes Timeline Signals ---
+  newNoteText = signal<string>('');
+  newNoteCategory = signal<ClinicalNoteCategory>('general');
+  isSavingNote = signal<boolean>(false);
+
+  localNotes = signal<ClinicalNote[]>([]);
+
+  constructor(
+    private patientService: PatientService,
+    private authService: AuthService,
+    private analytics: AnalyticsService
+  ) {
+    effect(() => {
+      const p = this.patient();
+      if (p && p.notas) {
+        const raw = (p.notas as string).trim();
+        if (raw.startsWith('[')) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              this.localNotes.set(parsed.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()));
+              return;
+            }
+          } catch (e) {
+            console.warn('Failed to parse notes JSON:', e);
+          }
+        }
+        if (raw) {
+          this.localNotes.set([{
+            id: 'legacy-note-1',
+            text: raw,
+            category: 'general',
+            created_at: p.ultima_actualizacion || p.created_at || new Date().toISOString()
+          }]);
+          return;
+        }
+      }
+      this.localNotes.set([]);
+    }, { allowSignalWrites: true });
+  }
+
+  parsedNotesList = computed<ClinicalNote[]>(() => this.localNotes());
+
+  // --- Pagination & Sorting Signals for Notes ---
+  notesSortOrder = signal<'desc' | 'asc'>('desc');
+  notesCurrentPage = signal<number>(1);
+  notesPerPage = signal<number>(5);
+
+  sortedNotesList = computed<ClinicalNote[]>(() => {
+    const notes = [...this.localNotes()];
+    const order = this.notesSortOrder();
+    return notes.sort((a, b) => {
+      const timeA = new Date(a.created_at || 0).getTime();
+      const timeB = new Date(b.created_at || 0).getTime();
+      return order === 'desc' ? timeB - timeA : timeA - timeB;
+    });
+  });
+
+  notesTotalPages = computed<number>(() => {
+    const total = this.sortedNotesList().length;
+    const perPage = this.notesPerPage();
+    return Math.max(1, Math.ceil(total / perPage));
+  });
+
+  paginatedNotesList = computed<ClinicalNote[]>(() => {
+    const list = this.sortedNotesList();
+    const page = this.notesCurrentPage();
+    const perPage = this.notesPerPage();
+    const start = (page - 1) * perPage;
+    return list.slice(start, start + perPage);
+  });
+
+  toggleNotesSortOrder() {
+    this.notesSortOrder.update(curr => curr === 'desc' ? 'asc' : 'desc');
+    this.notesCurrentPage.set(1);
+  }
+
+  setNotesPage(page: number) {
+    if (page >= 1 && page <= this.notesTotalPages()) {
+      this.notesCurrentPage.set(page);
+    }
+  }
+
+  changeNotesPerPage(perPage: number) {
+    this.notesPerPage.set(perPage);
+    this.notesCurrentPage.set(1);
+  }
+
+  recentNoteBadge = computed(() => {
+    const notes = this.localNotes();
+    if (notes.length === 0) return null;
+
+    const latest = [...notes].sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0];
+    const createdDate = new Date(latest.created_at);
+    const now = new Date();
+    const diffHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60);
+
+    if (diffHours <= 48) {
+      return {
+        isRecent: true,
+        text: this.getRelativeTime(latest.created_at),
+        note: latest
+      };
+    }
+    return null;
+  });
+
+  tabs = computed(() => [
     { label: 'Personal', icon: 'person' },
     { label: 'Antecedentes', icon: 'history_edu' },
     { label: 'Estilo de Vida', icon: 'self_improvement' },
     { label: 'Nutrición', icon: 'restaurant' },
     { label: 'Avances', icon: 'analytics' },
-    { label: 'Notas', icon: 'description' }
+    { label: `Notas (${this.parsedNotesList().length})`, icon: 'description' }
   ]);
 
   ngOnInit() {
@@ -124,12 +224,6 @@ export class PatientDetailComponent implements OnInit {
   originalEmail = '';
   showLinkCitaConfirm = signal<boolean>(false);
   originalPlanCitas: number | null = null;
-
-  constructor(
-    private patientService: PatientService,
-    private authService: AuthService,
-    private analytics: AnalyticsService
-  ) {}
 
 
 
@@ -802,5 +896,111 @@ export class PatientDetailComponent implements OnInit {
       console.error('Error copying text to clipboard', err);
       this.toastService.show('Error al copiar al portapapeles', 'error');
     });
+  }
+
+  // --- Clinical Notes Methods ---
+  getCategoryMeta(category?: ClinicalNoteCategory) {
+    switch (category) {
+      case 'seguimiento':
+        return { label: 'Seguimiento', icon: 'lightbulb', badgeClass: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' };
+      case 'dieta':
+        return { label: 'Dieta / Plan', icon: 'restaurant', badgeClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' };
+      case 'sintoma':
+        return { label: 'Síntoma / Alergia', icon: 'warning', badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' };
+      default:
+        return { label: 'General', icon: 'push_pin', badgeClass: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' };
+    }
+  }
+
+  getRelativeTime(isoString: string): string {
+    if (!isoString) return '';
+    try {
+      const d = new Date(isoString);
+      const now = new Date();
+      const diffMs = now.getTime() - d.getTime();
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffMins < 2) return 'Hace un momento';
+      if (diffMins < 60) return `Hace ${diffMins} min`;
+      if (diffHours < 24) return `Hace ${diffHours} h`;
+      if (diffDays === 1) return 'Ayer';
+      if (diffDays < 7) return `Hace ${diffDays} días`;
+
+      return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return isoString;
+    }
+  }
+
+  async addQuickNote() {
+    const text = this.newNoteText().trim();
+    if (!text) {
+      this.toastService.show('Escribe el contenido de la nota antes de guardar', 'info');
+      return;
+    }
+
+    const currentPatient = this.patient();
+    if (!currentPatient) return;
+
+    this.isSavingNote.set(true);
+
+    const newNoteObj: ClinicalNote = {
+      id: 'note_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      text: text,
+      category: this.newNoteCategory(),
+      created_at: new Date().toISOString()
+    };
+
+    const updatedNotesList = [newNoteObj, ...this.localNotes()];
+    const serializedNotes = JSON.stringify(updatedNotesList);
+
+    // Instantly update local reactive state
+    this.localNotes.set(updatedNotesList);
+    this.notesCurrentPage.set(1);
+    currentPatient.notas = serializedNotes;
+    currentPatient.ultima_actualizacion = newNoteObj.created_at;
+
+    // Reset input fields immediately
+    this.newNoteText.set('');
+    this.newNoteCategory.set('general');
+
+    const payload = {
+      email: currentPatient.email,
+      nombre: currentPatient.nombre,
+      notas: serializedNotes,
+      ultima_actualizacion: currentPatient.ultima_actualizacion,
+      action: 'update'
+    };
+
+    try {
+      await this.sendUpdate(payload, false, 'Nota agregada al expediente correctamente');
+    } finally {
+      this.isSavingNote.set(false);
+    }
+  }
+
+  async deleteQuickNote(noteId: string) {
+    const currentPatient = this.patient();
+    if (!currentPatient) return;
+
+    const updatedNotesList = this.localNotes().filter(n => n.id !== noteId);
+    const serializedNotes = JSON.stringify(updatedNotesList);
+
+    // Instantly update local reactive state
+    this.localNotes.set(updatedNotesList);
+    currentPatient.notas = serializedNotes;
+    currentPatient.ultima_actualizacion = new Date().toISOString();
+
+    const payload = {
+      email: currentPatient.email,
+      nombre: currentPatient.nombre,
+      notas: serializedNotes,
+      ultima_actualizacion: currentPatient.ultima_actualizacion,
+      action: 'update'
+    };
+
+    await this.sendUpdate(payload, false, 'Nota eliminada de la bitácora');
   }
 }

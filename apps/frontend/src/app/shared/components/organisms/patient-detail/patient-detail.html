@@ -1167,30 +1167,220 @@
             </div>
         }
 
-        <!-- Tab 5: Notas -->
+        <!-- Tab 5: Bitácora de Notas Clínicas (Timeline) -->
         @if (activeTab() === 5) {
             <div class="space-y-4 animate-fade-up h-full flex flex-col">
-                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                <!-- Header / Counter -->
+                <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
                     <div class="space-y-0.5">
-                        <h3 class="text-xl font-bold serif italic text-nutri-rose">Notas de Seguimiento</h3>
-                        <p class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-600 uppercase tracking-widest">Edición centralizada. Pulsa "Editar" arriba para modificar.</p>
+                        <h3 class="text-base sm:text-lg font-bold serif italic text-nutri-rose flex items-center gap-2">
+                            <span>Bitácora de Notas Clínicas</span>
+                            <span class="text-xs font-sans font-bold px-2.5 py-0.5 rounded-full bg-nutri-rose/10 text-nutri-rose">
+                                {{ sortedNotesList().length }} {{ sortedNotesList().length === 1 ? 'nota' : 'notas' }}
+                            </span>
+                        </h3>
+                        <p class="text-[10px] font-bold text-nutri-text/50 dark:text-slate-500 uppercase tracking-widest">
+                            Historial cronológico de observaciones, síntomas y seguimiento.
+                        </p>
                     </div>
-                    @if (isEditing()) {
-                        <app-a-badge label="Modo Edición Activo" variant="warning" size="sm" customClass="!bg-amber-500/10 !text-amber-600 !border-amber-500/20"></app-a-badge>
-                    } @else {
-                        <app-a-badge label="Vista de Lectura" variant="ghost" size="sm" icon="lock"></app-a-badge>
+
+                    @if (recentNoteBadge()) {
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold animate-pulse">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Nota reciente ({{ recentNoteBadge()?.text }})</span>
+                        </div>
                     }
                 </div>
-                
-                <div class="relative flex-1">
-                    <textarea [(ngModel)]="patient().notas" 
-                              [disabled]="!isEditing()"
-                              placeholder="Escribe aquí las notas, seguimiento o evolución..."
-                              class="w-full min-h-[500px] h-full bg-white dark:bg-[#111111] rounded-[2rem] border border-nutri-rose/10 dark:border-white/10 shadow-inner p-8 text-md leading-relaxed focus:ring-4 focus:ring-nutri-rose/5 dark:focus:ring-white/5 outline-none resize-none scroll-premium dark:text-slate-300 transition-colors"
-                              [ngClass]="!isEditing() ? 'cursor-default opacity-85 bg-slate-50/50 dark:bg-white/[0.02]' : 'bg-white dark:bg-white/5 shadow-none ring-1 ring-nutri-rose/20'"></textarea>
-                    
-                    <div class="absolute bottom-4 right-6 text-[8px] text-nutri-rose/20 font-bold uppercase tracking-[0.4em]">
-                        Nutrilev Management System
+
+                <!-- 2-Column Responsive Layout (Left: Form, Right: Scrollable Feed with Fixed Footer) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                    <!-- Left Column: Express Note Creation Box -->
+                    <div class="lg:col-span-4 xl:col-span-4 bg-white dark:bg-[#111111] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-nutri-rose/10 dark:border-white/10 shadow-sm space-y-3 lg:sticky lg:top-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold text-slate-700 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                                <app-a-icon name="add_circle" size="18px" class="text-nutri-rose"></app-a-icon>
+                                <span>Nueva Nota Rápida</span>
+                            </span>
+                        </div>
+
+                        <!-- Category Selector -->
+                        <div class="space-y-1">
+                            <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500 block">Categoría:</span>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button type="button" 
+                                        (click)="newNoteCategory.set('general')"
+                                        [class]="'px-2 py-1 rounded-xl text-xs font-bold transition-all border text-left flex items-center gap-1 cursor-pointer ' + 
+                                                 (newNoteCategory() === 'general' ? 'bg-purple-500 text-white border-purple-500 shadow-sm' : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-purple-500/30')">
+                                    <span>📌</span>
+                                    <span>General</span>
+                                </button>
+                                <button type="button" 
+                                        (click)="newNoteCategory.set('seguimiento')"
+                                        [class]="'px-2 py-1 rounded-xl text-xs font-bold transition-all border text-left flex items-center gap-1 cursor-pointer ' + 
+                                                 (newNoteCategory() === 'seguimiento' ? 'bg-blue-500 text-white border-blue-500 shadow-sm' : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-blue-500/30')">
+                                    <span>💡</span>
+                                    <span>Seguimiento</span>
+                                </button>
+                                <button type="button" 
+                                        (click)="newNoteCategory.set('dieta')"
+                                        [class]="'px-2 py-1 rounded-xl text-xs font-bold transition-all border text-left flex items-center gap-1 cursor-pointer ' + 
+                                                 (newNoteCategory() === 'dieta' ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-emerald-500/30')">
+                                    <span>🍏</span>
+                                    <span>Dieta</span>
+                                </button>
+                                <button type="button" 
+                                        (click)="newNoteCategory.set('sintoma')"
+                                        [class]="'px-2 py-1 rounded-xl text-xs font-bold transition-all border text-left flex items-center gap-1 cursor-pointer ' + 
+                                                 (newNoteCategory() === 'sintoma' ? 'bg-amber-500 text-white border-amber-500 shadow-sm' : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-amber-500/30')">
+                                    <span>⚠️</span>
+                                    <span>Síntoma</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Textarea Box -->
+                        <div>
+                            <textarea [(ngModel)]="newNoteText"
+                                      (keydown.control.enter)="addQuickNote()"
+                                      (keydown.meta.enter)="addQuickNote()"
+                                      placeholder="Escribe la observación clínica aquí... (Ctrl+Enter para guardar)"
+                                      rows="3"
+                                      class="w-full bg-slate-50 dark:bg-white/5 rounded-2xl p-3 text-xs sm:text-sm outline-none border border-slate-200 dark:border-white/10 focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/10 text-slate-800 dark:text-slate-100 resize-none transition-all"></textarea>
+                        </div>
+
+                        <!-- Guardar Button -->
+                        <button type="button"
+                                (click)="addQuickNote()"
+                                [disabled]="isSavingNote() || !newNoteText().trim()"
+                                class="w-full py-2.5 bg-nutri-rose hover:bg-nutri-rose/90 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50">
+                            @if (isSavingNote()) {
+                                <div class="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
+                            } @else {
+                                <app-a-icon name="send" size="15px"></app-a-icon>
+                            }
+                            <span>Guardar Nota en Bitácora</span>
+                        </button>
+
+                        <div class="text-center">
+                            <span class="text-[10px] text-slate-400 dark:text-slate-500 italic">
+                                Atajo: Ctrl + Enter para guardar rápido
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Timeline Feed with Responsive Scroll Height -->
+                    <div class="lg:col-span-8 xl:col-span-8 space-y-3 flex flex-col">
+                        @if (sortedNotesList().length === 0) {
+                            <div class="p-10 text-center bg-white dark:bg-[#111111] rounded-2xl border border-nutri-rose/5 dark:border-white/5 space-y-2">
+                                <div class="w-12 h-12 rounded-2xl bg-nutri-rose/10 text-nutri-rose mx-auto flex items-center justify-center">
+                                    <app-a-icon name="description" size="24px"></app-a-icon>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-700 dark:text-slate-200">Sin notas registradas</h4>
+                                <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                                    Agrega observaciones sobre la evolución, síntomas o acuerdos de la consulta en el panel lateral.
+                                </p>
+                            </div>
+                        } @else {
+                            <!-- Toolbar (Order Toggle & Page Size) -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 bg-white dark:bg-[#111111] px-4 py-2.5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Orden:</span>
+                                    <button type="button" 
+                                            (click)="toggleNotesSortOrder()"
+                                            class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all flex items-center gap-1.5 cursor-pointer">
+                                        <app-a-icon [name]="notesSortOrder() === 'desc' ? 'arrow_downward' : 'arrow_upward'" size="14px" class="text-nutri-rose"></app-a-icon>
+                                        <span>{{ notesSortOrder() === 'desc' ? 'Más recientes primero' : 'Más antiguas primero' }}</span>
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center gap-3 self-end sm:self-center">
+                                    <span class="text-[11px] font-medium text-slate-400">
+                                        Página {{ notesCurrentPage() }} de {{ notesTotalPages() }} ({{ sortedNotesList().length }} notas)
+                                    </span>
+                                    
+                                    <div class="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-0.5 rounded-xl">
+                                        <button type="button" 
+                                                (click)="changeNotesPerPage(5)"
+                                                [class]="'px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ' + (notesPerPage() === 5 ? 'bg-nutri-rose text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200')">
+                                            5
+                                        </button>
+                                        <button type="button" 
+                                                (click)="changeNotesPerPage(10)"
+                                                [class]="'px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ' + (notesPerPage() === 10 ? 'bg-nutri-rose text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200')">
+                                            10
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Responsive Scroll Container (Sized to fit screen height so pagination footer is always visible) -->
+                            <div class="max-h-[340px] sm:max-h-[370px] lg:max-h-[340px] xl:max-h-[440px] 2xl:max-h-[500px] overflow-y-auto pr-1.5 space-y-3 scroll-premium">
+                                @for (note of paginatedNotesList(); track note.id) {
+                                    @let meta = getCategoryMeta(note.category);
+                                    <div class="p-4 bg-white dark:bg-[#111111] rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm space-y-2 transition-all hover:border-nutri-rose/20">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <span [class]="'px-2 py-0.5 rounded-lg text-[10px] font-bold border flex items-center gap-1 ' + meta.badgeClass">
+                                                    <app-a-icon [name]="meta.icon" size="13px"></app-a-icon>
+                                                    <span>{{ meta.label }}</span>
+                                                </span>
+                                                <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                                                    • {{ getRelativeTime(note.created_at) }}
+                                                </span>
+                                            </div>
+
+                                            <button type="button" 
+                                                    (click)="deleteQuickNote(note.id)"
+                                                    class="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                                                    title="Eliminar esta nota">
+                                                <app-a-icon name="delete_outline" size="15px"></app-a-icon>
+                                            </button>
+                                        </div>
+
+                                        <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap pl-0.5 font-normal">
+                                            {{ note.text }}
+                                        </p>
+
+                                        <div class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-600 pl-0.5 pt-1.5 flex items-center justify-between border-t border-slate-100 dark:border-white/5">
+                                            <span>Registrado el {{ note.created_at | date:'dd/MM/yyyy, hh:mm a' }}</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Always Visible Pagination Footer -->
+                            @if (notesTotalPages() > 1) {
+                                <div class="flex items-center justify-between bg-white dark:bg-[#111111] px-4 py-2.5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
+                                    <button type="button"
+                                            (click)="setNotesPage(notesCurrentPage() - 1)"
+                                            [disabled]="notesCurrentPage() === 1"
+                                            class="px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer">
+                                        <app-a-icon name="chevron_left" size="15px"></app-a-icon>
+                                        <span>Anterior</span>
+                                    </button>
+
+                                    <div class="flex items-center gap-1">
+                                        @for (p of [].constructor(notesTotalPages()); track $index) {
+                                            @let pageNum = $index + 1;
+                                            <button type="button"
+                                                    (click)="setNotesPage(pageNum)"
+                                                    [class]="'w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ' + 
+                                                             (notesCurrentPage() === pageNum ? 'bg-nutri-rose text-white shadow-sm' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10')">
+                                                {{ pageNum }}
+                                            </button>
+                                        }
+                                    </div>
+
+                                    <button type="button"
+                                            (click)="setNotesPage(notesCurrentPage() + 1)"
+                                            [disabled]="notesCurrentPage() === notesTotalPages()"
+                                            class="px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer">
+                                        <span>Siguiente</span>
+                                        <app-a-icon name="chevron_right" size="15px"></app-a-icon>
+                                    </button>
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
             </div>
