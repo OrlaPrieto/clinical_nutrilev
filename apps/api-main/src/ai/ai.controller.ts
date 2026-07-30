@@ -6,14 +6,17 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AiService } from './ai.service';
 import { PatientService } from '../patients/patient.service';
+import { AdminGuard } from '../common/guards/admin.guard';
 import type { AiResponse, NotifyMenuRequest } from '@shared/index';
 import type { Response } from 'express';
 
 @Controller('api')
+@UseGuards(AdminGuard)
 export class AiController {
   constructor(
     private readonly aiService: AiService,

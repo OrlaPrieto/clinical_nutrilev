@@ -1,6 +1,3 @@
 User-agent: *
-Allow: /
-Allow: /login
-Disallow: /dashboard
-Disallow: /portal
-Disallow: /menu-automation
+Disallow: /
+
