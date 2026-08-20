@@ -588,3 +588,199 @@ def fetch_dish_image_url(dish_name: str, search_term: str = "", unsplash_key: st
 
     # 3. Fallback categorizado HD si no hay claves o falla la conexión
     return get_fallback_image(final_query)
+
+
+def generate_menu_copilot_suggestion(
+    patient_context: dict,
+    prev_progress: Optional[dict] = None,
+    latest_progress: Optional[dict] = None,
+    previous_menu_summary: Optional[str] = "",
+    target_calories: int = 1800,
+    extra_notes: str = "",
+    gemini_key: str = ""
+) -> dict:
+    """
+    Copiloto Clínico IA: Genera sugerencias estructuradas de menús, macros y equivalencias
+    basadas en el delta de avance corporal, historial clínico, patologías y menú anterior.
+    """
+    import json
+    import time
+    from google import genai
+    from google.genai import types
+
+    if not gemini_key:
+        raise ValueError("GEMINI_API_KEY no está configurada")
+
+    client = genai.Client(api_key=gemini_key)
+
+    # 1. Formatear delta de progreso corporal
+    delta_lines = []
+    if prev_progress and latest_progress:
+        prev_date = prev_progress.get("created_at", prev_progress.get("date", "Consulta Anterior"))
+        curr_date = latest_progress.get("created_at", latest_progress.get("date", "Consulta Actual"))
+        
+        delta_lines.append(f"• Consulta previa ({prev_date}): Peso {prev_progress.get('weight', prev_progress.get('peso', 'N/A'))} kg, %Grasa {prev_progress.get('body_fat', prev_progress.get('pct_grasa', 'N/A'))}%, M. Muscular {prev_progress.get('muscle_mass', 'N/A')} kg, Grasa Visceral {prev_progress.get('visceral_fat', prev_progress.get('grasa_visceral', 'N/A'))}")
+        delta_lines.append(f"• Consulta actual ({curr_date}): Peso {latest_progress.get('weight', latest_progress.get('peso', 'N/A'))} kg, %Grasa {latest_progress.get('body_fat', latest_progress.get('pct_grasa', 'N/A'))}%, M. Muscular {latest_progress.get('muscle_mass', 'N/A')} kg, Grasa Visceral {latest_progress.get('visceral_fat', latest_progress.get('grasa_visceral', 'N/A'))}")
+    elif latest_progress:
+        curr_date = latest_progress.get("created_at", latest_progress.get("date", "Reciente"))
+        delta_lines.append(f"• Último registro ({curr_date}): Peso {latest_progress.get('weight', latest_progress.get('peso', 'N/A'))} kg, %Grasa {latest_progress.get('body_fat', latest_progress.get('pct_grasa', 'N/A'))}%, M. Muscular {latest_progress.get('muscle_mass', 'N/A')} kg")
+    else:
+        delta_lines.append("• Sin registros de bioimpedancia previos registrados.")
+
+    progreso_context = "\n".join(delta_lines)
+
+    # 2. Schema de respuesta JSON estricto
+    copilot_schema = {
+        "type": "OBJECT",
+        "properties": {
+            "clinical_analysis": {
+                "type": "OBJECT",
+                "properties": {
+                    "delta_summary": {
+                        "type": "STRING",
+                        "description": "Análisis conciso del cambio en peso, masa muscular y grasa corporal entre consultas."
+                    },
+                    "clinical_rationale": {
+                        "type": "STRING",
+                        "description": "Justificación clínica para el nutriólogo de la estrategia nutricional, calorías y distribución de macronutrientes."
+                    },
+                    "macro_distribution": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "calories": {"type": "INTEGER"},
+                            "protein_g": {"type": "INTEGER"},
+                            "protein_pct": {"type": "INTEGER"},
+                            "carbs_g": {"type": "INTEGER"},
+                            "carbs_pct": {"type": "INTEGER"},
+                            "fat_g": {"type": "INTEGER"},
+                            "fat_pct": {"type": "INTEGER"}
+                        },
+                        "required": ["calories", "protein_g", "protein_pct", "carbs_g", "carbs_pct", "fat_g", "fat_pct"]
+                    }
+                },
+                "required": ["delta_summary", "clinical_rationale", "macro_distribution"]
+            },
+            "menus": {
+                "type": "ARRAY",
+                "description": "3 propuestas completas de menú (Opción 1, Opción 2, Opción 3) variadas y atractivas.",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "id": {"type": "INTEGER"},
+                        "title": {"type": "STRING", "description": "Título descriptivo del menú (ej. Opción 1 · Práctica y Rápida)."},
+                        "desayuno": {
+                            "type": "OBJECT",
+                            "properties": {
+                                "platillo": {"type": "STRING"},
+                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
+                                "preparacion_rapida": {"type": "STRING"}
+                            },
+                            "required": ["platillo", "ingredientes", "preparacion_rapida"]
+                        },
+                        "colacion_matutina": {
+                            "type": "OBJECT",
+                            "properties": {
+                                "platillo": {"type": "STRING"},
+                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}}
+                            },
+                            "required": ["platillo", "ingredientes"]
+                        },
+                        "comida": {
+                            "type": "OBJECT",
+                            "properties": {
+                                "platillo": {"type": "STRING"},
+                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
+                                "preparacion_rapida": {"type": "STRING"}
+                            },
+                            "required": ["platillo", "ingredientes", "preparacion_rapida"]
+                        },
+                        "colacion_vespertina": {
+                            "type": "OBJECT",
+                            "properties": {
+                                "platillo": {"type": "STRING"},
+                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}}
+                            },
+                            "required": ["platillo", "ingredientes"]
+                        },
+                        "cena": {
+                            "type": "OBJECT",
+                            "properties": {
+                                "platillo": {"type": "STRING"},
+                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
+                                "preparacion_rapida": {"type": "STRING"}
+                            },
+                            "required": ["platillo", "ingredientes", "preparacion_rapida"]
+                        }
+                    },
+                    "required": ["id", "title", "desayuno", "comida", "cena"]
+                }
+            },
+            "formatted_clipboard_text": {
+                "type": "STRING",
+                "description": "Texto limpio, estructurado y elegante con separadores, listo para copiar y pegar directamente en Word/PDF."
+            }
+        },
+        "required": ["clinical_analysis", "menus", "formatted_clipboard_text"]
+    }
+
+    system_prompt = (
+        "Eres NutriArchitect Copilot, un asistente clínico de élite especializado en nutrición de precisión (Sistema Mexicano de Alimentos Equivalentes - SMAE). "
+        "Tu objetivo es asistir al nutriólogo generando propuestas de menús clínicas fundamentadas, variadas y listas para su revisión y copiado rápido. "
+        "REGLAS INQUEBRANTABLES:\n"
+        "1. EXCLUSIÓN ABSOLUTA: Jamás incluyas ingredientes reportados en 'alergias_alimentarias' ni en 'alimentos_no_agradan'.\n"
+        "2. PRIORIZACIÓN: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
+        "3. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable).\n"
+        "4. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
+        "5. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════' para que al pegarlo en Word se vea profesional."
+    )
+
+    user_prompt = f"""
+DATOS DEL PACIENTE:
+• Nombre: {patient_context.get('nombre', 'Paciente')}
+• Edad: {patient_context.get('edad', 'N/A')} años | Sexo: {patient_context.get('sexo', 'N/A')} | Estatura: {patient_context.get('estatura', 'N/A')} cm
+• Ocupación / Estilo de vida: {patient_context.get('ocupacion', 'N/A')}
+• Patologías / Diagnóstico: {patient_context.get('enfermedades', 'Ninguna reportada')}
+• Alergias e intolerancias: {patient_context.get('alergias_alimentarias', 'Ninguna reportada')}
+• Alimentos favoritos (Gusta): {patient_context.get('alimentos_preferidos', 'No especificado')}
+• Alimentos que evita (No le gustan): {patient_context.get('alimentos_no_agradan', 'No especificado')}
+• Número de comidas al día: {patient_context.get('comidas_dia', 5)}
+
+EVOLUCIÓN CLÍNICA Y ANTROPOMETRÍA:
+{progreso_context}
+
+OBJETIVO CALÓRICO Y NOTAS DEL NUTRIÓLOGO:
+• Calorías objetivo: {target_calories} kcal
+• Notas adicionales: {extra_notes or 'Diseñar menú balanceado, variado y con preparaciones sencillas.'}
+• Referencia de menú anterior: {previous_menu_summary or 'No especificado.'}
+
+Genera la sugerencia clínica en formato JSON cumpliendo con el schema requerido.
+"""
+
+    models_to_try = ["gemini-2.5-flash", "gemini-3.1-flash-lite"]
+    last_error = None
+
+    for model in models_to_try:
+        try:
+            print(f"[MenuCopilot] Llamando a Gemini con modelo: {model}")
+            response = client.models.generate_content(
+                model=model,
+                contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + user_prompt}]}],
+                config=types.GenerateContentConfig(
+                    temperature=0.2,
+                    response_mime_type="application/json",
+                    response_schema=copilot_schema
+                )
+            )
+            raw_text = response.text.strip()
+            return json.loads(raw_text)
+        except Exception as e:
+            last_error = e
+            delay = extract_retry_delay(e)
+            print(f"[MenuCopilot] Error con modelo {model}: {e}")
+            if delay > 0 and delay <= 10.0:
+                print(f"[MenuCopilot] Esperando {delay}s por límite de tasa...")
+                time.sleep(delay)
+            else:
+                print(f"[MenuCopilot] Descartando {model} inmediatamente y probando fallback...")
+
+    raise RuntimeError(f"No fue posible generar la sugerencia con IA: {last_error}")

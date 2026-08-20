@@ -119,6 +119,57 @@ def generate_ai_menu():
             "details": str(e)
         }), 500
 
+
+@menu_bp.route('/suggest-menu-copilot', methods=['POST', 'OPTIONS'])
+def suggest_menu_copilot():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    try:
+        from services.ai_service import generate_menu_copilot_suggestion
+
+        data = request.get_json(force=True, silent=True) or {}
+        patient_context = data.get('patient_context', {})
+        prev_progress = data.get('prev_progress')
+        latest_progress = data.get('latest_progress')
+        previous_menu_summary = data.get('previous_menu_summary', '')
+        calories = int(data.get('calories', 1800))
+        extra_notes = data.get('extra_notes', '')
+
+        result = generate_menu_copilot_suggestion(
+            patient_context=patient_context,
+            prev_progress=prev_progress,
+            latest_progress=latest_progress,
+            previous_menu_summary=previous_menu_summary,
+            target_calories=calories,
+            extra_notes=extra_notes,
+            gemini_key=GEMINI_API_KEY
+        )
+
+        return jsonify({
+            "success": True,
+            "data": result
+        }), 200
+
+    except Exception as e:
+        print(f"ERROR [suggest-menu-copilot]: {str(e)}")
+        traceback.print_exc()
+
+        err_msg = str(e)
+        if any(kw in err_msg for kw in ["429", "RESOURCE_EXHAUSTED", "quota", "503", "UNAVAILABLE", "high demand"]):
+            return jsonify({
+                "success": False,
+                "error": "AI_SERVICE_TEMPORARILY_UNAVAILABLE",
+                "message": "El servicio de Gemini está experimentando alta demanda. Por favor reintenta en unos momentos."
+            }), 429
+
+        return jsonify({
+            "success": False,
+            "error": "Error al generar sugerencias del copiloto",
+            "details": str(e)
+        }), 500
+
+
 @menu_bp.route('/process-menu', methods=['POST', 'OPTIONS'])
 def process_menu():
     if request.method == 'OPTIONS':

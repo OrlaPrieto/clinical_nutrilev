@@ -93,4 +93,19 @@ export class AiController {
       });
     }
   }
+
+  @Post('suggest-menu-copilot')
+  async suggestMenuCopilot(
+    @Body()
+    body: {
+      patient_context: any;
+      prev_progress?: any;
+      latest_progress?: any;
+      previous_menu_summary?: string;
+      calories?: number;
+      extra_notes?: string;
+    },
+  ) {
+    return this.aiService.suggestMenuCopilot(body);
+  }
 }

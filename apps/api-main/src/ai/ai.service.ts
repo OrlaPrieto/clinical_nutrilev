@@ -114,4 +114,41 @@ export class AiService {
       throw error;
     }
   }
+
+  async suggestMenuCopilot(payload: {
+    patient_context: any;
+    prev_progress?: any;
+    latest_progress?: any;
+    previous_menu_summary?: string;
+    calories?: number;
+    extra_notes?: string;
+  }): Promise<any> {
+    try {
+      const { data: responseData } = await firstValueFrom(
+        this.httpService.post(
+          `${this.flaskBaseUrl}/api/suggest-menu-copilot`,
+          payload,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-internal-key':
+                this.configService.get<string>('INTERNAL_API_KEY'),
+            },
+            timeout: 60000,
+          },
+        ),
+      );
+      return responseData;
+    } catch (error) {
+      console.error('--- [NESTJS AI SERVICE ERROR] suggestMenuCopilot ---');
+      if (error.response) {
+        console.error('Status:', error.response.status);
+        console.error('Data:', error.response.data);
+        throw new Error(
+          `Python AI Error (${error.response.status}): ${JSON.stringify(error.response.data)}`,
+        );
+      }
+      throw error;
+    }
+  }
 }
