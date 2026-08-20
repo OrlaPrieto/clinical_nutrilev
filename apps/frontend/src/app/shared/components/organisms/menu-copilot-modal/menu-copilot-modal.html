@@ -1,0 +1,486 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-[120] flex items-center justify-center p-3 md:p-6 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div class="relative w-full max-w-5xl max-h-[90vh] flex flex-col bg-white dark:bg-[#0e0e0e] border border-nutri-rose/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden text-nutri-text dark:text-slate-200">
+      
+      <!-- Top Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-nutri-rose/10 dark:border-white/10 bg-nutri-rose/[0.02] dark:bg-white/[0.02]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-nutri-rose to-pink-500 text-white flex items-center justify-center shadow-md shadow-nutri-rose/20">
+            <app-a-icon name="auto_awesome" size="20px"></app-a-icon>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base md:text-lg font-bold text-nutri-text dark:text-slate-100">
+                Copiloto Clínico de Menús
+              </h3>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-nutri-rose/10 text-nutri-rose border border-nutri-rose/20">
+                IA NutriArchitect
+              </span>
+            </div>
+            <p class="text-xs text-nutri-text/60 dark:text-slate-400">
+              Propuestas rápidas de platillos, macros y equivalencias para <strong class="text-nutri-rose">{{ patient()?.nombre || 'el paciente' }}</strong>
+            </p>
+          </div>
+        </div>
+
+        <button (click)="closeModal()" 
+                class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 text-nutri-text/50 dark:text-slate-400 hover:text-nutri-rose transition-colors cursor-pointer"
+                title="Cerrar modal">
+          <app-a-icon name="close" size="18px"></app-a-icon>
+        </button>
+      </div>
+
+      <!-- Controls & Parameters Bar -->
+      <div class="px-6 py-4 bg-slate-50/70 dark:bg-[#141414] border-b border-nutri-rose/10 dark:border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+        <!-- Target Calories -->
+        <div class="md:col-span-3 space-y-1">
+          <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
+            <app-a-icon name="local_fire_department" size="13px" customClass="text-amber-500"></app-a-icon>
+            Calorías Objetivo
+          </label>
+          <div class="flex items-center gap-1">
+            <input type="number" 
+                   [ngModel]="targetCalories()" 
+                   (ngModelChange)="targetCalories.set($event)" 
+                   step="50"
+                   class="w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-nutri-text dark:text-white outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 transition-all">
+            <span class="text-xs font-bold text-nutri-text/50 dark:text-slate-400">kcal</span>
+          </div>
+        </div>
+
+        <!-- Extra Notes for AI -->
+        <div class="md:col-span-6 space-y-1">
+          <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
+            <app-a-icon name="edit_note" size="14px" customClass="text-nutri-rose"></app-a-icon>
+            Instrucción especial / Enfoque
+          </label>
+          <input type="text" 
+                 [ngModel]="extraNotes()" 
+                 (ngModelChange)="extraNotes.set($event)" 
+                 placeholder="Ej. Comidas prácticas para oficina, cena ligera, alto en fibra..."
+                 class="w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl text-xs text-nutri-text dark:text-white outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 transition-all placeholder:text-nutri-text/30 dark:placeholder:text-slate-600">
+        </div>
+
+        <!-- Action Button -->
+        <div class="md:col-span-3">
+          <button (click)="generateSuggestion()" 
+                  [disabled]="isLoading()"
+                  class="w-full h-10 px-4 rounded-xl bg-gradient-to-r from-nutri-rose to-pink-600 hover:from-pink-600 hover:to-nutri-rose text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-nutri-rose/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 active:scale-95 cursor-pointer">
+            @if (isLoading()) {
+              <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              <span>Generando...</span>
+            } @else {
+              <app-a-icon name="magic_button" size="16px"></app-a-icon>
+              <span>{{ copilotData() ? 'Regenerar Propuesta' : 'Generar con IA' }}</span>
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+
+        <!-- Initial Welcome State (Before generating) -->
+        @if (!copilotData() && !isLoading()) {
+          <div class="py-12 px-4 text-center max-w-xl mx-auto space-y-6">
+            <div class="w-16 h-16 mx-auto rounded-3xl bg-nutri-rose/10 text-nutri-rose flex items-center justify-center border border-nutri-rose/20">
+              <app-a-icon name="psychology" size="32px"></app-a-icon>
+            </div>
+            
+            <div class="space-y-2">
+              <h4 class="text-lg font-bold text-nutri-text dark:text-slate-100">
+                Listo para acelerar el diseño de menús
+              </h4>
+              <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
+                El copiloto leerá el expediente clínico de <strong class="text-nutri-rose">{{ patient()?.nombre }}</strong>, sus patologías, alimentos favoritos/evitados y la evolución entre sus últimos registros para sugerirte 3 opciones completas con sus macros.
+              </p>
+            </div>
+
+            <!-- Context Pillars Summary -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 space-y-1">
+                <span class="text-[9px] font-black uppercase text-nutri-rose tracking-wider">Patologías</span>
+                <p class="text-[11px] font-semibold text-nutri-text/80 dark:text-slate-300 truncate">
+                  {{ patient()?.enfermedades || 'Ninguna reportada' }}
+                </p>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 space-y-1">
+                <span class="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Le Gusta</span>
+                <p class="text-[11px] font-semibold text-nutri-text/80 dark:text-slate-300 truncate">
+                  {{ patient()?.alimentos_preferidos || 'No especificado' }}
+                </p>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 space-y-1">
+                <span class="text-[9px] font-black uppercase text-rose-500 tracking-wider">Evita</span>
+                <p class="text-[11px] font-semibold text-nutri-text/80 dark:text-slate-300 truncate">
+                  {{ patient()?.alimentos_no_agradan || patient()?.alergias_alimentarias || 'Ninguno' }}
+                </p>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 space-y-1">
+                <span class="text-[9px] font-black uppercase text-indigo-500 tracking-wider">Avances</span>
+                <p class="text-[11px] font-semibold text-nutri-text/80 dark:text-slate-300 truncate">
+                  {{ progressHistory().length }} consultas registradas
+                </p>
+              </div>
+            </div>
+
+            <button (click)="generateSuggestion()"
+                    class="px-6 py-2.5 rounded-xl bg-nutri-rose text-white text-xs font-bold shadow-lg shadow-nutri-rose/30 hover:bg-pink-600 transition-all cursor-pointer">
+              Generar Sugerencia Ahora
+            </button>
+          </div>
+        }
+
+        <!-- Loading State -->
+        @if (isLoading()) {
+          <div class="py-16 text-center space-y-4">
+            <div class="relative w-14 h-14 mx-auto">
+              <div class="absolute inset-0 rounded-full border-4 border-nutri-rose/20 border-t-nutri-rose animate-spin"></div>
+              <div class="absolute inset-2 rounded-full bg-nutri-rose/10 flex items-center justify-center text-nutri-rose">
+                <app-a-icon name="auto_awesome" size="18px"></app-a-icon>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-sm font-bold text-nutri-text dark:text-slate-100">
+                NutriArchitect Copilot está analizando el caso clínico...
+              </h4>
+              <p class="text-xs text-nutri-text/50 dark:text-slate-400">
+                Comparando delta de composición corporal, calculando equivalencias y diseñando platillos.
+              </p>
+            </div>
+          </div>
+        }
+
+        <!-- Results Display -->
+        @if (copilotData() && !isLoading()) {
+          <!-- Strategy & Clinical Delta Banner -->
+          <div class="p-5 rounded-3xl bg-gradient-to-br from-nutri-rose/[0.06] via-slate-50 to-pink-50/50 dark:from-nutri-rose/10 dark:via-[#141414] dark:to-[#1a1417] border border-nutri-rose/20 dark:border-white/10 space-y-4">
+            
+            <!-- Top row: Delta Summary & Macro Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+              
+              <!-- Clinical Rationale -->
+              <div class="lg:col-span-7 space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md bg-nutri-rose text-white text-[9px] font-black uppercase tracking-wider">
+                    Estrategia Clínica
+                  </span>
+                  @if (deltaWeight() || deltaFat()) {
+                    <div class="flex items-center gap-2 text-[10px] font-bold text-nutri-text/70 dark:text-slate-300">
+                      <span>Evolución:</span>
+                      @if (deltaWeight()) {
+                        <span class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono">{{ deltaWeight() }} peso</span>
+                      }
+                      @if (deltaFat()) {
+                        <span class="px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 font-mono">{{ deltaFat() }} grasa</span>
+                      }
+                      @if (deltaMuscle()) {
+                        <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono">{{ deltaMuscle() }} músculo</span>
+                      }
+                    </div>
+                  }
+                </div>
+                <p class="text-xs text-nutri-text/80 dark:text-slate-300 leading-relaxed font-medium">
+                  {{ copilotData()?.clinical_analysis?.clinical_rationale }}
+                </p>
+              </div>
+
+              <!-- Macronutrient Distribution Badges -->
+              <div class="lg:col-span-5 grid grid-cols-3 gap-2">
+                <div class="p-2.5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-slate-200/80 dark:border-white/10 text-center space-y-0.5 shadow-sm">
+                  <span class="text-[8px] font-black uppercase text-indigo-500 tracking-wider">Proteína</span>
+                  <div class="text-sm font-black text-nutri-text dark:text-white">
+                    {{ copilotData()?.clinical_analysis?.macro_distribution?.protein_g }}g
+                  </div>
+                  <span class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-400">
+                    {{ copilotData()?.clinical_analysis?.macro_distribution?.protein_pct }}%
+                  </span>
+                </div>
+
+                <div class="p-2.5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-slate-200/80 dark:border-white/10 text-center space-y-0.5 shadow-sm">
+                  <span class="text-[8px] font-black uppercase text-amber-500 tracking-wider">Carbohidratos</span>
+                  <div class="text-sm font-black text-nutri-text dark:text-white">
+                    {{ copilotData()?.clinical_analysis?.macro_distribution?.carbs_g }}g
+                  </div>
+                  <span class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-400">
+                    {{ copilotData()?.clinical_analysis?.macro_distribution?.carbs_pct }}%
+                  </span>
+                </div>
+
+                <div class="p-2.5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-slate-200/80 dark:border-white/10 text-center space-y-0.5 shadow-sm">
+                  <span class="text-[8px] font-black uppercase text-rose-500 tracking-wider">Grasas</span>
+                  <div class="text-sm font-black text-nutri-text dark:text-white">
+                    {{ copilotData()?.clinical_analysis?.macro_distribution?.fat_g }}g
+                  </div>
+                  <span class="text-[9px] font-bold text-nutri-text/50 dark:text-slate-400">
+                    {{ copilotData()?.clinical_analysis?.macro_distribution?.fat_pct }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action & View Toolbar -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+            <!-- View Selector Tabs -->
+            <div class="flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <button (click)="activeViewTab.set('visual')"
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                      [ngClass]="activeViewTab() === 'visual' ? 'bg-white dark:bg-[#222] text-nutri-rose shadow-sm' : 'text-nutri-text/60 dark:text-slate-400 hover:text-nutri-text'">
+                <app-a-icon name="dashboard" size="14px"></app-a-icon>
+                <span>Vista Visual</span>
+              </button>
+
+              <button (click)="activeViewTab.set('plaintext')"
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                      [ngClass]="activeViewTab() === 'plaintext' ? 'bg-white dark:bg-[#222] text-nutri-rose shadow-sm' : 'text-nutri-text/60 dark:text-slate-400 hover:text-nutri-text'">
+                <app-a-icon name="content_paste" size="14px"></app-a-icon>
+                <span>Texto Plano (Word / PDF)</span>
+              </button>
+            </div>
+
+            <!-- Master Copy Button -->
+            <button (click)="copyFullPlan()"
+                    class="w-full sm:w-auto px-4 py-2 rounded-xl bg-nutri-rose text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-nutri-rose/20 hover:bg-pink-600 active:scale-95 transition-all cursor-pointer">
+              @if (copiedSection() === 'full_plan') {
+                <app-a-icon name="check" size="16px"></app-a-icon>
+                <span>¡Plan Completo Copiado!</span>
+              } @else {
+                <app-a-icon name="content_copy" size="16px"></app-a-icon>
+                <span>Copiar Plan Completo (3 Menús)</span>
+              }
+            </button>
+          </div>
+
+          <!-- VIEW 1: Visual Interactive Cards -->
+          @if (activeViewTab() === 'visual') {
+            <div class="space-y-4">
+              <!-- Menu Option Pills (Menu 1, 2, 3) -->
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  @for (menu of copilotData()?.menus; track menu.id; let i = $index) {
+                    <button (click)="activeMenuIndex.set(i)"
+                            class="px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
+                            [ngClass]="activeMenuIndex() === i 
+                              ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20 ring-2 ring-nutri-rose/30' 
+                              : 'bg-slate-100 dark:bg-white/5 text-nutri-text/70 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'">
+                      <span>{{ menu.title }}</span>
+                    </button>
+                  }
+                </div>
+
+                <button (click)="copyActiveMenu()"
+                        class="px-3 py-1.5 rounded-xl border border-nutri-rose/30 hover:bg-nutri-rose/10 text-nutri-rose text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
+                  <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                  <span>Copiar Esta Opción</span>
+                </button>
+              </div>
+
+              <!-- Active Menu Meals Grid -->
+              @if (activeMenu()) {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  <!-- Desayuno -->
+                  @if (activeMenu()?.desayuno; as d) {
+                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <span class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black text-xs">
+                            🍳
+                          </span>
+                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Desayuno</span>
+                        </div>
+                        <button (click)="copyMeal('Desayuno', d)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar desayuno">
+                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                        </button>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ d.platillo }}</h5>
+                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                          @for (ing of d.ingredientes; track ing) {
+                            <li class="flex items-start gap-1.5">
+                              <span class="text-nutri-rose font-bold">•</span>
+                              <span>{{ ing }}</span>
+                            </li>
+                          }
+                        </ul>
+                        @if (d.preparacion_rapida) {
+                          <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">
+                            Tip: {{ d.preparacion_rapida }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Colación Matutina -->
+                  @if (activeMenu()?.colacion_matutina; as c1) {
+                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <span class="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-xs">
+                            🍏
+                          </span>
+                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Matutina</span>
+                        </div>
+                        <button (click)="copyMeal('Colación Matutina', c1)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
+                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                        </button>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c1.platillo }}</h5>
+                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                          @for (ing of c1.ingredientes; track ing) {
+                            <li class="flex items-start gap-1.5">
+                              <span class="text-emerald-500 font-bold">•</span>
+                              <span>{{ ing }}</span>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Comida -->
+                  @if (activeMenu()?.comida; as c) {
+                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <span class="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-black text-xs">
+                            🍲
+                          </span>
+                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Comida Principal</span>
+                        </div>
+                        <button (click)="copyMeal('Comida', c)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar comida">
+                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                        </button>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c.platillo }}</h5>
+                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                          @for (ing of c.ingredientes; track ing) {
+                            <li class="flex items-start gap-1.5">
+                              <span class="text-nutri-rose font-bold">•</span>
+                              <span>{{ ing }}</span>
+                            </li>
+                          }
+                        </ul>
+                        @if (c.preparacion_rapida) {
+                          <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">
+                            Tip: {{ c.preparacion_rapida }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Colación Vespertina -->
+                  @if (activeMenu()?.colacion_vespertina; as c2) {
+                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <span class="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs">
+                            🫐
+                          </span>
+                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Vespertina</span>
+                        </div>
+                        <button (click)="copyMeal('Colación Vespertina', c2)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
+                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                        </button>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c2.platillo }}</h5>
+                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                          @for (ing of c2.ingredientes; track ing) {
+                            <li class="flex items-start gap-1.5">
+                              <span class="text-purple-500 font-bold">•</span>
+                              <span>{{ ing }}</span>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Cena -->
+                  @if (activeMenu()?.cena; as cn) {
+                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all md:col-span-2">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <span class="w-7 h-7 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs">
+                            🌙
+                          </span>
+                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Cena</span>
+                        </div>
+                        <button (click)="copyMeal('Cena', cn)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar cena">
+                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                        </button>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ cn.platillo }}</h5>
+                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400 grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                          @for (ing of cn.ingredientes; track ing) {
+                            <li class="flex items-start gap-1.5">
+                              <span class="text-indigo-500 font-bold">•</span>
+                              <span>{{ ing }}</span>
+                            </li>
+                          }
+                        </ul>
+                        @if (cn.preparacion_rapida) {
+                          <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">
+                            Tip: {{ cn.preparacion_rapida }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                </div>
+              }
+            </div>
+          }
+
+          <!-- VIEW 2: Plaintext Editor -->
+          @if (activeViewTab() === 'plaintext') {
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-nutri-text/60 dark:text-slate-400">
+                  Puedes retocar el texto antes de copiarlo a Word o tu editor:
+                </span>
+                <button (click)="copyFullPlan()" 
+                        class="px-3 py-1.5 bg-nutri-rose text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm hover:bg-pink-600 transition-colors cursor-pointer">
+                  <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                  <span>Copiar Texto</span>
+                </button>
+              </div>
+
+              <textarea [ngModel]="copilotData()?.formatted_clipboard_text" 
+                        (ngModelChange)="copilotData()!.formatted_clipboard_text = $event"
+                        rows="15"
+                        class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-white/10 text-xs font-mono text-nutri-text dark:text-slate-200 outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 resize-y leading-relaxed">
+              </textarea>
+            </div>
+          }
+        }
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t border-nutri-rose/10 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.01] flex items-center justify-between text-xs text-nutri-text/50 dark:text-slate-500">
+        <span>Clinical Nutrilev · Asistente Clínico Inteligente</span>
+        <button (click)="closeModal()" class="font-bold text-nutri-text dark:text-slate-300 hover:text-nutri-rose transition-colors cursor-pointer">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

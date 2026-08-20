@@ -15,12 +15,24 @@ import { AnalyticsService } from '../../../../shared/services/analytics.service'
 import { ToastService } from '../../../../shared/services/toast.service';
 import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progress-analytic-card';
 import { ProgressHistoryComponent } from '../progress-history/progress-history';
+import { MenuCopilotModalComponent } from '../menu-copilot-modal/menu-copilot-modal';
 import { ClinicalNote, ClinicalNoteCategory } from '@shared/models/interfaces';
 
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, InputComponent, BadgeComponent, StatCardComponent, DetailFieldComponent, ProgressHistoryComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ButtonComponent, 
+    IconComponent, 
+    InputComponent, 
+    BadgeComponent, 
+    StatCardComponent, 
+    DetailFieldComponent, 
+    ProgressHistoryComponent,
+    MenuCopilotModalComponent
+  ],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -31,6 +43,7 @@ export class PatientDetailComponent implements OnInit {
   showSuccess = signal<boolean>(false);
   isEditing = signal<boolean>(false);
   headerCollapsed = signal<boolean>(false);
+  showCopilotModal = signal<boolean>(false);
   saved = output<void>();
   closed = output<void>();
   

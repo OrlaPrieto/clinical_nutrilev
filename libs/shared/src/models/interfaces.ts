@@ -163,3 +163,41 @@ export interface ShoppingCategory {
   category: string;
   items: ShoppingItem[];
 }
+
+export interface MenuCopilotDish {
+  platillo: string;
+  ingredientes: string[];
+  preparacion_rapida?: string;
+}
+
+export interface MenuCopilotOption {
+  id: number;
+  title: string;
+  desayuno: MenuCopilotDish;
+  colacion_matutina?: MenuCopilotDish;
+  comida: MenuCopilotDish;
+  colacion_vespertina?: MenuCopilotDish;
+  cena: MenuCopilotDish;
+}
+
+export interface MenuCopilotMacroDistribution {
+  calories: number;
+  protein_g: number;
+  protein_pct: number;
+  carbs_g: number;
+  carbs_pct: number;
+  fat_g: number;
+  fat_pct: number;
+}
+
+export interface MenuCopilotClinicalAnalysis {
+  delta_summary: string;
+  clinical_rationale: string;
+  macro_distribution: MenuCopilotMacroDistribution;
+}
+
+export interface MenuCopilotResponse {
+  clinical_analysis: MenuCopilotClinicalAnalysis;
+  menus: MenuCopilotOption[];
+  formatted_clipboard_text: string;
+}

@@ -124,6 +124,12 @@
                                     customClass="!rounded-xl !text-rose-500 hover:!bg-rose-50 !w-full">
                         </app-a-button>
                     } @else {
+                        <!-- Copilot IA Button -->
+                        <app-a-button (onClick)="showCopilotModal.set(true)" 
+                                    label="Copiloto IA" icon="auto_awesome" variant="outline" size="md"
+                                    customClass="!rounded-xl !border-nutri-rose/30 !bg-nutri-rose/5 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white active:scale-95 transition-all !w-full shadow-sm">
+                        </app-a-button>
+
                         <!-- Files Button -->
                         <app-a-button (onClick)="showMenuModal.set(true); highlightCopy.set(false)" 
                                     [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
@@ -458,6 +464,34 @@
     <!-- Tab 3: Nutrición Compacto -->
     @if (activeTab() === 3) {
             <div class="space-y-6 animate-fade-up">
+                <!-- AI Copilot Trigger Banner -->
+                <div class="p-5 rounded-3xl bg-gradient-to-r from-nutri-rose/[0.08] via-pink-500/[0.04] to-purple-500/[0.04] dark:from-nutri-rose/15 dark:via-purple-900/10 dark:to-transparent border border-nutri-rose/20 dark:border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-nutri-rose to-pink-500 text-white flex items-center justify-center shadow-lg shadow-nutri-rose/25 shrink-0">
+                            <app-a-icon name="auto_awesome" size="24px"></app-a-icon>
+                        </div>
+                        <div class="space-y-0.5">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-nutri-text dark:text-slate-100">
+                                    Copiloto de Menús con IA
+                                </h4>
+                                <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-nutri-rose text-white">
+                                    Nuevo
+                                </span>
+                            </div>
+                            <p class="text-xs text-nutri-text/60 dark:text-slate-400">
+                                Sugiere 3 opciones completas analizando patologías, gustos y delta de peso/% grasa con copiado en 1 clic.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button (click)="showCopilotModal.set(true)" 
+                            class="px-5 py-2.5 rounded-2xl bg-nutri-rose hover:bg-pink-600 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-nutri-rose/25 active:scale-95 transition-all cursor-pointer shrink-0">
+                        <app-a-icon name="psychology" size="16px"></app-a-icon>
+                        <span>Abrir Copiloto IA</span>
+                    </button>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- Column 1: Preferencias (More Important) -->
                     <div class="lg:col-span-2 bg-white dark:bg-[#111111] p-6 rounded-3xl border border-nutri-rose/10 dark:border-white/10 space-y-4 relative overflow-hidden transition-colors">
@@ -1547,6 +1581,14 @@
             </div>
         </div>
     }
+
+    <!-- Menu Copilot Modal -->
+    <app-o-menu-copilot-modal 
+        [patient]="patient()" 
+        [progressHistory]="progressHistory()" 
+        [isOpen]="showCopilotModal()" 
+        (closed)="showCopilotModal.set(false)">
+    </app-o-menu-copilot-modal>
 
     </div> <!-- Root Wrapper (2) -->
 }

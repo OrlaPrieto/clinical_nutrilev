@@ -177,5 +177,21 @@ export class PatientService {
   async uploadMenuPdf(formData: FormData): Promise<{ url: string }> {
     return firstValueFrom(this.http.post<{ url: string }>(`${this.apiUrl}/upload-menu`, formData));
   }
+
+  async suggestMenuCopilot(payload: {
+    patient_context: any;
+    prev_progress?: any;
+    latest_progress?: any;
+    previous_menu_summary?: string;
+    calories?: number;
+    extra_notes?: string;
+  }): Promise<{ success: boolean; data: import('@shared/models/interfaces').MenuCopilotResponse }> {
+    return firstValueFrom(
+      this.http.post<{ success: boolean; data: import('@shared/models/interfaces').MenuCopilotResponse }>(
+        `${environment.apiUrl}/suggest-menu-copilot`,
+        payload
+      )
+    );
+  }
 }
 
