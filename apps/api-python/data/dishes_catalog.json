@@ -1,0 +1,1626 @@
+[
+  {
+    "platillo": "Licuado verde",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Pepino, 1 rama  Apio, ¼ taza  Piña, al gusto  Agua, al gusto  Stevia. Preparación: agua y stevia.",
+    "ingredientes_detalle": "1 taza  Pepino, 1 rama  Apio, ¼ taza  Piña, al gusto  Agua, al gusto  Stevia",
+    "preparacion": "agua y stevia.",
+    "termino_busqueda_sugerido": "green smoothie"
+  },
+  {
+    "platillo": "Chilaquiles rojos",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 piezas  Tostadas de maíz, al gusto  Aceite en aerosol, al gusto  Cebolla picada, 1 taza  Salsa de chile colorado casera, al gusto  Cilantro, 100 g  Pechuga de pollo, 1 tza  Pepino, al gusto  Agua natural. Preparación: cocinar con aceite en aerosol (presionar por 2 segundos), cebolla picada y cilantro al gusto. Beber agua natural.",
+    "ingredientes_detalle": "4 piezas  Tostadas de maíz, al gusto  Aceite en aerosol, al gusto  Cebolla picada, 1 taza  Salsa de chile colorado casera, al gusto  Cilantro, 100 g  Pechuga de pollo, 1 tza  Pepino, al gusto  Agua natural",
+    "preparacion": "cocinar con aceite en aerosol (presionar por 2 segundos), cebolla picada y cilantro al gusto. Beber agua natural.",
+    "termino_busqueda_sugerido": "red chilaquiles"
+  },
+  {
+    "platillo": "Papaya y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza (140 g)  Papaya, 10 mitades (15 g)  Nuez.",
+    "ingredientes_detalle": "1 taza (140 g)  Papaya, 10 mitades (15 g)  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "papaya nuts snack"
+  },
+  {
+    "platillo": "Molida de res",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 100 g  Carne molida de res 95/5, 1/2 pza (60 g)  Aguacate, 1 taza (150 g)  Papa o camote cocido, 2 tazas (120 g)  Ensalada mixta, al gusto  Agua natural. Preparación: Beber agua natural.",
+    "ingredientes_detalle": "100 g  Carne molida de res 95/5, 1/2 pza (60 g)  Aguacate, 1 taza (150 g)  Papa o camote cocido, 2 tazas (120 g)  Ensalada mixta, al gusto  Agua natural",
+    "preparacion": "Beber agua natural.",
+    "termino_busqueda_sugerido": "ground beef with avocado"
+  },
+  {
+    "platillo": "Pepino y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Pepino, 10 mitades (15 g)  Nuez.",
+    "ingredientes_detalle": "1 taza  Pepino, 10 mitades (15 g)  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cucumber nuts snack"
+  },
+  {
+    "platillo": "Tostadas con aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Tostadas de maíz horneadas sannisimo, 1/2 pza (60 g)  Aguacate, al gusto  Tomate, 100 g  Pechuga de pollo, 2 tazas  Lechuga romana, 1 tza  Papaya picada, al gusto  Licuado. Preparación: mezclar con tomate, acompañar con 2 tazas de lechuga romana + 1 tza de papaya picada, beber licuado.",
+    "ingredientes_detalle": "2 pzas  Tostadas de maíz horneadas sannisimo, 1/2 pza (60 g)  Aguacate, al gusto  Tomate, 100 g  Pechuga de pollo, 2 tazas  Lechuga romana, 1 tza  Papaya picada, al gusto  Licuado",
+    "preparacion": "mezclar con tomate, acompañar con 2 tazas de lechuga romana + 1 tza de papaya picada, beber licuado.",
+    "termino_busqueda_sugerido": "avocado chicken tostadas"
+  },
+  {
+    "platillo": "Avena overnight",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Avena cruda en hojuelas, al gusto  Esencia de vainilla, 1 tza  Fresas en cuadritos, 250 ml  Yogurt griego s/a, 1 cucharada de 10 g  Linaza. Preparación: cocer 1/2 taza avena cruda en hojuelas añadir esencia de vainilla al gusto, mezclar.",
+    "ingredientes_detalle": "1/2 taza  Avena cruda en hojuelas, al gusto  Esencia de vainilla, 1 tza  Fresas en cuadritos, 250 ml  Yogurt griego s/a, 1 cucharada de 10 g  Linaza",
+    "preparacion": "cocer 1/2 taza avena cruda en hojuelas añadir esencia de vainilla al gusto, mezclar.",
+    "termino_busqueda_sugerido": "overnight oats"
+  },
+  {
+    "platillo": "Manzana y Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza (140 g)  Manzana, 10 (12 g)  Almendras.",
+    "ingredientes_detalle": "1 pza (140 g)  Manzana, 10 (12 g)  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "apple almonds snack"
+  },
+  {
+    "platillo": "Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 100 g  Pechuga de pollo, 1.5 tazas (135 g)  Ejotes con brócoli al vapor, 1 taza (120 g)  Ejotes, 1/2 taza (85 g)  Arroz cocido, 1/4 pza (30 g)  Aguacate, al gusto  Limonada s/a. Preparación: Limonada s/a.",
+    "ingredientes_detalle": "100 g  Pechuga de pollo, 1.5 tazas (135 g)  Ejotes con brócoli al vapor, 1 taza (120 g)  Ejotes, 1/2 taza (85 g)  Arroz cocido, 1/4 pza (30 g)  Aguacate, al gusto  Limonada s/a",
+    "preparacion": "Limonada s/a.",
+    "termino_busqueda_sugerido": "chicken with green beans broccoli"
+  },
+  {
+    "platillo": "Apio con Tajín y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Apio con tajin bajo en sodio, 10 mitades (15 g)  Nuez.",
+    "ingredientes_detalle": "1 taza  Apio con tajin bajo en sodio, 10 mitades (15 g)  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "celery tajin nuts snack"
+  },
+  {
+    "platillo": "Ensalada de pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 100 g  Pechuga de pollo, un poco  Sal, 1/2 taza  Lechuga, 1/2 taza  Brócoli cocido (en trozo), 1/4 taza  Calabacita rallada, al gusto  Cilantro, al gusto  Condimentos, al gusto  Mostaza, 2 cdas  Mayonesa light, al gusto  Agua natural. Preparación: Cocer 100 g de pechuga de pollo con un poco de sal, al estar lista desmenuzarla, agregar cilantro y condimentos al gusto + mostaza al gusto + 2 cdas de mayonesa light. Acompañar con agua natural.",
+    "ingredientes_detalle": "100 g  Pechuga de pollo, un poco  Sal, 1/2 taza  Lechuga, 1/2 taza  Brócoli cocido (en trozo), 1/4 taza  Calabacita rallada, al gusto  Cilantro, al gusto  Condimentos, al gusto  Mostaza, 2 cdas  Mayonesa light, al gusto  Agua natural",
+    "preparacion": "Cocer 100 g de pechuga de pollo con un poco de sal, al estar lista desmenuzarla, agregar cilantro y condimentos al gusto + mostaza al gusto + 2 cdas de mayonesa light. Acompañar con agua natural.",
+    "termino_busqueda_sugerido": "chicken salad"
+  },
+  {
+    "platillo": "Sándwich",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja (Bimbo Cero Cero), 1/2 pza  Aguacate, 100 g  Pechuga de pollo a la plancha, al gusto  Cebolla, al gusto  Germinado de alfalfa, al gusto  Lechuga, 1 taza  Fruta (no mango, no uva, no plátano), al gusto  Agua natural. Preparación: añadir cebolla, germinado de alfalfa, lechuga. Beber agua natural.",
+    "ingredientes_detalle": "2 piezas  Pan de caja (Bimbo Cero Cero), 1/2 pza  Aguacate, 100 g  Pechuga de pollo a la plancha, al gusto  Cebolla, al gusto  Germinado de alfalfa, al gusto  Lechuga, 1 taza  Fruta (no mango, no uva, no plátano), al gusto  Agua natural",
+    "preparacion": "añadir cebolla, germinado de alfalfa, lechuga. Beber agua natural.",
+    "termino_busqueda_sugerido": "chicken avocado sandwich"
+  },
+  {
+    "platillo": "Fruta libre y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza (140 g)  Fruta libre, 10 mitades (15 g)  Nuez.",
+    "ingredientes_detalle": "1 taza (140 g)  Fruta libre, 10 mitades (15 g)  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "fruit nuts snack"
+  },
+  {
+    "platillo": "Chuleta de cerdo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 150 g  Chuleta natural de cerdo, 2 tazas  Brócoli al vapor, 1/2 (60 g)  Aguacate, al gusto  Agua natural. Preparación: sin empanizar. Cocinar a la plancha sin grasas, dorada en su misma grasa. Agua natural.",
+    "ingredientes_detalle": "150 g  Chuleta natural de cerdo, 2 tazas  Brócoli al vapor, 1/2 (60 g)  Aguacate, al gusto  Agua natural",
+    "preparacion": "sin empanizar. Cocinar a la plancha sin grasas, dorada en su misma grasa. Agua natural.",
+    "termino_busqueda_sugerido": "pork chop broccoli avocado"
+  },
+  {
+    "platillo": "Chilaquiles",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 piezas  Tostadas de maíz sannisimo, 1 taza  Champiñones naturales, al gusto  Tomate picada, al gusto  Cebolla picada, al gusto  Aceite en aerosol, 100 g  Pechuga de pollo, 1 taza  Salsa de tomate, 1 tza  Espinaca, al gusto  Agua natural. Preparación: no freír. Cocinar con aceite en aerosol (presionar durante 2 segundos). Acompañado de 1 tza de espinaca y beber agua natural.",
+    "ingredientes_detalle": "3 piezas  Tostadas de maíz sannisimo, 1 taza  Champiñones naturales, al gusto  Tomate picada, al gusto  Cebolla picada, al gusto  Aceite en aerosol, 100 g  Pechuga de pollo, 1 taza  Salsa de tomate, 1 tza  Espinaca, al gusto  Agua natural",
+    "preparacion": "no freír. Cocinar con aceite en aerosol (presionar durante 2 segundos). Acompañado de 1 tza de espinaca y beber agua natural.",
+    "termino_busqueda_sugerido": "chilaquiles with mushrooms"
+  },
+  {
+    "platillo": "Burrito de Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pan  Pan pita integral delgado, 100 g  Pollo, 1 pieza  Zanahoria, al gusto  Pepino rallado, al gusto  Té sin azúcar o café sin azúcar con hielo. Preparación: deshebrado cocida en agua. Ralla 1 pieza de zanahoria y añade pepino rallado o jícama rallada al gusto. Cortar en Espiral (Zoodles). Beber Licuar el té sin azúcar o el café sin azúcar con hielo (tipo frappé).",
+    "ingredientes_detalle": "1 pan  Pan pita integral delgado, 100 g  Pollo, 1 pieza  Zanahoria, al gusto  Pepino rallado, al gusto  Té sin azúcar o café sin azúcar con hielo",
+    "preparacion": "deshebrado cocida en agua. Ralla 1 pieza de zanahoria y añade pepino rallado o jícama rallada al gusto. Cortar en Espiral (Zoodles). Beber Licuar el té sin azúcar o el café sin azúcar con hielo (tipo frappé).",
+    "termino_busqueda_sugerido": "chicken burrito"
+  },
+  {
+    "platillo": "Melón y Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza (160 g)  Melón, 10 (12 g)  Almendras.",
+    "ingredientes_detalle": "1 taza (160 g)  Melón, 10 (12 g)  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "melon almonds snack"
+  },
+  {
+    "platillo": "Filete de res",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 100 g  Filete de res magro en tiras, al gusto  Ajo en polvo, al gusto  Comino, 1/2  Jugo de limón, 1 tazas  Morrón (rojo, amarillo y verde), 1  Cebolla morada, al gusto  Aceite en spray, al gusto  Sal, al gusto  Pimienta negra, al gusto  Agua natural. Preparación: ajo en polvo, comino y el jugo de 1/2 limón. Cocinar con aceite en spray, sal y pimienta negra. Beber agua natural.",
+    "ingredientes_detalle": "100 g  Filete de res magro en tiras, al gusto  Ajo en polvo, al gusto  Comino, 1/2  Jugo de limón, 1 tazas  Morrón (rojo, amarillo y verde), 1  Cebolla morada, al gusto  Aceite en spray, al gusto  Sal, al gusto  Pimienta negra, al gusto  Agua natural",
+    "preparacion": "ajo en polvo, comino y el jugo de 1/2 limón. Cocinar con aceite en spray, sal y pimienta negra. Beber agua natural.",
+    "termino_busqueda_sugerido": "beef strips bell peppers"
+  },
+  {
+    "platillo": "Betabel rallado y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Betabel rallado, 10 mitades (15 g)  Nuez.",
+    "ingredientes_detalle": "1 taza  Betabel rallado, 10 mitades (15 g)  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "beetroot nuts snack"
+  },
+  {
+    "platillo": "Ensalada de atún",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 100 g  Medallón de atún, 1 cda  Mayonesa light, 1/2 taza  Lechuga, 1/2 taza  Brócoli cocido (en trozo), 1/4 taza  Calabacita rallada, 1/2 pza  Aguacate mediano, al gusto  Cilantro, al gusto  Condimentos, al gusto  Mostaza, al gusto  Agua natural. Preparación: agregar 1 cda de mayonesa light, cilantro y condimentos al gusto + mostaza al gusto. Acompañar con agua natural.",
+    "ingredientes_detalle": "100 g  Medallón de atún, 1 cda  Mayonesa light, 1/2 taza  Lechuga, 1/2 taza  Brócoli cocido (en trozo), 1/4 taza  Calabacita rallada, 1/2 pza  Aguacate mediano, al gusto  Cilantro, al gusto  Condimentos, al gusto  Mostaza, al gusto  Agua natural",
+    "preparacion": "agregar 1 cda de mayonesa light, cilantro y condimentos al gusto + mostaza al gusto. Acompañar con agua natural.",
+    "termino_busqueda_sugerido": "tuna salad"
+  },
+  {
+    "platillo": "Melón y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza (160 g)  Melón, 10 mitades (15 g)  Nuez.",
+    "ingredientes_detalle": "1 taza (160 g)  Melón, 10 mitades (15 g)  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "melon nuts snack"
+  },
+  {
+    "platillo": "Tostadas de Tinga",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tostadas Saníssimo, 1/3 de pza (40 g)  Aguacate, 90 g  Carne deshebrada guisada tipo tinga con tomate, cebolla, al gusto  Lechuga fresca, al gusto  Agua de jamaica natural s/a. Preparación: untado con aguacate. Acompañar con lechuga fresca al gusto. Beber agua de jamaica natural s/a.",
+    "ingredientes_detalle": "2 piezas  Tostadas Saníssimo, 1/3 de pza (40 g)  Aguacate, 90 g  Carne deshebrada guisada tipo tinga con tomate, cebolla, al gusto  Lechuga fresca, al gusto  Agua de jamaica natural s/a",
+    "preparacion": "untado con aguacate. Acompañar con lechuga fresca al gusto. Beber agua de jamaica natural s/a.",
+    "termino_busqueda_sugerido": "tinga tostadas"
+  },
+  {
+    "platillo": "Lentejas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Lentejas cocidas, 1 tza  Espinacas, al gusto  Pico de gallo, al gusto  Agua de Flor de Jamaica endulzada con stevia. Preparación: cocinar sin grasas. Acompañar con agua de Flor de Jamaica endulzada con stevia.",
+    "ingredientes_detalle": "1 taza  Lentejas cocidas, 1 tza  Espinacas, al gusto  Pico de gallo, al gusto  Agua de Flor de Jamaica endulzada con stevia",
+    "preparacion": "cocinar sin grasas. Acompañar con agua de Flor de Jamaica endulzada con stevia.",
+    "termino_busqueda_sugerido": "lentil soup spinach"
+  },
+  {
+    "platillo": "Licuado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Pepino, 1/2 taza  Espinacas, 1/2 pza  Manzana, 3 mitades  Nuez.",
+    "ingredientes_detalle": "1/2 taza  Pepino, 1/2 taza  Espinacas, 1/2 pza  Manzana, 3 mitades  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "smoothie"
+  },
+  {
+    "platillo": "Huevo con Espinacas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Tortillas de maíz, 2  Huevos enteros, 4 (120 ml)  Claras de huevo, 10 ml  Aceite de aguacate o de oliva, 2 pzas  Naranja, 1 taza  Espinaca, 1  Té sin azúcar de menta o manzanilla.",
+    "ingredientes_detalle": "2 pzas  Tortillas de maíz, 2  Huevos enteros, 4 (120 ml)  Claras de huevo, 10 ml  Aceite de aguacate o de oliva, 2 pzas  Naranja, 1 taza  Espinaca, 1  Té sin azúcar de menta o manzanilla",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "egg spinach"
+  },
+  {
+    "platillo": "Manzana con Jícama o Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Manzana, 1 taza  Jícama o Pepino.",
+    "ingredientes_detalle": "2 pzas  Manzana, 1 taza  Jícama o Pepino",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "apple jicama cucumber snack"
+  },
+  {
+    "platillo": "Pollo con Morrón",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2  Tortillas de maíz, 210 g  Pechuga de pollo, 1 taza  Morrón, variedad de colores, 2 tazas  Lechuga, 1/2 pza  Aguacate mediano, Beber  Agua natural.",
+    "ingredientes_detalle": "2  Tortillas de maíz, 210 g  Pechuga de pollo, 1 taza  Morrón, variedad de colores, 2 tazas  Lechuga, 1/2 pza  Aguacate mediano, Beber  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken bell pepper"
+  },
+  {
+    "platillo": "Gelatina sin Azúcar con Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Gelatina sin azúcar, 15 piezas  Almendras.",
+    "ingredientes_detalle": "1 taza  Gelatina sin azúcar, 15 piezas  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "sugar free gelatin almonds"
+  },
+  {
+    "platillo": "Tostadas de Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Tostadas de maíz horneadas, 1/2 (60 g)  Aguacate, 120 g  Pechuga de pollo, 1 taza  Lechuga, 1/2 taza  Zanahoria rallada, 2 tazas  Pepino, Beber  Agua natural.",
+    "ingredientes_detalle": "2 pzas  Tostadas de maíz horneadas, 1/2 (60 g)  Aguacate, 120 g  Pechuga de pollo, 1 taza  Lechuga, 1/2 taza  Zanahoria rallada, 2 tazas  Pepino, Beber  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken tostadas"
+  },
+  {
+    "platillo": "Bistec de Calabacita",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 tza  Papa cocida, 210 g  Bistec de res, 1 taza  Calabaza picada, 1 taza  Lechuga, 1/2 taza  Zanahoria cocida, 20 g  Queso parmesano, Beber  Agua natural.",
+    "ingredientes_detalle": "1 tza  Papa cocida, 210 g  Bistec de res, 1 taza  Calabaza picada, 1 taza  Lechuga, 1/2 taza  Zanahoria cocida, 20 g  Queso parmesano, Beber  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "beef zucchini"
+  },
+  {
+    "platillo": "Sándwich de Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja (Bimbo Cero Cero, Natures Own 100% de trigo integral), 1/2 pieza (60 g)  Aguacate, 120 g  Pechuga de pollo, 2 tazas  Pepino, Beber  Agua natural. Preparación: Añadir espinacas, pepino, lechuga al gusto.",
+    "ingredientes_detalle": "2 piezas  Pan de caja (Bimbo Cero Cero, Natures Own 100% de trigo integral), 1/2 pieza (60 g)  Aguacate, 120 g  Pechuga de pollo, 2 tazas  Pepino, Beber  Agua natural",
+    "preparacion": "Añadir espinacas, pepino, lechuga al gusto.",
+    "termino_busqueda_sugerido": "chicken sandwich"
+  },
+  {
+    "platillo": "Yogurt con Fresas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/3 tza  Amaranto, 2 tzas  Yogurt griego sin azúcar, 1 cucharada (10 g)  Chía, 1 taza  Fresas, 1/2 taza  Zanahoria.",
+    "ingredientes_detalle": "1/3 tza  Amaranto, 2 tzas  Yogurt griego sin azúcar, 1 cucharada (10 g)  Chía, 1 taza  Fresas, 1/2 taza  Zanahoria",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "yogurt berries"
+  },
+  {
+    "platillo": "Filete de Pescado con Pico de Gallo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Tostadas de maíz horneadas Sannísimo, 280 g  Filete de pescado, 1 tza  Lechuga, 1/2 taza  Zanahoria rallada, 1/2 pza de 60 g  Aguacate. Preparación: Empapelado con pico de gallo al gusto.",
+    "ingredientes_detalle": "2 pzas  Tostadas de maíz horneadas Sannísimo, 280 g  Filete de pescado, 1 tza  Lechuga, 1/2 taza  Zanahoria rallada, 1/2 pza de 60 g  Aguacate",
+    "preparacion": "Empapelado con pico de gallo al gusto.",
+    "termino_busqueda_sugerido": "fish pico de gallo"
+  },
+  {
+    "platillo": "Sándwich de Jamón",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja (Bimbo Cero Cero, Natures Own 100% de trigo integral), 1 cda (10 g)  Mayonesa light, 1/4 pieza (30 g)  Aguacate, 2 reb  Jamón de pechuga de pavo Zwan o Sabori, 60 g  Queso panela, Beber  Agua natural. Preparación: Acompañar con espinacas, zanahoria, lechuga y tomate al gusto. Té o café sin azúcar.",
+    "ingredientes_detalle": "2 piezas  Pan de caja (Bimbo Cero Cero, Natures Own 100% de trigo integral), 1 cda (10 g)  Mayonesa light, 1/4 pieza (30 g)  Aguacate, 2 reb  Jamón de pechuga de pavo Zwan o Sabori, 60 g  Queso panela, Beber  Agua natural",
+    "preparacion": "Acompañar con espinacas, zanahoria, lechuga y tomate al gusto. Té o café sin azúcar.",
+    "termino_busqueda_sugerido": "ham sandwich"
+  },
+  {
+    "platillo": "Tacos de Bistec",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Tortillas de maíz, 210 g  Bistec de res, 3 tazas  Brócoli al vapor, 1/2 pza  Aguacate mediano, Beber  Agua natural.",
+    "ingredientes_detalle": "2 pzas  Tortillas de maíz, 210 g  Bistec de res, 3 tazas  Brócoli al vapor, 1/2 pza  Aguacate mediano, Beber  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "beef tacos"
+  },
+  {
+    "platillo": "Burrito de Panela",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  Pan pita integral, 1/2 pieza (60 g)  Aguacate, 120 g  Queso panela, Al gusto  Pico de gallo, 1 tza  Pepino picado, Beber  Agua natural. Preparación: Mezclar el pico de gallo con el queso panela. Acompañar con pepino picado.",
+    "ingredientes_detalle": "1 pza  Pan pita integral, 1/2 pieza (60 g)  Aguacate, 120 g  Queso panela, Al gusto  Pico de gallo, 1 tza  Pepino picado, Beber  Agua natural",
+    "preparacion": "Mezclar el pico de gallo con el queso panela. Acompañar con pepino picado.",
+    "termino_busqueda_sugerido": "panela cheese burrito"
+  },
+  {
+    "platillo": "Avena Cocida",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza  Avena cruda en hojuelas, 2 tazas  Yogurt griego sin azúcar, 12  Almendras, 1 taza  Melón, 1/2 taza  Zanahoria rallada, Al gusto  Stevia, Al gusto  Canela. Preparación: Cocer en agua con stevia y canela.",
+    "ingredientes_detalle": "1/4 taza  Avena cruda en hojuelas, 2 tazas  Yogurt griego sin azúcar, 12  Almendras, 1 taza  Melón, 1/2 taza  Zanahoria rallada, Al gusto  Stevia, Al gusto  Canela",
+    "preparacion": "Cocer en agua con stevia y canela.",
+    "termino_busqueda_sugerido": "oatmeal"
+  },
+  {
+    "platillo": "Pollo con Ejotes y Arroz",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Arroz cocido, 210 g  Pechuga de pollo, 3 tazas  Ejotes, 10 ml  Aceite de aguacate o de oliva, Beber  Agua natural.",
+    "ingredientes_detalle": "1/2 taza  Arroz cocido, 210 g  Pechuga de pollo, 3 tazas  Ejotes, 10 ml  Aceite de aguacate o de oliva, Beber  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken green beans rice"
+  },
+  {
+    "platillo": "Pan con Cottage",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 panes  Pan Bimbo Cero Cero, 1/2 pieza (60 g)  Aguacate, 2 tazas  Cottage, Beber  Agua natural.",
+    "ingredientes_detalle": "2 panes  Pan Bimbo Cero Cero, 1/2 pieza (60 g)  Aguacate, 2 tazas  Cottage, Beber  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "bread cottage cheese"
+  },
+  {
+    "platillo": "Toast de pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 rebanadas  Pan integral, ¼ de aguacate (30 g) a cada pan  Aguacate machacado, 100 g  Pechuga de pollo deshebrada, 1 taza  Espinacas al vapor, Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "2 rebanadas  Pan integral, ¼ de aguacate (30 g) a cada pan  Aguacate machacado, 100 g  Pechuga de pollo deshebrada, 1 taza  Espinacas al vapor, Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken toast"
+  },
+  {
+    "platillo": "Fresas y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ½ taza  Fresas, 5 almendras  Almendras.",
+    "ingredientes_detalle": "½ taza  Fresas, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "strawberries almonds"
+  },
+  {
+    "platillo": "Bowl de pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 120 g  Pechuga de pollo, ⅓ taza  Pasta integral cocida, 2 tazas  Calabacita y zanahoria al vapor, ¼ pieza  Aguacate, Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "120 g  Pechuga de pollo, ⅓ taza  Pasta integral cocida, 2 tazas  Calabacita y zanahoria al vapor, ¼ pieza  Aguacate, Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken bowl"
+  },
+  {
+    "platillo": "Jícama y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Jícama, 5 almendras  Almendras.",
+    "ingredientes_detalle": "1 taza  Jícama, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "jicama almonds"
+  },
+  {
+    "platillo": "Pollo a la plancha",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 120 g  Pechuga de pollo a la plancha, ½ taza  Papa o camote cocido, 1 taza  Vegetales al vapor (chayote, zanahoria, espinaca), Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "120 g  Pechuga de pollo a la plancha, ½ taza  Papa o camote cocido, 1 taza  Vegetales al vapor (chayote, zanahoria, espinaca), Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "grilled chicken"
+  },
+  {
+    "platillo": "Pepino y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Pepino sin semillas, 5 almendras  Almendras.",
+    "ingredientes_detalle": "1 taza  Pepino sin semillas, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cucumber almonds"
+  },
+  {
+    "platillo": "Pudding de chía y fresas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza de 250 ml  Leche de almendra sin azúcar, 10 g (1 cda)  Chía, 8 galletas  Galletas María, 1 taza  Fresas. Preparación: Reposar la chía en agua para hidratar.",
+    "ingredientes_detalle": "1 taza de 250 ml  Leche de almendra sin azúcar, 10 g (1 cda)  Chía, 8 galletas  Galletas María, 1 taza  Fresas",
+    "preparacion": "Reposar la chía en agua para hidratar.",
+    "termino_busqueda_sugerido": "chia strawberry pudding"
+  },
+  {
+    "platillo": "Piña y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ¾ taza  Piña, 5 almendras  Almendras.",
+    "ingredientes_detalle": "¾ taza  Piña, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "pineapple almonds"
+  },
+  {
+    "platillo": "Tostadas de pescado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 120 g  Filete de pescado blanco a la plancha, ⅓ aguacate  Aguacate, Cantidad suficiente  Vegetales cocidos, 2 tostadas  Tostadas horneadas, Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "120 g  Filete de pescado blanco a la plancha, ⅓ aguacate  Aguacate, Cantidad suficiente  Vegetales cocidos, 2 tostadas  Tostadas horneadas, Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "fish tostadas"
+  },
+  {
+    "platillo": "Melón o papaya y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Melón o papaya, 5 almendras  Almendras.",
+    "ingredientes_detalle": "1 taza  Melón o papaya, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "melon papaya almonds"
+  },
+  {
+    "platillo": "Quesadillas sin queso",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 tortillas  Tortillas de maíz, 60 g  Champiñones asados o pechuga de pavo, 1 taza  Espinacas al vapor, ¼ aguacate  Aguacate.",
+    "ingredientes_detalle": "2 tortillas  Tortillas de maíz, 60 g  Champiñones asados o pechuga de pavo, 1 taza  Espinacas al vapor, ¼ aguacate  Aguacate",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mushroom turkey quesadillas"
+  },
+  {
+    "platillo": "Bistec",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 150 g  Bistec de res, 1/2 taza  Arroz cocido, 2 tazas  Ejotes o espinacas al vapor, Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "150 g  Bistec de res, 1/2 taza  Arroz cocido, 2 tazas  Ejotes o espinacas al vapor, Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "beef steak rice vegetables"
+  },
+  {
+    "platillo": "Zanahoria rallada y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Zanahoria rallada, 5 almendras  Almendras.",
+    "ingredientes_detalle": "1 taza  Zanahoria rallada, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "shredded carrot almonds"
+  },
+  {
+    "platillo": "Cereal",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Cereal sin azúcar, 250 ml  Leche de coco sin azúcar, 1 taza  Fresas, 15 mitades  Nuez.",
+    "ingredientes_detalle": "1 taza  Cereal sin azúcar, 250 ml  Leche de coco sin azúcar, 1 taza  Fresas, 15 mitades  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cereal with milk and fruit"
+  },
+  {
+    "platillo": "Hot cakes de avena",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ¼ taza  Avena, ½ pieza  Plátano, Chorrito  Leche de almendra, 1 cda de 10 g  Chía hidratada, Cantidad suficiente  Vainilla, Cantidad suficiente  Stevia, ¼ manzana  Manzana, ½ taza  Frutos rojos. Preparación: Licuar ¼ taza de avena, ½ pza plátano, chorrito de leche de almendra, 1 cda de 10 g chía hidratada, vainilla y stevia. Servir con ¼ manzana y ½ taza de frutos rojos.",
+    "ingredientes_detalle": "¼ taza  Avena, ½ pieza  Plátano, Chorrito  Leche de almendra, 1 cda de 10 g  Chía hidratada, Cantidad suficiente  Vainilla, Cantidad suficiente  Stevia, ¼ manzana  Manzana, ½ taza  Frutos rojos",
+    "preparacion": "Licuar ¼ taza de avena, ½ pza plátano, chorrito de leche de almendra, 1 cda de 10 g chía hidratada, vainilla y stevia. Servir con ¼ manzana y ½ taza de frutos rojos.",
+    "termino_busqueda_sugerido": "oatmeal pancakes"
+  },
+  {
+    "platillo": "Papaya y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Papaya, 5 almendras  Almendras.",
+    "ingredientes_detalle": "1 taza  Papaya, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "papaya almonds"
+  },
+  {
+    "platillo": "Atún con aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 lata (100 g)  Atún en agua, 1/2 pieza  Aguacate, 1 taza  Pepino picado sin semillas, Cantidad suficiente  Cilantro, 2 tostadas  Tostadas horneadas, Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "1 lata (100 g)  Atún en agua, 1/2 pieza  Aguacate, 1 taza  Pepino picado sin semillas, Cantidad suficiente  Cilantro, 2 tostadas  Tostadas horneadas, Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "tuna avocado salad"
+  },
+  {
+    "platillo": "Manzana cocida y almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Manzana cocida, 5 almendras  Almendras.",
+    "ingredientes_detalle": "1 taza  Manzana cocida, 5 almendras  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cooked apple almonds"
+  },
+  {
+    "platillo": "Ensalada con Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Espinacas, 1/2 taza  Zanahoria rallada, 1/4 de aguacate (30 g)  Aguacate, 100 g  Pechuga de pollo a la plancha, 2 tostadas  Tostadas de maíz horneadas, Cantidad suficiente  Agua natural.",
+    "ingredientes_detalle": "1 taza  Espinacas, 1/2 taza  Zanahoria rallada, 1/4 de aguacate (30 g)  Aguacate, 100 g  Pechuga de pollo a la plancha, 2 tostadas  Tostadas de maíz horneadas, Cantidad suficiente  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken salad"
+  },
+  {
+    "platillo": "Colación",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Mandarinas, 2 tazas  Jícama.",
+    "ingredientes_detalle": "2 pzas  Mandarinas, 2 tazas  Jícama",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mandarin jicama snack"
+  },
+  {
+    "platillo": "Picadillo Casero",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 tza cocido  Arroz integral, 210 g (en crudo)  Carne molida de res magra (95/5), 10 ml (2 cditas)  Aceite de oliva, 1.5 tazas  Mezcla de calabacita y chayote picados, 1 taza  Melón picado. Preparación: Cocina la carne molida con el aceite, la calabacita y el chayote. Sazona con puro ajo y puré de tomate natural sin sal. Beber agua natural.",
+    "ingredientes_detalle": "1 tza cocido  Arroz integral, 210 g (en crudo)  Carne molida de res magra (95/5), 10 ml (2 cditas)  Aceite de oliva, 1.5 tazas  Mezcla de calabacita y chayote picados, 1 taza  Melón picado",
+    "preparacion": "Cocina la carne molida con el aceite, la calabacita y el chayote. Sazona con puro ajo y puré de tomate natural sin sal. Beber agua natural.",
+    "termino_busqueda_sugerido": "homemade picadillo"
+  },
+  {
+    "platillo": "Wrap de Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  Pan pita integral, 60 g (en crudo)  Pechuga de pollo en tiras, ¼ pza  Aguacate mediano, 1 taza (para relleno)  Espinacas, 1 tza (para acompañar)  Jícama. Preparación: Saltear las verduras y el pollo. Beber agua natural.",
+    "ingredientes_detalle": "1 pza  Pan pita integral, 60 g (en crudo)  Pechuga de pollo en tiras, ¼ pza  Aguacate mediano, 1 taza (para relleno)  Espinacas, 1 tza (para acompañar)  Jícama",
+    "preparacion": "Saltear las verduras y el pollo. Beber agua natural.",
+    "termino_busqueda_sugerido": "chicken wrap"
+  },
+  {
+    "platillo": "Tacos de Queso Asado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Tortillas de maíz, 80 g  Queso panela bajo en sodio, 2 tazas  Champiñones y calabacitas rebanadas, 1 pza  Manzana. Preparación: Saltea los champiñones y calabacitas con especias. Asa el queso y arma tus tacos.",
+    "ingredientes_detalle": "2 pzas  Tortillas de maíz, 80 g  Queso panela bajo en sodio, 2 tazas  Champiñones y calabacitas rebanadas, 1 pza  Manzana",
+    "preparacion": "Saltea los champiñones y calabacitas con especias. Asa el queso y arma tus tacos.",
+    "termino_busqueda_sugerido": "cheese tacos"
+  },
+  {
+    "platillo": "Chuleta",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 tza  Puré de papa natural, 1 pza  Tortillas de maíz, 2 pzas (210 g pesar en crudo)  Chuletas de cerdo ahumadas, ½ pza de 60 g  Aguacate mediano, 1.5 tazas  Verduras mixtas, 1 pza  Durazno grande. Preparación: Sazón al gusto (sin caldos/sal). Agua natural.",
+    "ingredientes_detalle": "1 tza  Puré de papa natural, 1 pza  Tortillas de maíz, 2 pzas (210 g pesar en crudo)  Chuletas de cerdo ahumadas, ½ pza de 60 g  Aguacate mediano, 1.5 tazas  Verduras mixtas, 1 pza  Durazno grande",
+    "preparacion": "Sazón al gusto (sin caldos/sal). Agua natural.",
+    "termino_busqueda_sugerido": "pork chop"
+  },
+  {
+    "platillo": "Claras de Huevo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 rebanadas  Pan Bimbo 00, 4 claras (125 ml) 1/2 TAZA medidora  Claras de huevo, 10 g  Semillas de chía, 5 ml (1 cdita)  Aceite de oliva, Libre  Té de manzanilla s/a. Preparación: 10 g de semillas de chía (en tu agua de la mañana)",
+    "ingredientes_detalle": "2 rebanadas  Pan Bimbo 00, 4 claras (125 ml) 1/2 TAZA medidora  Claras de huevo, 10 g  Semillas de chía, 5 ml (1 cdita)  Aceite de oliva, Libre  Té de manzanilla s/a",
+    "preparacion": "10 g de semillas de chía (en tu agua de la mañana)",
+    "termino_busqueda_sugerido": "egg whites"
+  },
+  {
+    "platillo": "Pollo a las Hierbas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza cocida  Pasta de tornillo, Salsa de tomate natural, 210 g (en crudo)  Pechuga de pollo en cubos, 10 ml (2 cditas)  Aceite de oliva, 1.5 tazas  Ejotes, 2 pzas  Naranja mediana. Preparación: Los espárragos/ejotes actúan directo en el riñón para eliminar líquidos. Sazona el pollo con tomillo y romero. Beber agua natural.",
+    "ingredientes_detalle": "1 taza cocida  Pasta de tornillo, Salsa de tomate natural, 210 g (en crudo)  Pechuga de pollo en cubos, 10 ml (2 cditas)  Aceite de oliva, 1.5 tazas  Ejotes, 2 pzas  Naranja mediana",
+    "preparacion": "Los espárragos/ejotes actúan directo en el riñón para eliminar líquidos. Sazona el pollo con tomillo y romero. Beber agua natural.",
+    "termino_busqueda_sugerido": "herbed chicken"
+  },
+  {
+    "platillo": "Tostadas de Cottage",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 tostadas  Tostadas Saníssimo horneadas (para trocear), 1 taza  Queso cottage, ¼ pza  Aguacate mediano, 2 tazas  Jícama. Preparación: Beber agua natural.",
+    "ingredientes_detalle": "2 tostadas  Tostadas Saníssimo horneadas (para trocear), 1 taza  Queso cottage, ¼ pza  Aguacate mediano, 2 tazas  Jícama",
+    "preparacion": "Beber agua natural.",
+    "termino_busqueda_sugerido": "cottage cheese tostadas"
+  },
+  {
+    "platillo": "Galletas de Arroz con Aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Galletas de arroz, 1/4 pieza (30 g)  Aguacate.",
+    "ingredientes_detalle": "2 piezas  Galletas de arroz, 1/4 pieza (30 g)  Aguacate",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "rice cakes avocado"
+  },
+  {
+    "platillo": "Avena con Almendras y Leche",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza  Avena cruda, 6 piezas  Almendras, 1/2 taza  Leche descremada. Preparación: Dejar remojando 3 horas o más.",
+    "ingredientes_detalle": "1/4 taza  Avena cruda, 6 piezas  Almendras, 1/2 taza  Leche descremada",
+    "preparacion": "Dejar remojando 3 horas o más.",
+    "termino_busqueda_sugerido": "oatmeal almonds milk"
+  },
+  {
+    "platillo": "Pan con Aguacate y Queso Cottage",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja Bimbo Cero Cero, 1/4 pieza (30 g)  Aguacate mediano, 1/2 taza  Queso cottage pasteurizado, 1 taza  Fresas, 170 g (3/4 taza)  Yogurt griego sin azúcar.",
+    "ingredientes_detalle": "2 piezas  Pan de caja Bimbo Cero Cero, 1/4 pieza (30 g)  Aguacate mediano, 1/2 taza  Queso cottage pasteurizado, 1 taza  Fresas, 170 g (3/4 taza)  Yogurt griego sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "avocado toast cottage cheese"
+  },
+  {
+    "platillo": "Licuado con Huevo Cocido",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza (20 g)  Avena cruda, 6 mitades  Nuez, 3 piezas  Huevo cocido, 1 taza  Melón, 250 ml  Leche descremada. Preparación: Licuar todos los ingredientes a excepción del huevo cocido. Beber agua natural o té sin azúcar.",
+    "ingredientes_detalle": "1/4 taza (20 g)  Avena cruda, 6 mitades  Nuez, 3 piezas  Huevo cocido, 1 taza  Melón, 250 ml  Leche descremada",
+    "preparacion": "Licuar todos los ingredientes a excepción del huevo cocido. Beber agua natural o té sin azúcar.",
+    "termino_busqueda_sugerido": "smoothie boiled egg"
+  },
+  {
+    "platillo": "Huevo con Fruta y Tortillas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tortillas de maíz, 2 segundos de presión  Aceite en aerosol, 1 pieza  Huevo revuelto, 4 piezas  Claras de huevo, 1 taza  Melón, 170 g (3/4 taza)  Yogurt griego sin azúcar.",
+    "ingredientes_detalle": "2 piezas  Tortillas de maíz, 2 segundos de presión  Aceite en aerosol, 1 pieza  Huevo revuelto, 4 piezas  Claras de huevo, 1 taza  Melón, 170 g (3/4 taza)  Yogurt griego sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "scrambled eggs fruit tortillas"
+  },
+  {
+    "platillo": "Licuado con Huevo Cocido y Chía",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 3 piezas  Huevo cocido, 1 taza  Berries congeladas, 250 ml  Leche descremada.",
+    "ingredientes_detalle": "1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 3 piezas  Huevo cocido, 1 taza  Berries congeladas, 250 ml  Leche descremada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "smoothie boiled egg chia"
+  },
+  {
+    "platillo": "Bowl Dulce con Proteína y Chía",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 1.5 scoop de 25 g  Proteína base de suero de leche o claras de huevo, 1 pieza  Manzana mediana, 1 taza (250 ml)  Leche descremada.",
+    "ingredientes_detalle": "1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 1.5 scoop de 25 g  Proteína base de suero de leche o claras de huevo, 1 pieza  Manzana mediana, 1 taza (250 ml)  Leche descremada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "sweet bowl protein chia"
+  },
+  {
+    "platillo": "Fruta con Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 tazas  Fruta, 15 piezas  Almendras.",
+    "ingredientes_detalle": "2 tazas  Fruta, 15 piezas  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "fruit almonds"
+  },
+  {
+    "platillo": "Pescado a la Plancha con Arroz y Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Arroz cocido con sal y pimienta, 150 g  Pechuga de pollo, 1.5 tazas  Brócoli, 1/2 taza  Zanahoria, 1/2 pieza (60 g)  Aguacate mediano. Preparación: Beber agua natural.",
+    "ingredientes_detalle": "1 taza  Arroz cocido con sal y pimienta, 150 g  Pechuga de pollo, 1.5 tazas  Brócoli, 1/2 taza  Zanahoria, 1/2 pieza (60 g)  Aguacate mediano",
+    "preparacion": "Beber agua natural.",
+    "termino_busqueda_sugerido": "grilled fish rice vegetables"
+  },
+  {
+    "platillo": "Res a la Plancha con Papa y Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Papa, 2 piezas  Tortilla de maíz, 150 g  Cuete, falda o filete de res, 1/2 taza  Zanahoria, 1 taza  Brócoli, 1/2 pieza (60 g)  Aguacate mediano. Preparación: Cocinar sin grasas, agregar con cilantro, beber agua natural o limonada endulzada con stevia.",
+    "ingredientes_detalle": "1 taza  Papa, 2 piezas  Tortilla de maíz, 150 g  Cuete, falda o filete de res, 1/2 taza  Zanahoria, 1 taza  Brócoli, 1/2 pieza (60 g)  Aguacate mediano",
+    "preparacion": "Cocinar sin grasas, agregar con cilantro, beber agua natural o limonada endulzada con stevia.",
+    "termino_busqueda_sugerido": "grilled beef potato vegetables"
+  },
+  {
+    "platillo": "Wrap de Pollo con Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza  Pan pita, 150 g  Pechuga de pollo, 1 taza  Zanahoria rallada, 1/2 taza  Espinacas, 1 taza  Espinacas, al gusto  Cilantro, 1/2 pieza (60 g)  Aguacate mediano. Preparación: Beber agua natural.",
+    "ingredientes_detalle": "1 pieza  Pan pita, 150 g  Pechuga de pollo, 1 taza  Zanahoria rallada, 1/2 taza  Espinacas, 1 taza  Espinacas, al gusto  Cilantro, 1/2 pieza (60 g)  Aguacate mediano",
+    "preparacion": "Beber agua natural.",
+    "termino_busqueda_sugerido": "chicken wrap vegetables"
+  },
+  {
+    "platillo": "Ensalada de Pollo con Elote y Saladitas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Elote de lata, 3 paquetes individuales  Saladitas, 150 g  Pechuga de pollo, 1 taza  Lechuga, 1/2 taza  Zanahoria cocida, 1/2 taza  Pepino, 1/4 taza  Ejotes, 10 ml  Aceite de oliva con especias italianas. Preparación: Beber agua natural.",
+    "ingredientes_detalle": "1/2 taza  Elote de lata, 3 paquetes individuales  Saladitas, 150 g  Pechuga de pollo, 1 taza  Lechuga, 1/2 taza  Zanahoria cocida, 1/2 taza  Pepino, 1/4 taza  Ejotes, 10 ml  Aceite de oliva con especias italianas",
+    "preparacion": "Beber agua natural.",
+    "termino_busqueda_sugerido": "chicken salad corn crackers"
+  },
+  {
+    "platillo": "Hamburguesa de Res con Ensalada",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza  Pan de Thin hamburguesa, 125 g  Carne molida de res, 2 tazas  Ensalada (lechuga, pepino, cebolla morada, espinacas), 1 taza  Zanahoria rallada, 1/2 pieza (60 g)  Aguacate mediano. Preparación: Cocinar sin grasas, beber agua natural o limonada endulzada con stevia.",
+    "ingredientes_detalle": "1 pieza  Pan de Thin hamburguesa, 125 g  Carne molida de res, 2 tazas  Ensalada (lechuga, pepino, cebolla morada, espinacas), 1 taza  Zanahoria rallada, 1/2 pieza (60 g)  Aguacate mediano",
+    "preparacion": "Cocinar sin grasas, beber agua natural o limonada endulzada con stevia.",
+    "termino_busqueda_sugerido": "beef burger salad"
+  },
+  {
+    "platillo": "Batido de Proteína Birdman Falcon",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 scoop de 42 g  Proteína Birdman Falcon, 250 ml  Leche vegetal de almendras sin azúcar.",
+    "ingredientes_detalle": "1 scoop de 42 g  Proteína Birdman Falcon, 250 ml  Leche vegetal de almendras sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "protein shake birdman falcon"
+  },
+  {
+    "platillo": "Tostadas con Queso Cottage y Aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tostadas de maíz horneadas Sannísimo, 1/2 pieza (60 g)  Aguacate mediano, 1 taza  Queso cottage pasteurizado, 1 taza  Espinacas, 1 taza  Pepino. Preparación: Agua natural.",
+    "ingredientes_detalle": "2 piezas  Tostadas de maíz horneadas Sannísimo, 1/2 pieza (60 g)  Aguacate mediano, 1 taza  Queso cottage pasteurizado, 1 taza  Espinacas, 1 taza  Pepino",
+    "preparacion": "Agua natural.",
+    "termino_busqueda_sugerido": "tostadas cottage cheese avocado"
+  },
+  {
+    "platillo": "Sándwich de Atún con Aguacate y Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 1/2 pieza (60 g)  Aguacate, 120 g  Atún en agua, 2 tazas  Pepino. Preparación: Acompañar con 2 tazas de pepino. Agua natural.",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 1/2 pieza (60 g)  Aguacate, 120 g  Atún en agua, 2 tazas  Pepino",
+    "preparacion": "Acompañar con 2 tazas de pepino. Agua natural.",
+    "termino_busqueda_sugerido": "tuna sandwich avocado cucumber"
+  },
+  {
+    "platillo": "Sándwich de Jamón de Pavo y Queso Panela",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 2 cucharadas (10 g)  Mayonesa light, 2 rebanadas  Jamón de pechuga de pavo Zwan o Sabori, 60 g  Queso panela pasteurizado, al gusto  Espinacas, al gusto  Pepino, al gusto  Lechuga, 2 tazas  Pepino. Preparación: Sándwich añadir espinacas, pepino, lechuga al gusto, acompañar con 2 tazas de pepino. Agua natural.",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 2 cucharadas (10 g)  Mayonesa light, 2 rebanadas  Jamón de pechuga de pavo Zwan o Sabori, 60 g  Queso panela pasteurizado, al gusto  Espinacas, al gusto  Pepino, al gusto  Lechuga, 2 tazas  Pepino",
+    "preparacion": "Sándwich añadir espinacas, pepino, lechuga al gusto, acompañar con 2 tazas de pepino. Agua natural.",
+    "termino_busqueda_sugerido": "turkey ham cheese sandwich"
+  },
+  {
+    "platillo": "Pan Tostado con Pollo y Aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 1/2 pieza (60 g)  Aguacate, 120 g  Pechuga de pollo, 1 taza  Zanahoria rallada.",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 1/2 pieza (60 g)  Aguacate, 120 g  Pechuga de pollo, 1 taza  Zanahoria rallada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "toast chicken avocado"
+  },
+  {
+    "platillo": "Bowl de Pollo con Arroz y Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Arroz blanco cocido con salsa de soya, 1/2 pieza (60 g)  Aguacate mediano, 120 g  Pechuga de pollo, 1 pieza  Pepino, 1/2 pieza  Zanahoria, al gusto  Repollo morado, al gusto  Repollo verde.",
+    "ingredientes_detalle": "1/2 taza  Arroz blanco cocido con salsa de soya, 1/2 pieza (60 g)  Aguacate mediano, 120 g  Pechuga de pollo, 1 pieza  Pepino, 1/2 pieza  Zanahoria, al gusto  Repollo morado, al gusto  Repollo verde",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken rice bowl vegetables"
+  },
+  {
+    "platillo": "Avena con Almendras y Leche Descremada",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza  Avena cruda, 6 piezas  Almendras, 1/2 taza  Leche descremada. Preparación: Dejar remojando 3 horas o mas",
+    "ingredientes_detalle": "1/4 taza  Avena cruda, 6 piezas  Almendras, 1/2 taza  Leche descremada",
+    "preparacion": "Dejar remojando 3 horas o mas",
+    "termino_busqueda_sugerido": "oatmeal almonds milk"
+  },
+  {
+    "platillo": "Huevo Revuelto con Tortillas y Fruta",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tortillas de maíz, 1 pieza  Huevo revuelto, 4  Claras de huevo, 1 taza  Melón, 170 g (3/4 taza)  Yogurt griego s/a. Preparación: Aceite en aerosol (presionar 2 segundos) para cocinar el huevo, mezclar las 2 pzas de tortilla con huevo",
+    "ingredientes_detalle": "2 piezas  Tortillas de maíz, 1 pieza  Huevo revuelto, 4  Claras de huevo, 1 taza  Melón, 170 g (3/4 taza)  Yogurt griego s/a",
+    "preparacion": "Aceite en aerosol (presionar 2 segundos) para cocinar el huevo, mezclar las 2 pzas de tortilla con huevo",
+    "termino_busqueda_sugerido": "scrambled eggs tortillas fruit"
+  },
+  {
+    "platillo": "Licuado con Chía y Huevo Cocido",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 3 piezas  Huevo cocido, 1 taza  Berries congeladas, 250 ml  Leche descremada.",
+    "ingredientes_detalle": "1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 3 piezas  Huevo cocido, 1 taza  Berries congeladas, 250 ml  Leche descremada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chia smoothie boiled egg"
+  },
+  {
+    "platillo": "Bowl Dulce con Amaranto, Chía y Proteína",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 1.5 scoop de 25 g  Proteína base de suero de leche o claras de huevo, 1 pieza  Manzana mediana, 1 taza de 250 ml  Leche descremada. Preparación: Colocar cottage, acompañar con yogurt, fruta y bebida de té s/a o agua natural.",
+    "ingredientes_detalle": "1/4 taza (20 g)  Amaranto, 20 g  Semillas de chía, 1.5 scoop de 25 g  Proteína base de suero de leche o claras de huevo, 1 pieza  Manzana mediana, 1 taza de 250 ml  Leche descremada",
+    "preparacion": "Colocar cottage, acompañar con yogurt, fruta y bebida de té s/a o agua natural.",
+    "termino_busqueda_sugerido": "sweet breakfast bowl"
+  },
+  {
+    "platillo": "Pechuga de Pollo con Arroz y Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Arroz cocido con sal y pimienta, 150 g  Pechuga de pollo, 1.5 tazas  Brócoli, 1/2 taza  Zanahoria, 1/2 pieza, 60 g  Aguacate mediano. Preparación: Beber agua natural.",
+    "ingredientes_detalle": "1 taza  Arroz cocido con sal y pimienta, 150 g  Pechuga de pollo, 1.5 tazas  Brócoli, 1/2 taza  Zanahoria, 1/2 pieza, 60 g  Aguacate mediano",
+    "preparacion": "Beber agua natural.",
+    "termino_busqueda_sugerido": "grilled chicken rice vegetables"
+  },
+  {
+    "platillo": "Carne de Res con Papa, Tortilla y Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Papa, 2  Tortilla de maíz, 150 g  Cuete, falda o filete de res, 1/2 taza  Zanahoria, 1 taza  Brócoli, 1/2 pieza, 60 g  Aguacate mediano. Preparación: Cocinar sin grasas, agregar con cilantro beber agua natural o limonada endulzada con stevia.",
+    "ingredientes_detalle": "1 taza  Papa, 2  Tortilla de maíz, 150 g  Cuete, falda o filete de res, 1/2 taza  Zanahoria, 1 taza  Brócoli, 1/2 pieza, 60 g  Aguacate mediano",
+    "preparacion": "Cocinar sin grasas, agregar con cilantro beber agua natural o limonada endulzada con stevia.",
+    "termino_busqueda_sugerido": "beef potato tortillas vegetables"
+  },
+  {
+    "platillo": "Proteína Birdman con Leche Vegetal",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 scoop de 42 g  Proteína Birdman Falcon, 250 ml  Leche vegetal de almendras s/a.",
+    "ingredientes_detalle": "1 scoop de 42 g  Proteína Birdman Falcon, 250 ml  Leche vegetal de almendras s/a",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "protein shake almond milk"
+  },
+  {
+    "platillo": "Tostadas con Queso Cottage y Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tostadas de maíz horneadas sannisimo, 1/2 pieza, 60 g  Aguacate mediano, 1 taza  Queso cottage pasteurizado, 1 taza  Espinacas, 1 taza  Pepino. Preparación: Agua natural",
+    "ingredientes_detalle": "2 piezas  Tostadas de maíz horneadas sannisimo, 1/2 pieza, 60 g  Aguacate mediano, 1 taza  Queso cottage pasteurizado, 1 taza  Espinacas, 1 taza  Pepino",
+    "preparacion": "Agua natural",
+    "termino_busqueda_sugerido": "cottage cheese tostadas"
+  },
+  {
+    "platillo": "Sándwich de Atún con Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 1/2 pieza, 60 g  Aguacate, 120 g  Atún en agua, 2 tazas  Pepino. Preparación: acompañar con 2 tazas de pepino. Agua natural",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 1/2 pieza, 60 g  Aguacate, 120 g  Atún en agua, 2 tazas  Pepino",
+    "preparacion": "acompañar con 2 tazas de pepino. Agua natural",
+    "termino_busqueda_sugerido": "tuna sandwich cucumber"
+  },
+  {
+    "platillo": "Sándwich de Jamón y Queso Panela con Verduras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 2 cdas (10 g)  Mayonesa light, 2 rebanadas  Jamón de pechuga de pavo, 60 g  Queso panela pasteurizado, al gusto  Espinacas, al gusto  Pepino, al gusto  Lechuga, 2 tazas  Pepino. Preparación: Sándwich añadir espinacas, pepino lechuga al gusto acompañar con 2 tazas de pepino. Agua natural",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 2 cdas (10 g)  Mayonesa light, 2 rebanadas  Jamón de pechuga de pavo, 60 g  Queso panela pasteurizado, al gusto  Espinacas, al gusto  Pepino, al gusto  Lechuga, 2 tazas  Pepino",
+    "preparacion": "Sándwich añadir espinacas, pepino lechuga al gusto acompañar con 2 tazas de pepino. Agua natural",
+    "termino_busqueda_sugerido": "ham cheese sandwich vegetables"
+  },
+  {
+    "platillo": "Pan Tostado con Pollo y Zanahoria",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 1/2 pieza, 60 g  Aguacate, 120 g  Pechuga de pollo, 1 taza  Zanahoria rallada.",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 1/2 pieza, 60 g  Aguacate, 120 g  Pechuga de pollo, 1 taza  Zanahoria rallada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "toast chicken carrot"
+  },
+  {
+    "platillo": "Machaca con Huevo y Licuado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  huevos enteros, 4 piezas  claras, 80g  machaca de res magra, 1 tza (90g)  espinaca al vapor, 1/2 tza (60g)  tomate picado, 30g  aguacate, 2 piezas  tortillas de maíz, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia.",
+    "ingredientes_detalle": "2 piezas  huevos enteros, 4 piezas  claras, 80g  machaca de res magra, 1 tza (90g)  espinaca al vapor, 1/2 tza (60g)  tomate picado, 30g  aguacate, 2 piezas  tortillas de maíz, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "machaca with egg smoothie"
+  },
+  {
+    "platillo": "Carne seca magra con jícama",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 60g  carne seca magra Chihuahua, 1 tza (120g)  jícama en bastones.",
+    "ingredientes_detalle": "60g  carne seca magra Chihuahua, 1 tza (120g)  jícama en bastones",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "dried beef jicama sticks"
+  },
+  {
+    "platillo": "Caldillo Norteño Magro",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  pulpa de res, 1.5 tzas (180g)  mezcla de tomate, cebolla y chilaca verde, 1 tza (100g)  calabacita picada, 1/4 pza (150g)  papa mediana, 1/4 pza (30g)  aguacate, 1 tza  arroz cocido.",
+    "ingredientes_detalle": "250g  pulpa de res, 1.5 tzas (180g)  mezcla de tomate, cebolla y chilaca verde, 1 tza (100g)  calabacita picada, 1/4 pza (150g)  papa mediana, 1/4 pza (30g)  aguacate, 1 tza  arroz cocido",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "caldillo norteño lean beef"
+  },
+  {
+    "platillo": "Manzana y Yogurt Bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza  manzana, 1 pza (231 ml)  yogurt Yoplait bebible s/a.",
+    "ingredientes_detalle": "1 pieza  manzana, 1 pza (231 ml)  yogurt Yoplait bebible s/a",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "apple yogurt drink"
+  },
+  {
+    "platillo": "Tacos de Machaca con Queso",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 piezas  tortillas de maíz, 120g  queso Oaxaca reducido en grasa, 80g  machaca de res magra, 1 tza (120g)  cebolla y chile chilaca tatemados a la plancha, 1/4 pza (30g)  aguacate, cantidad al gusto  Salsa de chile colorado.",
+    "ingredientes_detalle": "4 piezas  tortillas de maíz, 120g  queso Oaxaca reducido en grasa, 80g  machaca de res magra, 1 tza (120g)  cebolla y chile chilaca tatemados a la plancha, 1/4 pza (30g)  aguacate, cantidad al gusto  Salsa de chile colorado",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "machaca cheese tacos"
+  },
+  {
+    "platillo": "Quesadillas con Rajas y Tomate y Licuado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 piezas  tortillas de maíz, 150g  queso Oaxaca reducido en grasa, 1.5 tzas (150g)  rajas de chile chilaca asado, 1/2 tza (60g)  tomate en cubos, 1/4 pza (30g)  aguacate, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia.",
+    "ingredientes_detalle": "4 piezas  tortillas de maíz, 150g  queso Oaxaca reducido en grasa, 1.5 tzas (150g)  rajas de chile chilaca asado, 1/2 tza (60g)  tomate en cubos, 1/4 pza (30g)  aguacate, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "quesadillas rajas tomato smoothie"
+  },
+  {
+    "platillo": "Carne seca magra con pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 60g  carne seca magra Chihuahua, 1 tza (110g)  pepino picado sin semilla.",
+    "ingredientes_detalle": "60g  carne seca magra Chihuahua, 1 tza (110g)  pepino picado sin semilla",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "dried beef cucumber"
+  },
+  {
+    "platillo": "Fajitas de Pollo de Colores",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  pechuga de pollo, 1.5 tzas (200g)  pimiento morrón y cebolla en tiras, 1/4 pza (30g)  aguacate, 1/2 tza  frijoles de la olla enteros, 2 piezas  tortillas de maíz.",
+    "ingredientes_detalle": "250g  pechuga de pollo, 1.5 tzas (200g)  pimiento morrón y cebolla en tiras, 1/4 pza (30g)  aguacate, 1/2 tza  frijoles de la olla enteros, 2 piezas  tortillas de maíz",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "colorful chicken fajitas"
+  },
+  {
+    "platillo": "Tostadas con aguacate y atún",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 pzas  tostadas de maíz horneadas sannisimo, 100g  atún en agua, 1/2 pza  aguacate mediano machacado, 2 tzas  lechuga romana.",
+    "ingredientes_detalle": "3 pzas  tostadas de maíz horneadas sannisimo, 100g  atún en agua, 1/2 pza  aguacate mediano machacado, 2 tzas  lechuga romana",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "tuna avocado tostadas"
+  },
+  {
+    "platillo": "Huevo con Machaca y Ejotes y Licuado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  huevos enteros, 4 piezas  claras, 60g  machaca de res magra, 1 tza (100g)  ejotes cocidos picados, 1/4 pza (30g)  aguacate, 2 piezas  tortillas de maíz, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia.",
+    "ingredientes_detalle": "2 piezas  huevos enteros, 4 piezas  claras, 60g  machaca de res magra, 1 tza (100g)  ejotes cocidos picados, 1/4 pza (30g)  aguacate, 2 piezas  tortillas de maíz, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "egg machaca green beans smoothie"
+  },
+  {
+    "platillo": "Yogurt Griego con Manzana",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 tazas  yogurt Griego natural sin azucar, 1 pza  manzana.",
+    "ingredientes_detalle": "2 tazas  yogurt Griego natural sin azucar, 1 pza  manzana",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "greek yogurt apple"
+  },
+  {
+    "platillo": "Carne con Chile Pasado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  pulpa de res magra, 1.5 tzas (180g)  salsa de chile pasado con tomate y cebolla, 1 tza (100g)  calabacita en cubos, 30g  aguacate, 1 tza  arroz cocido, 2 piezas  tortillas de maíz.",
+    "ingredientes_detalle": "250g  pulpa de res magra, 1.5 tzas (180g)  salsa de chile pasado con tomate y cebolla, 1 tza (100g)  calabacita en cubos, 30g  aguacate, 1 tza  arroz cocido, 2 piezas  tortillas de maíz",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "beef dried chili"
+  },
+  {
+    "platillo": "Plátano, Manzana y Yogurt Bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza  plátano, 1 pieza  manzana, 1 pieza (231 ml)  yogurt Yoplait bebible s/a.",
+    "ingredientes_detalle": "1 pieza  plátano, 1 pieza  manzana, 1 pieza (231 ml)  yogurt Yoplait bebible s/a",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "banana apple yogurt drink"
+  },
+  {
+    "platillo": "Bowl de Pollo con Tostadas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 150g  pechuga de pollo, 2 pzas  tostadas de maíz horneadas sannisimo, 1/2 pza (60g)  aguacate, 2 tazas  ensalada (lechuga, pepino, zanahoria). Preparación: Pechuga de pollo (pesar en crudo, cocer en agua sin grasas y desmenuzar, condimentar con sal y pimienta)",
+    "ingredientes_detalle": "150g  pechuga de pollo, 2 pzas  tostadas de maíz horneadas sannisimo, 1/2 pza (60g)  aguacate, 2 tazas  ensalada (lechuga, pepino, zanahoria)",
+    "preparacion": "Pechuga de pollo (pesar en crudo, cocer en agua sin grasas y desmenuzar, condimentar con sal y pimienta)",
+    "termino_busqueda_sugerido": "chicken bowl tostadas"
+  },
+  {
+    "platillo": "Carne seca magra con yogurt y pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 60g  carne seca magra Chihuahua, 200g  yogurt griego natural 0%, 1 tza (110g)  pepino picado sin semilla.",
+    "ingredientes_detalle": "60g  carne seca magra Chihuahua, 200g  yogurt griego natural 0%, 1 tza (110g)  pepino picado sin semilla",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "dried beef yogurt cucumber"
+  },
+  {
+    "platillo": "Albóndigas en Caldillo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  carne de res molida 95/5, 1 tza (100g) calabacita, 1 tza (70g) repollo picado y 1/2 tza (50g) zanahoria  caldillo de tomate con calabacita, repollo y zanahoria, 30g  aguacate, 2 piezas  tortillas de maíz.",
+    "ingredientes_detalle": "250g  carne de res molida 95/5, 1 tza (100g) calabacita, 1 tza (70g) repollo picado y 1/2 tza (50g) zanahoria  caldillo de tomate con calabacita, repollo y zanahoria, 30g  aguacate, 2 piezas  tortillas de maíz",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "meatballs in broth"
+  },
+  {
+    "platillo": "Yogurt Bebible, Plátano y Manzana",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza (231 ml)  yogurt Yoplait bebible s/a, 1 pieza  plátano, 1 pieza  manzana.",
+    "ingredientes_detalle": "1 pieza (231 ml)  yogurt Yoplait bebible s/a, 1 pieza  plátano, 1 pieza  manzana",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "yogurt drink banana apple"
+  },
+  {
+    "platillo": "Quesadillas con Pollo y Rajas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 piezas  tortillas de maíz, 100g  queso asadero light, 150g  pechuga de pollo deshebrada, 1.5 tzas (150g)  rajas de chile chilaca verde y cebolla a la plancha, 1/4 pza (30g)  aguacate.",
+    "ingredientes_detalle": "3 piezas  tortillas de maíz, 100g  queso asadero light, 150g  pechuga de pollo deshebrada, 1.5 tzas (150g)  rajas de chile chilaca verde y cebolla a la plancha, 1/4 pza (30g)  aguacate",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken rajas quesadillas"
+  },
+  {
+    "platillo": "Discada",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  bistec res magro, 100g  pechuga pollo, 1.5 tzas (180g)  cebolla, tomate y chile chilaca picados, 1/4 pza (30g)  aguacate, 1/2 tza  frijoles de la olla enteros, 2 piezas  tortillas de maíz.",
+    "ingredientes_detalle": "250g  bistec res magro, 100g  pechuga pollo, 1.5 tzas (180g)  cebolla, tomate y chile chilaca picados, 1/4 pza (30g)  aguacate, 1/2 tza  frijoles de la olla enteros, 2 piezas  tortillas de maíz",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "discada beef chicken"
+  },
+  {
+    "platillo": "Molletes Panela",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza  bolillo integral sin migajón, 1 tza  frijoles machacados (sin grasa), 60g  queso panela light, 1 tza (100g)  calabacita rallada, 1/2 tza (60g)  pico de gallo con perejil, 1/4 pza (30g)  aguacate.",
+    "ingredientes_detalle": "1 pieza  bolillo integral sin migajón, 1 tza  frijoles machacados (sin grasa), 60g  queso panela light, 1 tza (100g)  calabacita rallada, 1/2 tza (60g)  pico de gallo con perejil, 1/4 pza (30g)  aguacate",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "molletes panela cheese"
+  },
+  {
+    "platillo": "Cortadillo de Res",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  puntas de filete de res, 1.5 tzas (180g)  tomate, cebolla y chile verde picado, 1/4 pza (30g)  aguacate, 1.5 tzas  arroz cocido, 3 piezas  tortillas. Preparación: guisado en su jugo",
+    "ingredientes_detalle": "250g  puntas de filete de res, 1.5 tzas (180g)  tomate, cebolla y chile verde picado, 1/4 pza (30g)  aguacate, 1.5 tzas  arroz cocido, 3 piezas  tortillas",
+    "preparacion": "guisado en su jugo",
+    "termino_busqueda_sugerido": "beef stew cortadillo"
+  },
+  {
+    "platillo": "Wrap de Pollo con Frutas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  pan pita, 200g  pollo a la plancha, cantidad al gusto  espinaca, cantidad al gusto  pepino, cantidad al gusto  germinado de alfalfa, 2 cdas  mayonesa light, 1/4 pza (30g)  aguacate, 1 taza  piña, 1 tza  fresas, cantidad al gusto  té de menta, verde o manzanilla sin azúcar.",
+    "ingredientes_detalle": "1 pza  pan pita, 200g  pollo a la plancha, cantidad al gusto  espinaca, cantidad al gusto  pepino, cantidad al gusto  germinado de alfalfa, 2 cdas  mayonesa light, 1/4 pza (30g)  aguacate, 1 taza  piña, 1 tza  fresas, cantidad al gusto  té de menta, verde o manzanilla sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken wrap fruit"
+  },
+  {
+    "platillo": "Tostadas Atún con Papaya",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 piezas  tostadas Saníssimo, 100g  atún en agua, 1/4 pza (30g)  aguacate, 2 tzas  lechuga romana, 1 tza  papaya.",
+    "ingredientes_detalle": "3 piezas  tostadas Saníssimo, 100g  atún en agua, 1/4 pza (30g)  aguacate, 2 tzas  lechuga romana, 1 tza  papaya",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "tuna tostadas papaya"
+  },
+  {
+    "platillo": "Huevo con Champiñones y Licuado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  huevos enteros, 4 piezas  claras, 60g  queso oaxaca light, 1 tza (100g)  champiñones rebanados, 1/2 tza (60g)  tomate picado, 30g  aguacate, 2 piezas  tortillas de maíz, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia.",
+    "ingredientes_detalle": "2 piezas  huevos enteros, 4 piezas  claras, 60g  queso oaxaca light, 1 tza (100g)  champiñones rebanados, 1/2 tza (60g)  tomate picado, 30g  aguacate, 2 piezas  tortillas de maíz, 1 pza  plátano, 250 ml  leche descremada, cantidad al gusto  hielo, cantidad al gusto  stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "egg mushrooms smoothie"
+  },
+  {
+    "platillo": "Yogurt Griego con Mango",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 tazas  yogurt Griego natural sin azucar, 1 pza  mango.",
+    "ingredientes_detalle": "2 tazas  yogurt Griego natural sin azucar, 1 pza  mango",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "greek yogurt mango"
+  },
+  {
+    "platillo": "Falda de Res al Vapor",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250g  falda de res, 1 tza (120g)  cebolla picada y cilantro fresco, 1/4 pza (30g)  aguacate, 3 piezas  tortillas de maíz, cantidad al gusto  Salsa roja casera. Preparación: cocida al vapor sin grasa",
+    "ingredientes_detalle": "250g  falda de res, 1 tza (120g)  cebolla picada y cilantro fresco, 1/4 pza (30g)  aguacate, 3 piezas  tortillas de maíz, cantidad al gusto  Salsa roja casera",
+    "preparacion": "cocida al vapor sin grasa",
+    "termino_busqueda_sugerido": "steamed beef skirt steak"
+  },
+  {
+    "platillo": "Tostadas de Pollo Norteño con Papaya",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 piezas  tostadas horneadas Saníssimo, 200g  pechuga de pollo deshebrada, 1 tza (100g)  calabacita rallada, 1/2 tza (60g)  rodajas de tomate, 1/4 pza (30g)  aguacate, 1 tza  papaya picada.",
+    "ingredientes_detalle": "3 piezas  tostadas horneadas Saníssimo, 200g  pechuga de pollo deshebrada, 1 tza (100g)  calabacita rallada, 1/2 tza (60g)  rodajas de tomate, 1/4 pza (30g)  aguacate, 1 tza  papaya picada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken tostadas papaya"
+  },
+  {
+    "platillo": "Machaca con Huevo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 huevos enteros y 4 claras  Huevos enteros y claras, 80g  Machaca de res magra, 1 tza (90g)  Espinaca al vapor, 1/2 tza (60g)  Tomate picado, 30g  Aguacate, 2 tortillas  Tortillas de maíz, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia.",
+    "ingredientes_detalle": "2 huevos enteros y 4 claras  Huevos enteros y claras, 80g  Machaca de res magra, 1 tza (90g)  Espinaca al vapor, 1/2 tza (60g)  Tomate picado, 30g  Aguacate, 2 tortillas  Tortillas de maíz, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "machaca eggs"
+  },
+  {
+    "platillo": "Tacos",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 tortillas  Tortillas de maíz, 120g  Queso Oaxaca reducido en grasa, 80g  Machaca de res magra, 1 tza (120g)  Cebolla y chile chilaca tatemados a la plancha, 1/4 pza (30g)  Aguacate, Salsa de chile colorado  Salsa de chile colorado.",
+    "ingredientes_detalle": "4 tortillas  Tortillas de maíz, 120g  Queso Oaxaca reducido en grasa, 80g  Machaca de res magra, 1 tza (120g)  Cebolla y chile chilaca tatemados a la plancha, 1/4 pza (30g)  Aguacate, Salsa de chile colorado  Salsa de chile colorado",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "machaca tacos"
+  },
+  {
+    "platillo": "Quesadillas con Rajas y Tomate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 tortillas  Tortillas de maíz, 150g  Queso Oaxaca reducido en grasa, 1.5 tzas (150g)  Rajas de chile chilaca asado, 1/2 tza (60g)  Tomate en cubos, 1/4 pza (30g)  Aguacate, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia.",
+    "ingredientes_detalle": "4 tortillas  Tortillas de maíz, 150g  Queso Oaxaca reducido en grasa, 1.5 tzas (150g)  Rajas de chile chilaca asado, 1/2 tza (60g)  Tomate en cubos, 1/4 pza (30g)  Aguacate, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "quesadillas rajas"
+  },
+  {
+    "platillo": "Huevo con Machaca y Ejotes",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 huevos enteros y 4 claras  Huevos enteros y claras, 60g  Machaca de res magra, 1 tza (100g)  Ejotes cocidos picados, 1/4 pza (30g)  Aguacate, 2 tortillas  Tortillas de maíz, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia.",
+    "ingredientes_detalle": "2 huevos enteros y 4 claras  Huevos enteros y claras, 60g  Machaca de res magra, 1 tza (100g)  Ejotes cocidos picados, 1/4 pza (30g)  Aguacate, 2 tortillas  Tortillas de maíz, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "machaca eggs green beans"
+  },
+  {
+    "platillo": "Quesadillas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 tortillas  Tortillas de maíz, 150g  Queso Oaxaca reducido en grasa, 1.5 tzas (150g)  Rajas de chile chilaca asado, 1/2 tza (60g)  Tomate en cubos, 1/4 pza (30g)  Aguacate, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia.",
+    "ingredientes_detalle": "4 tortillas  Tortillas de maíz, 150g  Queso Oaxaca reducido en grasa, 1.5 tzas (150g)  Rajas de chile chilaca asado, 1/2 tza (60g)  Tomate en cubos, 1/4 pza (30g)  Aguacate, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "quesadillas rajas"
+  },
+  {
+    "platillo": "Wrap",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  Pan pita, 200 g  Pollo a la plancha, espinaca  Espinaca, pepino  Pepino, germinado de alfalfa  Germinado de alfalfa, 2 cdas  Mayonesa light, 1/4 pza (30g)  Aguacate, 1 taza  Piña, 1 tza  Fresas. Preparación: colocar 200 g de pollo a la plancha, espinaca, pepino, germinado de alfalfa + 2 cdas de mayonesa light + ¼ pza ( 30g) de aguacate acompañar con 1 taza de piña + 1 tza de fresas",
+    "ingredientes_detalle": "1 pza  Pan pita, 200 g  Pollo a la plancha, espinaca  Espinaca, pepino  Pepino, germinado de alfalfa  Germinado de alfalfa, 2 cdas  Mayonesa light, 1/4 pza (30g)  Aguacate, 1 taza  Piña, 1 tza  Fresas",
+    "preparacion": "colocar 200 g de pollo a la plancha, espinaca, pepino, germinado de alfalfa + 2 cdas de mayonesa light + ¼ pza ( 30g) de aguacate acompañar con 1 taza de piña + 1 tza de fresas",
+    "termino_busqueda_sugerido": "chicken wrap"
+  },
+  {
+    "platillo": "Tostadas Atún",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3  Tostadas Saníssimo, 100 g  Atún en agua, 1/4 pza (30g)  Aguacate, 2 tzas  Lechuga romana, 1 tza  Papaya.",
+    "ingredientes_detalle": "3  Tostadas Saníssimo, 100 g  Atún en agua, 1/4 pza (30g)  Aguacate, 2 tzas  Lechuga romana, 1 tza  Papaya",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "tuna tostadas"
+  },
+  {
+    "platillo": "Huevo con Queso Oaxaca y Champiñones",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 huevos enteros y 4 claras  Huevos enteros y claras, 60g  Queso oaxaca light, 1 tza (100g)  Champiñones rebanados, 1/2 tza (60g)  Tomate picado, 30g  Aguacate, 2 tortillas  Tortillas de maíz, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia.",
+    "ingredientes_detalle": "2 huevos enteros y 4 claras  Huevos enteros y claras, 60g  Queso oaxaca light, 1 tza (100g)  Champiñones rebanados, 1/2 tza (60g)  Tomate picado, 30g  Aguacate, 2 tortillas  Tortillas de maíz, 1 pza  Plátano, 250 ml  Leche descremada, hielo  Hielo, stevia  Stevia",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "eggs with mushrooms"
+  },
+  {
+    "platillo": "Tostadas de Pollo Norteño",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3  Tostadas horneadas Saníssimo, 200g  Pechuga de pollo deshebrada, 1 tza (100g)  Calabacita rallada, 1/2 tza (60g)  Rodajas de tomate, 1/4 pza (30g)  Aguacate, 1 tza  Papaya picada.",
+    "ingredientes_detalle": "3  Tostadas horneadas Saníssimo, 200g  Pechuga de pollo deshebrada, 1 tza (100g)  Calabacita rallada, 1/2 tza (60g)  Rodajas de tomate, 1/4 pza (30g)  Aguacate, 1 tza  Papaya picada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken tostadas"
+  },
+  {
+    "platillo": "Almendras o Nuez con Jícama o Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 10  Almendras o mitades de nuez, 1 taza  Jícama o pepino.",
+    "ingredientes_detalle": "10  Almendras o mitades de nuez, 1 taza  Jícama o pepino",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "almonds jicama snack"
+  },
+  {
+    "platillo": "Pollo con Ejotes + Arroz",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Arroz cocido, 140 g  Pechuga de pollo, 2 tazas  Ejotes, 10 ml  Aceite de aguacate o de oliva.",
+    "ingredientes_detalle": "1/2 taza  Arroz cocido, 140 g  Pechuga de pollo, 2 tazas  Ejotes, 10 ml  Aceite de aguacate o de oliva",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken with green beans and rice"
+  },
+  {
+    "platillo": "Frutas, Almendras y Jícama/Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  Manzana, 2 pzas  Naranja, 18 almendras  Almendras, 1 taza  Jícama.",
+    "ingredientes_detalle": "1 pza  Manzana, 2 pzas  Naranja, 18 almendras  Almendras, 1 taza  Jícama",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "fruit nuts jicama"
+  },
+  {
+    "platillo": "Galletas de Arroz, Plátano y Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 galletas  Galletas de arroz, 1 pza  Plátano, 15 piezas  Almendras.",
+    "ingredientes_detalle": "4 galletas  Galletas de arroz, 1 pza  Plátano, 15 piezas  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "rice cakes banana almonds"
+  },
+  {
+    "platillo": "Sándwich de Atún",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja, 1/2 pieza (60 g)  Aguacate, 120 g  Atún en agua, 2 tazas  Pepino, Agua natural  Agua natural.",
+    "ingredientes_detalle": "2 piezas  Pan de caja, 1/2 pieza (60 g)  Aguacate, 120 g  Atún en agua, 2 tazas  Pepino, Agua natural  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "tuna sandwich"
+  },
+  {
+    "platillo": "TOSTADAS",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  tostadas de maíz horneados sannisimo, 1/2 taza  queso cottage, 1/2 pza (60 g)  aguacate, 2 pzas  Naranja, 1 taza  pepino.",
+    "ingredientes_detalle": "2 pzas  tostadas de maíz horneados sannisimo, 1/2 taza  queso cottage, 1/2 pza (60 g)  aguacate, 2 pzas  Naranja, 1 taza  pepino",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican tostadas cheese avocado"
+  },
+  {
+    "platillo": "Naranja y Jícama/Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  naranja, 1 taza  jícama o pepino.",
+    "ingredientes_detalle": "2 pzas  naranja, 1 taza  jícama o pepino",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "orange jicama snack"
+  },
+  {
+    "platillo": "Durazno y Pepino",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  durazno, 1 taza  pepino.",
+    "ingredientes_detalle": "1 pza  durazno, 1 taza  pepino",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "peach cucumber snack"
+  },
+  {
+    "platillo": "POLLO CON EJOTES",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza cocido  arroz, 150 g (pesar en crudo)  pechuga de pollo, 2 tazas  Ejotes, 10 ml  aceite de aguacate o de oliva.",
+    "ingredientes_detalle": "1/2 taza cocido  arroz, 150 g (pesar en crudo)  pechuga de pollo, 2 tazas  Ejotes, 10 ml  aceite de aguacate o de oliva",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken green beans rice"
+  },
+  {
+    "platillo": "Huevo estrellado",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  huevo entero, 2 segundos  aceite en aerosol, 1 taza  tomate, 1 taza  piña, al gusto  té o café sin azúcar. Preparación: 2 piezas de huevo entero cocinados con aceite en aerosol (2 segundos).",
+    "ingredientes_detalle": "2 piezas  huevo entero, 2 segundos  aceite en aerosol, 1 taza  tomate, 1 taza  piña, al gusto  té o café sin azúcar",
+    "preparacion": "2 piezas de huevo entero cocinados con aceite en aerosol (2 segundos).",
+    "termino_busqueda_sugerido": "mexican fried eggs tomato pineapple"
+  },
+  {
+    "platillo": "Yogurt griego con fresas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ¾ taza  yogurt griego natural sin azúcar, ½ taza  fresas.",
+    "ingredientes_detalle": "¾ taza  yogurt griego natural sin azúcar, ½ taza  fresas",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "greek yogurt strawberries"
+  },
+  {
+    "platillo": "Jícama con limón y tajín",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  jícama, al gusto  limón, al gusto  tajín bajo en sodio.",
+    "ingredientes_detalle": "1 taza  jícama, al gusto  limón, al gusto  tajín bajo en sodio",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican jicama lemon tajin"
+  },
+  {
+    "platillo": "Tostadas de aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  tostadas horneadas de maíz, 1/3 pieza  aguacate machacado, al gusto  cebolla, al gusto  repollo morado, 2 piezas  huevos cocidos, ½ pieza  manzana, al gusto  té de menta sin azúcar.",
+    "ingredientes_detalle": "2 piezas  tostadas horneadas de maíz, 1/3 pieza  aguacate machacado, al gusto  cebolla, al gusto  repollo morado, 2 piezas  huevos cocidos, ½ pieza  manzana, al gusto  té de menta sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican avocado toast boiled eggs"
+  },
+  {
+    "platillo": "Manzana con nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ½ pieza  manzana, 5 mitades  nuez.",
+    "ingredientes_detalle": "½ pieza  manzana, 5 mitades  nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "apple walnuts snack"
+  },
+  {
+    "platillo": "Enchiladas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 piezas  tortillas de maíz, 100 g  pechuga de pollo cocida, 1 taza  salsa casera, 2 tazas  ensalada, al gusto  Agua natural. Preparación: Elaborar 3 enchiladas con tortillas de maíz, rellenas con 100 g de pechuga de pollo cocida. Hornear o tostar (no freír). Agregar 1 taza de salsa casera y acompañar con 2 tazas de ensalada. Agua natural.",
+    "ingredientes_detalle": "3 piezas  tortillas de maíz, 100 g  pechuga de pollo cocida, 1 taza  salsa casera, 2 tazas  ensalada, al gusto  Agua natural",
+    "preparacion": "Elaborar 3 enchiladas con tortillas de maíz, rellenas con 100 g de pechuga de pollo cocida. Hornear o tostar (no freír). Agregar 1 taza de salsa casera y acompañar con 2 tazas de ensalada. Agua natural.",
+    "termino_busqueda_sugerido": "mexican chicken enchiladas"
+  },
+  {
+    "platillo": "Pepino con limón",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  pepino, al gusto  limón.",
+    "ingredientes_detalle": "1 taza  pepino, al gusto  limón",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cucumber lemon snack"
+  },
+  {
+    "platillo": "Carlota de yogurt",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ¾ taza  yogurt natural sin azúcar con limón, 2 piezas  galletas María, 1 taza  fresas, 8 piezas  almendras. Preparación: ¾ taza de yogurt natural sin azúcar con limón, en capas con 2 galletas María y 1 taza de fresas o arándanos. Agregar 8 almendras.",
+    "ingredientes_detalle": "¾ taza  yogurt natural sin azúcar con limón, 2 piezas  galletas María, 1 taza  fresas, 8 piezas  almendras",
+    "preparacion": "¾ taza de yogurt natural sin azúcar con limón, en capas con 2 galletas María y 1 taza de fresas o arándanos. Agregar 8 almendras.",
+    "termino_busqueda_sugerido": "yogurt parfait berries almonds"
+  },
+  {
+    "platillo": "Piña con nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ¾ taza  piña, 5 mitades  nuez.",
+    "ingredientes_detalle": "¾ taza  piña, 5 mitades  nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "pineapple walnuts snack"
+  },
+  {
+    "platillo": "Ceviche",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 120 g  pescado blanco curtido en limón, al gusto  pepino, al gusto  tomate, al gusto  cebolla, al gusto  cilantro, al gusto  chile, 2 piezas  tostadas horneadas, 1 taza  lechuga, al gusto  Agua natural.",
+    "ingredientes_detalle": "120 g  pescado blanco curtido en limón, al gusto  pepino, al gusto  tomate, al gusto  cebolla, al gusto  cilantro, al gusto  chile, 2 piezas  tostadas horneadas, 1 taza  lechuga, al gusto  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican fish ceviche tostadas"
+  },
+  {
+    "platillo": "Gelatina light",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  gelatina light.",
+    "ingredientes_detalle": "1 taza  gelatina light",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "light gelatin dessert"
+  },
+  {
+    "platillo": "Huevos a la mexicana",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pieza  huevo entero, 2 piezas  claras, al gusto  tomate, al gusto  cebolla, al gusto  chile jalapeño, ¼ pieza  aguacate, 1 pieza  tortilla de maíz, ¾ taza  piña, al gusto  Té o café sin azúcar.",
+    "ingredientes_detalle": "1 pieza  huevo entero, 2 piezas  claras, al gusto  tomate, al gusto  cebolla, al gusto  chile jalapeño, ¼ pieza  aguacate, 1 pieza  tortilla de maíz, ¾ taza  piña, al gusto  Té o café sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican scrambled eggs tortilla"
+  },
+  {
+    "platillo": "Apio con limón y tajín",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  apio, al gusto  limón, al gusto  tajín bajo en sodio.",
+    "ingredientes_detalle": "1 taza  apio, al gusto  limón, al gusto  tajín bajo en sodio",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "celery lemon tajin snack"
+  },
+  {
+    "platillo": "Mollete saludable",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: ½ pieza  pan pita integral, ¼ taza  frijoles machacados, 50 g  queso panela, 1 taza  pico de gallo, al gusto  Té o café sin azúcar.",
+    "ingredientes_detalle": "½ pieza  pan pita integral, ¼ taza  frijoles machacados, 50 g  queso panela, 1 taza  pico de gallo, al gusto  Té o café sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican healthy mollete beans cheese"
+  },
+  {
+    "platillo": "Sandía con nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  sandía, 5 mitades  nuez.",
+    "ingredientes_detalle": "1 taza  sandía, 5 mitades  nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "watermelon walnuts snack"
+  },
+  {
+    "platillo": "Zanahoria rallada con limón",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  zanahoria rallada, al gusto  limón.",
+    "ingredientes_detalle": "1 taza  zanahoria rallada, al gusto  limón",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "grated carrot lemon snack"
+  },
+  {
+    "platillo": "Tostadas de frijoles",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  tostadas horneadas Saníssimo, ⅓ taza  frijoles machacados, ⅓ taza  requesón, al gusto  pico de gallo, al gusto  Agua natural.",
+    "ingredientes_detalle": "2 piezas  tostadas horneadas Saníssimo, ⅓ taza  frijoles machacados, ⅓ taza  requesón, al gusto  pico de gallo, al gusto  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican bean tostadas cottage cheese"
+  },
+  {
+    "platillo": "Huevo revueltas con calabacita",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: s/a  Té o café, 3 pzas (150g)  Huevo, ½ tza (55g)  Calabacita rallada, 2 pzas  Tortillas de maiz. Preparación: Huevo revueltas con calabacita rallada, acompañar con tortillas de maiz.",
+    "ingredientes_detalle": "s/a  Té o café, 3 pzas (150g)  Huevo, ½ tza (55g)  Calabacita rallada, 2 pzas  Tortillas de maiz",
+    "preparacion": "Huevo revueltas con calabacita rallada, acompañar con tortillas de maiz.",
+    "termino_busqueda_sugerido": "mexican scrambled eggs zucchini corn tortillas"
+  },
+  {
+    "platillo": "Batido de Proteína",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 scoops (aprox. 60 g)  Whey Protein, en agua  Agua.",
+    "ingredientes_detalle": "2 scoops (aprox. 60 g)  Whey Protein, en agua  Agua",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "whey protein shake water"
+  },
+  {
+    "platillo": "Galletas con aguacate",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: Bebida  Agua natural, 4 pzas  Galletas habaneras, 1 pza (120 g)  Aguacate machacado con pico de gallo, 1 tza  Lechuga, tomate rebanado  Tomate rebanado. Preparación: Galletas habaneras con aguacate machacado con pico de gallo, acompañar con lechuga y tomate rebanado. Beber agua natural.",
+    "ingredientes_detalle": "Bebida  Agua natural, 4 pzas  Galletas habaneras, 1 pza (120 g)  Aguacate machacado con pico de gallo, 1 tza  Lechuga, tomate rebanado  Tomate rebanado",
+    "preparacion": "Galletas habaneras con aguacate machacado con pico de gallo, acompañar con lechuga y tomate rebanado. Beber agua natural.",
+    "termino_busqueda_sugerido": "mexican habanera crackers avocado pico de gallo"
+  },
+  {
+    "platillo": "Licuado Proteico",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 scoop (30g)  Whey Protein, con agua  Agua.",
+    "ingredientes_detalle": "1 scoop (30g)  Whey Protein, con agua  Agua",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "whey protein shake water"
+  },
+  {
+    "platillo": "Plátano y Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  Plátano, 20 almendras (24 g)  Almendras.",
+    "ingredientes_detalle": "1 pza  Plátano, 20 almendras (24 g)  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "banana almonds snack"
+  },
+  {
+    "platillo": "Ensalada en frasco",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 4 sobres (300 g)  Atún, 1 tza (30g)  Espinacas baby, ½ tza (60g)  Zanahoria rallada, 1/2 tza (85g)  Elote, 1 pza (120g)  Aguacate, aderezo limón/mostaza  Aderezo limón/mostaza. Preparación: Ensalada en frasco con atún, espinacas baby, zanahoria rallada, elote, aguacate y aderezo limón/mostaza.",
+    "ingredientes_detalle": "4 sobres (300 g)  Atún, 1 tza (30g)  Espinacas baby, ½ tza (60g)  Zanahoria rallada, 1/2 tza (85g)  Elote, 1 pza (120g)  Aguacate, aderezo limón/mostaza  Aderezo limón/mostaza",
+    "preparacion": "Ensalada en frasco con atún, espinacas baby, zanahoria rallada, elote, aguacate y aderezo limón/mostaza.",
+    "termino_busqueda_sugerido": "tuna salad jar spinach carrot corn avocado"
+  },
+  {
+    "platillo": "Molletes",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Pan tostado Cero Cero, 1 tza  Frijoles machacados, 1 taza  Pico de gallo, 2 pzas  Naranja congelada, Beber agua natural  Agua natural. Preparación: Molletes con pan tostado Cero Cero, frijoles machacados y pico de gallo. Acompañar con naranja congelada. Beber agua natural.",
+    "ingredientes_detalle": "2 pzas  Pan tostado Cero Cero, 1 tza  Frijoles machacados, 1 taza  Pico de gallo, 2 pzas  Naranja congelada, Beber agua natural  Agua natural",
+    "preparacion": "Molletes con pan tostado Cero Cero, frijoles machacados y pico de gallo. Acompañar con naranja congelada. Beber agua natural.",
+    "termino_busqueda_sugerido": "mexican molletes beans pico de gallo"
+  },
+  {
+    "platillo": "Ensalada de pollo con pasta",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250 g  Pechuga de pollo, sazonar con mostaza  Mostaza, 1 tza (140g)  Pasta integral, 1 tza (150g)  Manzana verde, 1/2 tza (50g)  Apio, 1 tza (30g)  Lechuga, 1 cda (15g)  Mayonesa light con limón. Preparación: Ensalada con pechuga de pollo sazonada con mostaza, pasta integral, manzana verde, apio, lechuga y mayonesa light con limón.",
+    "ingredientes_detalle": "250 g  Pechuga de pollo, sazonar con mostaza  Mostaza, 1 tza (140g)  Pasta integral, 1 tza (150g)  Manzana verde, 1/2 tza (50g)  Apio, 1 tza (30g)  Lechuga, 1 cda (15g)  Mayonesa light con limón",
+    "preparacion": "Ensalada con pechuga de pollo sazonada con mostaza, pasta integral, manzana verde, apio, lechuga y mayonesa light con limón.",
+    "termino_busqueda_sugerido": "chicken pasta salad apple celery"
+  },
+  {
+    "platillo": "Cereal con leche de almendras y fresas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 tza (40g)  Cereal sin azúcar, 250 ml  Leche de almendras s/a, 1 tza (75g)  Fresas picadas, 10 mitades (20g)  Nuez. Preparación: Cereal sin azúcar con leche de almendras s/a, fresas picadas y nuez.",
+    "ingredientes_detalle": "1 tza (40g)  Cereal sin azúcar, 250 ml  Leche de almendras s/a, 1 tza (75g)  Fresas picadas, 10 mitades (20g)  Nuez",
+    "preparacion": "Cereal sin azúcar con leche de almendras s/a, fresas picadas y nuez.",
+    "termino_busqueda_sugerido": "cereal almond milk strawberries walnuts"
+  },
+  {
+    "platillo": "Huevo revueltas con tomate, cebolla y chile",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 pzas (150g)  Huevo, 1 tza (150g)  Tomate, cebolla y chile picados, 2 pzas  Tortillas de maiz. Preparación: Huevo revueltas con tomate, cebolla y chile picados. Acompañar con tortillas de maiz.",
+    "ingredientes_detalle": "3 pzas (150g)  Huevo, 1 tza (150g)  Tomate, cebolla y chile picados, 2 pzas  Tortillas de maiz",
+    "preparacion": "Huevo revueltas con tomate, cebolla y chile picados. Acompañar con tortillas de maiz.",
+    "termino_busqueda_sugerido": "mexican scrambled eggs tomato onion chili corn tortillas"
+  },
+  {
+    "platillo": "Ensalada Cítrica de Pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 200 g  Pechuga de pollo, 1/2 tza (70g)  Pasta cocida, 2 tza (60g)  Espinacas, gajos de 1 pza (100g)  Naranja, 1 cda (10g)  Arándanos, 1 pza (120g)  Aguacate, vinagreta limón/mostaza  Vinagreta limón/mostaza. Preparación: Ensalada con pechuga de pollo, pasta cocida, espinacas, gajos de naranja, arándanos, aguacate y vinagreta limón/mostaza.",
+    "ingredientes_detalle": "200 g  Pechuga de pollo, 1/2 tza (70g)  Pasta cocida, 2 tza (60g)  Espinacas, gajos de 1 pza (100g)  Naranja, 1 cda (10g)  Arándanos, 1 pza (120g)  Aguacate, vinagreta limón/mostaza  Vinagreta limón/mostaza",
+    "preparacion": "Ensalada con pechuga de pollo, pasta cocida, espinacas, gajos de naranja, arándanos, aguacate y vinagreta limón/mostaza.",
+    "termino_busqueda_sugerido": "chicken citrus salad spinach orange avocado"
+  },
+  {
+    "platillo": "Burritos de Huevo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 tortillas  Tortillas de harina integral, 3 huevos  Huevos enteros, 1 taza  Espinacas, al gusto  Pico de gallo, ½ taza  Frijoles molidos, ½ pza  Aguacate, Bebida  Café o té s/a. Preparación: Burritos con tortillas de harina integral, huevos enteros revueltos con espinacas y pico de gallo al gusto. Acompañar con frijoles molidos untados y aguacate. Beber café o té s/a.",
+    "ingredientes_detalle": "2 tortillas  Tortillas de harina integral, 3 huevos  Huevos enteros, 1 taza  Espinacas, al gusto  Pico de gallo, ½ taza  Frijoles molidos, ½ pza  Aguacate, Bebida  Café o té s/a",
+    "preparacion": "Burritos con tortillas de harina integral, huevos enteros revueltos con espinacas y pico de gallo al gusto. Acompañar con frijoles molidos untados y aguacate. Beber café o té s/a.",
+    "termino_busqueda_sugerido": "mexican egg spinach burritos avocado"
+  },
+  {
+    "platillo": "Bowl de Res",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 200 g  Fajitas de res, 1 tza (140g)  Arroz integral cocido, ½ tza (50g)  Pimiento asado, ½ tza (45g)  Cebolla asada, 1 tza (30g)  Lechuga, 1 pza (120g)  Aguacate. Preparación: Bowl con fajitas de res, arroz integral cocido, pimiento y cebolla asados, lechuga y aguacate.",
+    "ingredientes_detalle": "200 g  Fajitas de res, 1 tza (140g)  Arroz integral cocido, ½ tza (50g)  Pimiento asado, ½ tza (45g)  Cebolla asada, 1 tza (30g)  Lechuga, 1 pza (120g)  Aguacate",
+    "preparacion": "Bowl con fajitas de res, arroz integral cocido, pimiento y cebolla asados, lechuga y aguacate.",
+    "termino_busqueda_sugerido": "mexican beef fajita bowl brown rice avocado"
+  },
+  {
+    "platillo": "Huevo revueltas con espinacas y champiñones",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 pzas (150g)  Huevo, 1 tza (150g)  Espinacas con champiñones.",
+    "ingredientes_detalle": "3 pzas (150g)  Huevo, 1 tza (150g)  Espinacas con champiñones",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican scrambled eggs spinach mushrooms"
+  },
+  {
+    "platillo": "Ensalada al Pesto",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 200g  Pechuga de pollo en cubos, 1 cda (30 g)  Pesto, 1 tza (140g)  Pasta fría, 1 tza (150g)  Tomates cherry, 1 tza (30g)  Lechuga. Preparación: Ensalada con pechuga de pollo en cubos sazonado con pesto, pasta fría, tomates cherry y lechuga.",
+    "ingredientes_detalle": "200g  Pechuga de pollo en cubos, 1 cda (30 g)  Pesto, 1 tza (140g)  Pasta fría, 1 tza (150g)  Tomates cherry, 1 tza (30g)  Lechuga",
+    "preparacion": "Ensalada con pechuga de pollo en cubos sazonado con pesto, pasta fría, tomates cherry y lechuga.",
+    "termino_busqueda_sugerido": "chicken pesto pasta salad cherry tomatoes"
+  },
+  {
+    "platillo": "Ensalada Rusa",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 300  Pechuga de pollo deshebrado, 1/2 tza (75g)  Papa cocida, 1/2 tza (80g)  Verduras al vapor frías (zanahoria/chícharo), 1 cda (15g)  Mayonesa light, mostaza y limón  Mostaza y limón, 1 tza (30g)  Lechuga. Preparación: Ensalada Rusa con pechuga de pollo deshebrado, papa cocida, verduras al vapor frías (zanahoria/chícharo), mayonesa light, mostaza y limón sobre lechuga.",
+    "ingredientes_detalle": "300  Pechuga de pollo deshebrado, 1/2 tza (75g)  Papa cocida, 1/2 tza (80g)  Verduras al vapor frías (zanahoria/chícharo), 1 cda (15g)  Mayonesa light, mostaza y limón  Mostaza y limón, 1 tza (30g)  Lechuga",
+    "preparacion": "Ensalada Rusa con pechuga de pollo deshebrado, papa cocida, verduras al vapor frías (zanahoria/chícharo), mayonesa light, mostaza y limón sobre lechuga.",
+    "termino_busqueda_sugerido": "mexican chicken russian salad potato vegetables"
+  },
+  {
+    "platillo": "Huevo revuelto con calabacita",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 3 piezas (150g)  Huevo, 1/2 taza (55g)  Calabacita rallada, 2 piezas  Tortillas de maíz. Preparación: Huevo revuelto con calabacita rallada, acompañar con tortillas de maíz.",
+    "ingredientes_detalle": "3 piezas (150g)  Huevo, 1/2 taza (55g)  Calabacita rallada, 2 piezas  Tortillas de maíz",
+    "preparacion": "Huevo revuelto con calabacita rallada, acompañar con tortillas de maíz.",
+    "termino_busqueda_sugerido": "mexican scrambled eggs zucchini"
+  },
+  {
+    "platillo": "Manzana con almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Manzana, 20 piezas (24g)  Almendras.",
+    "ingredientes_detalle": "2 piezas  Manzana, 20 piezas (24g)  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "apple and almonds snack"
+  },
+  {
+    "platillo": "Mandarinas y Jícama",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 pzas  Mandarinas, 2 tazas  Jícama.",
+    "ingredientes_detalle": "2 pzas  Mandarinas, 2 tazas  Jícama",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mandarin jicama snack"
+  },
+  {
+    "platillo": "Uvas y Gelatina sin azúcar",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Uvas, 1 taza  Gelatina sin azúcar.",
+    "ingredientes_detalle": "1 taza  Uvas, 1 taza  Gelatina sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "grapes sugar free gelatin snack"
+  },
+  {
+    "platillo": "Zanahoria rallada y yogurt bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Zanahoria rallada, 1 bote (220 ml)  Yogurt bebible sin azúcar.",
+    "ingredientes_detalle": "1 taza  Zanahoria rallada, 1 bote (220 ml)  Yogurt bebible sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "shredded carrot yogurt drink"
+  },
+  {
+    "platillo": "Huevo a la mexicana",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 (100 g)  Huevos enteros, 1 taza (180 g)  Pico de gallo, 2 (60 g)  Tortillas de maíz, 1/2 (60 g)  Aguacate, 1 taza (140 g)  Melon, al gusto  Té o café sin azúcar.",
+    "ingredientes_detalle": "2 (100 g)  Huevos enteros, 1 taza (180 g)  Pico de gallo, 2 (60 g)  Tortillas de maíz, 1/2 (60 g)  Aguacate, 1 taza (140 g)  Melon, al gusto  Té o café sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican scrambled eggs pico de gallo"
+  },
+  {
+    "platillo": "Manzana cocida y yogurt bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Manzana cocida, 1 bote (220 ml)  Yogurt bebible sin azúcar.",
+    "ingredientes_detalle": "1 taza  Manzana cocida, 1 bote (220 ml)  Yogurt bebible sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cooked apple yogurt drink"
+  },
+  {
+    "platillo": "Huevo con nopal",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 (100 g)  Huevos enteros, 1 taza (180 g)  Nopal, 2 (60 g)  Tortillas de maíz, 1/2 (60 g)  Aguacate, 1 taza (140 g)  Melon, al gusto  Té o café sin azúcar.",
+    "ingredientes_detalle": "2 (100 g)  Huevos enteros, 1 taza (180 g)  Nopal, 2 (60 g)  Tortillas de maíz, 1/2 (60 g)  Aguacate, 1 taza (140 g)  Melon, al gusto  Té o café sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican scrambled eggs nopal"
+  },
+  {
+    "platillo": "Kiwis o manzana y yogurt bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2  Kiwis, 1 bote (220 ml)  Yogurt bebible sin azúcar.",
+    "ingredientes_detalle": "2  Kiwis, 1 bote (220 ml)  Yogurt bebible sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "kiwi apple yogurt drink"
+  },
+  {
+    "platillo": "Pepino sin semillas y yogurt bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Pepino sin semillas, 1 bote (220 ml)  Yogurt bebible sin azúcar.",
+    "ingredientes_detalle": "1 taza  Pepino sin semillas, 1 bote (220 ml)  Yogurt bebible sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cucumber yogurt drink"
+  },
+  {
+    "platillo": "Huevo con calabacita",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 (100 g)  Huevos enteros, 1 taza (180 g)  Calabacita, 2 (60 g)  Tortillas de maíz, 1/2 (60 g)  Aguacate, 1 taza (140 g)  Melon, al gusto  Té o café sin azúcar.",
+    "ingredientes_detalle": "2 (100 g)  Huevos enteros, 1 taza (180 g)  Calabacita, 2 (60 g)  Tortillas de maíz, 1/2 (60 g)  Aguacate, 1 taza (140 g)  Melon, al gusto  Té o café sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "mexican scrambled eggs zucchini"
+  },
+  {
+    "platillo": "Manzana o kiwis y yogurt bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 pza  Manzana, 1 bote (220 ml)  Yogurt bebible sin azúcar.",
+    "ingredientes_detalle": "1 pza  Manzana, 1 bote (220 ml)  Yogurt bebible sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "apple kiwi yogurt drink"
+  },
+  {
+    "platillo": "Pescado a la plancha",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250 g  Filete de pescado, 1 taza  Quinoa o arroz, al gusto  Calabacita y zanahoria al vapor, al gusto  Agua natural.",
+    "ingredientes_detalle": "250 g  Filete de pescado, 1 taza  Quinoa o arroz, al gusto  Calabacita y zanahoria al vapor, al gusto  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "grilled fish quinoa zucchini carrots"
+  },
+  {
+    "platillo": "Pita de pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2  Pan pita integral, 100 g  Pechuga de pollo, 1 taza  Pepino, 1/4  Aguacate, al gusto  Agua natural.",
+    "ingredientes_detalle": "1/2  Pan pita integral, 100 g  Pechuga de pollo, 1 taza  Pepino, 1/4  Aguacate, al gusto  Agua natural",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "chicken pita cucumber avocado"
+  },
+  {
+    "platillo": "Melón y yogurt bebible",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1 taza  Melón, 1 bote (220 ml)  Yogurt bebible sin azúcar.",
+    "ingredientes_detalle": "1 taza  Melón, 1 bote (220 ml)  Yogurt bebible sin azúcar",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cantaloupe yogurt drink"
+  },
+  {
+    "platillo": "Picadillo de pollo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 250 g  Pollo molido, al gusto  Zanahoria, al gusto  Papa, 2  Tortillas de maíz, al gusto  Agua natural. Preparación: sin tomate, ajo ni cebolla",
+    "ingredientes_detalle": "250 g  Pollo molido, al gusto  Zanahoria, al gusto  Papa, 2  Tortillas de maíz, al gusto  Agua natural",
+    "preparacion": "sin tomate, ajo ni cebolla",
+    "termino_busqueda_sugerido": "mexican chicken picadillo carrots potatoes"
+  },
+  {
+    "platillo": "Licuado Verde con Manzana y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Pepino, 1/2 taza  Espinacas, 1/2 pieza  Manzana, 3 mitades  Nuez.",
+    "ingredientes_detalle": "1/2 taza  Pepino, 1/2 taza  Espinacas, 1/2 pieza  Manzana, 3 mitades  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "green smoothie apple walnut"
+  },
+  {
+    "platillo": "Huevos con Espinacas y Tortillas",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tortillas de maíz, 2 enteros  Huevo, 10 ml  Aceite de aguacate o de oliva, 2 piezas  Naranja, 1 taza  Espinaca, sin azúcar  Té de menta o manzanilla. Preparación: Cocinar con aceite de aguacate o de oliva.",
+    "ingredientes_detalle": "2 piezas  Tortillas de maíz, 2 enteros  Huevo, 10 ml  Aceite de aguacate o de oliva, 2 piezas  Naranja, 1 taza  Espinaca, sin azúcar  Té de menta o manzanilla",
+    "preparacion": "Cocinar con aceite de aguacate o de oliva.",
+    "termino_busqueda_sugerido": "mexican scrambled eggs spinach tortillas"
+  },
+  {
+    "platillo": "Licuado de Nopal con Manzana y Chía",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza  Nopal picado, 1/2 pieza  Manzana, 7 g  Semillas de chía.",
+    "ingredientes_detalle": "1/4 taza  Nopal picado, 1/2 pieza  Manzana, 7 g  Semillas de chía",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "nopal smoothie apple chia"
+  },
+  {
+    "platillo": "Sándwich de Jamón de Pavo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja Bimbo Cero Cero, 2 rebanadas  Jamón de pechuga de pavo, 1/2 pieza de 60 g mediano  Aguacate, 1 pieza  Durazno mediano, 1 taza  Lechuga, 1/2 taza  Zanahoria rallada.",
+    "ingredientes_detalle": "2 piezas  Pan de caja Bimbo Cero Cero, 2 rebanadas  Jamón de pechuga de pavo, 1/2 pieza de 60 g mediano  Aguacate, 1 pieza  Durazno mediano, 1 taza  Lechuga, 1/2 taza  Zanahoria rallada",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "turkey ham sandwich"
+  },
+  {
+    "platillo": "Licuado de Pepino con Piña y Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Pepino, 1/2 taza  Piña, 3 piezas  Almendras.",
+    "ingredientes_detalle": "1/2 taza  Pepino, 1/2 taza  Piña, 3 piezas  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "cucumber pineapple smoothie almonds"
+  },
+  {
+    "platillo": "Yogurt con Fresas y Amaranto",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/3 taza  Amaranto, 1 taza  Yogurt griego sin azúcar, 1 cucharada (10 g)  Chía, 1 taza  Fresas, 1/2 taza  Zanahoria.",
+    "ingredientes_detalle": "1/3 taza  Amaranto, 1 taza  Yogurt griego sin azúcar, 1 cucharada (10 g)  Chía, 1 taza  Fresas, 1/2 taza  Zanahoria",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "greek yogurt strawberries amaranth"
+  },
+  {
+    "platillo": "Filete de Pescado Empapelado con Pico de Gallo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tostadas de maíz horneadas Sannísimo, 160 g  Filete de pescado, 1 taza  Lechuga, 1/2 taza  Zanahoria rallada, 1/2 pieza de 60 g  Aguacate. Preparación: Pesar el pescado en crudo. Pico de gallo al gusto.",
+    "ingredientes_detalle": "2 piezas  Tostadas de maíz horneadas Sannísimo, 160 g  Filete de pescado, 1 taza  Lechuga, 1/2 taza  Zanahoria rallada, 1/2 pieza de 60 g  Aguacate",
+    "preparacion": "Pesar el pescado en crudo. Pico de gallo al gusto.",
+    "termino_busqueda_sugerido": "mexican fish fillet pico de gallo"
+  },
+  {
+    "platillo": "Sándwich de Jamón con Queso Panela",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Pan de caja (Bimbo Cero Cero, Natures Own 100% de trigo integral), 1 cucharada (10 g)  Mayonesa light, 1/4 pieza 30 g  Aguacate, 1 rebanada  Jamón de pechuga de pavo Zwan o Sabori, 30 g  Queso panela, al gusto  Espinacas, al gusto  Zanahoria, al gusto  Lechuga, al gusto  Tomate, al gusto  Té o café sin azúcar. Preparación: Acompañar con espinacas, zanahoria, lechuga y tomate al gusto. Té o café sin azúcar.",
+    "ingredientes_detalle": "2 piezas  Pan de caja (Bimbo Cero Cero, Natures Own 100% de trigo integral), 1 cucharada (10 g)  Mayonesa light, 1/4 pieza 30 g  Aguacate, 1 rebanada  Jamón de pechuga de pavo Zwan o Sabori, 30 g  Queso panela, al gusto  Espinacas, al gusto  Zanahoria, al gusto  Lechuga, al gusto  Tomate, al gusto  Té o café sin azúcar",
+    "preparacion": "Acompañar con espinacas, zanahoria, lechuga y tomate al gusto. Té o café sin azúcar.",
+    "termino_busqueda_sugerido": "ham panela cheese sandwich"
+  },
+  {
+    "platillo": "Licuado de Betabel con Jugo de Naranja y Nuez",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza  Betabel rallado, 1 pieza  Jugo de naranja, 3 mitades  Nuez.",
+    "ingredientes_detalle": "1/4 taza  Betabel rallado, 1 pieza  Jugo de naranja, 3 mitades  Nuez",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "beetroot orange juice smoothie walnut"
+  },
+  {
+    "platillo": "Tacos de Bistec con Brócoli al Vapor",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 piezas  Tortillas de maíz, 140 g  Bistec de res, 2 tazas  Brócoli al vapor, 1/2 pieza mediano  Aguacate. Preparación: Pesar el bistec en crudo. Beber agua natural.",
+    "ingredientes_detalle": "2 piezas  Tortillas de maíz, 140 g  Bistec de res, 2 tazas  Brócoli al vapor, 1/2 pieza mediano  Aguacate",
+    "preparacion": "Pesar el bistec en crudo. Beber agua natural.",
+    "termino_busqueda_sugerido": "mexican beef tacos steamed broccoli"
+  },
+  {
+    "platillo": "Licuado de Piña con Almendras",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/2 taza  Piña, 3 piezas  Almendras.",
+    "ingredientes_detalle": "1/2 taza  Piña, 3 piezas  Almendras",
+    "preparacion": "",
+    "termino_busqueda_sugerido": "pineapple smoothie almonds"
+  },
+  {
+    "platillo": "Avena Cocida con Yogurt Griego y Melón",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 1/4 taza  Avena cruda en hojuelas, al gusto  Stevia, al gusto  Canela, 1 taza  Yogurt griego sin azúcar, 12 piezas  Almendras, 1 taza  Melón, 1/2 taza  Zanahoria rallada. Preparación: Cocer la avena en agua con stevia y canela. Mezclar con zanahoria rallada.",
+    "ingredientes_detalle": "1/4 taza  Avena cruda en hojuelas, al gusto  Stevia, al gusto  Canela, 1 taza  Yogurt griego sin azúcar, 12 piezas  Almendras, 1 taza  Melón, 1/2 taza  Zanahoria rallada",
+    "preparacion": "Cocer la avena en agua con stevia y canela. Mezclar con zanahoria rallada.",
+    "termino_busqueda_sugerido": "oatmeal greek yogurt melon"
+  },
+  {
+    "platillo": "Pan con Cottage y Pico de Gallo",
+    "categoria": "General",
+    "descripcion_ingredientes": "Ingredientes: 2 panes  Pan Bimbo Cero Cero, 1/2 pieza 60 g  Aguacate, 1 taza  Queso cottage, al gusto  Pico de gallo, 1 taza  Pepino picado, al gusto  Agua natural. Preparación: Mezclar el cottage con pico de gallo. Acompañar con pepino picado y agua natural.",
+    "ingredientes_detalle": "2 panes  Pan Bimbo Cero Cero, 1/2 pieza 60 g  Aguacate, 1 taza  Queso cottage, al gusto  Pico de gallo, 1 taza  Pepino picado, al gusto  Agua natural",
+    "preparacion": "Mezclar el cottage con pico de gallo. Acompañar con pepino picado y agua natural.",
+    "termino_busqueda_sugerido": "toast cottage cheese pico de gallo"
+  }
+]

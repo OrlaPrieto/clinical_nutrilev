@@ -1,4 +1,6 @@
 from __future__ import annotations
+import os
+import json
 from typing import Optional, List, Dict, Any
 
 from services.docx_utils import (
@@ -603,6 +605,26 @@ def detect_target_menu_format(menu_format: str = "auto", previous_menu_summary: 
     return "equivalencias"
 
 
+_DISHES_CATALOG_CACHE = None
+
+def get_nutrilev_dishes_catalog() -> list:
+    """
+    Carga y cachea en memoria el catálogo oficial de platillos y recetas clínicas de Nutrilev.
+    """
+    global _DISHES_CATALOG_CACHE
+    if _DISHES_CATALOG_CACHE is not None:
+        return _DISHES_CATALOG_CACHE
+    try:
+        catalog_path = os.path.join(os.path.dirname(__file__), "..", "data", "dishes_catalog.json")
+        if os.path.exists(catalog_path):
+            with open(catalog_path, "r", encoding="utf-8") as f:
+                _DISHES_CATALOG_CACHE = json.load(f)
+                return _DISHES_CATALOG_CACHE
+    except Exception as e:
+        print(f"[MenuCopilot] Advertencia al cargar catálogo de platillos: {e}")
+    return []
+
+
 def generate_menu_copilot_suggestion(
     patient_context: dict,
     prev_progress: Optional[dict] = None,
@@ -615,7 +637,8 @@ def generate_menu_copilot_suggestion(
 ) -> dict:
     """
     Copiloto Clínico IA: Genera sugerencias estructuradas de menús, macros y equivalencias
-    basadas en el delta de avance corporal, historial clínico, patologías y menú anterior.
+    basadas en el catálogo oficial de 203 platillos de Nutrilev, notas clínicas del paciente,
+    delta de avance corporal, historial clínico, patologías y menú anterior.
     Soporta formato 'equivalencias' (3 opciones intercambiables) o 'semanal' (7 días Lunes a Domingo).
     """
     import json
@@ -645,7 +668,44 @@ def generate_menu_copilot_suggestion(
 
     progreso_context = "\n".join(delta_lines)
 
-    # 2. Schema de respuesta JSON según formato
+    # 2. Extraer y formatear Notas Clínicas y de Evolución del Paciente
+    clinical_notes_parts = []
+    if patient_context.get("notas"):
+        clinical_notes_parts.append(f"• Notas generales del expediente: {patient_context.get('notas')}")
+    if patient_context.get("motivos_consulta"):
+        clinical_notes_parts.append(f"• Motivo de consulta / Metas del paciente: {patient_context.get('motivos_consulta')}")
+    if patient_context.get("antecedentes_patologicos"):
+        clinical_notes_parts.append(f"• Antecedentes patológicos / Cirugías: {patient_context.get('antecedentes_patologicos')}")
+    if patient_context.get("medicamentos"):
+        clinical_notes_parts.append(f"• Medicamentos actuales: {patient_context.get('medicamentos')}")
+    if patient_context.get("dieta_especial"):
+        clinical_notes_parts.append(f"• Dieta especial previa / requerimientos: {patient_context.get('dieta_especial')}")
+    if patient_context.get("cambios_peso_detalle"):
+        clinical_notes_parts.append(f"• Historial de peso / variaciones: {patient_context.get('cambios_peso_detalle')}")
+    if patient_context.get("meta_objetivo"):
+        clinical_notes_parts.append(f"• Meta u objetivo prioritario: {patient_context.get('meta_objetivo')}")
+    if latest_progress and latest_progress.get("notes"):
+        curr_date = latest_progress.get("created_at", latest_progress.get("date", "Última cita"))
+        clinical_notes_parts.append(f"• Nota clínica de la última consulta ({curr_date}): {latest_progress.get('notes')}")
+    if prev_progress and prev_progress.get("notes"):
+        prev_date = prev_progress.get("created_at", prev_progress.get("date", "Cita anterior"))
+        clinical_notes_parts.append(f"• Nota clínica de la consulta previa ({prev_date}): {prev_progress.get('notes')}")
+
+    clinical_notes_context = "\n".join(clinical_notes_parts) if clinical_notes_parts else "• Sin notas clínicas específicas registradas."
+
+    # 3. Cargar el Catálogo Oficial de Platillos Nutrilev
+    dishes_catalog = get_nutrilev_dishes_catalog()
+    catalog_lines = []
+    for d in dishes_catalog:
+        name = d.get("platillo", "")
+        desc = d.get("ingredientes_detalle") or d.get("descripcion_ingredientes") or ""
+        prep = d.get("preparacion", "")
+        prep_str = f" (Prep: {prep})" if prep else ""
+        if name:
+            catalog_lines.append(f"• [{name}]: {desc}{prep_str}")
+    catalog_text = "\n".join(catalog_lines) if catalog_lines else "• Catálogo estándar SMAE disponible."
+
+    # 4. Schema de respuesta JSON según formato
     meal_item_schema = {
         "type": "OBJECT",
         "properties": {
@@ -765,14 +825,16 @@ def generate_menu_copilot_suggestion(
 
     system_prompt = (
         "Eres NutriArchitect Copilot, un asistente clínico de élite especializado en nutrición de precisión (Sistema Mexicano de Alimentos Equivalentes - SMAE). "
-        "Tu objetivo es asistir al nutriólogo generando propuestas de menús clínicas fundamentadas, variadas y listas para su revisión y copiado rápido. "
+        "Tu objetivo es asistir al nutriólogo generando propuestas de menús clínicas fundamentadas, variadas y listas para su revisión y copiado rápido.\n\n"
         "REGLAS INQUEBRANTABLES:\n"
-        "1. EXCLUSIÓN ABSOLUTA: Jamás incluyas ingredientes reportados en 'alergias_alimentarias' ni en 'alimentos_no_agradan'.\n"
-        "2. PRIORIZACIÓN: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
-        "3. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable).\n"
-        "4. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
-        f"5. {format_instruction}\n"
-        "6. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════' para que al pegarlo en Word se vea profesional."
+        "1. CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV (PRIORITARIO): Basa preferentemente los desayunos, comidas, cenas y colaciones en el 'CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV' provisto más abajo. Utiliza los nombres de platillos y combinaciones de ingredientes de la clínica, adaptando las cantidades/porciones a las calorías objetivo del paciente.\n"
+        "2. NOTAS CLÍNICAS Y EVOLUCIÓN: Lee con extrema atención las notas del expediente y las notas de las consultas de seguimiento. Si las notas indican síntomas (ej. reflujo, estreñimiento, horarios complicados, pesadez nocturna, antojos de dulce o salado, etc.), adapta los alimentos para abordar directamente esas observaciones.\n"
+        "3. EXCLUSIÓN ABSOLUTA: Jamás incluyas ingredientes reportados en 'alergias_alimentarias' ni en 'alimentos_no_agradan'.\n"
+        "4. PREFERENCIAS: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
+        "5. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable, etc.).\n"
+        "6. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
+        f"7. {format_instruction}\n"
+        "8. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════' para que al pegarlo en Word se vea profesional."
     )
 
     user_prompt = f"""
@@ -786,14 +848,20 @@ DATOS DEL PACIENTE:
 • Alimentos que evita (No le gustan): {patient_context.get('alimentos_no_agradan', 'No especificado')}
 • Número de comidas al día: {patient_context.get('comidas_dia', 5)}
 
+NOTAS CLÍNICAS Y OBSERVACIONES DEL PACIENTE:
+{clinical_notes_context}
+
 EVOLUCIÓN CLÍNICA Y ANTROPOMETRÍA:
 {progreso_context}
 
 OBJETIVO CALÓRICO Y FORMATO:
 • Formato solicitado: {resolved_format.upper()}
 • Calorías objetivo: {target_calories} kcal
-• Notas adicionales: {extra_notes or 'Diseñar menú balanceado, variado y con preparaciones sencillas.'}
+• Notas adicionales de la sesión: {extra_notes or 'Diseñar menú balanceado, variado y con preparaciones sencillas.'}
 • Referencia de menú anterior: {previous_menu_summary or 'No especificado.'}
+
+CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV (Selecciona y combina preferentemente de esta lista de recetas oficiales):
+{catalog_text}
 
 Genera la sugerencia clínica en formato JSON cumpliendo con el schema requerido.
 """
@@ -803,7 +871,7 @@ Genera la sugerencia clínica en formato JSON cumpliendo con el schema requerido
 
     for model in models_to_try:
         try:
-            print(f"[MenuCopilot] Llamando a Gemini con modelo: {model} (formato: {resolved_format})")
+            print(f"[MenuCopilot] Llamando a Gemini con modelo: {model} (formato: {resolved_format}, platillos catálogo: {len(dishes_catalog)})")
             response = client.models.generate_content(
                 model=model,
                 contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + user_prompt}]}],
