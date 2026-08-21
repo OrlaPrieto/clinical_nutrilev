@@ -16,9 +16,15 @@
               <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-nutri-rose/10 text-nutri-rose border border-nutri-rose/20">
                 IA NutriArchitect
               </span>
+              @if (isPreloadedFromDb()) {
+                <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <app-a-icon name="save" size="11px"></app-a-icon>
+                  Guardado en Base de Datos
+                </span>
+              }
             </div>
             <p class="text-xs text-nutri-text/60 dark:text-slate-400">
-              Propuestas rápidas de platillos, macros y equivalencias para <strong class="text-nutri-rose">{{ patient()?.nombre || 'el paciente' }}</strong>
+              Propuestas clínicas para <strong class="text-nutri-rose">{{ patient()?.nombre || 'el paciente' }}</strong>
             </p>
           </div>
         </div>
@@ -32,11 +38,12 @@
 
       <!-- Controls & Parameters Bar -->
       <div class="px-6 py-4 bg-slate-50/70 dark:bg-[#141414] border-b border-nutri-rose/10 dark:border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+        
         <!-- Target Calories -->
-        <div class="md:col-span-3 space-y-1">
+        <div class="md:col-span-2 space-y-1">
           <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
             <app-a-icon name="local_fire_department" size="13px" customClass="text-amber-500"></app-a-icon>
-            Calorías Objetivo
+            Calorías
           </label>
           <div class="flex items-center gap-1">
             <input type="number" 
@@ -48,16 +55,31 @@
           </div>
         </div>
 
+        <!-- Format Selector -->
+        <div class="md:col-span-3 space-y-1">
+          <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
+            <app-a-icon name="view_agenda" size="13px" customClass="text-indigo-500"></app-a-icon>
+            Tipo de Menú
+          </label>
+          <select [ngModel]="selectedFormat()" 
+                  (ngModelChange)="selectedFormat.set($event)"
+                  class="w-full h-10 px-2.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-nutri-text dark:text-white outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 transition-all cursor-pointer">
+            <option value="auto">🔍 Auto (Detectar previo)</option>
+            <option value="equivalencias">📋 Opciones (Equivalencias)</option>
+            <option value="semanal">📅 Semanal (Lunes a Domingo)</option>
+          </select>
+        </div>
+
         <!-- Extra Notes for AI -->
-        <div class="md:col-span-6 space-y-1">
+        <div class="md:col-span-4 space-y-1">
           <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
             <app-a-icon name="edit_note" size="14px" customClass="text-nutri-rose"></app-a-icon>
-            Instrucción especial / Enfoque
+            Enfoque / Instrucción especial
           </label>
           <input type="text" 
                  [ngModel]="extraNotes()" 
                  (ngModelChange)="extraNotes.set($event)" 
-                 placeholder="Ej. Comidas prácticas para oficina, cena ligera, alto en fibra..."
+                 placeholder="Ej. Oficina, cena ligera, alto en fibra..."
                  class="w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl text-xs text-nutri-text dark:text-white outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 transition-all placeholder:text-nutri-text/30 dark:placeholder:text-slate-600">
         </div>
 
@@ -71,7 +93,7 @@
               <span>Generando...</span>
             } @else {
               <app-a-icon name="magic_button" size="16px"></app-a-icon>
-              <span>{{ copilotData() ? 'Regenerar Propuesta' : 'Generar con IA' }}</span>
+              <span>{{ copilotData() ? 'Regenerar con IA' : 'Generar con IA' }}</span>
             }
           </button>
         </div>
@@ -89,10 +111,10 @@
             
             <div class="space-y-2">
               <h4 class="text-lg font-bold text-nutri-text dark:text-slate-100">
-                Listo para acelerar el diseño de menús
+                Diseño Inteligente de Menús (Equivalencias o Semanal)
               </h4>
               <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
-                El copiloto leerá el expediente clínico de <strong class="text-nutri-rose">{{ patient()?.nombre }}</strong>, sus patologías, alimentos favoritos/evitados y la evolución entre sus últimos registros para sugerirte 3 opciones completas con sus macros.
+                El copiloto leerá el historial clínico de <strong class="text-nutri-rose">{{ patient()?.nombre }}</strong>, sus patologías, alimentos preferidos/evitados y el delta de sus mediciones corporales para sugerir platillos y macros listos para copiar.
               </p>
             </div>
 
@@ -156,6 +178,7 @@
 
         <!-- Results Display -->
         @if (copilotData() && !isLoading()) {
+          
           <!-- Strategy & Clinical Delta Banner -->
           <div class="p-5 rounded-3xl bg-gradient-to-br from-nutri-rose/[0.06] via-slate-50 to-pink-50/50 dark:from-nutri-rose/10 dark:via-[#141414] dark:to-[#1a1417] border border-nutri-rose/20 dark:border-white/10 space-y-4">
             
@@ -164,13 +187,15 @@
               
               <!-- Clinical Rationale -->
               <div class="lg:col-span-7 space-y-2">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                   <span class="px-2 py-0.5 rounded-md bg-nutri-rose text-white text-[9px] font-black uppercase tracking-wider">
                     Estrategia Clínica
                   </span>
+                  <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-nutri-text dark:text-slate-200">
+                    Formato: {{ isWeekly() ? 'Semanal (7 Días)' : 'Equivalencias (3 Opciones)' }}
+                  </span>
                   @if (deltaWeight() || deltaFat()) {
-                    <div class="flex items-center gap-2 text-[10px] font-bold text-nutri-text/70 dark:text-slate-300">
-                      <span>Evolución:</span>
+                    <div class="flex items-center gap-1.5 text-[10px] font-bold text-nutri-text/70 dark:text-slate-300">
                       @if (deltaWeight()) {
                         <span class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono">{{ deltaWeight() }} peso</span>
                       }
@@ -250,7 +275,7 @@
                 <span>¡Plan Completo Copiado!</span>
               } @else {
                 <app-a-icon name="content_copy" size="16px"></app-a-icon>
-                <span>Copiar Plan Completo (3 Menús)</span>
+                <span>{{ isWeekly() ? 'Copiar Semana Completa (L-D)' : 'Copiar Plan Completo (3 Menús)' }}</span>
               }
             </button>
           </div>
@@ -258,193 +283,343 @@
           <!-- VIEW 1: Visual Interactive Cards -->
           @if (activeViewTab() === 'visual') {
             <div class="space-y-4">
-              <!-- Menu Option Pills (Menu 1, 2, 3) -->
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <div class="flex items-center gap-2">
-                  @for (menu of copilotData()?.menus; track menu.id; let i = $index) {
-                    <button (click)="activeMenuIndex.set(i)"
-                            class="px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
-                            [ngClass]="activeMenuIndex() === i 
-                              ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20 ring-2 ring-nutri-rose/30' 
-                              : 'bg-slate-100 dark:bg-white/5 text-nutri-text/70 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'">
-                      <span>{{ menu.title }}</span>
-                    </button>
-                  }
+              
+              <!-- CASE A: Semanal (7 Days) -->
+              @if (isWeekly()) {
+                <!-- Day Pills (Lunes .. Domingo) -->
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    @for (day of copilotData()?.days; track day.id; let i = $index) {
+                      <button (click)="activeDayIndex.set(i)"
+                              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                              [ngClass]="activeDayIndex() === i 
+                                ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20 ring-2 ring-nutri-rose/30' 
+                                : 'bg-slate-100 dark:bg-white/5 text-nutri-text/70 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'">
+                        <span>{{ day.day_name }}</span>
+                      </button>
+                    }
+                  </div>
+
+                  <button (click)="copyActiveDay()"
+                          class="px-3 py-1.5 rounded-xl border border-nutri-rose/30 hover:bg-nutri-rose/10 text-nutri-rose text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
+                    <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                    <span>Copiar {{ activeDay()?.day_name }}</span>
+                  </button>
                 </div>
 
-                <button (click)="copyActiveMenu()"
-                        class="px-3 py-1.5 rounded-xl border border-nutri-rose/30 hover:bg-nutri-rose/10 text-nutri-rose text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
-                  <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                  <span>Copiar Esta Opción</span>
-                </button>
-              </div>
-
-              <!-- Active Menu Meals Grid -->
-              @if (activeMenu()) {
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  
-                  <!-- Desayuno -->
-                  @if (activeMenu()?.desayuno; as d) {
-                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                          <span class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black text-xs">
-                            🍳
-                          </span>
-                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Desayuno</span>
-                        </div>
-                        <button (click)="copyMeal('Desayuno', d)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar desayuno">
-                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                        </button>
-                      </div>
-
-                      <div class="space-y-1.5">
-                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ d.platillo }}</h5>
-                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
-                          @for (ing of d.ingredientes; track ing) {
-                            <li class="flex items-start gap-1.5">
-                              <span class="text-nutri-rose font-bold">•</span>
-                              <span>{{ ing }}</span>
-                            </li>
-                          }
-                        </ul>
-                        @if (d.preparacion_rapida) {
-                          <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">
-                            Tip: {{ d.preparacion_rapida }}
+                <!-- Active Day Meals Grid -->
+                @if (activeDay()) {
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Desayuno -->
+                    @if (activeDay()?.desayuno; as d) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black text-xs">🍳</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Desayuno</span>
                           </div>
-                        }
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Colación Matutina -->
-                  @if (activeMenu()?.colacion_matutina; as c1) {
-                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                          <span class="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-xs">
-                            🍏
-                          </span>
-                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Matutina</span>
+                          <button (click)="copyMeal('Desayuno', d)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar desayuno">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
                         </div>
-                        <button (click)="copyMeal('Colación Matutina', c1)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
-                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                        </button>
-                      </div>
-
-                      <div class="space-y-1.5">
-                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c1.platillo }}</h5>
-                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
-                          @for (ing of c1.ingredientes; track ing) {
-                            <li class="flex items-start gap-1.5">
-                              <span class="text-emerald-500 font-bold">•</span>
-                              <span>{{ ing }}</span>
-                            </li>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ d.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of d.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-nutri-rose font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                          @if (d.preparacion_rapida) {
+                            <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">Tip: {{ d.preparacion_rapida }}</div>
                           }
-                        </ul>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Comida -->
-                  @if (activeMenu()?.comida; as c) {
-                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                          <span class="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-black text-xs">
-                            🍲
-                          </span>
-                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Comida Principal</span>
                         </div>
-                        <button (click)="copyMeal('Comida', c)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar comida">
-                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                        </button>
                       </div>
+                    }
 
-                      <div class="space-y-1.5">
-                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c.platillo }}</h5>
-                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
-                          @for (ing of c.ingredientes; track ing) {
-                            <li class="flex items-start gap-1.5">
-                              <span class="text-nutri-rose font-bold">•</span>
-                              <span>{{ ing }}</span>
-                            </li>
-                          }
-                        </ul>
-                        @if (c.preparacion_rapida) {
-                          <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">
-                            Tip: {{ c.preparacion_rapida }}
+                    <!-- Colación Matutina -->
+                    @if (activeDay()?.colacion_matutina; as c1) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-xs">🍏</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Matutina</span>
                           </div>
-                        }
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Colación Vespertina -->
-                  @if (activeMenu()?.colacion_vespertina; as c2) {
-                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                          <span class="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs">
-                            🫐
-                          </span>
-                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Vespertina</span>
+                          <button (click)="copyMeal('Colación Matutina', c1)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
                         </div>
-                        <button (click)="copyMeal('Colación Vespertina', c2)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
-                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                        </button>
-                      </div>
-
-                      <div class="space-y-1.5">
-                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c2.platillo }}</h5>
-                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
-                          @for (ing of c2.ingredientes; track ing) {
-                            <li class="flex items-start gap-1.5">
-                              <span class="text-purple-500 font-bold">•</span>
-                              <span>{{ ing }}</span>
-                            </li>
-                          }
-                        </ul>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Cena -->
-                  @if (activeMenu()?.cena; as cn) {
-                    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all md:col-span-2">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                          <span class="w-7 h-7 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs">
-                            🌙
-                          </span>
-                          <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Cena</span>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c1.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of c1.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-emerald-500 font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
                         </div>
-                        <button (click)="copyMeal('Cena', cn)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar cena">
-                          <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                        </button>
                       </div>
+                    }
 
-                      <div class="space-y-1.5">
-                        <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ cn.platillo }}</h5>
-                        <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400 grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                          @for (ing of cn.ingredientes; track ing) {
-                            <li class="flex items-start gap-1.5">
-                              <span class="text-indigo-500 font-bold">•</span>
-                              <span>{{ ing }}</span>
-                            </li>
-                          }
-                        </ul>
-                        @if (cn.preparacion_rapida) {
-                          <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">
-                            Tip: {{ cn.preparacion_rapida }}
+                    <!-- Comida -->
+                    @if (activeDay()?.comida; as c) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-black text-xs">🍲</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Comida Principal</span>
                           </div>
-                        }
+                          <button (click)="copyMeal('Comida', c)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar comida">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of c.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-nutri-rose font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                          @if (c.preparacion_rapida) {
+                            <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">Tip: {{ c.preparacion_rapida }}</div>
+                          }
+                        </div>
                       </div>
-                    </div>
-                  }
+                    }
 
-                </div>
+                    <!-- Colación Vespertina -->
+                    @if (activeDay()?.colacion_vespertina; as c2) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs">🫐</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Vespertina</span>
+                          </div>
+                          <button (click)="copyMeal('Colación Vespertina', c2)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c2.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of c2.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-purple-500 font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Cena -->
+                    @if (activeDay()?.cena; as cn) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all md:col-span-2">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs">🌙</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Cena</span>
+                          </div>
+                          <button (click)="copyMeal('Cena', cn)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar cena">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ cn.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400 grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                            @for (ing of cn.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-indigo-500 font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                          @if (cn.preparacion_rapida) {
+                            <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">Tip: {{ cn.preparacion_rapida }}</div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               }
+
+              <!-- CASE B: Equivalencias (3 Options) -->
+              @if (!isWeekly()) {
+                <!-- Option Pills (Opción 1, 2, 3) -->
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                  <div class="flex items-center gap-2">
+                    @for (menu of copilotData()?.menus; track menu.id; let i = $index) {
+                      <button (click)="activeMenuIndex.set(i)"
+                              class="px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
+                              [ngClass]="activeMenuIndex() === i 
+                                ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20 ring-2 ring-nutri-rose/30' 
+                                : 'bg-slate-100 dark:bg-white/5 text-nutri-text/70 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'">
+                        <span>{{ menu.title }}</span>
+                      </button>
+                    }
+                  </div>
+
+                  <button (click)="copyActiveMenu()"
+                          class="px-3 py-1.5 rounded-xl border border-nutri-rose/30 hover:bg-nutri-rose/10 text-nutri-rose text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
+                    <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                    <span>Copiar {{ activeMenu()?.title }}</span>
+                  </button>
+                </div>
+
+                <!-- Active Option Meals Grid -->
+                @if (activeMenu()) {
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Desayuno -->
+                    @if (activeMenu()?.desayuno; as d) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black text-xs">🍳</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Desayuno</span>
+                          </div>
+                          <button (click)="copyMeal('Desayuno', d)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar desayuno">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ d.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of d.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-nutri-rose font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                          @if (d.preparacion_rapida) {
+                            <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">Tip: {{ d.preparacion_rapida }}</div>
+                          }
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Colación Matutina -->
+                    @if (activeMenu()?.colacion_matutina; as c1) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-xs">🍏</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Matutina</span>
+                          </div>
+                          <button (click)="copyMeal('Colación Matutina', c1)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c1.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of c1.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-emerald-500 font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Comida -->
+                    @if (activeMenu()?.comida; as c) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-black text-xs">🍲</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Comida Principal</span>
+                          </div>
+                          <button (click)="copyMeal('Comida', c)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar comida">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of c.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-nutri-rose font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                          @if (c.preparacion_rapida) {
+                            <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">Tip: {{ c.preparacion_rapida }}</div>
+                          }
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Colación Vespertina -->
+                    @if (activeMenu()?.colacion_vespertina; as c2) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs">🫐</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Colación Vespertina</span>
+                          </div>
+                          <button (click)="copyMeal('Colación Vespertina', c2)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar colación">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ c2.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400">
+                            @for (ing of c2.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-purple-500 font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Cena -->
+                    @if (activeMenu()?.cena; as cn) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm hover:border-nutri-rose/30 transition-all md:col-span-2">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs">🌙</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">Cena</span>
+                          </div>
+                          <button (click)="copyMeal('Cena', cn)" class="text-nutri-text/40 hover:text-nutri-rose text-xs flex items-center gap-1" title="Copiar cena">
+                            <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                          </button>
+                        </div>
+                        <div class="space-y-1.5">
+                          <h5 class="text-sm font-bold text-nutri-text dark:text-white leading-snug">{{ cn.platillo }}</h5>
+                          <ul class="space-y-1 text-xs text-nutri-text/70 dark:text-slate-400 grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                            @for (ing of cn.ingredientes; track ing) {
+                              <li class="flex items-start gap-1.5">
+                                <span class="text-indigo-500 font-bold">•</span>
+                                <span>{{ ing }}</span>
+                              </li>
+                            }
+                          </ul>
+                          @if (cn.preparacion_rapida) {
+                            <div class="pt-1.5 text-[11px] text-nutri-text/60 dark:text-slate-500 italic">Tip: {{ cn.preparacion_rapida }}</div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+
             </div>
           }
 

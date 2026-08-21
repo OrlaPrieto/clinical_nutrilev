@@ -178,6 +178,22 @@ export class PatientService {
     return firstValueFrom(this.http.post<{ url: string }>(`${this.apiUrl}/upload-menu`, formData));
   }
 
+  async getCopilotSuggestion(email: string): Promise<import('@shared/models/interfaces').MenuCopilotResponse | null> {
+    try {
+      if (this.authService.isDevMode()) {
+        return null;
+      }
+      return await firstValueFrom(
+        this.http.get<import('@shared/models/interfaces').MenuCopilotResponse | null>(
+          `${this.apiUrl}/${email}/copilot-suggestion`
+        )
+      );
+    } catch (err) {
+      console.warn('[PatientService] Could not fetch saved copilot suggestion:', err);
+      return null;
+    }
+  }
+
   async suggestMenuCopilot(payload: {
     patient_context: any;
     prev_progress?: any;
@@ -185,6 +201,7 @@ export class PatientService {
     previous_menu_summary?: string;
     calories?: number;
     extra_notes?: string;
+    menu_format?: string;
   }): Promise<{ success: boolean; data: import('@shared/models/interfaces').MenuCopilotResponse }> {
     return firstValueFrom(
       this.http.post<{ success: boolean; data: import('@shared/models/interfaces').MenuCopilotResponse }>(
