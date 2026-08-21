@@ -30,6 +30,7 @@ export class MenuCopilotModalComponent {
   targetCalories = signal<number>(1800);
   extraNotes = signal<string>('');
   selectedFormat = signal<'auto' | 'equivalencias' | 'semanal'>('auto');
+  weeklyDisplayMode = signal<'tabs' | 'all'>('tabs');
   isLoading = signal<boolean>(false);
   isPreloadedFromDb = signal<boolean>(false);
   copilotData = signal<MenuCopilotResponse | null>(null);
@@ -87,7 +88,9 @@ export class MenuCopilotModalComponent {
   });
 
   isWeekly = computed<boolean>(() => {
-    return this.copilotData()?.format_type === 'semanal';
+    const data = this.copilotData();
+    if (!data) return this.selectedFormat() === 'semanal';
+    return data.format_type === 'semanal' || (!!data.days && data.days.length > 0);
   });
 
   activeMenu = computed<MenuCopilotOption | null>(() => {
@@ -103,6 +106,16 @@ export class MenuCopilotModalComponent {
     const idx = this.activeDayIndex();
     return data.days[idx] || data.days[0];
   });
+
+  async onFormatChange(format: 'auto' | 'equivalencias' | 'semanal') {
+    this.selectedFormat.set(format);
+    // If format changed and differs from current data, regenerate
+    const currentIsWeekly = this.isWeekly();
+    const targetIsWeekly = format === 'semanal';
+    if (this.copilotData() && (currentIsWeekly !== targetIsWeekly) && format !== 'auto') {
+      await this.generateSuggestion();
+    }
+  }
 
   async loadPrecalculatedSuggestion(email: string) {
     try {

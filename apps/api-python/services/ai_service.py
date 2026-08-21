@@ -758,8 +758,9 @@ def generate_menu_copilot_suggestion(
     }
 
     format_instruction = (
-        f"ESTRUCTURA OBJETIVO: Generar un plan en formato '{resolved_format.upper()}'. "
-        + ("Genera 7 días completos (Lunes a Domingo)." if resolved_format == "semanal" else "Genera 3 opciones completas intercambiables (Opción 1, Opción 2, Opción 3) basadas en equivalencias SMAE.")
+        "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. Debes incluir EXACTAMENTE 7 días en el arreglo 'days' con 'day_name': 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo' con platillos distintos y variados para cada día."
+        if resolved_format == "semanal"
+        else "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones intercambiables en el arreglo 'menus' (Opción 1, Opción 2, Opción 3) basadas en equivalencias SMAE."
     )
 
     system_prompt = (

@@ -1,6 +1,6 @@
 @if (isOpen()) {
   <div class="fixed inset-0 z-[120] flex items-center justify-center p-3 md:p-6 bg-black/60 backdrop-blur-md animate-fade-in">
-    <div class="relative w-full max-w-5xl max-h-[90vh] flex flex-col bg-white dark:bg-[#0e0e0e] border border-nutri-rose/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden text-nutri-text dark:text-slate-200">
+    <div class="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-white dark:bg-[#0e0e0e] border border-nutri-rose/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden text-nutri-text dark:text-slate-200">
       
       <!-- Top Modal Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-nutri-rose/10 dark:border-white/10 bg-nutri-rose/[0.02] dark:bg-white/[0.02]">
@@ -39,6 +39,28 @@
       <!-- Controls & Parameters Bar -->
       <div class="px-6 py-4 bg-slate-50/70 dark:bg-[#141414] border-b border-nutri-rose/10 dark:border-white/10 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
         
+        <!-- Format Selector Toggle (High Visibility) -->
+        <div class="md:col-span-4 space-y-1">
+          <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
+            <app-a-icon name="view_agenda" size="13px" customClass="text-indigo-500"></app-a-icon>
+            Estructura del Menú
+          </label>
+          <div class="grid grid-cols-2 gap-1 p-1 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl">
+            <button type="button"
+                    (click)="onFormatChange('semanal')"
+                    [ngClass]="selectedFormat() === 'semanal' || (selectedFormat() === 'auto' && isWeekly()) ? 'bg-nutri-rose text-white shadow-sm font-black' : 'text-nutri-text/70 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold'"
+                    class="py-1.5 px-2 rounded-lg text-xs transition-all flex items-center justify-center gap-1 cursor-pointer">
+              <span>📅 Semanal (7 Días)</span>
+            </button>
+            <button type="button"
+                    (click)="onFormatChange('equivalencias')"
+                    [ngClass]="selectedFormat() === 'equivalencias' || (selectedFormat() === 'auto' && !isWeekly()) ? 'bg-nutri-rose text-white shadow-sm font-black' : 'text-nutri-text/70 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold'"
+                    class="py-1.5 px-2 rounded-lg text-xs transition-all flex items-center justify-center gap-1 cursor-pointer">
+              <span>📋 Equivalencias (3 Op.)</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Target Calories -->
         <div class="md:col-span-2 space-y-1">
           <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
@@ -55,31 +77,16 @@
           </div>
         </div>
 
-        <!-- Format Selector -->
+        <!-- Extra Notes for AI -->
         <div class="md:col-span-3 space-y-1">
           <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
-            <app-a-icon name="view_agenda" size="13px" customClass="text-indigo-500"></app-a-icon>
-            Tipo de Menú
-          </label>
-          <select [ngModel]="selectedFormat()" 
-                  (ngModelChange)="selectedFormat.set($event)"
-                  class="w-full h-10 px-2.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-nutri-text dark:text-white outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 transition-all cursor-pointer">
-            <option value="auto">🔍 Auto (Detectar previo)</option>
-            <option value="equivalencias">📋 Opciones (Equivalencias)</option>
-            <option value="semanal">📅 Semanal (Lunes a Domingo)</option>
-          </select>
-        </div>
-
-        <!-- Extra Notes for AI -->
-        <div class="md:col-span-4 space-y-1">
-          <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
             <app-a-icon name="edit_note" size="14px" customClass="text-nutri-rose"></app-a-icon>
-            Enfoque / Instrucción especial
+            Enfoque / Instrucción
           </label>
           <input type="text" 
                  [ngModel]="extraNotes()" 
                  (ngModelChange)="extraNotes.set($event)" 
-                 placeholder="Ej. Oficina, cena ligera, alto en fibra..."
+                 placeholder="Ej. Oficina, cena ligera..."
                  class="w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl text-xs text-nutri-text dark:text-white outline-none focus:border-nutri-rose focus:ring-2 focus:ring-nutri-rose/20 transition-all placeholder:text-nutri-text/30 dark:placeholder:text-slate-600">
         </div>
 
@@ -93,7 +100,7 @@
               <span>Generando...</span>
             } @else {
               <app-a-icon name="magic_button" size="16px"></app-a-icon>
-              <span>{{ copilotData() ? 'Regenerar con IA' : 'Generar con IA' }}</span>
+              <span>{{ copilotData() ? 'Regenerar ' + (selectedFormat() === 'semanal' ? 'Semanal' : 'con IA') : 'Generar con IA' }}</span>
             }
           </button>
         </div>
@@ -111,7 +118,7 @@
             
             <div class="space-y-2">
               <h4 class="text-lg font-bold text-nutri-text dark:text-slate-100">
-                Diseño Inteligente de Menús (Equivalencias o Semanal)
+                Diseño Inteligente de Menús (Semanal o Equivalencias)
               </h4>
               <p class="text-xs text-nutri-text/60 dark:text-slate-400 leading-relaxed">
                 El copiloto leerá el historial clínico de <strong class="text-nutri-rose">{{ patient()?.nombre }}</strong>, sus patologías, alimentos preferidos/evitados y el delta de sus mediciones corporales para sugerir platillos y macros listos para copiar.
@@ -167,7 +174,7 @@
             </div>
             <div class="space-y-1">
               <h4 class="text-sm font-bold text-nutri-text dark:text-slate-100">
-                NutriArchitect Copilot está analizando el caso clínico...
+                NutriArchitect Copilot está analizando el caso clínico (Modo {{ selectedFormat() === 'semanal' ? 'Semanal 7 Días' : 'Equivalencias' }})...
               </h4>
               <p class="text-xs text-nutri-text/50 dark:text-slate-400">
                 Comparando delta de composición corporal, calculando equivalencias y diseñando platillos.
@@ -192,7 +199,7 @@
                     Estrategia Clínica
                   </span>
                   <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-nutri-text dark:text-slate-200">
-                    Formato: {{ isWeekly() ? 'Semanal (7 Días)' : 'Equivalencias (3 Opciones)' }}
+                    Formato: {{ isWeekly() ? 'Semanal (7 Días Lunes a Domingo)' : 'Equivalencias (3 Opciones)' }}
                   </span>
                   @if (deltaWeight() || deltaFat()) {
                     <div class="flex items-center gap-1.5 text-[10px] font-bold text-nutri-text/70 dark:text-slate-300">
@@ -275,7 +282,7 @@
                 <span>¡Plan Completo Copiado!</span>
               } @else {
                 <app-a-icon name="content_copy" size="16px"></app-a-icon>
-                <span>{{ isWeekly() ? 'Copiar Semana Completa (L-D)' : 'Copiar Plan Completo (3 Menús)' }}</span>
+                <span>{{ isWeekly() ? 'Copiar Semana Completa (Lunes a Domingo)' : 'Copiar Plan Completo (3 Menús)' }}</span>
               }
             </button>
           </div>
@@ -286,29 +293,42 @@
               
               <!-- CASE A: Semanal (7 Days) -->
               @if (isWeekly()) {
-                <!-- Day Pills (Lunes .. Domingo) -->
+                <!-- Weekly Header with Day Pills and Display Mode -->
                 <div class="flex items-center justify-between flex-wrap gap-2">
+                  
+                  <!-- Day Pills (Lunes .. Domingo) -->
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    @for (day of copilotData()?.days; track day.id; let i = $index) {
-                      <button (click)="activeDayIndex.set(i)"
+                    @for (day of copilotData()?.days; track (day.id || $index); let i = $index) {
+                      <button (click)="activeDayIndex.set(i); weeklyDisplayMode.set('tabs')"
                               class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
-                              [ngClass]="activeDayIndex() === i 
+                              [ngClass]="activeDayIndex() === i && weeklyDisplayMode() === 'tabs'
                                 ? 'bg-nutri-rose text-white shadow-md shadow-nutri-rose/20 ring-2 ring-nutri-rose/30' 
                                 : 'bg-slate-100 dark:bg-white/5 text-nutri-text/70 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10'">
-                        <span>{{ day.day_name }}</span>
+                        <span>{{ day.day_name || ('Día ' + (i + 1)) }}</span>
                       </button>
                     }
+                    
+                    <button (click)="weeklyDisplayMode.set(weeklyDisplayMode() === 'all' ? 'tabs' : 'all')"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                            [ngClass]="weeklyDisplayMode() === 'all' 
+                              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' 
+                              : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100'">
+                      <app-a-icon name="calendar_view_week" size="14px"></app-a-icon>
+                      <span>{{ weeklyDisplayMode() === 'all' ? 'Ver por Día' : 'Ver 7 Días Juntos' }}</span>
+                    </button>
                   </div>
 
-                  <button (click)="copyActiveDay()"
-                          class="px-3 py-1.5 rounded-xl border border-nutri-rose/30 hover:bg-nutri-rose/10 text-nutri-rose text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
-                    <app-a-icon name="content_copy" size="14px"></app-a-icon>
-                    <span>Copiar {{ activeDay()?.day_name }}</span>
-                  </button>
+                  @if (weeklyDisplayMode() === 'tabs') {
+                    <button (click)="copyActiveDay()"
+                            class="px-3 py-1.5 rounded-xl border border-nutri-rose/30 hover:bg-nutri-rose/10 text-nutri-rose text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
+                      <app-a-icon name="content_copy" size="14px"></app-a-icon>
+                      <span>Copiar {{ activeDay()?.day_name || 'Día' }}</span>
+                    </button>
+                  }
                 </div>
 
-                <!-- Active Day Meals Grid -->
-                @if (activeDay()) {
+                <!-- Active Day Meals Grid (Tabs Mode) -->
+                @if (weeklyDisplayMode() === 'tabs' && activeDay()) {
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Desayuno -->
                     @if (activeDay()?.desayuno; as d) {
@@ -450,6 +470,73 @@
                     }
                   </div>
                 }
+
+                <!-- All 7 Days Grid (Weekly Overview Mode) -->
+                @if (weeklyDisplayMode() === 'all') {
+                  <div class="space-y-4">
+                    @for (day of copilotData()?.days; track (day.id || $index); let i = $index) {
+                      <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-2">
+                          <div class="flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-xl bg-nutri-rose text-white flex items-center justify-center font-black text-xs shadow-sm shadow-nutri-rose/20">
+                              {{ i + 1 }}
+                            </span>
+                            <h4 class="text-sm font-bold text-nutri-text dark:text-white uppercase tracking-wider">
+                              {{ day.day_name || ('Día ' + (i + 1)) }}
+                            </h4>
+                          </div>
+                          <button (click)="activeDayIndex.set(i); copyActiveDay()" 
+                                  class="px-2.5 py-1 rounded-lg text-xs text-nutri-rose border border-nutri-rose/20 hover:bg-nutri-rose/10 flex items-center gap-1 font-bold">
+                            <app-a-icon name="content_copy" size="12px"></app-a-icon>
+                            <span>Copiar {{ day.day_name }}</span>
+                          </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs">
+                          @if (day.desayuno) {
+                            <div class="p-2.5 rounded-2xl bg-amber-500/[0.04] border border-amber-500/10 space-y-1">
+                              <span class="text-[9px] font-black uppercase text-amber-600">🍳 Desayuno</span>
+                              <p class="font-bold text-nutri-text dark:text-slate-200 text-[11px] leading-tight">{{ day.desayuno.platillo }}</p>
+                              <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 line-clamp-2">{{ day.desayuno.ingredientes.join(', ') }}</p>
+                            </div>
+                          }
+
+                          @if (day.colacion_matutina) {
+                            <div class="p-2.5 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/10 space-y-1">
+                              <span class="text-[9px] font-black uppercase text-emerald-600">🍏 Colación 1</span>
+                              <p class="font-bold text-nutri-text dark:text-slate-200 text-[11px] leading-tight">{{ day.colacion_matutina.platillo }}</p>
+                              <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 line-clamp-2">{{ day.colacion_matutina.ingredientes.join(', ') }}</p>
+                            </div>
+                          }
+
+                          @if (day.comida) {
+                            <div class="p-2.5 rounded-2xl bg-rose-500/[0.04] border border-rose-500/10 space-y-1">
+                              <span class="text-[9px] font-black uppercase text-rose-600">🍲 Comida</span>
+                              <p class="font-bold text-nutri-text dark:text-slate-200 text-[11px] leading-tight">{{ day.comida.platillo }}</p>
+                              <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 line-clamp-2">{{ day.comida.ingredientes.join(', ') }}</p>
+                            </div>
+                          }
+
+                          @if (day.colacion_vespertina) {
+                            <div class="p-2.5 rounded-2xl bg-purple-500/[0.04] border border-purple-500/10 space-y-1">
+                              <span class="text-[9px] font-black uppercase text-purple-600">🫐 Colación 2</span>
+                              <p class="font-bold text-nutri-text dark:text-slate-200 text-[11px] leading-tight">{{ day.colacion_vespertina.platillo }}</p>
+                              <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 line-clamp-2">{{ day.colacion_vespertina.ingredientes.join(', ') }}</p>
+                            </div>
+                          }
+
+                          @if (day.cena) {
+                            <div class="p-2.5 rounded-2xl bg-indigo-500/[0.04] border border-indigo-500/10 space-y-1">
+                              <span class="text-[9px] font-black uppercase text-indigo-600">🌙 Cena</span>
+                              <p class="font-bold text-nutri-text dark:text-slate-200 text-[11px] leading-tight">{{ day.cena.platillo }}</p>
+                              <p class="text-[10px] text-nutri-text/60 dark:text-slate-400 line-clamp-2">{{ day.cena.ingredientes.join(', ') }}</p>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               }
 
               <!-- CASE B: Equivalencias (3 Options) -->
@@ -457,7 +544,7 @@
                 <!-- Option Pills (Opción 1, 2, 3) -->
                 <div class="flex items-center justify-between flex-wrap gap-2">
                   <div class="flex items-center gap-2">
-                    @for (menu of copilotData()?.menus; track menu.id; let i = $index) {
+                    @for (menu of copilotData()?.menus; track (menu.id || $index); let i = $index) {
                       <button (click)="activeMenuIndex.set(i)"
                               class="px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
                               [ngClass]="activeMenuIndex() === i 
