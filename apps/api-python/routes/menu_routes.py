@@ -135,6 +135,7 @@ def suggest_menu_copilot():
         previous_menu_summary = data.get('previous_menu_summary', '')
         calories = int(data.get('calories', 1800))
         extra_notes = data.get('extra_notes', '')
+        menu_format = data.get('menu_format', 'auto')
 
         result = generate_menu_copilot_suggestion(
             patient_context=patient_context,
@@ -143,6 +144,7 @@ def suggest_menu_copilot():
             previous_menu_summary=previous_menu_summary,
             target_calories=calories,
             extra_notes=extra_notes,
+            menu_format=menu_format,
             gemini_key=GEMINI_API_KEY
         )
 

@@ -590,6 +590,19 @@ def fetch_dish_image_url(dish_name: str, search_term: str = "", unsplash_key: st
     return get_fallback_image(final_query)
 
 
+def detect_target_menu_format(menu_format: str = "auto", previous_menu_summary: str = "") -> str:
+    """Detecta si el formato objetivo debe ser 'equivalencias' u 'semanal'."""
+    if menu_format in ("equivalencias", "semanal"):
+        return menu_format
+
+    summary_lower = (previous_menu_summary or "").lower()
+    dias = ["lunes", "martes", "miercoles", "miércoles", "jueves", "viernes", "sabado", "sábado", "domingo", "semanal", "semana"]
+    if sum(1 for d in dias if d in summary_lower) >= 2 or "semanal" in summary_lower:
+        return "semanal"
+
+    return "equivalencias"
+
+
 def generate_menu_copilot_suggestion(
     patient_context: dict,
     prev_progress: Optional[dict] = None,
@@ -597,11 +610,13 @@ def generate_menu_copilot_suggestion(
     previous_menu_summary: Optional[str] = "",
     target_calories: int = 1800,
     extra_notes: str = "",
+    menu_format: str = "auto",
     gemini_key: str = ""
 ) -> dict:
     """
     Copiloto Clínico IA: Genera sugerencias estructuradas de menús, macros y equivalencias
     basadas en el delta de avance corporal, historial clínico, patologías y menú anterior.
+    Soporta formato 'equivalencias' (3 opciones intercambiables) o 'semanal' (7 días Lunes a Domingo).
     """
     import json
     import time
@@ -612,6 +627,7 @@ def generate_menu_copilot_suggestion(
         raise ValueError("GEMINI_API_KEY no está configurada")
 
     client = genai.Client(api_key=gemini_key)
+    resolved_format = detect_target_menu_format(menu_format, previous_menu_summary or "")
 
     # 1. Formatear delta de progreso corporal
     delta_lines = []
@@ -629,21 +645,72 @@ def generate_menu_copilot_suggestion(
 
     progreso_context = "\n".join(delta_lines)
 
-    # 2. Schema de respuesta JSON estricto
-    copilot_schema = {
+    # 2. Schema de respuesta JSON según formato
+    meal_item_schema = {
         "type": "OBJECT",
         "properties": {
+            "platillo": {"type": "STRING"},
+            "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
+            "preparacion_rapida": {"type": "STRING"}
+        },
+        "required": ["platillo", "ingredientes"]
+    }
+
+    if resolved_format == "semanal":
+        content_properties = {
+            "format_type": {"type": "STRING", "enum": ["semanal"]},
             "clinical_analysis": {
                 "type": "OBJECT",
                 "properties": {
-                    "delta_summary": {
-                        "type": "STRING",
-                        "description": "Análisis conciso del cambio en peso, masa muscular y grasa corporal entre consultas."
+                    "delta_summary": {"type": "STRING"},
+                    "clinical_rationale": {"type": "STRING"},
+                    "macro_distribution": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "calories": {"type": "INTEGER"},
+                            "protein_g": {"type": "INTEGER"},
+                            "protein_pct": {"type": "INTEGER"},
+                            "carbs_g": {"type": "INTEGER"},
+                            "carbs_pct": {"type": "INTEGER"},
+                            "fat_g": {"type": "INTEGER"},
+                            "fat_pct": {"type": "INTEGER"}
+                        },
+                        "required": ["calories", "protein_g", "protein_pct", "carbs_g", "carbs_pct", "fat_g", "fat_pct"]
+                    }
+                },
+                "required": ["delta_summary", "clinical_rationale", "macro_distribution"]
+            },
+            "days": {
+                "type": "ARRAY",
+                "description": "Menús para los 7 días de la semana (Lunes a Domingo).",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "id": {"type": "INTEGER"},
+                        "day_name": {"type": "STRING", "description": "Lunes, Martes, Miércoles, Jueves, Viernes, Sábado o Domingo"},
+                        "desayuno": meal_item_schema,
+                        "colacion_matutina": meal_item_schema,
+                        "comida": meal_item_schema,
+                        "colacion_vespertina": meal_item_schema,
+                        "cena": meal_item_schema
                     },
-                    "clinical_rationale": {
-                        "type": "STRING",
-                        "description": "Justificación clínica para el nutriólogo de la estrategia nutricional, calorías y distribución de macronutrientes."
-                    },
+                    "required": ["id", "day_name", "desayuno", "comida", "cena"]
+                }
+            },
+            "formatted_clipboard_text": {
+                "type": "STRING",
+                "description": "Texto limpio, estructurado y elegante con separadores, listo para copiar y pegar directamente en Word/PDF."
+            }
+        }
+        required_root = ["format_type", "clinical_analysis", "days", "formatted_clipboard_text"]
+    else:
+        content_properties = {
+            "format_type": {"type": "STRING", "enum": ["equivalencias"]},
+            "clinical_analysis": {
+                "type": "OBJECT",
+                "properties": {
+                    "delta_summary": {"type": "STRING"},
+                    "clinical_rationale": {"type": "STRING"},
                     "macro_distribution": {
                         "type": "OBJECT",
                         "properties": {
@@ -668,49 +735,11 @@ def generate_menu_copilot_suggestion(
                     "properties": {
                         "id": {"type": "INTEGER"},
                         "title": {"type": "STRING", "description": "Título descriptivo del menú (ej. Opción 1 · Práctica y Rápida)."},
-                        "desayuno": {
-                            "type": "OBJECT",
-                            "properties": {
-                                "platillo": {"type": "STRING"},
-                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
-                                "preparacion_rapida": {"type": "STRING"}
-                            },
-                            "required": ["platillo", "ingredientes", "preparacion_rapida"]
-                        },
-                        "colacion_matutina": {
-                            "type": "OBJECT",
-                            "properties": {
-                                "platillo": {"type": "STRING"},
-                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}}
-                            },
-                            "required": ["platillo", "ingredientes"]
-                        },
-                        "comida": {
-                            "type": "OBJECT",
-                            "properties": {
-                                "platillo": {"type": "STRING"},
-                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
-                                "preparacion_rapida": {"type": "STRING"}
-                            },
-                            "required": ["platillo", "ingredientes", "preparacion_rapida"]
-                        },
-                        "colacion_vespertina": {
-                            "type": "OBJECT",
-                            "properties": {
-                                "platillo": {"type": "STRING"},
-                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}}
-                            },
-                            "required": ["platillo", "ingredientes"]
-                        },
-                        "cena": {
-                            "type": "OBJECT",
-                            "properties": {
-                                "platillo": {"type": "STRING"},
-                                "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
-                                "preparacion_rapida": {"type": "STRING"}
-                            },
-                            "required": ["platillo", "ingredientes", "preparacion_rapida"]
-                        }
+                        "desayuno": meal_item_schema,
+                        "colacion_matutina": meal_item_schema,
+                        "comida": meal_item_schema,
+                        "colacion_vespertina": meal_item_schema,
+                        "cena": meal_item_schema
                     },
                     "required": ["id", "title", "desayuno", "comida", "cena"]
                 }
@@ -719,9 +748,19 @@ def generate_menu_copilot_suggestion(
                 "type": "STRING",
                 "description": "Texto limpio, estructurado y elegante con separadores, listo para copiar y pegar directamente en Word/PDF."
             }
-        },
-        "required": ["clinical_analysis", "menus", "formatted_clipboard_text"]
+        }
+        required_root = ["format_type", "clinical_analysis", "menus", "formatted_clipboard_text"]
+
+    copilot_schema = {
+        "type": "OBJECT",
+        "properties": content_properties,
+        "required": required_root
     }
+
+    format_instruction = (
+        f"ESTRUCTURA OBJETIVO: Generar un plan en formato '{resolved_format.upper()}'. "
+        + ("Genera 7 días completos (Lunes a Domingo)." if resolved_format == "semanal" else "Genera 3 opciones completas intercambiables (Opción 1, Opción 2, Opción 3) basadas en equivalencias SMAE.")
+    )
 
     system_prompt = (
         "Eres NutriArchitect Copilot, un asistente clínico de élite especializado en nutrición de precisión (Sistema Mexicano de Alimentos Equivalentes - SMAE). "
@@ -731,7 +770,8 @@ def generate_menu_copilot_suggestion(
         "2. PRIORIZACIÓN: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
         "3. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable).\n"
         "4. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
-        "5. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════' para que al pegarlo en Word se vea profesional."
+        f"5. {format_instruction}\n"
+        "6. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════' para que al pegarlo en Word se vea profesional."
     )
 
     user_prompt = f"""
@@ -748,7 +788,8 @@ DATOS DEL PACIENTE:
 EVOLUCIÓN CLÍNICA Y ANTROPOMETRÍA:
 {progreso_context}
 
-OBJETIVO CALÓRICO Y NOTAS DEL NUTRIÓLOGO:
+OBJETIVO CALÓRICO Y FORMATO:
+• Formato solicitado: {resolved_format.upper()}
 • Calorías objetivo: {target_calories} kcal
 • Notas adicionales: {extra_notes or 'Diseñar menú balanceado, variado y con preparaciones sencillas.'}
 • Referencia de menú anterior: {previous_menu_summary or 'No especificado.'}
@@ -761,7 +802,7 @@ Genera la sugerencia clínica en formato JSON cumpliendo con el schema requerido
 
     for model in models_to_try:
         try:
-            print(f"[MenuCopilot] Llamando a Gemini con modelo: {model}")
+            print(f"[MenuCopilot] Llamando a Gemini con modelo: {model} (formato: {resolved_format})")
             response = client.models.generate_content(
                 model=model,
                 contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + user_prompt}]}],
@@ -772,7 +813,9 @@ Genera la sugerencia clínica en formato JSON cumpliendo con el schema requerido
                 )
             )
             raw_text = response.text.strip()
-            return json.loads(raw_text)
+            parsed = json.loads(raw_text)
+            parsed["format_type"] = resolved_format
+            return parsed
         except Exception as e:
             last_error = e
             delay = extract_retry_delay(e)
