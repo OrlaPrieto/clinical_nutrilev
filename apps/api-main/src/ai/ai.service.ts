@@ -122,6 +122,7 @@ export class AiService {
     previous_menu_summary?: string;
     calories?: number;
     extra_notes?: string;
+    menu_format?: string;
   }): Promise<any> {
     try {
       const { data: responseData } = await firstValueFrom(

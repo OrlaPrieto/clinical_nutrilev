@@ -128,7 +128,16 @@ export class PatientService {
       }
     });
 
-    return this.patientRepository.addProgress(formattedData as any);
+    const created = await this.patientRepository.addProgress(formattedData as any);
+
+    // Auto-generate Copilot Menu suggestion in background upon adding new progress record
+    if (created && created.patient_id) {
+      this.triggerAutoCopilotSuggestion(created.patient_id).catch((err) =>
+        console.warn(`[MenuCopilot] Auto-suggestion background error for ${created.patient_id}:`, err?.message || err),
+      );
+    }
+
+    return created;
   }
 
   async updateProgress(
@@ -156,39 +165,12 @@ export class PatientService {
   }
 
   async remove(identifier: string): Promise<{ success: boolean }> {
-    let email: string | null = null;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier) || identifier.startsWith('uuid-');
-
+    let email = identifier;
+    
     if (isUuid) {
-      try {
-        const { data } = await this.supabaseService
-          .getClient()
-          .from('patients')
-          .select('email')
-          .eq('id', identifier)
-          .maybeSingle() as any;
-        if (data && data.email) {
-          email = data.email.toLowerCase().trim();
-        }
-      } catch (err) {
-        console.error('Failed to resolve patient email from UUID for deletion:', err);
-      }
-    } else if (identifier.includes('@')) {
-      email = identifier.toLowerCase().trim();
-    } else {
-      try {
-        const { data } = await this.supabaseService
-          .getClient()
-          .from('patients')
-          .select('email')
-          .eq('nombre', identifier)
-          .maybeSingle() as any;
-        if (data && data.email) {
-          email = data.email.toLowerCase().trim();
-        }
-      } catch (err) {
-        console.error('Failed to resolve patient email for deletion:', err);
-      }
+      const patient = await this.patientRepository.findById(identifier);
+      email = patient.email;
     }
 
     if (email) {
@@ -253,6 +235,84 @@ export class PatientService {
       });
     }
     return result;
+  }
+
+  async getCopilotSuggestion(patientEmailOrId: string): Promise<any> {
+    const client: any = this.supabaseService.getClient();
+    let patientId = patientEmailOrId;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(patientEmailOrId) || patientEmailOrId.startsWith('uuid-');
+    
+    if (!isUuid) {
+      const patient = await this.findByEmail(patientEmailOrId);
+      if (!patient) return null;
+      patientId = patient.id;
+    }
+
+    const cacheKey = `copilot_${patientId}`;
+    const { data: cached } = await client
+      .from('ai_menu_cache')
+      .select('parsed_menu, created_at')
+      .eq('menu_url', cacheKey)
+      .maybeSingle() as any;
+
+    if (cached && cached.parsed_menu) {
+      return {
+        ...cached.parsed_menu,
+        created_at: cached.created_at,
+      };
+    }
+
+    return null;
+  }
+
+  async saveCopilotSuggestion(patientEmailOrId: string, suggestionData: any): Promise<void> {
+    const client: any = this.supabaseService.getClient();
+    let patientId = patientEmailOrId;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(patientEmailOrId) || patientEmailOrId.startsWith('uuid-');
+    
+    if (!isUuid) {
+      const patient = await this.findByEmail(patientEmailOrId);
+      if (!patient) return;
+      patientId = patient.id;
+    }
+
+    const cacheKey = `copilot_${patientId}`;
+    await client.from('ai_menu_cache').upsert({
+      menu_url: cacheKey,
+      parsed_menu: suggestionData,
+      created_at: new Date().toISOString(),
+    });
+  }
+
+  async triggerAutoCopilotSuggestion(patientId: string): Promise<void> {
+    try {
+      const patient = await this.patientRepository.findById(patientId);
+      if (!patient) return;
+
+      const progress = await this.patientRepository.getProgress(patientId);
+      const latestProgress = progress.length > 0 ? progress[0] : null;
+      const prevProgress = progress.length > 1 ? progress[1] : null;
+      const prevMenu = patient.menu_url || (patient.current_menus && patient.current_menus.length > 0 ? patient.current_menus[0].name : '') || '';
+
+      console.log(`[MenuCopilot] Auto-generating suggestion in background for patient: ${patient.nombre} (${patientId})`);
+
+      const response = await this.aiGatewayService.suggestMenuCopilot({
+        patient_context: patient,
+        prev_progress: prevProgress,
+        latest_progress: latestProgress,
+        previous_menu_summary: prevMenu,
+        calories: 1800,
+        extra_notes: '',
+        menu_format: 'auto',
+      });
+
+      if (response && response.success && response.data) {
+        await this.saveCopilotSuggestion(patientId, response.data);
+        console.log(`[MenuCopilot] Auto-suggestion successfully precalculated and stored in DB for ${patient.nombre}`);
+      }
+    } catch (err: any) {
+      console.warn(`[MenuCopilot] Error in triggerAutoCopilotSuggestion: ${err?.message || err}`);
+    }
   }
 
   async cleanupOldStorageFiles(): Promise<{ deletedCount: number }> {

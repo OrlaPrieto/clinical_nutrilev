@@ -104,8 +104,20 @@ export class AiController {
       previous_menu_summary?: string;
       calories?: number;
       extra_notes?: string;
+      menu_format?: string;
     },
   ) {
-    return this.aiService.suggestMenuCopilot(body);
+    const response = await this.aiService.suggestMenuCopilot(body);
+    if (response && response.success && response.data && body.patient_context) {
+      const patientIdOrEmail = body.patient_context.id || body.patient_context.email;
+      if (patientIdOrEmail) {
+        this.patientService
+          .saveCopilotSuggestion(patientIdOrEmail, response.data)
+          .catch((err) =>
+            console.warn('[AiController] Error persisting copilot suggestion:', err),
+          );
+      }
+    }
+    return response;
   }
 }

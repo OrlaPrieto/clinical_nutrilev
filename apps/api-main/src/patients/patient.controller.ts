@@ -55,6 +55,12 @@ export class PatientController {
     return this.patientService.getProgress(email);
   }
 
+  @Get(':email/copilot-suggestion')
+  @UseGuards(AdminGuard)
+  async getCopilotSuggestion(@Param('email') email: string): Promise<any> {
+    return this.patientService.getCopilotSuggestion(email);
+  }
+
   @Post('progress')
   @UseGuards(AdminGuard)
   async addProgress(

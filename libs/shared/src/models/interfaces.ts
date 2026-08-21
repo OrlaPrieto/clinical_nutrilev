@@ -196,8 +196,21 @@ export interface MenuCopilotClinicalAnalysis {
   macro_distribution: MenuCopilotMacroDistribution;
 }
 
+export interface MenuCopilotDay {
+  id: number;
+  day_name: string;
+  desayuno: MenuCopilotDish;
+  colacion_matutina?: MenuCopilotDish;
+  comida: MenuCopilotDish;
+  colacion_vespertina?: MenuCopilotDish;
+  cena: MenuCopilotDish;
+}
+
 export interface MenuCopilotResponse {
+  format_type: 'equivalencias' | 'semanal';
   clinical_analysis: MenuCopilotClinicalAnalysis;
-  menus: MenuCopilotOption[];
+  menus?: MenuCopilotOption[];
+  days?: MenuCopilotDay[];
   formatted_clipboard_text: string;
+  created_at?: string;
 }
