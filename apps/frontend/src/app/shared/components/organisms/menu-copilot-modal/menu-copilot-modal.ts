@@ -107,14 +107,8 @@ export class MenuCopilotModalComponent {
     return data.days[idx] || data.days[0];
   });
 
-  async onFormatChange(format: 'auto' | 'equivalencias' | 'semanal') {
+  onFormatChange(format: 'auto' | 'equivalencias' | 'semanal') {
     this.selectedFormat.set(format);
-    // If format changed and differs from current data, regenerate
-    const currentIsWeekly = this.isWeekly();
-    const targetIsWeekly = format === 'semanal';
-    if (this.copilotData() && (currentIsWeekly !== targetIsWeekly) && format !== 'auto') {
-      await this.generateSuggestion();
-    }
   }
 
   async loadPrecalculatedSuggestion(email: string) {
