@@ -834,7 +834,7 @@ def generate_menu_copilot_suggestion(
         "5. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable, etc.).\n"
         "6. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
         f"7. {format_instruction}\n"
-        "8. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════'. Para el formato de EQUIVALENCIAS, organiza siempre los tiempos de comida en el eje vertical (filas: Desayuno, Colación Matutina, Comida, Colación Vespertina, Cena) y las opciones en el eje horizontal (columnas: Opción 1, Opción 2, Opción 3) para dar suficiente ancho a los ingredientes y platillos al copiar a Word."
+        "8. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, listas con viñetas y separadores '═══════════════'. Organiza siempre los tiempos de comida en el eje vertical (filas: Desayuno, Colación Matutina, Comida, Colación Vespertina, Cena) y las opciones/días en el eje horizontal (columnas: Opción 1, 2, 3 o Lunes a Domingo) para asegurar la máxima legibilidad al copiar a Word."
     )
 
     user_prompt = f"""
