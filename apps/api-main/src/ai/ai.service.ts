@@ -135,7 +135,7 @@ export class AiService {
               'x-internal-key':
                 this.configService.get<string>('INTERNAL_API_KEY'),
             },
-            timeout: 60000,
+            timeout: 120000,
           },
         ),
       );

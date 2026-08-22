@@ -699,10 +699,10 @@ def generate_menu_copilot_suggestion(
     for d in dishes_catalog:
         name = d.get("platillo", "")
         desc = d.get("ingredientes_detalle") or d.get("descripcion_ingredientes") or ""
-        prep = d.get("preparacion", "")
-        prep_str = f" (Prep: {prep})" if prep else ""
+        if desc and len(desc) > 120:
+            desc = desc[:120] + "..."
         if name:
-            catalog_lines.append(f"• [{name}]: {desc}{prep_str}")
+            catalog_lines.append(f"• [{name}]: {desc}")
     catalog_text = "\n".join(catalog_lines) if catalog_lines else "• Catálogo estándar SMAE disponible."
 
     # 4. Schema de respuesta JSON según formato
