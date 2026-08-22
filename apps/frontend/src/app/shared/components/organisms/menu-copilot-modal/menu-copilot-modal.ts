@@ -172,8 +172,9 @@ export class MenuCopilotModalComponent {
     const data = this.copilotData();
     if (!data) return;
 
-    const textToCopy = data.formatted_clipboard_text || this.buildPlanPlainText(data);
-    this.executeCopy(textToCopy, 'full_plan', 'Plan completo copiado al portapapeles');
+    const plainText = data.formatted_clipboard_text || this.buildPlanPlainText(data);
+    const htmlText = this.buildPlanHtmlTable(data);
+    this.executeCopy(plainText, htmlText, 'full_plan', 'Plan completo copiado (Tabla para Word)');
   }
 
   copyActiveMenu() {
@@ -210,7 +211,8 @@ export class MenuCopilotModalComponent {
       text += `\n`;
     }
 
-    this.executeCopy(text, `menu_${menu.id}`, `Menú "${menu.title}" copiado al portapapeles`);
+    const htmlText = this.buildMenuHtmlTable(menu);
+    this.executeCopy(text, htmlText, `menu_${menu.id}`, `Menú "${menu.title}" copiado (Tabla para Word)`);
   }
 
   copyActiveDay() {
@@ -247,7 +249,8 @@ export class MenuCopilotModalComponent {
       text += `\n`;
     }
 
-    this.executeCopy(text, `day_${day.id}`, `Menú de "${day.day_name}" copiado al portapapeles`);
+    const htmlText = this.buildDayHtmlTable(day);
+    this.executeCopy(text, htmlText, `day_${day.id}`, `Menú de "${day.day_name}" copiado (Tabla para Word)`);
   }
 
   copyMeal(mealName: string, dish?: any) {
@@ -257,7 +260,237 @@ export class MenuCopilotModalComponent {
     if (dish.preparacion_rapida) {
       text += `Preparación: ${dish.preparacion_rapida}\n`;
     }
-    this.executeCopy(text, mealName, `${mealName} copiado al portapapeles`);
+    const htmlText = this.buildMealHtmlTable(mealName, dish);
+    this.executeCopy(text, htmlText, mealName, `${mealName} copiado (Tabla para Word)`);
+  }
+
+  private buildPlanHtmlTable(data: MenuCopilotResponse): string {
+    const isWeekly = data.format_type === 'semanal' || (!!data.days && data.days.length > 0);
+    let html = `
+    <div style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.5;">
+      <div style="background-color: #e11d48; color: #ffffff; padding: 14px 18px; border-radius: 6px 6px 0 0; font-family: Arial, sans-serif;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+          NUTRILEV · PROPUESTA DE MENÚ CLÍNICO PERSONALIZADO
+        </h2>
+        <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.95;">
+          Paciente: <strong>${this.escapeHtml(this.patient()?.nombre || 'Paciente')}</strong> | 
+          Objetivo: <strong>${data.clinical_analysis?.macro_distribution?.calories || this.targetCalories()} kcal</strong> | 
+          Formato: <strong>${isWeekly ? 'Plan Semanal (7 Días)' : 'Equivalencias (3 Opciones)'}</strong>
+        </p>
+      </div>
+    `;
+
+    if (isWeekly && data.days && data.days.length > 0) {
+      html += `
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+        <thead>
+          <tr style="background-color: #e11d48; color: #ffffff;">
+            <th style="padding: 10px; border: 1px solid #be123c; width: 12%; text-align: center; font-size: 12px; font-weight: bold;">DÍA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17.6%; text-align: left; font-size: 12px; font-weight: bold;">DESAYUNO</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17.6%; text-align: left; font-size: 12px; font-weight: bold;">COLACIÓN MATUTINA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17.6%; text-align: left; font-size: 12px; font-weight: bold;">COMIDA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17.6%; text-align: left; font-size: 12px; font-weight: bold;">COLACIÓN VESPERTINA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17.6%; text-align: left; font-size: 12px; font-weight: bold;">CENA</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      data.days.forEach((d) => {
+        html += `
+          <tr>
+            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; text-align: center; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 13px;">
+              ${this.escapeHtml(d.day_name.toUpperCase())}
+            </td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(d.desayuno)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(d.colacion_matutina)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(d.comida)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(d.colacion_vespertina)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(d.cena)}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+        </tbody>
+      </table>
+      `;
+    } else if (data.menus && data.menus.length > 0) {
+      html += `
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+        <thead>
+          <tr style="background-color: #e11d48; color: #ffffff;">
+            <th style="padding: 10px; border: 1px solid #be123c; width: 15%; text-align: center; font-size: 12px; font-weight: bold;">OPCIÓN</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">DESAYUNO</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">COLACIÓN MATUTINA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">COMIDA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">COLACIÓN VESPERTINA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">CENA</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      data.menus.forEach((m, idx) => {
+        html += `
+          <tr>
+            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; text-align: center; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">
+              ${this.escapeHtml(m.title || `Opción ${idx + 1}`)}
+            </td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.desayuno)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.colacion_matutina)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.comida)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.colacion_vespertina)}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.cena)}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+        </tbody>
+      </table>
+      `;
+    }
+
+    html += `</div>`;
+    return html;
+  }
+
+  private buildDayHtmlTable(day: MenuCopilotDay): string {
+    let html = `
+    <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 750px;">
+      <div style="background-color: #e11d48; color: #ffffff; padding: 12px 16px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 15px;">
+        📅 MENÚ DEL DÍA: ${this.escapeHtml(day.day_name.toUpperCase())}
+      </div>
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+        <thead>
+          <tr style="background-color: #f8fafc; color: #475569;">
+            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
+            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 12px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    const meals = [
+      { label: '🍳 DESAYUNO', dish: day.desayuno },
+      { label: '🍏 COLACIÓN MATUTINA', dish: day.colacion_matutina },
+      { label: '🍲 COMIDA', dish: day.comida },
+      { label: '🫐 COLACIÓN VESPERTINA', dish: day.colacion_vespertina },
+      { label: '🌙 CENA', dish: day.cena }
+    ];
+
+    meals.forEach((m) => {
+      if (m.dish) {
+        html += `
+          <tr>
+            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">${m.label}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.dish)}</td>
+          </tr>
+        `;
+      }
+    });
+
+    html += `
+        </tbody>
+      </table>
+    </div>
+    `;
+    return html;
+  }
+
+  private buildMenuHtmlTable(menu: MenuCopilotOption): string {
+    let html = `
+    <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 750px;">
+      <div style="background-color: #e11d48; color: #ffffff; padding: 12px 16px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 15px;">
+        🥗 ${this.escapeHtml(menu.title.toUpperCase())}
+      </div>
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+        <thead>
+          <tr style="background-color: #f8fafc; color: #475569;">
+            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
+            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 12px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    const meals = [
+      { label: '🍳 DESAYUNO', dish: menu.desayuno },
+      { label: '🍏 COLACIÓN MATUTINA', dish: menu.colacion_matutina },
+      { label: '🍲 COMIDA', dish: menu.comida },
+      { label: '🫐 COLACIÓN VESPERTINA', dish: menu.colacion_vespertina },
+      { label: '🌙 CENA', dish: menu.cena }
+    ];
+
+    meals.forEach((m) => {
+      if (m.dish) {
+        html += `
+          <tr>
+            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">${m.label}</td>
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.dish)}</td>
+          </tr>
+        `;
+      }
+    });
+
+    html += `
+        </tbody>
+      </table>
+    </div>
+    `;
+    return html;
+  }
+
+  private buildMealHtmlTable(mealName: string, dish: any): string {
+    return `
+    <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 500px;">
+      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+        <thead>
+          <tr style="background-color: #e11d48; color: #ffffff;">
+            <th style="padding: 8px 10px; border: 1px solid #be123c; text-align: left; font-size: 13px; font-weight: bold;">🍽️ ${this.escapeHtml(mealName.toUpperCase())}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #e2e8f0;">
+              ${this.formatMealCellHtml(dish)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    `;
+  }
+
+  private formatMealCellHtml(dish: any): string {
+    if (!dish || !dish.platillo) return '<span style="color: #94a3b8; font-style: italic;">Sin platillo asignado</span>';
+    
+    let html = `<div style="font-weight: bold; color: #0f172a; margin-bottom: 4px; font-size: 12px;">${this.escapeHtml(dish.platillo)}</div>`;
+    
+    if (dish.ingredientes && dish.ingredientes.length > 0) {
+      html += `<ul style="margin: 0; padding-left: 16px; color: #334155; font-size: 11px; line-height: 1.4;">`;
+      dish.ingredientes.forEach((ing: string) => {
+        html += `<li style="margin-bottom: 2px;">${this.escapeHtml(ing)}</li>`;
+      });
+      html += `</ul>`;
+    }
+    
+    if (dish.preparacion_rapida) {
+      html += `<div style="font-style: italic; color: #64748b; font-size: 10px; margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 2px;">💡 ${this.escapeHtml(dish.preparacion_rapida)}</div>`;
+    }
+    
+    return html;
+  }
+
+  private escapeHtml(str: string): string {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   private buildPlanPlainText(data: MenuCopilotResponse): string {
@@ -291,9 +524,19 @@ export class MenuCopilotModalComponent {
     return out;
   }
 
-  private async executeCopy(text: string, sectionKey: string, toastMsg: string) {
+  private async executeCopy(plainText: string, htmlText: string, sectionKey: string, toastMsg: string) {
     try {
-      await navigator.clipboard.writeText(text);
+      if (navigator.clipboard && (window as any).ClipboardItem) {
+        const textBlob = new Blob([plainText], { type: 'text/plain' });
+        const htmlBlob = new Blob([htmlText], { type: 'text/html' });
+        const item = new (window as any).ClipboardItem({
+          'text/plain': textBlob,
+          'text/html': htmlBlob,
+        });
+        await navigator.clipboard.write([item]);
+      } else {
+        await navigator.clipboard.writeText(plainText);
+      }
       this.copiedSection.set(sectionKey);
       this.toastService.show(toastMsg, 'success', 3000);
       setTimeout(() => {
@@ -302,8 +545,14 @@ export class MenuCopilotModalComponent {
         }
       }, 2500);
     } catch (err) {
-      console.error('Error al copiar al portapapeles:', err);
-      this.toastService.show('No se pudo copiar automáticamente. Copia el texto manualmente.', 'error', 4000);
+      console.error('Error al copiar con ClipboardItem:', err);
+      try {
+        await navigator.clipboard.writeText(plainText);
+        this.copiedSection.set(sectionKey);
+        this.toastService.show(toastMsg, 'success', 3000);
+      } catch (e) {
+        this.toastService.show('No se pudo copiar automáticamente. Copia el texto manualmente.', 'error', 4000);
+      }
     }
   }
 
