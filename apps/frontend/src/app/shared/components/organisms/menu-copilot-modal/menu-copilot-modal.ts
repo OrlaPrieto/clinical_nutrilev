@@ -316,32 +316,56 @@ export class MenuCopilotModalComponent {
       </table>
       `;
     } else if (data.menus && data.menus.length > 0) {
+      const optionCount = data.menus.length;
+      const colWidth = Math.floor(82 / optionCount);
+
       html += `
       <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
         <thead>
           <tr style="background-color: #e11d48; color: #ffffff;">
-            <th style="padding: 10px; border: 1px solid #be123c; width: 15%; text-align: center; font-size: 12px; font-weight: bold;">OPCIÓN</th>
-            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">DESAYUNO</th>
-            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">COLACIÓN MATUTINA</th>
-            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">COMIDA</th>
-            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">COLACIÓN VESPERTINA</th>
-            <th style="padding: 10px; border: 1px solid #be123c; width: 17%; text-align: left; font-size: 12px; font-weight: bold;">CENA</th>
+            <th style="padding: 10px; border: 1px solid #be123c; width: 18%; text-align: center; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
+      `;
+
+      data.menus.forEach((m, idx) => {
+        html += `
+            <th style="padding: 10px; border: 1px solid #be123c; width: ${colWidth}%; text-align: left; font-size: 12px; font-weight: bold;">
+              ${this.escapeHtml((m.title || `Opción ${idx + 1}`).toUpperCase())}
+            </th>
+        `;
+      });
+
+      html += `
           </tr>
         </thead>
         <tbody>
       `;
 
-      data.menus.forEach((m, idx) => {
+      const meals = [
+        { label: '🍳 DESAYUNO', key: 'desayuno' },
+        { label: '🍏 COLACIÓN MATUTINA', key: 'colacion_matutina' },
+        { label: '🍲 COMIDA', key: 'comida' },
+        { label: '🫐 COLACIÓN VESPERTINA', key: 'colacion_vespertina' },
+        { label: '🌙 CENA', key: 'cena' }
+      ];
+
+      meals.forEach((meal) => {
+        const hasMeal = data.menus!.some((m: any) => !!m[meal.key]);
+        if (!hasMeal) return;
+
         html += `
           <tr>
             <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; text-align: center; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">
-              ${this.escapeHtml(m.title || `Opción ${idx + 1}`)}
+              ${meal.label}
             </td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.desayuno)}</td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.colacion_matutina)}</td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.comida)}</td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.colacion_vespertina)}</td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.cena)}</td>
+        `;
+
+        data.menus!.forEach((m: any) => {
+          html += `
+            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m[meal.key])}</td>
+          `;
+        });
+
+        html += `
           </tr>
         `;
       });
