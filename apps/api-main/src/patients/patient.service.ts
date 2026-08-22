@@ -130,13 +130,6 @@ export class PatientService {
 
     const created = await this.patientRepository.addProgress(formattedData as any);
 
-    // Auto-generate Copilot Menu suggestion in background upon adding new progress record
-    if (created && created.patient_id) {
-      this.triggerAutoCopilotSuggestion(created.patient_id).catch((err) =>
-        console.warn(`[MenuCopilot] Auto-suggestion background error for ${created.patient_id}:`, err?.message || err),
-      );
-    }
-
     return created;
   }
 
