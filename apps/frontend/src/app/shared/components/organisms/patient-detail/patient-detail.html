@@ -4,56 +4,59 @@
     <!-- Sticky Header & Tabs Group -->
     <div class="flex-none sticky top-0 z-[100] bg-white dark:bg-[#0b0b0b] shadow-sm transition-colors duration-300">
         <!-- Profile Banner -->
-        <div class="relative overflow-hidden transition-all duration-300 border-b border-nutri-rose/5 dark:border-white/5"
-             [class.pt-6]="!headerCollapsed()"
-             [class.pb-6]="!headerCollapsed()"
-             [class.px-10]="!headerCollapsed()"
-             [class.py-3]="headerCollapsed()"
-             [class.px-6]="headerCollapsed()">
+        <div class="relative overflow-hidden transition-all duration-300 border-b border-nutri-rose/10 dark:border-white/10 bg-gradient-to-r from-white via-slate-50/50 to-rose-50/20 dark:from-[#0b0b0b] dark:via-[#0f0f0f] dark:to-[#171214]"
+             [class.p-5]="!headerCollapsed()"
+             [class.md:p-6]="!headerCollapsed()"
+             [class.py-2.5]="headerCollapsed()"
+             [class.px-4]="headerCollapsed()">
             <!-- Background Decoration (Fruit Image) -->
             @if (!headerCollapsed()) {
-                <div class="absolute right-[-2rem] top-[-2rem] w-64 h-64 opacity-[0.07] pointer-events-none rotate-12 transition-all duration-1000"
+                <div class="absolute right-[-2rem] top-[-2rem] w-64 h-64 opacity-[0.06] pointer-events-none rotate-12 transition-all duration-1000"
                      style="mask-image: radial-gradient(circle, black 30%, transparent 80%); -webkit-mask-image: radial-gradient(circle, black 30%, transparent 80%);">
                     <img [src]="randomFruit()" class="w-full h-full object-cover rounded-full" alt="decoration">
                 </div>
             }
 
-            <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6 relative pr-12 md:pr-16">
-                <div class="flex items-center gap-3 lg:gap-6 min-w-0 w-full lg:w-auto">
-                    <!-- Fruit Icon (Instead of Initial) -->
-                    <div class="rounded-2xl bg-nutri-rose/5 border border-nutri-rose/10 flex items-center justify-center shadow-sm overflow-hidden group shrink-0 transition-all duration-300 relative"
-                         [class.w-16]="!headerCollapsed()"
-                         [class.h-16]="!headerCollapsed()"
+            <div class="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative pr-10 md:pr-12">
+                
+                <!-- Left Section: Patient Avatar & Metadata Pills -->
+                <div class="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
+                    <!-- Fruit Icon Avatar -->
+                    <div class="rounded-2xl bg-white dark:bg-white/5 border border-nutri-rose/15 shadow-sm flex items-center justify-center overflow-hidden group shrink-0 transition-all duration-300 relative"
+                         [class.w-14]="!headerCollapsed()"
+                         [class.h-14]="!headerCollapsed()"
                          [class.w-9]="headerCollapsed()"
                          [class.h-9]="headerCollapsed()">
-                           <img [src]="randomFruit()" class="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt="fruit">
+                           <img [src]="randomFruit()" class="w-full h-full object-contain p-1.5 transition-transform group-hover:scale-110 duration-500" alt="fruit">
                            <!-- Active portal small green indicator dot -->
                            @if (patient()?.acceso_portal && !patient()?.dado_de_baja && !headerCollapsed()) {
-                               <span class="absolute bottom-1 right-1 flex h-2.5 w-2.5">
+                               <span class="absolute bottom-0.5 right-0.5 flex h-2.5 w-2.5">
                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 ring-2 ring-white dark:ring-[#0b0b0b]"></span>
                                </span>
                            }
                     </div>
 
+                    <!-- Details Box -->
                     <div class="space-y-1 min-w-0 flex-1">
                         <div class="flex items-center gap-2 md:gap-3 flex-wrap">
                             @if (!isEditing()) {
                                 <h2 class="font-bold serif text-nutri-text dark:text-slate-100 tracking-tight truncate transition-all duration-300"
-                                    [class.text-2xl]="!headerCollapsed()"
+                                    [class.text-xl]="!headerCollapsed()"
+                                    [class.md:text-2xl]="!headerCollapsed()"
                                     [class.text-base]="headerCollapsed()">
                                     {{patient()?.nombre}}
                                 </h2>
                             } @else {
                                 <app-a-input [value]="patient().nombre" (valueChange)="patient().nombre = $event" 
                                             customClass="w-full max-w-[240px] md:max-w-md"
-                                            [inputClass]="'!font-bold !serif !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto ' + (headerCollapsed() ? '!text-base' : '!text-2xl')">
+                                            [inputClass]="'!font-bold !serif !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto ' + (headerCollapsed() ? '!text-base' : '!text-xl md:!text-2xl')">
                                 </app-a-input>
                             }
 
                             <!-- Collapse/Expand Trigger Button -->
                             <button (click)="headerCollapsed.set(!headerCollapsed())" 
-                                    class="w-7 h-7 rounded-full hover:bg-nutri-rose/5 dark:hover:bg-white/5 text-nutri-text/30 dark:text-slate-500 hover:text-nutri-rose dark:hover:text-nutri-rose flex items-center justify-center transition-colors cursor-pointer outline-none shrink-0"
+                                    class="w-6 h-6 rounded-full hover:bg-nutri-rose/10 text-nutri-text/30 dark:text-slate-500 hover:text-nutri-rose flex items-center justify-center transition-colors cursor-pointer outline-none shrink-0"
                                     [title]="headerCollapsed() ? 'Expandir cabecera' : 'Colapsar cabecera'"
                                     [aria-label]="headerCollapsed() ? 'Expandir cabecera' : 'Colapsar cabecera'">
                                 <app-a-icon [name]="headerCollapsed() ? 'unfold_more' : 'unfold_less'" size="16px"></app-a-icon>
@@ -61,126 +64,109 @@
                         </div>
                         
                         @if (!headerCollapsed()) {
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-1.5">
-                                <!-- Expediente Badge + Status dynamic badge -->
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose font-black tracking-widest uppercase text-[8px] rounded-md">Expediente</span>
-                                    @if (patient()?.dado_de_baja) {
-                                        <app-a-badge label="INACTIVO" variant="danger" size="sm"></app-a-badge>
-                                    } @else {
-                                        <app-a-badge [label]="patient()?.acceso_portal ? 'ACTIVO' : 'PENDIENTE'" 
-                                                     [variant]="patient()?.acceso_portal ? 'success' : 'warning'" 
-                                                     size="sm"
-                                                     [customClass]="!patient()?.acceso_portal ? '!bg-amber-500/10 !text-amber-600 !border-amber-500/20' : ''"></app-a-badge>
-                                    }
-                                </div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-medium mt-1">
+                                <!-- Status Badges -->
+                                <span class="px-2 py-0.5 bg-nutri-rose/10 text-nutri-rose font-black tracking-wider uppercase text-[8px] rounded-md border border-nutri-rose/20">
+                                    Expediente
+                                </span>
+                                @if (patient()?.dado_de_baja) {
+                                    <app-a-badge label="INACTIVO" variant="danger" size="sm"></app-a-badge>
+                                } @else {
+                                    <app-a-badge [label]="patient()?.acceso_portal ? 'ACTIVO' : 'PENDIENTE'" 
+                                                 [variant]="patient()?.acceso_portal ? 'success' : 'warning'" 
+                                                 size="sm"
+                                                 [customClass]="!patient()?.acceso_portal ? '!bg-amber-500/10 !text-amber-600 !border-amber-500/20' : ''"></app-a-badge>
+                                }
 
-                                <!-- Email section -->
-                                <div class="flex items-center gap-2 text-[10px] text-nutri-text/50 dark:text-slate-400 font-medium truncate shrink-0">
-                                    <app-a-icon name="mail" customClass="text-xs opacity-40 flex-shrink-0"></app-a-icon>
+                                <!-- Email Pill -->
+                                <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/80 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 text-[10px] text-nutri-text/70 dark:text-slate-300">
+                                    <app-a-icon name="mail" size="12px" customClass="text-nutri-rose opacity-70"></app-a-icon>
                                     @if (!isEditing()) {
-                                        <span>{{patient()?.email}}</span>
+                                        <span class="truncate max-w-[200px]">{{patient()?.email}}</span>
                                     } @else {
                                         <app-a-input [value]="patient().email" (valueChange)="patient().email = $event" 
-                                                    customClass="w-full max-w-[200px]"
+                                                    customClass="w-full max-w-[180px]"
                                                     inputClass="!text-[10px] !font-medium !bg-transparent !border-none !p-0 !outline-none !text-nutri-rose !h-auto">
                                         </app-a-input>
                                     }
                                 </div>
 
-                                <!-- Update date section -->
-                                @if (patient()?.ultima_actualizacion) {
-                                    <span class="text-[9px] font-bold text-nutri-text/40 dark:text-slate-500 uppercase tracking-widest shrink-0 mt-0.5">
-                                        Actualizado: {{ patient()?.ultima_actualizacion | date:'dd/MM/yy' }}
-                                    </span>
-                                }
+                                <!-- Update & Last Login Pills -->
                                 @if (patient()?.ultimo_login) {
-                                    <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest shrink-0 mt-0.5 flex items-center gap-1" title="Fecha de último inicio de sesión en el portal">
+                                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[9px] font-bold uppercase tracking-wider">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        Último acceso: {{ patient()?.ultimo_login | date:'dd/MM/yy HH:mm' }}
-                                    </span>
+                                        <span>Acceso: {{ patient()?.ultimo_login | date:'dd/MM/yy HH:mm' }}</span>
+                                    </div>
                                 } @else if (patient()?.acceso_portal) {
-                                    <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest shrink-0 mt-0.5">
-                                        Sin accesos registrados
-                                    </span>
+                                    <div class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
+                                        Sin accesos
+                                    </div>
+                                }
+
+                                @if (patient()?.ultima_actualizacion) {
+                                    <div class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-white/5 text-nutri-text/40 dark:text-slate-500 text-[9px] font-bold uppercase tracking-wider">
+                                        Actualizado: {{ patient()?.ultima_actualizacion | date:'dd/MM/yy' }}
+                                    </div>
                                 }
                             </div>
                         }
                     </div>
                 </div>
 
-                <!-- Header Actions -->
-                <div class="grid grid-cols-2 gap-2 w-full lg:w-auto shrink-0" [class.hidden]="headerCollapsed() && !isEditing()">
+                <!-- Right Section: Clean Action Toolbar -->
+                <div class="flex flex-wrap items-center gap-2 shrink-0 justify-start lg:justify-end" [class.hidden]="headerCollapsed() && !isEditing()">
                     @if (isEditing()) {
                         <app-a-button (onClick)="saveChanges()" 
                                     [disabled]="saving()" [loading]="saving()"
                                     variant="primary" 
                                     icon="check"
-                                    label="Guardar" [size]="headerCollapsed() ? 'sm' : 'md'"
-                                    customClass="!rounded-xl !bg-emerald-500 !shadow-lg !shadow-emerald-500/20 !w-full">
+                                    label="Guardar" size="sm"
+                                    customClass="!rounded-xl !bg-emerald-500 !shadow-md !shadow-emerald-500/20">
                         </app-a-button>
 
-                        <app-a-button (onClick)="toggleEdit()" variant="ghost" icon="close" [size]="headerCollapsed() ? 'sm' : 'md'"
-                                    customClass="!rounded-xl !text-rose-500 hover:!bg-rose-50 !w-full">
+                        <app-a-button (onClick)="toggleEdit()" variant="ghost" icon="close" size="sm"
+                                    customClass="!rounded-xl !text-rose-500 hover:!bg-rose-50">
                         </app-a-button>
                     } @else {
-                        <!-- Copilot IA Button -->
-                        <app-a-button (onClick)="showCopilotModal.set(true)" 
-                                    label="Copiloto IA" icon="auto_awesome" variant="outline" size="md"
-                                    customClass="!rounded-xl !border-nutri-rose/30 !bg-nutri-rose/5 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white active:scale-95 transition-all !w-full shadow-sm">
-                        </app-a-button>
+                        <!-- Copilot IA Action (Featured Gradient) -->
+                        <button (click)="showCopilotModal.set(true)" 
+                                class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-nutri-rose via-pink-600 to-rose-500 hover:from-pink-600 hover:to-nutri-rose text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-nutri-rose/20 active:scale-95 transition-all cursor-pointer">
+                            <app-a-icon name="auto_awesome" size="14px"></app-a-icon>
+                            <span>Copiloto IA</span>
+                        </button>
 
-                        <!-- Files Button -->
-                        <app-a-button (onClick)="showMenuModal.set(true); highlightCopy.set(false)" 
-                                    [disabled]="isUploadingMenu()" [loading]="isUploadingMenu()"
-                                    label="Archivos" icon="folder_open" variant="outline" size="md"
-                                    customClass="!rounded-xl !border-nutri-rose/20 !text-nutri-rose hover:!bg-nutri-rose hover:!text-white active:scale-95 transition-all !w-full">
-                        </app-a-button>
+                        <!-- Archivos Action -->
+                        <button (click)="showMenuModal.set(true); highlightCopy.set(false)" 
+                                [disabled]="isUploadingMenu()"
+                                class="px-3.5 py-2 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-nutri-rose/40 text-nutri-text dark:text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer">
+                            <app-a-icon name="folder_open" size="14px" customClass="text-nutri-rose"></app-a-icon>
+                            <span>Archivos</span>
+                        </button>
 
-                        <!-- Edit Button (Accent solid for hierarchy) -->
-                        <app-a-button (onClick)="toggleEdit()" 
-                                    variant="primary" 
-                                    icon="edit"
-                                    label="Editar" size="md"
-                                    customClass="!rounded-xl !bg-nutri-rose hover:!bg-nutri-rose/90 !text-white !shadow-lg !shadow-nutri-rose/15 active:scale-95 transition-all !w-full">
-                        </app-a-button>
+                        <!-- Editar Action -->
+                        <button (click)="toggleEdit()" 
+                                class="px-3.5 py-2 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-nutri-rose/40 text-nutri-text dark:text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer">
+                            <app-a-icon name="edit" size="14px" customClass="text-slate-400"></app-a-icon>
+                            <span>Editar</span>
+                        </button>
 
-                        <!-- Portal Access Switch (Custom sliding toggle) -->
-                        <label class="flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border transition-all duration-300 cursor-pointer select-none h-11 w-full"
-                               [ngClass]="patient()?.acceso_portal 
-                                          ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400' 
-                                          : 'border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500'">
-                            <div class="flex items-center gap-2">
-                                <app-a-icon [name]="patient()?.acceso_portal ? 'vpn_key' : 'lock'" size="14px"></app-a-icon>
-                                <span class="text-[9px] font-black uppercase tracking-widest">Portal</span>
-                            </div>
-                            
-                            <div class="relative w-7 h-4 bg-slate-200 dark:bg-white/10 rounded-full transition-colors duration-300 shrink-0"
-                                 [class.bg-emerald-500]="patient()?.acceso_portal">
-                                <div class="absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform duration-300 shadow-sm"
-                                     [class.translate-x-3]="patient()?.acceso_portal"></div>
-                            </div>
-                            <input type="checkbox" [(ngModel)]="patient().acceso_portal" (change)="togglePortalAccess()" class="sr-only">
-                        </label>
+                        <!-- Compact Segmented Controls Group for Toggles -->
+                        <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/60 dark:border-white/10">
+                            <!-- Portal Access Toggle -->
+                            <button (click)="patient().acceso_portal = !patient().acceso_portal; togglePortalAccess()"
+                                    class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer"
+                                    [ngClass]="patient()?.acceso_portal ? 'bg-emerald-500 text-white shadow-2xs' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'">
+                                <app-a-icon name="vpn_key" size="11px"></app-a-icon>
+                                <span>Portal {{ patient()?.acceso_portal ? 'ON' : 'OFF' }}</span>
+                            </button>
 
-                        <!-- Active/Inactive Switch (Custom sliding toggle) -->
-                        <label class="flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-xl border transition-all duration-300 cursor-pointer select-none h-11 w-full"
-                               [ngClass]="!patient()?.dado_de_baja 
-                                          ? 'border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400' 
-                                          : 'border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-400'">
-                            <div class="flex items-center gap-2">
-                                <app-a-icon [name]="patient()?.dado_de_baja ? 'folder_off' : 'folder_shared'" size="14px"></app-a-icon>
-                                <span class="text-[9px] font-black uppercase tracking-widest">{{ patient()?.dado_de_baja ? 'Inactivo' : 'Activo' }}</span>
-                            </div>
-                            
-                            <div class="relative w-7 h-4 bg-rose-400 dark:bg-rose-500/80 rounded-full transition-colors duration-300 shrink-0"
-                                 [class.bg-blue-500]="!patient()?.dado_de_baja"
-                                 [class.dark:bg-blue-500]="!patient()?.dado_de_baja">
-                                <div class="absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform duration-300 shadow-sm"
-                                     [class.translate-x-3]="!patient()?.dado_de_baja"></div>
-                            </div>
-                            <input type="checkbox" [(ngModel)]="patient().dado_de_baja" (change)="toggleDeactivation()" class="sr-only">
-                        </label>
+                            <!-- Active Status Toggle -->
+                            <button (click)="patient().dado_de_baja = !patient().dado_de_baja; toggleDeactivation()"
+                                    class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer"
+                                    [ngClass]="!patient()?.dado_de_baja ? 'bg-blue-500 text-white shadow-2xs' : 'bg-rose-500 text-white shadow-2xs'">
+                                <span>{{ patient()?.dado_de_baja ? 'Baja' : 'Activo' }}</span>
+                            </button>
+                        </div>
                     }
                 </div>
             </div>
