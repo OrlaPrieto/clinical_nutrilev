@@ -197,6 +197,9 @@ export class PatientRepository {
 
     if (error) {
       console.error('[PatientRepository] Error inserting glucose log into Supabase:', error);
+      if (error.code === 'PGRST205') {
+        throw new Error("La tabla 'patient_glucose_logs' aún no ha sido creada en Supabase. Ejecuta el script SQL en el Editor de Supabase.");
+      }
       throw error;
     }
     return data;
