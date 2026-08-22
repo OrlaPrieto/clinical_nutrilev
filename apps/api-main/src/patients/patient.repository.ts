@@ -154,4 +154,66 @@ export class PatientRepository {
     }
     return true;
   }
+
+  async getGlucoseLogs(patientEmail: string): Promise<any[]> {
+    const client: any = this.supabaseService.getClient();
+    const { data, error } = await client
+      .from('patient_glucose_logs')
+      .select('*')
+      .ilike('patient_email', patientEmail)
+      .order('recorded_at', { ascending: false });
+
+    if (error) {
+      console.warn('[PatientRepository] Could not fetch glucose logs from Supabase:', error.message);
+      return [];
+    }
+    return data || [];
+  }
+
+  async addGlucoseLog(logData: {
+    patient_email: string;
+    patient_id?: string | null;
+    glucose_value: number;
+    context: string;
+    notes?: string | null;
+    recorded_at?: string;
+  }): Promise<any> {
+    const client: any = this.supabaseService.getClient();
+    const payload = {
+      patient_email: logData.patient_email.toLowerCase(),
+      patient_id: logData.patient_id || null,
+      glucose_value: Number(logData.glucose_value),
+      context: logData.context,
+      notes: logData.notes || null,
+      recorded_at: logData.recorded_at || new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await client
+      .from('patient_glucose_logs')
+      .insert(payload)
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error('[PatientRepository] Error inserting glucose log into Supabase:', error);
+      throw error;
+    }
+    return data;
+  }
+
+  async deleteGlucoseLog(id: string, patientEmail: string): Promise<boolean> {
+    const client: any = this.supabaseService.getClient();
+    const { error } = await client
+      .from('patient_glucose_logs')
+      .delete()
+      .eq('id', id)
+      .ilike('patient_email', patientEmail);
+
+    if (error) {
+      console.error('[PatientRepository] Error deleting glucose log:', error);
+      throw error;
+    }
+    return true;
+  }
 }

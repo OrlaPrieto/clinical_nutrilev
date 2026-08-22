@@ -31,6 +31,7 @@ import { EquivalentsModalComponent } from './components/equivalents-modal/equiva
 import { FreeCondimentsModalComponent } from './components/free-condiments-modal/free-condiments-modal';
 import { PushNotificationBannerComponent } from '../../shared/components/molecules/push-notification-banner/push-notification-banner';
 import { PortalStateService } from '../../services/portal-state.service';
+import { GlucoseTrackerComponent } from './components/glucose-tracker/glucose-tracker';
 
 @Component({
   selector: 'app-portal-page',
@@ -52,7 +53,8 @@ import { PortalStateService } from '../../services/portal-state.service';
     PortalPlanOrganism,
     EquivalentsModalComponent,
     FreeCondimentsModalComponent,
-    PushNotificationBannerComponent
+    PushNotificationBannerComponent,
+    GlucoseTrackerComponent
   ],
   templateUrl: './portal-page.html',
   styleUrl: './portal-page.css',
@@ -212,7 +214,7 @@ export class PortalPage implements OnInit, OnDestroy {
     const diffY = event.changedTouches[0].clientY - this.swipeStartY;
 
     if (Math.abs(diffX) > 100 && Math.abs(diffY) < 60) {
-      const tabs: ('dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources')[] = ['plan', 'menu-ia', 'dashboard', 'resources', 'analysis', 'history'];
+      const tabs: ('dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources' | 'glucose')[] = ['plan', 'menu-ia', 'glucose', 'dashboard', 'resources', 'analysis', 'history'];
       const currentIdx = tabs.indexOf(this.activeTab());
       
       if (diffX > 0 && currentIdx > 0) {
@@ -251,7 +253,7 @@ export class PortalPage implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources') {
+  setActiveTab(tab: 'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources' | 'glucose') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

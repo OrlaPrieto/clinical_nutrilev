@@ -174,20 +174,35 @@ export class PatientDetailComponent implements OnInit {
     return null;
   });
 
+  glucoseLogs = signal<any[]>([]);
+
   tabs = computed(() => [
     { label: 'Personal', icon: 'person' },
     { label: 'Antecedentes', icon: 'history_edu' },
     { label: 'Estilo de Vida', icon: 'self_improvement' },
     { label: 'Nutrición', icon: 'restaurant' },
     { label: 'Avances', icon: 'analytics' },
+    { label: `Glucosa (${this.glucoseLogs().length})`, icon: 'vital_signs' },
     { label: `Notas (${this.parsedNotesList().length})`, icon: 'description' }
   ]);
 
   ngOnInit() {
     this.assignPersistentFruit();
     this.loadProgress();
+    this.loadGlucoseLogs();
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       this.headerCollapsed.set(true);
+    }
+  }
+
+  async loadGlucoseLogs() {
+    const p = this.patient();
+    if (!p?.email) return;
+    try {
+      const data = await this.patientService.getGlucoseLogs(p.email);
+      this.glucoseLogs.set(data || []);
+    } catch (err) {
+      console.warn('[PatientDetail] Could not load glucose logs:', err);
     }
   }
 

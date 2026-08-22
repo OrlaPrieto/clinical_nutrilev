@@ -1,0 +1,248 @@
+<div class="space-y-6">
+
+  <!-- Header Card: Overview & Log Action -->
+  <div class="p-6 rounded-3xl bg-gradient-to-br from-white/80 via-slate-50 to-rose-50/40 dark:from-[#141414] dark:via-[#111111] dark:to-[#1a1417] border border-nutri-rose/20 dark:border-white/10 shadow-lg shadow-nutri-rose/[0.02] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    
+    <div class="space-y-1.5">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold">
+          🩸
+        </div>
+        <h3 class="text-base md:text-lg font-bold text-nutri-text dark:text-white">
+          Control de Glucosa en Sangre
+        </h3>
+        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
+          Automonitoreo
+        </span>
+      </div>
+      <p class="text-xs text-nutri-text/60 dark:text-slate-400">
+        Registra tus valores de glucosa capilar (mg/dL) para que tu nutrióloga dé seguimiento a tu perfil metabólico.
+      </p>
+    </div>
+
+    <!-- Quick Action Button -->
+    <button (click)="openLogModal()" 
+            class="w-full md:w-auto px-5 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-rose-500/25 active:scale-95 transition-all cursor-pointer">
+      <app-a-icon name="add" size="18px"></app-a-icon>
+      <span>Anotar Glucosa</span>
+    </button>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    
+    <!-- Latest Reading Card -->
+    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-2 shadow-sm">
+      <span class="text-[9px] font-black uppercase text-nutri-text/50 dark:text-slate-400 tracking-wider">Última Lectura</span>
+      @if (latestLog(); as log) {
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-black text-nutri-text dark:text-white">{{ log.glucose_value }}</span>
+          <span class="text-xs font-bold text-nutri-text/50 dark:text-slate-400">mg/dL</span>
+        </div>
+        @if (latestStatus(); as st) {
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-bold border" [ngClass]="st.badgeClass">
+            <app-a-icon [name]="st.icon" size="12px"></app-a-icon>
+            <span>{{ st.label }}</span>
+          </div>
+        }
+      } @else {
+        <div class="text-xs text-nutri-text/40 dark:text-slate-500 italic py-1">Sin lecturas registradas</div>
+      }
+    </div>
+
+    <!-- Average Glucose Card -->
+    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-2 shadow-sm">
+      <span class="text-[9px] font-black uppercase text-nutri-text/50 dark:text-slate-400 tracking-wider">Promedio Histórico</span>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400">
+          {{ averageGlucose() ?? '—' }}
+        </span>
+        <span class="text-xs font-bold text-nutri-text/50 dark:text-slate-400">mg/dL</span>
+      </div>
+      <p class="text-[10px] text-nutri-text/50 dark:text-slate-400">
+        {{ logs().length }} tomas registradas
+      </p>
+    </div>
+
+    <!-- Target Clinical Range -->
+    <div class="p-4 rounded-3xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 space-y-2 shadow-sm">
+      <span class="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Rango Objetivo</span>
+      <div class="space-y-1 text-xs">
+        <div class="flex justify-between text-nutri-text/70 dark:text-slate-300">
+          <span>En ayunas:</span>
+          <strong class="font-bold text-emerald-600 dark:text-emerald-400">70 – 99 mg/dL</strong>
+        </div>
+        <div class="flex justify-between text-nutri-text/70 dark:text-slate-300">
+          <span>2h post-comida:</span>
+          <strong class="font-bold text-emerald-600 dark:text-emerald-400">&lt; 140 mg/dL</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History List -->
+  <div class="space-y-3">
+    <h4 class="text-xs font-black uppercase tracking-wider text-nutri-text/70 dark:text-slate-400 px-1">
+      Historial de Tomas
+    </h4>
+
+    @if (loading()) {
+      <div class="py-8 text-center text-xs text-nutri-text/50 dark:text-slate-400">
+        <span class="w-4 h-4 border-2 border-rose-500/20 border-t-rose-500 rounded-full animate-spin inline-block mr-2"></span>
+        Cargando registros de glucosa...
+      </div>
+    } @else if (logs().length === 0) {
+      <div class="p-8 rounded-3xl bg-slate-50 dark:bg-white/5 border border-dashed border-slate-200 dark:border-white/10 text-center space-y-3">
+        <div class="w-12 h-12 mx-auto rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-xl">
+          🩺
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-bold text-nutri-text dark:text-slate-200">Aún no has registrado lecturas de glucosa</p>
+          <p class="text-[11px] text-nutri-text/50 dark:text-slate-400">Haz clic en "Anotar Glucosa" para agregar tu primera medición.</p>
+        </div>
+        <button (click)="openLogModal()" class="px-4 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-500/20 hover:bg-rose-600 transition-all cursor-pointer">
+          Anotar Glucosa Ahora
+        </button>
+      </div>
+    } @else {
+      <div class="space-y-2.5">
+        @for (log of logs(); track log.id) {
+          @let evalInfo = getEvaluationFor(log);
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#161616] border border-slate-200/80 dark:border-white/10 flex items-center justify-between gap-3 shadow-sm hover:border-rose-500/30 transition-all"
+               [ngClass]="evalInfo.bgCardClass">
+            
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm" [ngClass]="evalInfo.badgeClass">
+                {{ log.glucose_value }}
+              </div>
+
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-nutri-text dark:text-white">
+                    {{ getContextLabel(log.context) }}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-md text-[9px] font-bold border" [ngClass]="evalInfo.badgeClass">
+                    {{ evalInfo.label }}
+                  </span>
+                </div>
+                <div class="text-[10px] text-nutri-text/50 dark:text-slate-400 flex items-center gap-2">
+                  <span>📅 {{ log.recorded_at | date:'dd/MM/yyyy · hh:mm a' }}</span>
+                  @if (log.notes) {
+                    <span>• 💬 {{ log.notes }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Delete action -->
+            <button (click)="deleteLog(log.id)" 
+                    class="text-slate-300 dark:text-slate-600 hover:text-rose-500 text-xs transition-colors cursor-pointer p-1" 
+                    title="Eliminar registro">
+              <app-a-icon name="delete" size="16px"></app-a-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Modal Component for Adding Glucose Log -->
+  @if (showModal()) {
+    <div class="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+      <div class="w-full max-w-md bg-white dark:bg-[#121212] border border-nutri-rose/20 dark:border-white/10 rounded-3xl shadow-2xl p-6 space-y-5 text-nutri-text dark:text-slate-100">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🩸</span>
+            <h4 class="text-sm font-bold text-nutri-text dark:text-white">Anotar Toma de Glucosa</h4>
+          </div>
+          <button (click)="closeModal()" class="text-slate-400 hover:text-rose-500 text-xs cursor-pointer">
+            <app-a-icon name="close" size="18px"></app-a-icon>
+          </button>
+        </div>
+
+        <!-- Form Body -->
+        <div class="space-y-4">
+          <!-- Glucose Value Input -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-wider text-nutri-text/70 dark:text-slate-300 flex items-center justify-between">
+              <span>Cifra de Glucosa</span>
+              <span class="text-rose-500 font-normal">mg/dL</span>
+            </label>
+            <div class="relative">
+              <input type="number" 
+                     [ngModel]="inputValue()" 
+                     (ngModelChange)="inputValue.set($event)" 
+                     placeholder="Ej. 95" 
+                     min="30"
+                     max="600"
+                     class="w-full h-12 px-4 bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl text-lg font-black text-nutri-text dark:text-white outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all">
+              <span class="absolute right-4 top-3.5 text-xs font-bold text-nutri-text/40 dark:text-slate-500">mg/dL</span>
+            </div>
+          </div>
+
+          <!-- Context Selector -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">
+              Momento de la Toma
+            </label>
+            <select [ngModel]="selectedContext()" 
+                    (ngModelChange)="selectedContext.set($event)"
+                    class="w-full h-11 px-3 bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl text-xs font-bold text-nutri-text dark:text-white outline-none focus:border-rose-500 transition-all cursor-pointer">
+              @for (opt of contextOptions; track opt.key) {
+                <option [value]="opt.key">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Live Color & Advice Feedback -->
+          @if (currentEvaluation(); as evalInfo) {
+            <div class="p-3.5 rounded-2xl border transition-all space-y-1" [ngClass]="evalInfo.bgCardClass">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border" [ngClass]="evalInfo.badgeClass">
+                  {{ evalInfo.label }}
+                </span>
+              </div>
+              <p class="text-[11px] text-nutri-text/80 dark:text-slate-300 leading-relaxed font-medium">
+                {{ evalInfo.advice }}
+              </p>
+            </div>
+          }
+
+          <!-- Optional Notes -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-wider text-nutri-text/70 dark:text-slate-300">
+              Observaciones (Opcional)
+            </label>
+            <input type="text" 
+                   [ngModel]="inputNotes()" 
+                   (ngModelChange)="inputNotes.set($event)" 
+                   placeholder="Ej. Sentí leve mareo, comí fruta..." 
+                   class="w-full h-10 px-3 bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-xl text-xs text-nutri-text dark:text-white outline-none focus:border-rose-500 transition-all">
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-white/5">
+          <button (click)="closeModal()" 
+                  class="px-4 py-2 rounded-xl text-xs font-bold text-nutri-text/60 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button (click)="submitLog()" 
+                  [disabled]="saving() || !inputValue()" 
+                  class="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-rose-500/20 transition-all cursor-pointer">
+            @if (saving()) {
+              <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              <span>Guardando...</span>
+            } @else {
+              <span>Guardar Registro</span>
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

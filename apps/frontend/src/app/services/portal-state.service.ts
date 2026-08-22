@@ -34,7 +34,7 @@ export class PortalStateService {
   showEquivalentsModal = signal<boolean>(false);
   showCondimentsModal = signal<boolean>(false);
   activeCelebration = signal<any | null>(null);
-  activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources'>('plan');
+  activeTab = signal<'dashboard' | 'plan' | 'menu-ia' | 'analysis' | 'history' | 'resources' | 'glucose'>('plan');
   
   pullDistance = signal<number>(0);
   isRefreshing = signal<boolean>(false);

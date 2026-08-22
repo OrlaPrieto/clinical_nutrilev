@@ -152,6 +152,21 @@
                             <span>Registros</span>
                         }
                     </button>
+
+                    <button (click)="setActiveTab('glucose')"
+                            role="tab"
+                            [attr.aria-selected]="activeTab() === 'glucose' ? 'true' : 'false'"
+                            aria-label="Control de Glucosa"
+                            [title]="sidebarCollapsed() ? 'Glucosa' : ''"
+                            [class]="(activeTab() === 'glucose'
+                                     ? 'w-full flex items-center rounded-xl text-xs font-black uppercase tracking-wider transition-all border bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/25 shadow-sm '
+                                     : 'w-full flex items-center rounded-xl text-xs font-bold uppercase tracking-wider transition-all border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 ') +
+                                     (sidebarCollapsed() ? 'justify-center p-3 gap-0' : 'gap-3 px-4 py-3')">
+                        <span class="text-base leading-none">🩸</span>
+                        @if (!sidebarCollapsed()) {
+                            <span>Glucosa</span>
+                        }
+                    </button>
                 </nav>
             </div>
             
@@ -1101,6 +1116,13 @@
                             <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
                         </div>
                     }
+
+                    <!-- Pestaña 5: Control de Glucosa -->
+                    @if (activeTab() === 'glucose') {
+                        <div [@tabAnimation]>
+                            <app-glucose-tracker [patientEmail]="patient()?.email || ''" [patientId]="patient()?.id || null"></app-glucose-tracker>
+                        </div>
+                    }
                 }
             </main>
         </div>
@@ -1128,6 +1150,16 @@
                 <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Menú</span>
             </button>
 
+            <!-- Glucosa -->
+            <button (click)="setActiveTab('glucose')"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
+                    [class.text-rose-500]="activeTab() === 'glucose'"
+                    [class.text-slate-400]="activeTab() !== 'glucose'"
+                    [class.dark:text-slate-500]="activeTab() !== 'glucose'">
+                <span class="text-sm leading-none">🩸</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Glucosa</span>
+            </button>
+
             <!-- Inicio -->
             <button (click)="setActiveTab('dashboard')"
                     class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
@@ -1146,16 +1178,6 @@
                     [class.dark:text-slate-500]="activeTab() !== 'resources'">
                 <app-a-icon name="folder_open" size="20px"></app-a-icon>
                 <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Recursos</span>
-            </button>
-
-            <!-- Análisis -->
-            <button (click)="setActiveTab('analysis')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
-                    [class.text-nutri-rose]="activeTab() === 'analysis'"
-                    [class.text-slate-400]="activeTab() !== 'analysis'"
-                    [class.dark:text-slate-500]="activeTab() !== 'analysis'">
-                <app-a-icon name="insights" size="20px"></app-a-icon>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Análisis</span>
             </button>
 
             <!-- Historial -->

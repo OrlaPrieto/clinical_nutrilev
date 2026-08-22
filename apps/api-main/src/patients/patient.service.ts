@@ -315,4 +315,16 @@ export class PatientService {
   async uploadMenuPdf(file: any, email: string, fileName: string): Promise<{ url: string }> {
     return this.storageService.uploadMenuPdf(file, email, fileName);
   }
+
+  async getGlucoseLogs(patientEmail: string): Promise<any[]> {
+    return this.patientRepository.getGlucoseLogs(patientEmail);
+  }
+
+  async addGlucoseLog(logData: any): Promise<any> {
+    return this.patientRepository.addGlucoseLog(logData);
+  }
+
+  async deleteGlucoseLog(id: string, patientEmail: string): Promise<boolean> {
+    return this.patientRepository.deleteGlucoseLog(id, patientEmail);
+  }
 }

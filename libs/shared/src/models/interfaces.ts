@@ -214,3 +214,33 @@ export interface MenuCopilotResponse {
   formatted_clipboard_text: string;
   created_at?: string;
 }
+
+export type GlucoseContext = 
+  | 'ayuno' 
+  | 'antes_comida' 
+  | 'despues_comida_2h' 
+  | 'antes_cena' 
+  | 'despues_cena_2h' 
+  | 'antes_dormir' 
+  | 'aleatorio';
+
+export interface PatientGlucoseLog {
+  id: string;
+  patient_email: string;
+  patient_id?: string | null;
+  glucose_value: number;
+  context: GlucoseContext;
+  notes?: string | null;
+  recorded_at: string;
+  created_at: string;
+}
+
+export interface PatientGlucoseLogInsert {
+  patient_email: string;
+  patient_id?: string | null;
+  glucose_value: number;
+  context: GlucoseContext;
+  notes?: string | null;
+  recorded_at?: string;
+}
+

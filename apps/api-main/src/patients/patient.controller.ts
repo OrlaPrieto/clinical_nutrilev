@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PatientService } from './patient.service';
@@ -87,6 +88,28 @@ export class PatientController {
   ): Promise<{ success: boolean }> {
     this.logger.log(`[PatientProgress] Removing measurements ID: ${id}`);
     return this.patientService.removeProgress(id);
+  }
+
+  @Get(':email/glucose')
+  @UseGuards(PatientAuthGuard)
+  async getGlucoseLogs(@Param('email') email: string): Promise<any[]> {
+    return this.patientService.getGlucoseLogs(email);
+  }
+
+  @Post('glucose')
+  @UseGuards(PatientAuthGuard)
+  async addGlucoseLog(@Body() body: any): Promise<any> {
+    return this.patientService.addGlucoseLog(body);
+  }
+
+  @Delete('glucose/:id')
+  @UseGuards(PatientAuthGuard)
+  async deleteGlucoseLog(
+    @Param('id') id: string,
+    @Query('email') email: string,
+  ): Promise<{ success: boolean }> {
+    const success = await this.patientService.deleteGlucoseLog(id, email || '');
+    return { success };
   }
 
   @Delete(':identifier')

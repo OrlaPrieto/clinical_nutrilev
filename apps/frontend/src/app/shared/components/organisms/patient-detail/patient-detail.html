@@ -1201,8 +1201,58 @@
             </div>
         }
 
-        <!-- Tab 5: Bitácora de Notas Clínicas (Timeline) -->
+        <!-- Tab 5: Control de Glucosa (Registro del Paciente) -->
         @if (activeTab() === 5) {
+            <div class="space-y-4 animate-fade-up">
+                <div class="p-4 md:p-6 rounded-2xl md:rounded-3xl bg-white dark:bg-[#111111] border border-nutri-rose/10 dark:border-white/5 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🩸</span>
+                            <div>
+                                <h3 class="text-base font-bold text-nutri-text dark:text-white">Registros de Glucosa del Paciente</h3>
+                                <p class="text-xs text-nutri-text/60 dark:text-slate-400">Tomas anotadas por el paciente desde su portal personal</p>
+                            </div>
+                        </div>
+                        <button (click)="loadGlucoseLogs()" class="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-600 hover:text-nutri-rose transition-colors" title="Actualizar lecturas">
+                            <app-a-icon name="refresh" size="18px"></app-a-icon>
+                        </button>
+                    </div>
+
+                    @if (glucoseLogs().length === 0) {
+                        <div class="py-8 text-center text-xs text-nutri-text/40 dark:text-slate-500 italic">
+                            El paciente aún no ha registrado lecturas de glucosa desde su portal.
+                        </div>
+                    } @else {
+                        <div class="space-y-2">
+                            @for (log of glucoseLogs(); track log.id) {
+                                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 rounded-xl flex flex-col items-center justify-center bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-black">
+                                            <span class="text-base leading-none">{{ log.glucose_value }}</span>
+                                            <span class="text-[8px] font-normal opacity-80">mg/dL</span>
+                                        </div>
+                                        <div class="space-y-0.5">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-bold text-nutri-text dark:text-white uppercase">{{ log.context }}</span>
+                                            </div>
+                                            <div class="text-[10px] text-nutri-text/50 dark:text-slate-400">
+                                                📅 {{ log.recorded_at | date:'dd/MM/yyyy · hh:mm a' }}
+                                                @if (log.notes) {
+                                                    <span> — 💬 {{ log.notes }}</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Tab 6: Bitácora de Notas Clínicas (Timeline) -->
+        @if (activeTab() === 6) {
             <div class="space-y-4 animate-fade-up h-full flex flex-col">
                 <!-- Header / Counter -->
                 <div class="flex items-center justify-between bg-white dark:bg-[#111111] p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">

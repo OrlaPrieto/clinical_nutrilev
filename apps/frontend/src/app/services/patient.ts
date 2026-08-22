@@ -210,5 +210,39 @@ export class PatientService {
       )
     );
   }
+
+  async getGlucoseLogs(email: string): Promise<import('@shared/models/interfaces').PatientGlucoseLog[]> {
+    try {
+      if (this.authService.isDevMode()) {
+        return [];
+      }
+      return await firstValueFrom(
+        this.http.get<import('@shared/models/interfaces').PatientGlucoseLog[]>(
+          `${this.apiUrl}/${email}/glucose`
+        )
+      );
+    } catch (err) {
+      console.warn('[PatientService] Could not fetch glucose logs:', err);
+      return [];
+    }
+  }
+
+  async addGlucoseLog(payload: import('@shared/models/interfaces').PatientGlucoseLogInsert): Promise<import('@shared/models/interfaces').PatientGlucoseLog> {
+    return firstValueFrom(
+      this.http.post<import('@shared/models/interfaces').PatientGlucoseLog>(
+        `${this.apiUrl}/glucose`,
+        payload
+      )
+    );
+  }
+
+  async deleteGlucoseLog(id: string, email: string): Promise<boolean> {
+    const res = await firstValueFrom(
+      this.http.delete<{ success: boolean }>(
+        `${this.apiUrl}/glucose/${id}?email=${encodeURIComponent(email)}`
+      )
+    );
+    return res.success;
+  }
 }
 
