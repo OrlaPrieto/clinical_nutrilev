@@ -85,6 +85,8 @@ export class PortalPage implements OnInit, OnDestroy {
   activeCelebration = this.state.activeCelebration;
   activeTab = this.state.activeTab;
   
+  historySubTab = signal<'history' | 'glucose'>('history');
+  
   pullDistance = this.state.pullDistance;
   isRefreshing = this.state.isRefreshing;
   loadingAppointmentAction = this.state.loadingAppointmentAction;

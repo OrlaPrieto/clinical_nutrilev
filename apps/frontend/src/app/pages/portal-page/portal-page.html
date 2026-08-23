@@ -1096,15 +1096,46 @@
                         </div>
                     }
 
-                    <!-- Pestaña 4: Historial Clínico Completo y Control de Glucosa -->
+                    <!-- Pestaña 4: Historial Clínico & Registros (con Sub-Pestañas) -->
                     @if (activeTab() === 'history') {
-                        <div [@tabAnimation] class="space-y-10">
-                            <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
+                        <div [@tabAnimation] class="space-y-6">
+                            
+                            <!-- Sub-Nav Segmented Controls for Registros -->
+                            <div class="flex items-center justify-center sm:justify-start">
+                                <div class="p-1 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center gap-1 shadow-2xs">
+                                    <button (click)="historySubTab.set('history')"
+                                            class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer outline-none"
+                                            [ngClass]="historySubTab() === 'history' 
+                                                       ? 'bg-white dark:bg-[#1a1a1a] text-nutri-rose dark:text-rose-400 shadow-sm border border-slate-200/50 dark:border-white/10' 
+                                                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
+                                        <app-a-icon name="history" size="16px"></app-a-icon>
+                                        <span>Mediciones Físicas</span>
+                                    </button>
 
-                            <!-- Control de Glucosa en Sangre integrando la sección de Registros -->
-                            <div class="pt-6 border-t border-slate-200/60 dark:border-white/10">
-                                <app-glucose-tracker [patientEmail]="patient()?.email || ''" [patientId]="patient()?.id || null"></app-glucose-tracker>
+                                    <button (click)="historySubTab.set('glucose')"
+                                            class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer outline-none"
+                                            [ngClass]="historySubTab() === 'glucose' 
+                                                       ? 'bg-white dark:bg-[#1a1a1a] text-rose-500 dark:text-rose-400 shadow-sm border border-slate-200/50 dark:border-white/10' 
+                                                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
+                                        <span class="text-sm">🩸</span>
+                                        <span>Glucosa en Sangre</span>
+                                    </button>
+                                </div>
                             </div>
+
+                            <!-- Sub-Sección 1: Historial de Mediciones Físicas -->
+                            @if (historySubTab() === 'history') {
+                                <div [@tabAnimation]>
+                                    <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
+                                </div>
+                            }
+
+                            <!-- Sub-Sección 2: Control de Glucosa -->
+                            @if (historySubTab() === 'glucose') {
+                                <div [@tabAnimation]>
+                                    <app-glucose-tracker [patientEmail]="patient()?.email || ''" [patientId]="patient()?.id || null"></app-glucose-tracker>
+                                </div>
+                            }
                         </div>
                     }
                 }
