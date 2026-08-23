@@ -1096,17 +1096,15 @@
                         </div>
                     }
 
-                    <!-- Pestaña 4: Historial Clínico Completo -->
+                    <!-- Pestaña 4: Historial Clínico Completo y Control de Glucosa -->
                     @if (activeTab() === 'history') {
-                        <div [@tabAnimation]>
+                        <div [@tabAnimation] class="space-y-10">
                             <app-progress-history [history]="progress()" [patient]="patient()"></app-progress-history>
-                        </div>
-                    }
 
-                    <!-- Pestaña 5: Control de Glucosa -->
-                    @if (activeTab() === 'glucose') {
-                        <div [@tabAnimation]>
-                            <app-glucose-tracker [patientEmail]="patient()?.email || ''" [patientId]="patient()?.id || null"></app-glucose-tracker>
+                            <!-- Control de Glucosa en Sangre integrando la sección de Registros -->
+                            <div class="pt-6 border-t border-slate-200/60 dark:border-white/10">
+                                <app-glucose-tracker [patientEmail]="patient()?.email || ''" [patientId]="patient()?.id || null"></app-glucose-tracker>
+                            </div>
                         </div>
                     }
                 }
@@ -1173,12 +1171,6 @@
             [habitsPercentage]="habitsPercentage()"
             (toggle)="toggleHabit($event)">
         </app-habits-tracker>
-
-        <!-- Botón de Acción Flotante (FAB) de Glucosa -->
-        <app-glucose-tracker 
-            [patientEmail]="patient()?.email || ''" 
-            [patientId]="patient()?.id || null">
-        </app-glucose-tracker>
     </div>
 } @else if (loading()) {
     <div class="min-h-screen bg-nutri-bg dark:bg-[#080808] flex flex-col items-center justify-center gap-4 text-nutri-rose transition-colors">

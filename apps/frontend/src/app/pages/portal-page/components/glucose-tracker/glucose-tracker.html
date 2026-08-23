@@ -1,18 +1,6 @@
 <div class="space-y-6">
 
-  <!-- Floating FAB Droplet Widget (🩸) -->
-  <div class="fixed right-24 z-40 flex items-center justify-center select-none bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-8 md:right-28">
-    <button (click)="openLogModal()" 
-            title="Anotar Glucosa en Sangre"
-            class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-rose-500 via-pink-600 to-rose-400 text-white border-2 border-white dark:border-[#151515] flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg shadow-rose-500/35 group z-50">
-      <span class="text-xl group-hover:scale-125 transition-transform">🩸</span>
-      <span class="absolute -top-1.5 -right-1 text-[8px] font-black bg-white dark:bg-[#121212] text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded-full shadow-md border border-rose-500/20 truncate max-w-[60px]">
-        {{ latestLog() ? latestLog()!.glucose_value + ' mg' : 'Glucosa' }}
-      </span>
-    </button>
-  </div>
-
-  <!-- Header Card (If rendered inside a page tab) -->
+  <!-- Header Card: Overview & Log Action -->
   <div class="p-6 rounded-3xl bg-gradient-to-br from-white/80 via-slate-50 to-rose-50/40 dark:from-[#141414] dark:via-[#111111] dark:to-[#1a1417] border border-nutri-rose/20 dark:border-white/10 shadow-lg shadow-nutri-rose/[0.02] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
     
     <div class="space-y-1.5">
@@ -110,7 +98,7 @@
         </div>
         <div class="space-y-1">
           <p class="text-xs font-bold text-nutri-text dark:text-slate-200">Aún no has registrado lecturas de glucosa</p>
-          <p class="text-[11px] text-nutri-text/50 dark:text-slate-400">Haz clic en la gota 🩸 o en "Anotar Glucosa" para agregar tu primera medición.</p>
+          <p class="text-[11px] text-nutri-text/50 dark:text-slate-400">Haz clic en "Anotar Glucosa" para agregar tu primera medición.</p>
         </div>
         <button (click)="openLogModal()" class="px-4 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-500/20 hover:bg-rose-600 transition-all cursor-pointer">
           Anotar Glucosa Ahora
