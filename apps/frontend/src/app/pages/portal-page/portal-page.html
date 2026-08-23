@@ -1165,14 +1165,24 @@
                 <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Menú</span>
             </button>
 
-            <!-- Inicio -->
+            <!-- Inicio / Progreso -->
             <button (click)="setActiveTab('dashboard')"
-                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-1 sm:px-3 rounded-xl transition-all"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-0.5 sm:px-2 rounded-xl transition-all"
                     [class.text-nutri-rose]="activeTab() === 'dashboard'"
                     [class.text-slate-400]="activeTab() !== 'dashboard'"
                     [class.dark:text-slate-500]="activeTab() !== 'dashboard'">
                 <app-a-icon name="dashboard" size="20px"></app-a-icon>
                 <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Progreso</span>
+            </button>
+
+            <!-- Análisis -->
+            <button (click)="setActiveTab('analysis')"
+                    class="flex-1 min-w-0 flex flex-col items-center gap-1 py-2.5 px-0.5 sm:px-2 rounded-xl transition-all"
+                    [class.text-nutri-rose]="activeTab() === 'analysis'"
+                    [class.text-slate-400]="activeTab() !== 'analysis'"
+                    [class.dark:text-slate-500]="activeTab() !== 'analysis'">
+                <app-a-icon name="insights" size="20px"></app-a-icon>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider truncate w-full text-center">Análisis</span>
             </button>
 
             <!-- Recursos -->
