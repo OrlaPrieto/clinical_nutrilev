@@ -261,12 +261,12 @@ export class MenuCopilotModalComponent {
   private buildPlanHtmlTable(data: MenuCopilotResponse): string {
     const isWeekly = data.format_type === 'semanal' || (!!data.days && data.days.length > 0);
     let html = `
-    <div style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.5;">
-      <div style="background-color: #e11d48; color: #ffffff; padding: 14px 18px; border-radius: 6px 6px 0 0; font-family: Arial, sans-serif;">
-        <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+    <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.4;">
+      <div style="padding: 10px 0; border-bottom: 2px solid #0f172a; font-family: Arial, sans-serif; margin-bottom: 10px;">
+        <h2 style="margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase; color: #0f172a; letter-spacing: 0.5px;">
           NUTRILEV · PROPUESTA DE MENÚ CLÍNICO PERSONALIZADO
         </h2>
-        <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.95;">
+        <p style="margin: 4px 0 0 0; font-size: 11px; color: #475569;">
           Paciente: <strong>${this.escapeHtml(this.patient()?.nombre || 'Paciente')}</strong> | 
           Objetivo: <strong>${data.clinical_analysis?.macro_distribution?.calories || this.targetCalories()} kcal</strong> | 
           Formato: <strong>${isWeekly ? 'Plan Semanal (7 Días)' : 'Equivalencias (3 Opciones)'}</strong>
@@ -279,15 +279,15 @@ export class MenuCopilotModalComponent {
       const colWidth = Math.floor(84 / dayCount);
 
       html += `
-      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
         <thead>
-          <tr style="background-color: #e11d48; color: #ffffff;">
-            <th style="padding: 10px; border: 1px solid #be123c; width: 16%; text-align: center; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
+          <tr style="background-color: #f8fafc; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 16%; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase;">TIEMPO DE COMIDA</th>
       `;
 
       data.days.forEach((d) => {
         html += `
-            <th style="padding: 10px; border: 1px solid #be123c; width: ${colWidth}%; text-align: left; font-size: 12px; font-weight: bold;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: ${colWidth}%; text-align: left; font-size: 11px; font-weight: bold; text-transform: uppercase;">
               ${this.escapeHtml(d.day_name.toUpperCase())}
             </th>
         `;
@@ -300,11 +300,11 @@ export class MenuCopilotModalComponent {
       `;
 
       const meals = [
-        { label: '🍳 DESAYUNO', key: 'desayuno' },
-        { label: '🍏 COLACIÓN MATUTINA', key: 'colacion_matutina' },
-        { label: '🍲 COMIDA', key: 'comida' },
-        { label: '🫐 COLACIÓN VESPERTINA', key: 'colacion_vespertina' },
-        { label: '🌙 CENA', key: 'cena' }
+        { label: 'DESAYUNO', key: 'desayuno' },
+        { label: 'COLACIÓN MATUTINA', key: 'colacion_matutina' },
+        { label: 'COMIDA', key: 'comida' },
+        { label: 'COLACIÓN VESPERTINA', key: 'colacion_vespertina' },
+        { label: 'CENA', key: 'cena' }
       ];
 
       meals.forEach((meal) => {
@@ -313,14 +313,14 @@ export class MenuCopilotModalComponent {
 
         html += `
           <tr>
-            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; text-align: center; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">
+            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; text-align: center; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">
               ${meal.label}
             </td>
         `;
 
         data.days!.forEach((d: any) => {
           html += `
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(d[meal.key])}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(d[meal.key])}</td>
           `;
         });
 
@@ -338,15 +338,15 @@ export class MenuCopilotModalComponent {
       const colWidth = Math.floor(82 / optionCount);
 
       html += `
-      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
         <thead>
-          <tr style="background-color: #e11d48; color: #ffffff;">
-            <th style="padding: 10px; border: 1px solid #be123c; width: 18%; text-align: center; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
+          <tr style="background-color: #f8fafc; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 18%; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase;">TIEMPO DE COMIDA</th>
       `;
 
       data.menus.forEach((m, idx) => {
         html += `
-            <th style="padding: 10px; border: 1px solid #be123c; width: ${colWidth}%; text-align: left; font-size: 12px; font-weight: bold;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: ${colWidth}%; text-align: left; font-size: 11px; font-weight: bold; text-transform: uppercase;">
               ${this.escapeHtml((m.title || `Opción ${idx + 1}`).toUpperCase())}
             </th>
         `;
@@ -359,11 +359,11 @@ export class MenuCopilotModalComponent {
       `;
 
       const meals = [
-        { label: '🍳 DESAYUNO', key: 'desayuno' },
-        { label: '🍏 COLACIÓN MATUTINA', key: 'colacion_matutina' },
-        { label: '🍲 COMIDA', key: 'comida' },
-        { label: '🫐 COLACIÓN VESPERTINA', key: 'colacion_vespertina' },
-        { label: '🌙 CENA', key: 'cena' }
+        { label: 'DESAYUNO', key: 'desayuno' },
+        { label: 'COLACIÓN MATUTINA', key: 'colacion_matutina' },
+        { label: 'COMIDA', key: 'comida' },
+        { label: 'COLACIÓN VESPERTINA', key: 'colacion_vespertina' },
+        { label: 'CENA', key: 'cena' }
       ];
 
       meals.forEach((meal) => {
@@ -372,14 +372,14 @@ export class MenuCopilotModalComponent {
 
         html += `
           <tr>
-            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; text-align: center; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">
+            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; text-align: center; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">
               ${meal.label}
             </td>
         `;
 
         data.menus!.forEach((m: any) => {
           html += `
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m[meal.key])}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(m[meal.key])}</td>
           `;
         });
 
@@ -400,34 +400,34 @@ export class MenuCopilotModalComponent {
 
   private buildDayHtmlTable(day: MenuCopilotDay): string {
     let html = `
-    <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 750px;">
-      <div style="background-color: #e11d48; color: #ffffff; padding: 12px 16px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 15px;">
-        📅 MENÚ DEL DÍA: ${this.escapeHtml(day.day_name.toUpperCase())}
+    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 750px; line-height: 1.4;">
+      <div style="padding: 8px 0; border-bottom: 2px solid #0f172a; font-weight: bold; font-size: 13px; margin-bottom: 8px;">
+        MENÚ DEL DÍA: ${this.escapeHtml(day.day_name.toUpperCase())}
       </div>
-      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #475569;">
-            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
-            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 12px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
+          <tr style="background-color: #f8fafc; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 11px; font-weight: bold;">TIEMPO DE COMIDA</th>
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 11px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
           </tr>
         </thead>
         <tbody>
     `;
 
     const meals = [
-      { label: '🍳 DESAYUNO', dish: day.desayuno },
-      { label: '🍏 COLACIÓN MATUTINA', dish: day.colacion_matutina },
-      { label: '🍲 COMIDA', dish: day.comida },
-      { label: '🫐 COLACIÓN VESPERTINA', dish: day.colacion_vespertina },
-      { label: '🌙 CENA', dish: day.cena }
+      { label: 'DESAYUNO', dish: day.desayuno },
+      { label: 'COLACIÓN MATUTINA', dish: day.colacion_matutina },
+      { label: 'COMIDA', dish: day.comida },
+      { label: 'COLACIÓN VESPERTINA', dish: day.colacion_vespertina },
+      { label: 'CENA', dish: day.cena }
     ];
 
     meals.forEach((m) => {
       if (m.dish) {
         html += `
           <tr>
-            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">${m.label}</td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.dish)}</td>
+            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${m.label}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(m.dish)}</td>
           </tr>
         `;
       }
@@ -443,34 +443,34 @@ export class MenuCopilotModalComponent {
 
   private buildMenuHtmlTable(menu: MenuCopilotOption): string {
     let html = `
-    <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 750px;">
-      <div style="background-color: #e11d48; color: #ffffff; padding: 12px 16px; border-radius: 6px 6px 0 0; font-weight: bold; font-size: 15px;">
-        🥗 ${this.escapeHtml(menu.title.toUpperCase())}
+    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 750px; line-height: 1.4;">
+      <div style="padding: 8px 0; border-bottom: 2px solid #0f172a; font-weight: bold; font-size: 13px; margin-bottom: 8px;">
+        ${this.escapeHtml(menu.title.toUpperCase())}
       </div>
-      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #475569;">
-            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 12px; font-weight: bold;">TIEMPO DE COMIDA</th>
-            <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 12px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
+          <tr style="background-color: #f8fafc; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 11px; font-weight: bold;">TIEMPO DE COMIDA</th>
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 11px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
           </tr>
         </thead>
         <tbody>
     `;
 
     const meals = [
-      { label: '🍳 DESAYUNO', dish: menu.desayuno },
-      { label: '🍏 COLACIÓN MATUTINA', dish: menu.colacion_matutina },
-      { label: '🍲 COMIDA', dish: menu.comida },
-      { label: '🫐 COLACIÓN VESPERTINA', dish: menu.colacion_vespertina },
-      { label: '🌙 CENA', dish: menu.cena }
+      { label: 'DESAYUNO', dish: menu.desayuno },
+      { label: 'COLACIÓN MATUTINA', dish: menu.colacion_matutina },
+      { label: 'COMIDA', dish: menu.comida },
+      { label: 'COLACIÓN VESPERTINA', dish: menu.colacion_vespertina },
+      { label: 'CENA', dish: menu.cena }
     ];
 
     meals.forEach((m) => {
       if (m.dish) {
         html += `
           <tr>
-            <td style="background-color: #fff1f2; color: #9f1239; font-weight: bold; vertical-align: top; padding: 10px; border: 1px solid #fda4af; font-size: 12px;">${m.label}</td>
-            <td style="vertical-align: top; padding: 10px; border: 1px solid #e2e8f0;">${this.formatMealCellHtml(m.dish)}</td>
+            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${m.label}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(m.dish)}</td>
           </tr>
         `;
       }
@@ -486,16 +486,16 @@ export class MenuCopilotModalComponent {
 
   private buildMealHtmlTable(mealName: string, dish: any): string {
     return `
-    <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 500px;">
-      <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 12px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 500px; line-height: 1.4;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
         <thead>
-          <tr style="background-color: #e11d48; color: #ffffff;">
-            <th style="padding: 8px 10px; border: 1px solid #be123c; text-align: left; font-size: 13px; font-weight: bold;">🍽️ ${this.escapeHtml(mealName.toUpperCase())}</th>
+          <tr style="background-color: #f8fafc; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; text-align: left; font-size: 12px; font-weight: bold;">${this.escapeHtml(mealName.toUpperCase())}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="padding: 12px; border: 1px solid #e2e8f0;">
+            <td style="padding: 8px 6px; border: 1px solid #cbd5e1;">
               ${this.formatMealCellHtml(dish)}
             </td>
           </tr>
@@ -508,18 +508,17 @@ export class MenuCopilotModalComponent {
   private formatMealCellHtml(dish: any): string {
     if (!dish || !dish.platillo) return '<span style="color: #94a3b8; font-style: italic;">Sin platillo asignado</span>';
     
-    let html = `<div style="font-weight: bold; color: #0f172a; margin-bottom: 4px; font-size: 12px;">${this.escapeHtml(dish.platillo)}</div>`;
+    let html = `<div style="font-weight: bold; color: #0f172a; margin-bottom: 3px; font-size: 11px;">${this.escapeHtml(dish.platillo)}</div>`;
     
     if (dish.ingredientes && dish.ingredientes.length > 0) {
-      html += `<ul style="margin: 0; padding-left: 16px; color: #334155; font-size: 11px; line-height: 1.4;">`;
-      dish.ingredientes.forEach((ing: string) => {
-        html += `<li style="margin-bottom: 2px;">${this.escapeHtml(ing)}</li>`;
-      });
-      html += `</ul>`;
+      const cleanIngs = dish.ingredientes
+        .map((ing: string) => this.escapeHtml(ing.replace(/^[•\-\*\s]+/, '')))
+        .join('<br/>');
+      html += `<div style="color: #334155; font-size: 10.5px; line-height: 1.3; margin-bottom: 3px;">${cleanIngs}</div>`;
     }
     
     if (dish.preparacion_rapida) {
-      html += `<div style="font-style: italic; color: #64748b; font-size: 10px; margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 2px;">💡 ${this.escapeHtml(dish.preparacion_rapida)}</div>`;
+      html += `<div style="font-style: italic; color: #64748b; font-size: 9.5px; margin-top: 3px; border-top: 1px dashed #cbd5e1; padding-top: 2px;">💡 ${this.escapeHtml(dish.preparacion_rapida)}</div>`;
     }
     
     return html;
@@ -539,27 +538,27 @@ export class MenuCopilotModalComponent {
     let out = `NUTRILEV · PROPUESTA DE MENÚ CLÍNICO PERSONALIZADO\n`;
     out += `Paciente: ${this.patient()?.nombre || 'Paciente'} | Objetivo: ${data.clinical_analysis?.macro_distribution?.calories || this.targetCalories()} kcal\n`;
     out += `Formato: ${data.format_type === 'semanal' ? 'Plan Semanal (7 Días)' : 'Equivalencias (3 Opciones)'}\n`;
-    out += `═══════════════════════════════════════════════════════\n\n`;
+    out += `-------------------------------------------------------\n\n`;
 
     if (data.days && data.days.length > 0) {
       data.days.forEach((d) => {
-        out += `📅 ${d.day_name.toUpperCase()}\n`;
+        out += `${d.day_name.toUpperCase()}\n`;
         out += `-------------------------------------------------------\n`;
-        if (d.desayuno) out += `• DESAYUNO: ${d.desayuno.platillo}\n  ${d.desayuno.ingredientes.join(', ')}\n`;
-        if (d.colacion_matutina) out += `• COLACIÓN 1: ${d.colacion_matutina.platillo}\n  ${d.colacion_matutina.ingredientes.join(', ')}\n`;
-        if (d.comida) out += `• COMIDA: ${d.comida.platillo}\n  ${d.comida.ingredientes.join(', ')}\n`;
-        if (d.colacion_vespertina) out += `• COLACIÓN 2: ${d.colacion_vespertina.platillo}\n  ${d.colacion_vespertina.ingredientes.join(', ')}\n`;
-        if (d.cena) out += `• CENA: ${d.cena.platillo}\n  ${d.cena.ingredientes.join(', ')}\n\n`;
+        if (d.desayuno) out += `DESAYUNO: ${d.desayuno.platillo}\n${d.desayuno.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (d.colacion_matutina) out += `COLACIÓN 1: ${d.colacion_matutina.platillo}\n${d.colacion_matutina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (d.comida) out += `COMIDA: ${d.comida.platillo}\n${d.comida.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (d.colacion_vespertina) out += `COLACIÓN 2: ${d.colacion_vespertina.platillo}\n${d.colacion_vespertina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (d.cena) out += `CENA: ${d.cena.platillo}\n${d.cena.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
       });
     } else if (data.menus && data.menus.length > 0) {
       data.menus.forEach((m, idx) => {
         out += `OPCIÓN ${idx + 1}: ${m.title}\n`;
         out += `-------------------------------------------------------\n`;
-        if (m.desayuno) out += `• DESAYUNO: ${m.desayuno.platillo}\n  ${m.desayuno.ingredientes.join(', ')}\n`;
-        if (m.colacion_matutina) out += `• COLACIÓN 1: ${m.colacion_matutina.platillo}\n  ${m.colacion_matutina.ingredientes.join(', ')}\n`;
-        if (m.comida) out += `• COMIDA: ${m.comida.platillo}\n  ${m.comida.ingredientes.join(', ')}\n`;
-        if (m.colacion_vespertina) out += `• COLACIÓN 2: ${m.colacion_vespertina.platillo}\n  ${m.colacion_vespertina.ingredientes.join(', ')}\n`;
-        if (m.cena) out += `• CENA: ${m.cena.platillo}\n  ${m.cena.ingredientes.join(', ')}\n\n`;
+        if (m.desayuno) out += `OPCIÓN ${idx + 1} - DESAYUNO: ${m.desayuno.platillo}\n${m.desayuno.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (m.colacion_matutina) out += `OPCIÓN ${idx + 1} - COLACIÓN 1: ${m.colacion_matutina.platillo}\n${m.colacion_matutina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (m.comida) out += `OPCIÓN ${idx + 1} - COMIDA: ${m.comida.platillo}\n${m.comida.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (m.colacion_vespertina) out += `OPCIÓN ${idx + 1} - COLACIÓN 2: ${m.colacion_vespertina.platillo}\n${m.colacion_vespertina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (m.cena) out += `OPCIÓN ${idx + 1} - CENA: ${m.cena.platillo}\n${m.cena.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
       });
     }
 
