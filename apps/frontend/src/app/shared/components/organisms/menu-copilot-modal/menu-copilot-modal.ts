@@ -261,8 +261,8 @@ export class MenuCopilotModalComponent {
   private buildPlanHtmlTable(data: MenuCopilotResponse): string {
     const isWeekly = data.format_type === 'semanal' || (!!data.days && data.days.length > 0);
     let html = `
-    <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.4;">
-      <div style="padding: 10px 0; border-bottom: 2px solid #0f172a; font-family: Arial, sans-serif; margin-bottom: 10px;">
+    <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.4; background-color: transparent;">
+      <div style="padding: 10px 0; border-bottom: 2px solid #0f172a; font-family: Arial, sans-serif; margin-bottom: 10px; background-color: transparent;">
         <h2 style="margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase; color: #0f172a; letter-spacing: 0.5px;">
           NUTRILEV · PROPUESTA DE MENÚ CLÍNICO PERSONALIZADO
         </h2>
@@ -279,15 +279,15 @@ export class MenuCopilotModalComponent {
       const colWidth = Math.floor(84 / dayCount);
 
       html += `
-      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: transparent;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #0f172a;">
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 16%; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase;">TIEMPO DE COMIDA</th>
+          <tr style="background-color: transparent; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 16%; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; background-color: transparent;">TIEMPO DE COMIDA</th>
       `;
 
       data.days.forEach((d) => {
         html += `
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: ${colWidth}%; text-align: left; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: ${colWidth}%; text-align: left; font-size: 11px; font-weight: bold; text-transform: uppercase; background-color: transparent;">
               ${this.escapeHtml(d.day_name.toUpperCase())}
             </th>
         `;
@@ -313,14 +313,14 @@ export class MenuCopilotModalComponent {
 
         html += `
           <tr>
-            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; text-align: center; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">
+            <td style="background-color: transparent; color: #0f172a; font-weight: bold; text-align: center; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">
               ${meal.label}
             </td>
         `;
 
         data.days!.forEach((d: any) => {
           html += `
-            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(d[meal.key])}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px; background-color: transparent;">${this.formatMealCellHtml(d[meal.key])}</td>
           `;
         });
 
@@ -338,15 +338,15 @@ export class MenuCopilotModalComponent {
       const colWidth = Math.floor(82 / optionCount);
 
       html += `
-      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: transparent;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #0f172a;">
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 18%; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase;">TIEMPO DE COMIDA</th>
+          <tr style="background-color: transparent; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 18%; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; background-color: transparent;">TIEMPO DE COMIDA</th>
       `;
 
       data.menus.forEach((m, idx) => {
         html += `
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: ${colWidth}%; text-align: left; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: ${colWidth}%; text-align: left; font-size: 11px; font-weight: bold; text-transform: uppercase; background-color: transparent;">
               ${this.escapeHtml((m.title || `Opción ${idx + 1}`).toUpperCase())}
             </th>
         `;
@@ -372,14 +372,14 @@ export class MenuCopilotModalComponent {
 
         html += `
           <tr>
-            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; text-align: center; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">
+            <td style="background-color: transparent; color: #0f172a; font-weight: bold; text-align: center; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">
               ${meal.label}
             </td>
         `;
 
         data.menus!.forEach((m: any) => {
           html += `
-            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(m[meal.key])}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px; background-color: transparent;">${this.formatMealCellHtml(m[meal.key])}</td>
           `;
         });
 
@@ -400,15 +400,15 @@ export class MenuCopilotModalComponent {
 
   private buildDayHtmlTable(day: MenuCopilotDay): string {
     let html = `
-    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 750px; line-height: 1.4;">
-      <div style="padding: 8px 0; border-bottom: 2px solid #0f172a; font-weight: bold; font-size: 13px; margin-bottom: 8px;">
+    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 750px; line-height: 1.4; background-color: transparent;">
+      <div style="padding: 8px 0; border-bottom: 2px solid #0f172a; font-weight: bold; font-size: 13px; margin-bottom: 8px; background-color: transparent;">
         MENÚ DEL DÍA: ${this.escapeHtml(day.day_name.toUpperCase())}
       </div>
-      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: transparent;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #0f172a;">
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 11px; font-weight: bold;">TIEMPO DE COMIDA</th>
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 11px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
+          <tr style="background-color: transparent; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 11px; font-weight: bold; background-color: transparent;">TIEMPO DE COMIDA</th>
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 11px; font-weight: bold; background-color: transparent;">PLATILLO E INGREDIENTES</th>
           </tr>
         </thead>
         <tbody>
@@ -426,8 +426,8 @@ export class MenuCopilotModalComponent {
       if (m.dish) {
         html += `
           <tr>
-            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${m.label}</td>
-            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(m.dish)}</td>
+            <td style="background-color: transparent; color: #0f172a; font-weight: bold; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${m.label}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px; background-color: transparent;">${this.formatMealCellHtml(m.dish)}</td>
           </tr>
         `;
       }
@@ -443,15 +443,15 @@ export class MenuCopilotModalComponent {
 
   private buildMenuHtmlTable(menu: MenuCopilotOption): string {
     let html = `
-    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 750px; line-height: 1.4;">
-      <div style="padding: 8px 0; border-bottom: 2px solid #0f172a; font-weight: bold; font-size: 13px; margin-bottom: 8px;">
+    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 750px; line-height: 1.4; background-color: transparent;">
+      <div style="padding: 8px 0; border-bottom: 2px solid #0f172a; font-weight: bold; font-size: 13px; margin-bottom: 8px; background-color: transparent;">
         ${this.escapeHtml(menu.title.toUpperCase())}
       </div>
-      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: transparent;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #0f172a;">
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 11px; font-weight: bold;">TIEMPO DE COMIDA</th>
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 11px; font-weight: bold;">PLATILLO E INGREDIENTES</th>
+          <tr style="background-color: transparent; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 25%; text-align: left; font-size: 11px; font-weight: bold; background-color: transparent;">TIEMPO DE COMIDA</th>
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; width: 75%; text-align: left; font-size: 11px; font-weight: bold; background-color: transparent;">PLATILLO E INGREDIENTES</th>
           </tr>
         </thead>
         <tbody>
@@ -469,8 +469,8 @@ export class MenuCopilotModalComponent {
       if (m.dish) {
         html += `
           <tr>
-            <td style="background-color: #f8fafc; color: #0f172a; font-weight: bold; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${m.label}</td>
-            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${this.formatMealCellHtml(m.dish)}</td>
+            <td style="background-color: transparent; color: #0f172a; font-weight: bold; vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px;">${m.label}</td>
+            <td style="vertical-align: top; padding: 8px 6px; border: 1px solid #cbd5e1; font-size: 11px; background-color: transparent;">${this.formatMealCellHtml(m.dish)}</td>
           </tr>
         `;
       }
@@ -486,16 +486,16 @@ export class MenuCopilotModalComponent {
 
   private buildMealHtmlTable(mealName: string, dish: any): string {
     return `
-    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 500px; line-height: 1.4;">
-      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: #ffffff;">
+    <div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 500px; line-height: 1.4; background-color: transparent;">
+      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; background-color: transparent;">
         <thead>
-          <tr style="background-color: #f8fafc; color: #0f172a;">
-            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; text-align: left; font-size: 12px; font-weight: bold;">${this.escapeHtml(mealName.toUpperCase())}</th>
+          <tr style="background-color: transparent; color: #0f172a;">
+            <th style="padding: 8px 6px; border: 1px solid #cbd5e1; text-align: left; font-size: 12px; font-weight: bold; background-color: transparent;">${this.escapeHtml(mealName.toUpperCase())}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="padding: 8px 6px; border: 1px solid #cbd5e1;">
+            <td style="padding: 8px 6px; border: 1px solid #cbd5e1; background-color: transparent;">
               ${this.formatMealCellHtml(dish)}
             </td>
           </tr>
