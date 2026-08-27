@@ -710,7 +710,11 @@ def generate_menu_copilot_suggestion(
         "type": "OBJECT",
         "properties": {
             "platillo": {"type": "STRING"},
-            "ingredientes": {"type": "ARRAY", "items": {"type": "STRING"}},
+            "ingredientes": {
+                "type": "ARRAY",
+                "description": "Lista de ingredientes especificando obligatoriamente su medida en tazas/piezas/cucharadas y su peso exacto en gramos (ej. '1/2 taza de avena (40g)', '120g de pechuga de pollo', '1 taza de espinaca baby (30g)').",
+                "items": {"type": "STRING"}
+            },
             "preparacion_rapida": {"type": "STRING"}
         },
         "required": ["platillo", "ingredientes"]
@@ -817,8 +821,14 @@ def generate_menu_copilot_suggestion(
         "required": required_root
     }
 
+    from datetime import datetime
+    WEEKDAYS_ES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    today_idx = datetime.now().weekday()
+    ordered_days = [WEEKDAYS_ES[(today_idx + i) % 7] for i in range(7)]
+    ordered_days_str = ", ".join([f"'{d}'" for d in ordered_days])
+
     format_instruction = (
-        "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. Debes incluir EXACTAMENTE 7 días en el arreglo 'days' con 'day_name': 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo' con platillos distintos y variados para cada día."
+        f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. El plan DEBE comenzar a partir del día de hoy ({ordered_days[0]}). Debes incluir EXACTAMENTE 7 días en el arreglo 'days' con 'day_name' en este orden secuencial de 7 días iniciando hoy: {ordered_days_str} con platillos distintos y variados para cada día."
         if resolved_format == "semanal"
         else "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones intercambiables en el arreglo 'menus' (Opción 1, Opción 2, Opción 3) basadas en equivalencias SMAE."
     )
@@ -828,13 +838,19 @@ def generate_menu_copilot_suggestion(
         "Tu objetivo es asistir al nutriólogo generando propuestas de menús clínicas fundamentadas, variadas y listas para su revisión y copiado rápido.\n\n"
         "REGLAS INQUEBRANTABLES:\n"
         "1. CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV (PRIORITARIO): Basa preferentemente los desayunos, comidas, cenas y colaciones en el 'CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV' provisto más abajo. Utiliza los nombres de platillos y combinaciones de ingredientes de la clínica, adaptando las cantidades/porciones a las calorías objetivo del paciente.\n"
-        "2. NOTAS CLÍNICAS Y EVOLUCIÓN: Lee con extrema atención las notas del expediente y las notas de las consultas de seguimiento. Si las notas indican síntomas (ej. reflujo, estreñimiento, horarios complicados, pesadez nocturna, antojos de dulce o salado, etc.), adapta los alimentos para abordar directamente esas observaciones.\n"
-        "3. EXCLUSIÓN ABSOLUTA: Jamás incluyas ingredientes reportados en 'alergias_alimentarias' ni en 'alimentos_no_agradan'.\n"
-        "4. PREFERENCIAS: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
-        "5. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable, etc.).\n"
-        "6. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
-        f"7. {format_instruction}\n"
-        "8. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, sin viñetas ni puntos (para maximizar el espacio en tablas de Word). Organiza siempre los tiempos de comida en el eje vertical (filas: Desayuno, Colación Matutina, Comida, Colación Vespertina, Cena) y las opciones/días en el eje horizontal (columnas: Opción 1, 2, 3 o Lunes a Domingo)."
+        "2. UNIDADES Y MEDIDAS EN TAZAS Y GRAMOS EN INGREDIENTES: Cada ingrediente en el arreglo 'ingredientes' DEBE incluir explícitamente su medida práctica (en tazas, cucharadas, piezas o porciones) Y su peso o equivalencia exacta en gramos/mililitros entre paréntesis. Ejemplos obligatorios de formato:\n"
+        "   - '1/2 taza de avena cocida (40g)'\n"
+        "   - '120g de pechuga de pollo a la plancha'\n"
+        "   - '1 taza de espinaca baby fresca (30g)'\n"
+        "   - '2 cdtas de aceite de oliva extra virgen (10g)'\n"
+        "   - '1 pieza mediana de manzana (120g)'\n"
+        "3. NOTAS CLÍNICAS Y EVOLUCIÓN: Lee con extrema atención las notas del expediente y las notas de las consultas de seguimiento. Si las notas indican síntomas (ej. reflujo, estreñimiento, horarios complicados, pesadez nocturna, antojos de dulce o salado, etc.), adapta los alimentos para abordar directamente esas observaciones.\n"
+        "4. EXCLUSIÓN ABSOLUTA: Jamás incluyas ingredientes reportados en 'alergias_alimentarias' ni en 'alimentos_no_agradan'.\n"
+        "5. PREFERENCIAS: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
+        "6. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable, etc.).\n"
+        "7. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
+        f"8. {format_instruction}\n"
+        "9. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, sin viñetas ni puntos (para maximizar el espacio en tablas de Word). Organiza siempre los tiempos de comida en el eje vertical (filas: Desayuno, Colación Matutina, Comida, Colación Vespertina, Cena) y las opciones/días en el eje horizontal (columnas: Opción 1, 2, 3 o Lunes a Domingo)."
     )
 
     user_prompt = f"""

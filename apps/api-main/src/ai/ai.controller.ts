@@ -120,4 +120,39 @@ export class AiController {
     }
     return response;
   }
+
+  @Post('generate-copilot-docx')
+  async generateCopilotDocx(
+    @Body()
+    body: {
+      copilot_data: any;
+      patient_context: any;
+      calories?: number;
+    },
+    @Res() res: Response,
+  ) {
+    try {
+      const docxBuffer = await this.aiService.generateCopilotDocx(body);
+      const patientName = (
+        body.patient_context?.nombre ||
+        body.patient_context?.name ||
+        'paciente'
+      ).replace(/\s+/g, '_');
+
+      res.set({
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Content-Disposition': `attachment; filename=Menu_Copiloto_${patientName}.docx`,
+      });
+
+      res.send(Buffer.from(docxBuffer));
+    } catch (error) {
+      console.error('--- [CONTROLLER ERROR] generateCopilotDocx ---');
+      console.error(error);
+      res.status(500).json({
+        error: 'Error generating copilot docx',
+        message: error.message,
+      });
+    }
+  }
 }

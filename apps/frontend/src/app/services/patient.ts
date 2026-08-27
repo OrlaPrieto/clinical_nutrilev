@@ -211,6 +211,20 @@ export class PatientService {
     );
   }
 
+  async downloadCopilotDocx(payload: {
+    copilot_data: any;
+    patient_context: any;
+    calories?: number;
+  }): Promise<Blob> {
+    return firstValueFrom(
+      this.http.post(
+        `${environment.apiUrl}/generate-copilot-docx`,
+        payload,
+        { responseType: 'blob' }
+      )
+    );
+  }
+
   async getGlucoseLogs(email: string): Promise<import('@shared/models/interfaces').PatientGlucoseLog[]> {
     try {
       if (this.authService.isDevMode()) {

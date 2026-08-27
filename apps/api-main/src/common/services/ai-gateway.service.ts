@@ -104,7 +104,36 @@ export class AiGatewayService {
     }
   }
 
-  private handleError(error: any, defaultMsg: string) {
+  async generateCopilotDocx(payload: any): Promise<Buffer> {
+    const flaskApiUrl = this.configService.get<string>('FLASK_API_URL');
+    if (!flaskApiUrl) {
+      throw new Error('FLASK_API_URL is not defined in environment variables');
+    }
+
+    const headers: Record<string, string> = {
+      'x-internal-key': this.configService.get<string>('INTERNAL_API_KEY') || '',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${flaskApiUrl.replace(/\/$/, '')}/api/generate-copilot-docx`,
+          payload,
+          {
+            headers,
+            responseType: 'arraybuffer',
+            timeout: 60000,
+          },
+        ),
+      );
+      return Buffer.from(response.data);
+    } catch (error: any) {
+      this.handleError(error, 'Error al generar documento Word del menú copiloto');
+    }
+  }
+
+  private handleError(error: any, defaultMsg: string): never {
     if (error && error.response) {
       const status = error.response.status;
       const data = error.response.data;

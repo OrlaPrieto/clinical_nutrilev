@@ -274,17 +274,33 @@
               </button>
             </div>
 
-            <!-- Master Copy Button -->
-            <button (click)="copyFullPlan()"
-                    class="w-full sm:w-auto px-4 py-2 rounded-xl bg-nutri-rose text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-nutri-rose/20 hover:bg-pink-600 active:scale-95 transition-all cursor-pointer">
-              @if (copiedSection() === 'full_plan') {
-                <app-a-icon name="check" size="16px"></app-a-icon>
-                <span>¡Plan Completo Copiado!</span>
-              } @else {
-                <app-a-icon name="content_copy" size="16px"></app-a-icon>
-                <span>{{ isWeekly() ? 'Copiar Semana Completa (Lunes a Domingo)' : 'Copiar Plan Completo (3 Menús)' }}</span>
-              }
-            </button>
+            <!-- Action Buttons Group -->
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+              <!-- Download Word DOCX Button -->
+              <button (click)="downloadCopilotDocx()"
+                      [disabled]="isDownloadingDocx()"
+                      class="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer">
+                @if (isDownloadingDocx()) {
+                  <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span>Generando Word...</span>
+                } @else {
+                  <app-a-icon name="description" size="16px"></app-a-icon>
+                  <span>Descargar Word (.docx)</span>
+                }
+              </button>
+
+              <!-- Master Copy Button -->
+              <button (click)="copyFullPlan()"
+                      class="w-full sm:w-auto px-4 py-2 rounded-xl bg-nutri-rose text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-nutri-rose/20 hover:bg-pink-600 active:scale-95 transition-all cursor-pointer">
+                @if (copiedSection() === 'full_plan') {
+                  <app-a-icon name="check" size="16px"></app-a-icon>
+                  <span>¡Plan Completo Copiado!</span>
+                } @else {
+                  <app-a-icon name="content_copy" size="16px"></app-a-icon>
+                  <span>{{ isWeekly() ? 'Copiar Semana Completa' : 'Copiar Plan Completo' }}</span>
+                }
+              </button>
+            </div>
           </div>
 
           <!-- VIEW 1: Visual Interactive Cards -->

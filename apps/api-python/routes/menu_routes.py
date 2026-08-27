@@ -172,6 +172,44 @@ def suggest_menu_copilot():
         }), 500
 
 
+@menu_bp.route('/generate-copilot-docx', methods=['POST', 'OPTIONS'])
+def generate_copilot_docx():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    try:
+        from services.docx_copilot_utils import build_copilot_single_page_docx
+
+        data = request.get_json(force=True, silent=True) or {}
+        copilot_data = data.get('copilot_data', {})
+        patient_context = data.get('patient_context', {})
+        calories = int(data.get('calories', 1800))
+
+        docx_bytes = build_copilot_single_page_docx(
+            copilot_data=copilot_data,
+            patient_context=patient_context,
+            target_calories=calories
+        )
+
+        patient_name = (patient_context.get('nombre') or patient_context.get('name') or 'paciente').replace(' ', '_')
+        date_str = datetime.now().strftime('%Y%m%d')
+
+        return send_file(
+            io.BytesIO(docx_bytes),
+            as_attachment=True,
+            download_name=f"Menu_Copiloto_{patient_name}_{date_str}.docx",
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+
+    except Exception as e:
+        print(f"ERROR [generate-copilot-docx]: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            "error": "Error al generar el documento DOCX del copiloto",
+            "details": str(e)
+        }), 500
+
+
 @menu_bp.route('/process-menu', methods=['POST', 'OPTIONS'])
 def process_menu():
     if request.method == 'OPTIONS':

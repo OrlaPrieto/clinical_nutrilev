@@ -152,4 +152,39 @@ export class AiService {
       throw error;
     }
   }
+
+  async generateCopilotDocx(payload: {
+    copilot_data: any;
+    patient_context: any;
+    calories?: number;
+  }): Promise<any> {
+    try {
+      const { data: responseData } = await firstValueFrom(
+        this.httpService.post(
+          `${this.flaskBaseUrl}/api/generate-copilot-docx`,
+          payload,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-internal-key':
+                this.configService.get<string>('INTERNAL_API_KEY'),
+            },
+            responseType: 'arraybuffer',
+            timeout: 60000,
+          },
+        ),
+      );
+      return responseData;
+    } catch (error) {
+      console.error('--- [NESTJS AI SERVICE ERROR] generateCopilotDocx ---');
+      if (error.response) {
+        console.error('Status:', error.response.status);
+        console.error('Data:', error.response.data);
+        throw new Error(
+          `Python AI Error (${error.response.status}): ${JSON.stringify(error.response.data)}`,
+        );
+      }
+      throw error;
+    }
+  }
 }

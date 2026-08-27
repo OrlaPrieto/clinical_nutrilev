@@ -38,6 +38,7 @@ export class MenuCopilotModalComponent {
   activeDayIndex = signal<number>(0);
   activeViewTab = signal<'visual' | 'plaintext'>('visual');
   copiedSection = signal<string | null>(null);
+  isDownloadingDocx = signal<boolean>(false);
 
   constructor() {
     // Auto-load saved suggestion from DB on modal opening
@@ -169,6 +170,41 @@ export class MenuCopilotModalComponent {
     const plainText = data.formatted_clipboard_text || this.buildPlanPlainText(data);
     const htmlText = this.buildPlanHtmlTable(data);
     this.executeCopy(plainText, htmlText, 'full_plan', 'Plan completo copiado (Tabla para Word)');
+  }
+
+  async downloadCopilotDocx() {
+    const data = this.copilotData();
+    const p = this.patient();
+    if (!data || !p) return;
+
+    this.isDownloadingDocx.set(true);
+    this.toastService.show('Generando menú en formato Word (.docx)...', 'info', 3000);
+
+    try {
+      const blob = await this.patientService.downloadCopilotDocx({
+        copilot_data: data,
+        patient_context: p,
+        calories: this.targetCalories()
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const patientName = (p.nombre || p.name || 'paciente').replace(/\s+/g, '_');
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      a.href = url;
+      a.download = `Menu_Copiloto_${patientName}_${dateStr}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      this.toastService.show('¡Menú en Word descargado exitosamente!', 'success', 3500);
+    } catch (err: any) {
+      console.error('[MenuCopilotModal] Error al descargar DOCX:', err);
+      this.toastService.show('Error al descargar el archivo Word. Intenta nuevamente.', 'error', 4500);
+    } finally {
+      this.isDownloadingDocx.set(false);
+    }
   }
 
   copyActiveMenu() {
