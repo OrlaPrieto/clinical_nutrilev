@@ -164,9 +164,18 @@ export interface ShoppingCategory {
   items: ShoppingItem[];
 }
 
+export interface MenuCopilotEquivalenciaItem {
+  porciones: string;
+  grupo: string;
+  descripcion: string;
+}
+
 export interface MenuCopilotDish {
-  platillo: string;
-  ingredientes: string[];
+  platillo?: string;
+  nombre_platillo?: string;
+  ingredientes?: string[];
+  descripcion?: string;
+  equivalencias?: MenuCopilotEquivalenciaItem[];
   preparacion_rapida?: string;
 }
 

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../../atoms/icon/icon';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { PatientService } from '../../../../services/patient';
-import { MenuCopilotResponse, MenuCopilotOption, MenuCopilotDay, PatientProgress } from '@shared/models/interfaces';
+import { MenuCopilotResponse, MenuCopilotOption, MenuCopilotDay, MenuCopilotDish, PatientProgress } from '@shared/models/interfaces';
 
 @Component({
   selector: 'app-o-menu-copilot-modal',
@@ -207,6 +207,20 @@ export class MenuCopilotModalComponent {
     }
   }
 
+  private formatDishSummaryText(dish?: MenuCopilotDish): string {
+    if (!dish) return '';
+    const title = dish.nombre_platillo || dish.platillo || '';
+    if (dish.equivalencias && dish.equivalencias.length > 0) {
+      const eqs = dish.equivalencias.map((e: any) => `[${e.grupo} x${e.porciones}]: ${e.descripcion}`).join('\n  - ');
+      return `${title ? title + '\n' : ''}• Ingredientes por Equivalencias:\n  - ${eqs}`;
+    }
+    if (dish.descripcion) {
+      return dish.descripcion;
+    }
+    const ings = (dish.ingredientes || []).map((i: string) => i.replace(/^[•\-\*\s]+/, ''));
+    return `${title ? title + '\n' : ''}${ings.length > 0 ? '• Ingredientes:\n  - ' + ings.join('\n  - ') : ''}`;
+  }
+
   copyActiveMenu() {
     const menu = this.activeMenu();
     if (!menu) return;
@@ -216,27 +230,27 @@ export class MenuCopilotModalComponent {
     text += `═══════════════════════════════════\n\n`;
 
     if (menu.desayuno) {
-      text += `🍳 DESAYUNO:\n• Platillo: ${menu.desayuno.platillo}\n• Ingredientes:\n  - ${menu.desayuno.ingredientes.join('\n  - ')}\n`;
+      text += `🍳 DESAYUNO:\n${this.formatDishSummaryText(menu.desayuno)}\n`;
       if (menu.desayuno.preparacion_rapida) text += `• Tip: ${menu.desayuno.preparacion_rapida}\n`;
       text += `\n`;
     }
 
     if (menu.colacion_matutina) {
-      text += `🍏 COLACIÓN MATUTINA:\n• Platillo: ${menu.colacion_matutina.platillo}\n• Ingredientes:\n  - ${menu.colacion_matutina.ingredientes.join('\n  - ')}\n\n`;
+      text += `🍏 COLACIÓN MATUTINA:\n${this.formatDishSummaryText(menu.colacion_matutina)}\n\n`;
     }
 
     if (menu.comida) {
-      text += `🍲 COMIDA:\n• Platillo: ${menu.comida.platillo}\n• Ingredientes:\n  - ${menu.comida.ingredientes.join('\n  - ')}\n`;
+      text += `🍲 COMIDA:\n${this.formatDishSummaryText(menu.comida)}\n`;
       if (menu.comida.preparacion_rapida) text += `• Tip: ${menu.comida.preparacion_rapida}\n`;
       text += `\n`;
     }
 
     if (menu.colacion_vespertina) {
-      text += `🫐 COLACIÓN VESPERTINA:\n• Platillo: ${menu.colacion_vespertina.platillo}\n• Ingredientes:\n  - ${menu.colacion_vespertina.ingredientes.join('\n  - ')}\n\n`;
+      text += `🫐 COLACIÓN VESPERTINA:\n${this.formatDishSummaryText(menu.colacion_vespertina)}\n\n`;
     }
 
     if (menu.cena) {
-      text += `🌙 CENA:\n• Platillo: ${menu.cena.platillo}\n• Ingredientes:\n  - ${menu.cena.ingredientes.join('\n  - ')}\n`;
+      text += `🌙 CENA:\n${this.formatDishSummaryText(menu.cena)}\n`;
       if (menu.cena.preparacion_rapida) text += `• Tip: ${menu.cena.preparacion_rapida}\n`;
       text += `\n`;
     }
@@ -254,27 +268,27 @@ export class MenuCopilotModalComponent {
     text += `═══════════════════════════════════\n\n`;
 
     if (day.desayuno) {
-      text += `🍳 DESAYUNO: ${day.desayuno.platillo}\n• Ingredientes:\n  - ${day.desayuno.ingredientes.join('\n  - ')}\n`;
+      text += `🍳 DESAYUNO:\n${this.formatDishSummaryText(day.desayuno)}\n`;
       if (day.desayuno.preparacion_rapida) text += `• Tip: ${day.desayuno.preparacion_rapida}\n`;
       text += `\n`;
     }
 
     if (day.colacion_matutina) {
-      text += `🍏 COLACIÓN MATUTINA: ${day.colacion_matutina.platillo}\n• Ingredientes:\n  - ${day.colacion_matutina.ingredientes.join('\n  - ')}\n\n`;
+      text += `🍏 COLACIÓN MATUTINA:\n${this.formatDishSummaryText(day.colacion_matutina)}\n\n`;
     }
 
     if (day.comida) {
-      text += `🍲 COMIDA: ${day.comida.platillo}\n• Ingredientes:\n  - ${day.comida.ingredientes.join('\n  - ')}\n`;
+      text += `🍲 COMIDA:\n${this.formatDishSummaryText(day.comida)}\n`;
       if (day.comida.preparacion_rapida) text += `• Tip: ${day.comida.preparacion_rapida}\n`;
       text += `\n`;
     }
 
     if (day.colacion_vespertina) {
-      text += `🫐 COLACIÓN VESPERTINA: ${day.colacion_vespertina.platillo}\n• Ingredientes:\n  - ${day.colacion_vespertina.ingredientes.join('\n  - ')}\n\n`;
+      text += `🫐 COLACIÓN VESPERTINA:\n${this.formatDishSummaryText(day.colacion_vespertina)}\n\n`;
     }
 
     if (day.cena) {
-      text += `🌙 CENA: ${day.cena.platillo}\n• Ingredientes:\n  - ${day.cena.ingredientes.join('\n  - ')}\n`;
+      text += `🌙 CENA:\n${this.formatDishSummaryText(day.cena)}\n`;
       if (day.cena.preparacion_rapida) text += `• Tip: ${day.cena.preparacion_rapida}\n`;
       text += `\n`;
     }
@@ -580,21 +594,21 @@ export class MenuCopilotModalComponent {
       data.days.forEach((d) => {
         out += `${d.day_name.toUpperCase()}\n`;
         out += `-------------------------------------------------------\n`;
-        if (d.desayuno) out += `DESAYUNO: ${d.desayuno.platillo}\n${d.desayuno.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (d.colacion_matutina) out += `COLACIÓN 1: ${d.colacion_matutina.platillo}\n${d.colacion_matutina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (d.comida) out += `COMIDA: ${d.comida.platillo}\n${d.comida.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (d.colacion_vespertina) out += `COLACIÓN 2: ${d.colacion_vespertina.platillo}\n${d.colacion_vespertina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (d.cena) out += `CENA: ${d.cena.platillo}\n${d.cena.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (d.desayuno) out += `DESAYUNO:\n${this.formatDishSummaryText(d.desayuno)}\n\n`;
+        if (d.colacion_matutina) out += `COLACIÓN 1:\n${this.formatDishSummaryText(d.colacion_matutina)}\n\n`;
+        if (d.comida) out += `COMIDA:\n${this.formatDishSummaryText(d.comida)}\n\n`;
+        if (d.colacion_vespertina) out += `COLACIÓN 2:\n${this.formatDishSummaryText(d.colacion_vespertina)}\n\n`;
+        if (d.cena) out += `CENA:\n${this.formatDishSummaryText(d.cena)}\n\n`;
       });
     } else if (data.menus && data.menus.length > 0) {
       data.menus.forEach((m, idx) => {
         out += `OPCIÓN ${idx + 1}: ${m.title}\n`;
         out += `-------------------------------------------------------\n`;
-        if (m.desayuno) out += `OPCIÓN ${idx + 1} - DESAYUNO: ${m.desayuno.platillo}\n${m.desayuno.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (m.colacion_matutina) out += `OPCIÓN ${idx + 1} - COLACIÓN 1: ${m.colacion_matutina.platillo}\n${m.colacion_matutina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (m.comida) out += `OPCIÓN ${idx + 1} - COMIDA: ${m.comida.platillo}\n${m.comida.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (m.colacion_vespertina) out += `OPCIÓN ${idx + 1} - COLACIÓN 2: ${m.colacion_vespertina.platillo}\n${m.colacion_vespertina.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
-        if (m.cena) out += `OPCIÓN ${idx + 1} - CENA: ${m.cena.platillo}\n${m.cena.ingredientes.map(i => i.replace(/^[•\-\*\s]+/, '')).join('\n')}\n\n`;
+        if (m.desayuno) out += `OPCIÓN ${idx + 1} - DESAYUNO:\n${this.formatDishSummaryText(m.desayuno)}\n\n`;
+        if (m.colacion_matutina) out += `OPCIÓN ${idx + 1} - COLACIÓN 1:\n${this.formatDishSummaryText(m.colacion_matutina)}\n\n`;
+        if (m.comida) out += `OPCIÓN ${idx + 1} - COMIDA:\n${this.formatDishSummaryText(m.comida)}\n\n`;
+        if (m.colacion_vespertina) out += `OPCIÓN ${idx + 1} - COLACIÓN 2:\n${this.formatDishSummaryText(m.colacion_vespertina)}\n\n`;
+        if (m.cena) out += `OPCIÓN ${idx + 1} - CENA:\n${this.formatDishSummaryText(m.cena)}\n\n`;
       });
     }
 

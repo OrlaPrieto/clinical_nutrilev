@@ -751,7 +751,7 @@ def generate_menu_copilot_suggestion(
                     "type": "OBJECT",
                     "properties": {
                         "id": {"type": "INTEGER"},
-                        "day_name": {"type": "STRING", "description": "Lunes, Martes, Miércoles, Jueves, Viernes, Sábado o Domingo"},
+                        "day_name": {"type": "STRING", "description": "Nombre del día (ej. Lunes, Martes)"},
                         "desayuno": meal_item_schema,
                         "colacion_matutina": meal_item_schema,
                         "comida": meal_item_schema,
@@ -768,6 +768,37 @@ def generate_menu_copilot_suggestion(
         }
         required_root = ["format_type", "clinical_analysis", "days", "formatted_clipboard_text"]
     else:
+        eq_item_schema = {
+            "type": "OBJECT",
+            "properties": {
+                "porciones": {"type": "STRING", "description": "Número de equivalentes/porciones SMAE (ej. '2', '1', '0.5')"},
+                "grupo": {"type": "STRING", "enum": ["Cereales", "POA", "Grasas", "Frutas", "Verduras"], "description": "Grupo de alimentos SMAE"},
+                "descripcion": {"type": "STRING", "description": "Alimento e ingrediente específico con medida en tazas/piezas y gramos (ej. '2 pzas de tostadas de maíz (30g)')"}
+            },
+            "required": ["porciones", "grupo", "descripcion"]
+        }
+
+        meal_eq_schema = {
+            "type": "OBJECT",
+            "properties": {
+                "nombre_platillo": {"type": "STRING", "description": "Nombre o título breve del platillo (ej. TOSTADAS CON COTTAGE)"},
+                "equivalencias": {
+                    "type": "ARRAY",
+                    "description": "Desglose obligatorio de ingredientes por grupos SMAE (Cereales, POA, Grasas, Frutas, Verduras).",
+                    "items": eq_item_schema
+                }
+            },
+            "required": ["nombre_platillo", "equivalencias"]
+        }
+
+        colacion_schema = {
+            "type": "OBJECT",
+            "properties": {
+                "descripcion": {"type": "STRING", "description": "Descripción de la colación con cantidades y gramos (ej. '2 pzas de naranja + 1 taza de jícama (150g)')"}
+            },
+            "required": ["descripcion"]
+        }
+
         content_properties = {
             "format_type": {"type": "STRING", "enum": ["equivalencias"]},
             "clinical_analysis": {
@@ -793,17 +824,17 @@ def generate_menu_copilot_suggestion(
             },
             "menus": {
                 "type": "ARRAY",
-                "description": "3 propuestas completas de menú (Opción 1, Opción 2, Opción 3) variadas y atractivas.",
+                "description": "3 propuestas completas de menú (Opción 1, Opción 2, Opción 3) en formato oficial SMAE Nutrilev.",
                 "items": {
                     "type": "OBJECT",
                     "properties": {
                         "id": {"type": "INTEGER"},
-                        "title": {"type": "STRING", "description": "Título descriptivo del menú (ej. Opción 1 · Práctica y Rápida)."},
-                        "desayuno": meal_item_schema,
-                        "colacion_matutina": meal_item_schema,
-                        "comida": meal_item_schema,
-                        "colacion_vespertina": meal_item_schema,
-                        "cena": meal_item_schema
+                        "title": {"type": "STRING", "description": "Título en mayúsculas del menú (ej. MENÚ 1 TOSTADAS DE POLLO)"},
+                        "desayuno": meal_eq_schema,
+                        "colacion_matutina": colacion_schema,
+                        "comida": meal_eq_schema,
+                        "colacion_vespertina": colacion_schema,
+                        "cena": meal_eq_schema
                     },
                     "required": ["id", "title", "desayuno", "comida", "cena"]
                 }
@@ -830,7 +861,7 @@ def generate_menu_copilot_suggestion(
     format_instruction = (
         f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. El plan DEBE comenzar a partir del día de hoy ({ordered_days[0]}). Debes incluir EXACTAMENTE 7 días en el arreglo 'days' con 'day_name' en este orden secuencial de 7 días iniciando hoy: {ordered_days_str} con platillos distintos y variados para cada día."
         if resolved_format == "semanal"
-        else "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones intercambiables en el arreglo 'menus' (Opción 1, Opción 2, Opción 3) basadas en equivalencias SMAE."
+        else "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones en el arreglo 'menus' (MENÚ 1, MENÚ 2, MENÚ 3). Para Desayuno, Comida y Cena en cada menú, debes desglosar en 'equivalencias' los grupos SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras') con sus porciones 'porciones' (Eq) e ingredientes 'descripcion' con tazas/piezas y gramos."
     )
 
     system_prompt = (
@@ -838,19 +869,19 @@ def generate_menu_copilot_suggestion(
         "Tu objetivo es asistir al nutriólogo generando propuestas de menús clínicas fundamentadas, variadas y listas para su revisión y copiado rápido.\n\n"
         "REGLAS INQUEBRANTABLES:\n"
         "1. CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV (PRIORITARIO): Basa preferentemente los desayunos, comidas, cenas y colaciones en el 'CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV' provisto más abajo. Utiliza los nombres de platillos y combinaciones de ingredientes de la clínica, adaptando las cantidades/porciones a las calorías objetivo del paciente.\n"
-        "2. UNIDADES Y MEDIDAS EN TAZAS Y GRAMOS EN INGREDIENTES: Cada ingrediente en el arreglo 'ingredientes' DEBE incluir explícitamente su medida práctica (en tazas, cucharadas, piezas o porciones) Y su peso o equivalencia exacta en gramos/mililitros entre paréntesis. Ejemplos obligatorios de formato:\n"
-        "   - '1/2 taza de avena cocida (40g)'\n"
-        "   - '120g de pechuga de pollo a la plancha'\n"
-        "   - '1 taza de espinaca baby fresca (30g)'\n"
-        "   - '2 cdtas de aceite de oliva extra virgen (10g)'\n"
-        "   - '1 pieza mediana de manzana (120g)'\n"
+        "2. FORMATO EQUIVALENCIAS NUTRILIV SMAE: Cuando el formato sea 'EQUIVALENCIAS', clasifica estrictamente cada ingrediente de Desayuno, Comida y Cena en su grupo de alimento SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras'). Especifica el número de equivalentes/porciones en 'porciones' (ej. '2', '1', '0.5') y la descripción detallada con medida en tazas/piezas Y gramos en 'descripcion'. Ejemplos obligatorios:\n"
+        "   - Grupo: 'Cereales', porciones: '2', descripcion: '2 pzas de tostadas de maíz horneadas (30g)'\n"
+        "   - Grupo: 'POA', porciones: '2', descripcion: '120g de pechuga de pollo a la plancha'\n"
+        "   - Grupo: 'Grasas', porciones: '1', descripcion: '1/2 pza de aguacate (60g)'\n"
+        "   - Grupo: 'Frutas', porciones: '1', descripcion: '1 taza de fresas rebanadas (150g)'\n"
+        "   - Grupo: 'Verduras', porciones: '1', descripcion: '1 taza de pepino picado (120g)'\n"
         "3. NOTAS CLÍNICAS Y EVOLUCIÓN: Lee con extrema atención las notas del expediente y las notas de las consultas de seguimiento. Si las notas indican síntomas (ej. reflujo, estreñimiento, horarios complicados, pesadez nocturna, antojos de dulce o salado, etc.), adapta los alimentos para abordar directamente esas observaciones.\n"
         "4. EXCLUSIÓN ABSOLUTA: Jamás incluyas ingredientes reportados en 'alergias_alimentarias' ni en 'alimentos_no_agradan'.\n"
         "5. PREFERENCIAS: Incluye con frecuencia los alimentos en 'alimentos_preferidos'.\n"
         "6. PATOLOGÍAS: Adapta la selección a sus patologías (ej. hipotiroidismo, diabetes, hipertensión, SOP, colon irritable, etc.).\n"
         "7. ANTI-MONOTONÍA: Si se provee información del menú anterior, ofrece platillos frescos y variados sin repetir idénticamente la misma semana.\n"
         f"8. {format_instruction}\n"
-        "9. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, con títulos claros, sin viñetas ni puntos (para maximizar el espacio en tablas de Word). Organiza siempre los tiempos de comida en el eje vertical (filas: Desayuno, Colación Matutina, Comida, Colación Vespertina, Cena) y las opciones/días en el eje horizontal (columnas: Opción 1, 2, 3 o Lunes a Domingo)."
+        "9. TEXTO PARA PORTAPAPELES: 'formatted_clipboard_text' debe ser estéticamente impecable, organizado por filas de grupos SMAE y columnas de Menú 1, 2 y 3."
     )
 
     user_prompt = f"""
