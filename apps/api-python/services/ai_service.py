@@ -74,6 +74,94 @@ def _normalizar_menu(menu_json: dict) -> dict:
             if nuevas_eq: bloque["equivalencias"] = nuevas_eq
     return menu_json
 
+def sanitize_copilot_response(data: dict) -> dict:
+    """
+    Sanitizador y Guardraíl Post-IA para Copiloto Nutrilev:
+    1. Normaliza sinónimos de grupos SMAE a ['Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras'].
+    2. Normaliza cadenas de porciones ('1/2' -> '0.5', '2.0' -> '2').
+    3. Garantiza la simetría de los 5 grupos SMAE en cada tiempo principal (Desayuno, Comida, Cena) de los 3 menús.
+    """
+    if not isinstance(data, dict):
+        return data
+
+    format_type = data.get("format_type", "equivalencias")
+    if format_type != "equivalencias":
+        return data
+
+    group_synonyms = {
+        "cereal": "Cereales", "cereales": "Cereales", "cereal sin grasa": "Cereales", "cereales sin grasa": "Cereales",
+        "harina": "Cereales", "harinas": "Cereales", "pan": "Cereales",
+        "poa": "POA", "proteina": "POA", "proteína": "POA", "proteinas": "POA", "origen animal": "POA",
+        "carne": "POA", "carnes": "POA", "pollo": "POA", "pescado": "POA",
+        "grasa": "Grasas", "grasas": "Grasas", "grasa sin proteína": "Grasas", "grasas sin proteína": "Grasas", "aceite": "Grasas",
+        "fruta": "Frutas", "frutas": "Frutas",
+        "verdura": "Verduras", "verduras": "Verduras", "vegetal": "Verduras", "vegetales": "Verduras"
+    }
+
+    standard_groups = ["Cereales", "POA", "Grasas", "Frutas", "Verduras"]
+
+    def _normalize_group(g_str: str) -> str:
+        if not g_str:
+            return "Cereales"
+        g_clean = str(g_str).strip().lower()
+        return group_synonyms.get(g_clean, g_str.strip().capitalize())
+
+    def _normalize_porciones(p_str) -> str:
+        if p_str is None:
+            return "1"
+        s = str(p_str).strip()
+        if s == "1/2": return "0.5"
+        if s == "1 1/2": return "1.5"
+        if s == "2.0": return "2"
+        if s == "1.0": return "1"
+        if s.endswith(".0"): return s[:-2]
+        return s if s else "1"
+
+    menus = data.get("menus", [])
+    if isinstance(menus, list):
+        for m in menus:
+            if not isinstance(m, dict):
+                continue
+            for meal_key in ["desayuno", "comida", "cena"]:
+                meal_data = m.get(meal_key)
+                if not isinstance(meal_data, dict):
+                    continue
+                
+                eqs = meal_data.get("equivalencias", [])
+                normalized_eqs = []
+                seen_groups = set()
+
+                if isinstance(eqs, list):
+                    for eq in eqs:
+                        if not isinstance(eq, dict):
+                            continue
+                        norm_g = _normalize_group(eq.get("grupo"))
+                        norm_p = _normalize_porciones(eq.get("porciones"))
+                        desc = eq.get("descripcion", "")
+
+                        if norm_g in standard_groups and norm_g not in seen_groups:
+                            normalized_eqs.append({
+                                "porciones": norm_p,
+                                "grupo": norm_g,
+                                "descripcion": desc
+                            })
+                            seen_groups.add(norm_g)
+
+                # Rellenar grupos no presentes en la respuesta para mantener simetría visual
+                for g in standard_groups:
+                    if g not in seen_groups:
+                        normalized_eqs.append({
+                            "porciones": "1",
+                            "grupo": g,
+                            "descripcion": "—"
+                        })
+
+                # Ordenar por el orden estándar SMAE: Cereales, POA, Grasas, Frutas, Verduras
+                normalized_eqs.sort(key=lambda x: standard_groups.index(x["grupo"]) if x["grupo"] in standard_groups else 99)
+                meal_data["equivalencias"] = normalized_eqs
+
+    return data
+
 def get_base_menu_text() -> str:
     try:
         import os
@@ -852,6 +940,11 @@ def generate_menu_copilot_suggestion(
         "required": required_root
     }
 
+    from services.smae_calculator import calculate_smae_dietosintetico, build_smae_instruction_prompt
+
+    smae_diet_data = calculate_smae_dietosintetico(target_calories)
+    smae_prompt_instruction = build_smae_instruction_prompt(smae_diet_data) if resolved_format == "equivalencias" else ""
+
     from datetime import datetime
     WEEKDAYS_ES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
     today_idx = datetime.now().weekday()
@@ -861,7 +954,7 @@ def generate_menu_copilot_suggestion(
     format_instruction = (
         f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. El plan DEBE comenzar a partir del día de hoy ({ordered_days[0]}). Debes incluir EXACTAMENTE 7 días en el arreglo 'days' con 'day_name' en este orden secuencial de 7 días iniciando hoy: {ordered_days_str} con platillos distintos y variados para cada día."
         if resolved_format == "semanal"
-        else "ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones en el arreglo 'menus' (MENÚ 1, MENÚ 2, MENÚ 3). Para Desayuno, Comida y Cena en cada menú, debes desglosar en 'equivalencias' los grupos SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras') con sus porciones 'porciones' (Eq) e ingredientes 'descripcion' con tazas/piezas y gramos."
+        else f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones en el arreglo 'menus' (MENÚ 1, MENÚ 2, MENÚ 3). Para Desayuno, Comida y Cena en cada menú, debes desglosar en 'equivalencias' los grupos SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras') con sus porciones 'porciones' (Eq) e ingredientes 'descripcion' con tazas/piezas y gramos.\n\n{smae_prompt_instruction}"
     )
 
     system_prompt = (
@@ -907,6 +1000,8 @@ OBJETIVO CALÓRICO Y FORMATO:
 • Notas adicionales de la sesión: {extra_notes or 'Diseñar menú balanceado, variado y con preparaciones sencillas.'}
 • Referencia de menú anterior: {previous_menu_summary or 'No especificado.'}
 
+{smae_prompt_instruction}
+
 CATÁLOGO OFICIAL DE PLATILLOS NUTRILIV (Selecciona y combina preferentemente de esta lista de recetas oficiales):
 {catalog_text}
 
@@ -931,6 +1026,9 @@ Genera la sugerencia clínica en formato JSON cumpliendo con el schema requerido
             raw_text = response.text.strip()
             parsed = json.loads(raw_text)
             parsed["format_type"] = resolved_format
+            
+            # Sanitizar y normalizar respuesta post-IA
+            parsed = sanitize_copilot_response(parsed)
             return parsed
         except Exception as e:
             last_error = e
