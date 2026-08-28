@@ -365,13 +365,13 @@ export class PortalPage implements OnInit, OnDestroy {
     const remainingHours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
     if (remainingDays >= 1) {
-      return `Tiempo para ver tu menú: ${remainingDays} día${remainingDays > 1 ? 's' : ''}${remainingHours > 0 ? ' y ' + remainingHours + ' hora' + (remainingHours > 1 ? 's' : '') : ''}`;
+      return `Plan activo por: ${remainingDays} día${remainingDays > 1 ? 's' : ''}${remainingHours > 0 ? ' y ' + remainingHours + ' hora' + (remainingHours > 1 ? 's' : '') : ''}`;
     } else {
       const remainingMinutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
       if (remainingHours > 0) {
-        return `Tiempo para ver tu menú: ${remainingHours} hora${remainingHours > 1 ? 's' : ''}${remainingMinutes > 0 ? ' y ' + remainingMinutes + ' min' : ''}`;
+        return `Plan activo por: ${remainingHours} hora${remainingHours > 1 ? 's' : ''}${remainingMinutes > 0 ? ' y ' + remainingMinutes + ' min' : ''}`;
       }
-      return `Tiempo para ver tu menú: ${remainingMinutes} minuto${remainingMinutes > 1 ? 's' : ''}`;
+      return `Plan activo por: ${remainingMinutes} minuto${remainingMinutes > 1 ? 's' : ''}`;
     }
   });
 
