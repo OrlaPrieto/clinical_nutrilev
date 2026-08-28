@@ -948,11 +948,12 @@ def generate_menu_copilot_suggestion(
     from datetime import datetime
     WEEKDAYS_ES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
     today_idx = datetime.now().weekday()
-    ordered_days = [WEEKDAYS_ES[(today_idx + i) % 7] for i in range(7)]
+    start_idx = (today_idx + 1) % 7
+    ordered_days = [WEEKDAYS_ES[(start_idx + i) % 7] for i in range(7)]
     ordered_days_str = ", ".join([f"'{d}'" for d in ordered_days])
 
     format_instruction = (
-        f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. El plan DEBE comenzar a partir del día de hoy ({ordered_days[0]}). Debes incluir EXACTAMENTE 7 días en el arreglo 'days' con 'day_name' en este orden secuencial de 7 días iniciando hoy: {ordered_days_str} con platillos distintos y variados para cada día."
+        f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. El plan DEBE comenzar a partir de mañana ({ordered_days[0]}). Debes incluir EXACTAMENTE 7 días consecutivos en el arreglo 'days' con 'day_name' en este orden secuencial estricto iniciando mañana: {ordered_days_str} con platillos distintos y variados para cada día."
         if resolved_format == "semanal"
         else f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones en el arreglo 'menus' (MENÚ 1, MENÚ 2, MENÚ 3). Para Desayuno, Comida y Cena en cada menú, debes desglosar en 'equivalencias' los grupos SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras') con sus porciones 'porciones' (Eq) e ingredientes 'descripcion' con tazas/piezas y gramos.\n\n{smae_prompt_instruction}"
     )

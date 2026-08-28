@@ -287,7 +287,8 @@ def _build_weekly_table(doc, days: list):
 
     WEEKDAYS_ES = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"]
     today_idx = datetime.now().weekday()
-    day_names = [WEEKDAYS_ES[(today_idx + i) % 7] for i in range(7)]
+    start_idx = (today_idx + 1) % 7
+    day_names = [WEEKDAYS_ES[(start_idx + i) % 7] for i in range(7)]
     for i in range(7):
         cell = header_row.cells[i + 1]
         d_name = days[i].get("day_name", day_names[i]).upper() if (i < len(days) and days[i].get("day_name")) else day_names[i]
