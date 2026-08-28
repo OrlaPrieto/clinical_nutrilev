@@ -202,6 +202,7 @@ export class PatientService {
     calories?: number;
     extra_notes?: string;
     menu_format?: string;
+    num_options?: number;
   }): Promise<{ success: boolean; data: import('@shared/models/interfaces').MenuCopilotResponse }> {
     return firstValueFrom(
       this.http.post<{ success: boolean; data: import('@shared/models/interfaces').MenuCopilotResponse }>(

@@ -346,116 +346,122 @@ def _build_weekly_table(doc, days: list):
 def _build_equivalencias_table(doc, menus: list):
     """
     Construye la tabla oficial de Menú de Equivalencias Nutrilev (SMAE):
-    - 5 Columnas: Eq | Grupo | MENÚ 1 | MENÚ 2 | MENÚ 3
-    - Secciones: DESAYUNO, COMIDA, CENA (filas por grupos: Cereales, POA, Grasas, Frutas, Verduras)
-    - Banners horizontales para COLACIÓN MATUTINA y COLACIÓN VESPERTINA
+    - Soporta dinámicamente 3 o 5 columnas de menú (Eq | Grupo | MENÚ 1 | MENÚ 2 | MENÚ 3 | [MENÚ 4] | [MENÚ 5])
+    - Columnas Eq y Grupo compactas para maximizar el ancho de los platillos
+    - Paleta sobria y profesional (Slate / Nutrilev) sin colores estridentes
+    - Incluye todos los tiempos de comida (Desayuno, Colación Matutina, Comida, Colación Vespertina, Cena)
+      con Grupo, Eq y opciones correspondientes a cada columna de menú.
     """
     if not menus:
         return
 
-    # 1. Extraer colaciones globales o de cada menú
-    col_mat_desc = ""
-    col_vesp_desc = ""
-    for m in menus:
-        c1 = m.get("colacion_matutina", {})
-        c2 = m.get("colacion_vespertina", {})
-        if isinstance(c1, dict) and c1.get("descripcion") and not col_mat_desc:
-            col_mat_desc = c1.get("descripcion")
-        elif isinstance(c1, dict) and c1.get("platillo") and not col_mat_desc:
-            col_mat_desc = f"{c1.get('platillo')} ({', '.join([_clean_ingredient(i) for i in c1.get('ingredientes', []) if i])})"
+    num_menus = len(menus)
+    num_cols = 2 + num_menus
 
-        if isinstance(c2, dict) and c2.get("descripcion") and not col_vesp_desc:
-            col_vesp_desc = c2.get("descripcion")
-        elif isinstance(c2, dict) and c2.get("platillo") and not col_vesp_desc:
-            col_vesp_desc = f"{c2.get('platillo')} ({', '.join([_clean_ingredient(i) for i in c2.get('ingredientes', []) if i])})"
+    # Anchos calculados: Eq y Grupo compactos
+    # Para 3 menús: Eq 480, Grupo 980, Menús 4490 c/u (Total 14930 dxa)
+    # Para 5 menús: Eq 450, Grupo 900, Menús 2716 c/u (Total 14930 dxa)
+    eq_w = 450 if num_menus >= 5 else 480
+    grupo_w = 900 if num_menus >= 5 else 980
+    rem_w = 14930 - (eq_w + grupo_w)
+    each_menu_w = int(rem_w / num_menus)
+    col_widths = [eq_w, grupo_w] + [each_menu_w] * (num_menus - 1) + [rem_w - each_menu_w * (num_menus - 1)]
 
-    col_widths = [567, 1200, 4387, 4387, 4389]  # Total = 14930 dxa (~26.34 cm)
-    opt_bgs = ["1A7A6E", "E8762B", "7B3DB5"]
+    # Tamaño de tipografía dinámico según cantidad de columnas
+    dish_font_size = 6.2 if num_menus >= 5 else 7.0
+    tip_font_size = 5.8 if num_menus >= 5 else 6.5
 
-    main_meals = [
-        ("desayuno", "DESAYUNO", "1A7A6E"),
-        ("comida", "COMIDA", "E8762B"),
-        ("cena", "CENA", "7B3DB5")
+    all_meals = [
+        ("desayuno", "🍳 DESAYUNO"),
+        ("colacion_matutina", "🍏 COLACIÓN MATUTINA"),
+        ("comida", "🍲 COMIDA"),
+        ("colacion_vespertina", "🫐 COLACIÓN VESPERTINA"),
+        ("cena", "🌙 CENA")
     ]
-
-    # Recopilar filas que construiremos en la tabla unificada
-    # Tipos de fila:
-    # 'section_header': (label, bg_color)
-    # 'col_header': (m1_title, m2_title, m3_title)
-    # 'group_row': (eq_val, group_name, m1_desc, m2_desc, m3_desc)
-    # 'colacion_banner': (label, desc_text)
 
     rows_to_render = []
 
-    for m_key, m_label, m_color in main_meals:
-        # Verificar si algún menú tiene esta comida
+    for m_key, m_label in all_meals:
+        # Verificar si algún menú tiene este tiempo
         if not any(m.get(m_key) for m in menus):
             continue
 
-        # 1. Section Header
-        rows_to_render.append(("section_header", (m_label, m_color)))
+        # 1. Section Header Row
+        rows_to_render.append(("section_header", m_label))
 
-        # 2. Column Titles Row
-        t1 = menus[0].get(m_key, {}).get("nombre_platillo") or menus[0].get("title") or "MENÚ 1"
-        t2 = menus[1].get(m_key, {}).get("nombre_platillo") or menus[1].get("title") or "MENÚ 2" if len(menus) > 1 else "MENÚ 2"
-        t3 = menus[2].get(m_key, {}).get("nombre_platillo") or menus[2].get("title") or "MENÚ 3" if len(menus) > 2 else "MENÚ 3"
-        rows_to_render.append(("col_header", (t1, t2, t3)))
+        # 2. Column Titles Row (Eq, Grupo, MENÚ 1..N)
+        dish_titles = []
+        for idx, m in enumerate(menus):
+            meal_obj = m.get(m_key, {})
+            if isinstance(meal_obj, dict):
+                t = meal_obj.get("nombre_platillo") or meal_obj.get("platillo") or meal_obj.get("title") or f"MENÚ {idx + 1}"
+            else:
+                t = f"MENÚ {idx + 1}"
+            dish_titles.append(t)
 
-        # 3. Group rows
-        # Recopilar grupos SMAE
+        rows_to_render.append(("col_header", dish_titles))
+
+        # 3. Extraer grupos presentes en este tiempo de comida
         groups_in_meal = []
-        standard_groups = ["Cereales", "POA", "Grasas", "Frutas", "Verduras"]
-
         for m in menus:
             meal_data = m.get(m_key, {})
-            eqs = meal_data.get("equivalencias", [])
-            for eq in eqs:
-                g = eq.get("grupo")
-                if g and g not in groups_in_meal:
-                    groups_in_meal.append(g)
-
-        if not groups_in_meal:
-            groups_in_meal = standard_groups
-
-        for g_name in groups_in_meal:
-            # Obtener porción y descripciones para cada menú
-            eq_val = ""
-            m_descs = ["—", "—", "—"]
-
-            for idx, m in enumerate(menus[:3]):
-                meal_data = m.get(m_key, {})
+            if isinstance(meal_data, dict):
                 eqs = meal_data.get("equivalencias", [])
-                
-                # Buscar equivalencia de este grupo
-                found_eq = next((eq for eq in eqs if eq.get("grupo", "").lower() == g_name.lower()), None)
-                if found_eq:
-                    if not eq_val and found_eq.get("porciones"):
-                        eq_val = str(found_eq.get("porciones"))
-                    m_descs[idx] = found_eq.get("descripcion") or "—"
-                elif meal_data.get("ingredientes"):
-                    # Fallback si el menú viene en formato antiguo de ingredientes en lista
-                    ings = meal_data.get("ingredientes", [])
-                    clean_ings = [_clean_ingredient(i) for i in ings if i]
-                    if idx == 0 and not eq_val:
-                        eq_val = "1"
-                    if idx < len(clean_ings):
-                        m_descs[idx] = clean_ings[idx]
-                    elif clean_ings:
-                        m_descs[idx] = ", ".join(clean_ings)
+                if isinstance(eqs, list):
+                    for eq in eqs:
+                        if isinstance(eq, dict):
+                            g = eq.get("grupo")
+                            if g and g not in groups_in_meal:
+                                groups_in_meal.append(g)
+
+        # Fallback de grupos estándar según el tipo de comida
+        if not groups_in_meal:
+            if "colacion" in m_key:
+                groups_in_meal = ["Frutas", "Verduras"]
+            else:
+                groups_in_meal = ["Cereales", "POA", "Grasas", "Frutas", "Verduras"]
+
+        # Ordenar grupos en secuencia oficial SMAE
+        standard_order = ["Cereales", "POA", "Grasas", "Frutas", "Verduras"]
+        groups_in_meal.sort(key=lambda x: standard_order.index(x) if x in standard_order else 99)
+
+        # 4. Construir filas de grupos para este tiempo
+        for g_name in groups_in_meal:
+            eq_val = ""
+            m_descs = []
+
+            for idx, m in enumerate(menus):
+                meal_data = m.get(m_key, {})
+                desc = "—"
+
+                if isinstance(meal_data, dict):
+                    eqs = meal_data.get("equivalencias", [])
+                    if isinstance(eqs, list) and eqs:
+                        found_eq = next((eq for eq in eqs if isinstance(eq, dict) and eq.get("grupo", "").lower() == g_name.lower()), None)
+                        if found_eq:
+                            if not eq_val and found_eq.get("porciones"):
+                                eq_val = str(found_eq.get("porciones"))
+                            desc = found_eq.get("descripcion") or "—"
+                    elif meal_data.get("descripcion"):
+                        desc = str(meal_data.get("descripcion"))
+                        if not eq_val:
+                            eq_val = "1"
+                    elif meal_data.get("ingredientes"):
+                        clean_ings = [_clean_ingredient(i) for i in meal_data.get("ingredientes", []) if i]
+                        if clean_ings:
+                            desc = ", ".join(clean_ings)
+                        if not eq_val:
+                            eq_val = "1"
+
+                m_descs.append(desc)
 
             if not eq_val:
                 eq_val = "1"
 
-            rows_to_render.append(("group_row", (eq_val, g_name, m_descs[0], m_descs[1], m_descs[2])))
+            rows_to_render.append(("group_row", (eq_val, g_name, m_descs)))
 
-        # 4. Banner de colación después de Desayuno y Comida
-        if m_key == "desayuno" and col_mat_desc:
-            rows_to_render.append(("colacion_banner", ("🍎 COLACIÓN MATUTINA: ", col_mat_desc)))
-        elif m_key == "comida" and col_vesp_desc:
-            rows_to_render.append(("colacion_banner", ("🫐 COLACIÓN VESPERTINA: ", col_vesp_desc)))
-
-    # Crear la tabla unificada en Word
-    table = doc.add_table(rows=len(rows_to_render), cols=5)
+    # Crear tabla unificada en Word
+    table = doc.add_table(rows=len(rows_to_render), cols=num_cols)
     table.autofit = False
     _set_table_width(table, 14930)
     _apply_col_widths(table, col_widths)
@@ -464,25 +470,25 @@ def _build_equivalencias_table(doc, menus: list):
         row = table.rows[r_idx]
 
         if r_type == "section_header":
-            m_label, m_color = r_data
-            for c_idx in range(5):
+            m_label = r_data
+            for c_idx in range(num_cols):
                 cell = row.cells[c_idx]
-                _set_cell_bg(cell, m_color)
+                _set_cell_bg(cell, "1E293B")
                 _set_cell_no_borders(cell)
-                _set_cell_margins(cell, top=30, left=60, bottom=30, right=60)
+                _set_cell_margins(cell, top=25, left=50, bottom=25, right=50)
                 _set_cell_valign(cell, "center")
                 if c_idx == 0:
                     p = cell.paragraphs[0]
                     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                     p.paragraph_format.space_before = Pt(0)
                     p.paragraph_format.space_after = Pt(0)
-                    _add_run(p, f"  {m_label}", bold=True, size_pt=8.5, color="FFFFFF")
+                    _add_run(p, f"  {m_label}", bold=True, size_pt=8.0, color="FFFFFF")
 
         elif r_type == "col_header":
-            t1, t2, t3 = r_data
-            for c_idx in range(5):
+            dish_titles = r_data
+            for c_idx in range(num_cols):
                 cell = row.cells[c_idx]
-                _set_cell_margins(cell, top=30, left=40, bottom=30, right=40)
+                _set_cell_margins(cell, top=25, left=35, bottom=25, right=35)
                 _set_cell_valign(cell, "center")
                 p = cell.paragraphs[0]
                 p.paragraph_format.space_before = Pt(0)
@@ -491,34 +497,26 @@ def _build_equivalencias_table(doc, menus: list):
                 if c_idx == 0:
                     _set_cell_bg(cell, "1E293B")
                     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    _add_run(p, "Eq", bold=True, size_pt=7.5, color="FFFFFF")
+                    _add_run(p, "Eq", bold=True, size_pt=7.2, color="FFFFFF")
                 elif c_idx == 1:
                     _set_cell_bg(cell, "334155")
                     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    _add_run(p, "Grupo", bold=True, size_pt=7.5, color="FFFFFF")
+                    _add_run(p, "Grupo", bold=True, size_pt=7.2, color="FFFFFF")
                 else:
                     opt_idx = c_idx - 2
-                    title_text = [t1, t2, t3][opt_idx]
-                    _set_cell_bg(cell, opt_bgs[opt_idx % 3])
-                    _set_cell_no_borders(cell)
+                    title_text = dish_titles[opt_idx] if opt_idx < len(dish_titles) else f"MENÚ {opt_idx + 1}"
+                    _set_cell_bg(cell, "334155")
+                    _set_cell_borders(cell, "475569", 2)
                     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    _add_run(p, f"MENÚ {opt_idx + 1}: {title_text.upper()}", bold=True, size_pt=7.5, color="FFFFFF")
+                    _add_run(p, f"MENÚ {opt_idx + 1}: {title_text.upper()}", bold=True, size_pt=dish_font_size, color="FFFFFF")
 
         elif r_type == "group_row":
-            eq_val, g_name, d1, d2, d3 = r_data
-            group_colors_map = {
-                "Cereales": ("664D00", "FFF3CD"),
-                "POA":      ("0C5460", "D1ECF1"),
-                "Grasas":   ("7D4E00", "FDEBD0"),
-                "Verduras": ("155724", "D4EDDA"),
-                "Frutas":   ("7A4000", "FDE8C8"),
-            }
-            num_color, bg_color = group_colors_map.get(g_name, ("334155", "F8FAFC"))
+            eq_val, g_name, m_descs = r_data
 
-            for c_idx in range(5):
+            for c_idx in range(num_cols):
                 cell = row.cells[c_idx]
-                _set_cell_borders(cell, "CBD5E1", 2)
-                _set_cell_margins(cell, 25, 40, 25, 40)
+                _set_cell_borders(cell, "E2E8F0", 2)
+                _set_cell_margins(cell, 20, 35, 20, 35)
                 _set_cell_valign(cell, "center")
                 p = cell.paragraphs[0]
                 p.paragraph_format.space_before = Pt(0)
@@ -526,30 +524,17 @@ def _build_equivalencias_table(doc, menus: list):
                 p.paragraph_format.line_spacing = 1.0
 
                 if c_idx == 0:
-                    _set_cell_bg(cell, bg_color)
+                    _set_cell_bg(cell, "F1F5F9")
                     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    _add_run(p, str(eq_val), bold=True, size_pt=7.5, color=num_color)
+                    _add_run(p, str(eq_val), bold=True, size_pt=7.2, color="1E293B")
                 elif c_idx == 1:
-                    _set_cell_bg(cell, bg_color)
+                    _set_cell_bg(cell, "F8FAFC")
                     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    _add_run(p, g_name, bold=True, size_pt=7.2, color=num_color)
+                    _add_run(p, g_name, bold=True, size_pt=7.0, color="334155")
                 else:
                     opt_idx = c_idx - 2
-                    desc_text = [d1, d2, d3][opt_idx]
+                    desc_text = m_descs[opt_idx] if opt_idx < len(m_descs) else "—"
+                    _set_cell_bg(cell, "FFFFFF" if r_idx % 2 == 0 else "FAFAFA")
                     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    _add_run(p, desc_text, size_pt=7.0, color="0F172A")
+                    _add_run(p, desc_text, size_pt=dish_font_size, color="0F172A")
 
-        elif r_type == "colacion_banner":
-            title_text, desc_text = r_data
-            for c_idx in range(5):
-                cell = row.cells[c_idx]
-                _set_cell_bg(cell, "ECFDF5")
-                _set_cell_borders(cell, "10B981", 3)
-                _set_cell_margins(cell, top=30, left=80, bottom=30, right=80)
-                _set_cell_valign(cell, "center")
-                if c_idx == 0:
-                    p = cell.paragraphs[0]
-                    p.paragraph_format.space_before = Pt(0)
-                    p.paragraph_format.space_after = Pt(0)
-                    _add_run(p, title_text, bold=True, size_pt=7.5, color="065F46")
-                    _add_run(p, desc_text, size_pt=7.2, color="047857")

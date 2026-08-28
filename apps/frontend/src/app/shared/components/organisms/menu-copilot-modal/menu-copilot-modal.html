@@ -41,10 +41,28 @@
         
         <!-- Format Selector Toggle (High Visibility) -->
         <div class="md:col-span-4 space-y-1">
-          <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
-            <app-a-icon name="view_agenda" size="13px" customClass="text-indigo-500"></app-a-icon>
-            Estructura del Menú
-          </label>
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-bold text-nutri-text/70 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
+              <app-a-icon name="view_agenda" size="13px" customClass="text-indigo-500"></app-a-icon>
+              Estructura del Menú
+            </label>
+            @if (selectedFormat() === 'equivalencias' || (selectedFormat() === 'auto' && !isWeekly())) {
+              <div class="flex items-center gap-1 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-lg p-0.5 shadow-xs">
+                <button type="button" 
+                        (click)="numEquivalenceOptions.set(3)"
+                        [ngClass]="numEquivalenceOptions() === 3 ? 'bg-nutri-rose text-white font-black' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white font-medium'"
+                        class="px-2 py-0.5 rounded text-[10px] transition-all cursor-pointer">
+                  3 Op.
+                </button>
+                <button type="button" 
+                        (click)="numEquivalenceOptions.set(5)"
+                        [ngClass]="numEquivalenceOptions() === 5 ? 'bg-nutri-rose text-white font-black' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white font-medium'"
+                        class="px-2 py-0.5 rounded text-[10px] transition-all cursor-pointer">
+                  5 Op.
+                </button>
+              </div>
+            }
+          </div>
           <div class="grid grid-cols-2 gap-1 p-1 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 rounded-xl">
             <button type="button"
                     (click)="onFormatChange('semanal')"
@@ -56,7 +74,7 @@
                     (click)="onFormatChange('equivalencias')"
                     [ngClass]="selectedFormat() === 'equivalencias' || (selectedFormat() === 'auto' && !isWeekly()) ? 'bg-nutri-rose text-white shadow-sm font-black' : 'text-nutri-text/70 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold'"
                     class="py-1.5 px-2 rounded-lg text-xs transition-all flex items-center justify-center gap-1 cursor-pointer">
-              <span>📋 Equivalencias (3 Op.)</span>
+              <span>📋 Equivalencias</span>
             </button>
           </div>
         </div>
@@ -199,7 +217,7 @@
                     Estrategia Clínica
                   </span>
                   <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-nutri-text dark:text-slate-200">
-                    Formato: {{ isWeekly() ? 'Semanal (7 Días Lunes a Domingo)' : 'Equivalencias (3 Opciones)' }}
+                    Formato: {{ isWeekly() ? 'Semanal (7 Días)' : ('Equivalencias (' + (copilotData()?.menus?.length || numEquivalenceOptions()) + ' Opciones)') }}
                   </span>
                   @if (deltaWeight() || deltaFat()) {
                     <div class="flex items-center gap-1.5 text-[10px] font-bold text-nutri-text/70 dark:text-slate-300">

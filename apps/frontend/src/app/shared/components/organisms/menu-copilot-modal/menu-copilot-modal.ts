@@ -30,6 +30,7 @@ export class MenuCopilotModalComponent {
   targetCalories = signal<number>(1800);
   extraNotes = signal<string>('');
   selectedFormat = signal<'auto' | 'equivalencias' | 'semanal'>('auto');
+  numEquivalenceOptions = signal<3 | 5>(3);
   weeklyDisplayMode = signal<'tabs' | 'all'>('tabs');
   isLoading = signal<boolean>(false);
   isPreloadedFromDb = signal<boolean>(false);
@@ -144,7 +145,8 @@ export class MenuCopilotModalComponent {
         previous_menu_summary: p.menu_url || (p.current_menus && p.current_menus.length > 0 ? p.current_menus[0].name : ''),
         calories: this.targetCalories(),
         extra_notes: this.extraNotes(),
-        menu_format: this.selectedFormat()
+        menu_format: this.selectedFormat(),
+        num_options: this.numEquivalenceOptions()
       });
 
       if (response && response.success && response.data) {

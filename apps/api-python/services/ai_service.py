@@ -122,7 +122,7 @@ def sanitize_copilot_response(data: dict) -> dict:
         for m in menus:
             if not isinstance(m, dict):
                 continue
-            for meal_key in ["desayuno", "comida", "cena"]:
+            for meal_key in ["desayuno", "colacion_matutina", "comida", "colacion_vespertina", "cena"]:
                 meal_data = m.get(meal_key)
                 if not isinstance(meal_data, dict):
                     continue
@@ -147,17 +147,20 @@ def sanitize_copilot_response(data: dict) -> dict:
                             })
                             seen_groups.add(norm_g)
 
-                # Rellenar grupos no presentes en la respuesta para mantener simetría visual
-                for g in standard_groups:
-                    if g not in seen_groups:
-                        normalized_eqs.append({
-                            "porciones": "1",
-                            "grupo": g,
-                            "descripcion": "—"
-                        })
+                # Para comidas principales, rellenar los 5 grupos SMAE para mantener simetría
+                if meal_key in ["desayuno", "comida", "cena"]:
+                    for g in standard_groups:
+                        if g not in seen_groups:
+                            normalized_eqs.append({
+                                "porciones": "1",
+                                "grupo": g,
+                                "descripcion": "—"
+                            })
+                    # Ordenar por el orden estándar SMAE: Cereales, POA, Grasas, Frutas, Verduras
+                    normalized_eqs.sort(key=lambda x: standard_groups.index(x["grupo"]) if x["grupo"] in standard_groups else 99)
+                elif normalized_eqs:
+                    normalized_eqs.sort(key=lambda x: standard_groups.index(x["grupo"]) if x["grupo"] in standard_groups else 99)
 
-                # Ordenar por el orden estándar SMAE: Cereales, POA, Grasas, Frutas, Verduras
-                normalized_eqs.sort(key=lambda x: standard_groups.index(x["grupo"]) if x["grupo"] in standard_groups else 99)
                 meal_data["equivalencias"] = normalized_eqs
 
     return data
@@ -721,13 +724,14 @@ def generate_menu_copilot_suggestion(
     target_calories: int = 1800,
     extra_notes: str = "",
     menu_format: str = "auto",
+    num_options: int = 3,
     gemini_key: str = ""
 ) -> dict:
     """
     Copiloto Clínico IA: Genera sugerencias estructuradas de menús, macros y equivalencias
     basadas en el catálogo oficial de 203 platillos de Nutrilev, notas clínicas del paciente,
     delta de avance corporal, historial clínico, patologías y menú anterior.
-    Soporta formato 'equivalencias' (3 opciones intercambiables) o 'semanal' (7 días Lunes a Domingo).
+    Soporta formato 'equivalencias' (3 o 5 opciones intercambiables) o 'semanal' (7 días Lunes a Domingo).
     """
     import json
     import time
@@ -739,6 +743,7 @@ def generate_menu_copilot_suggestion(
 
     client = genai.Client(api_key=gemini_key)
     resolved_format = detect_target_menu_format(menu_format, previous_menu_summary or "")
+    num_menus = 5 if int(num_options) == 5 else 3
 
     # 1. Formatear delta de progreso corporal
     delta_lines = []
@@ -869,7 +874,7 @@ def generate_menu_copilot_suggestion(
         meal_eq_schema = {
             "type": "OBJECT",
             "properties": {
-                "nombre_platillo": {"type": "STRING", "description": "Nombre o título breve del platillo (ej. TOSTADAS CON COTTAGE)"},
+                "nombre_platillo": {"type": "STRING", "description": "Nombre o título breve del platillo o colación (ej. TOSTADAS CON COTTAGE)"},
                 "equivalencias": {
                     "type": "ARRAY",
                     "description": "Desglose obligatorio de ingredientes por grupos SMAE (Cereales, POA, Grasas, Frutas, Verduras).",
@@ -877,14 +882,6 @@ def generate_menu_copilot_suggestion(
                 }
             },
             "required": ["nombre_platillo", "equivalencias"]
-        }
-
-        colacion_schema = {
-            "type": "OBJECT",
-            "properties": {
-                "descripcion": {"type": "STRING", "description": "Descripción de la colación con cantidades y gramos (ej. '2 pzas de naranja + 1 taza de jícama (150g)')"}
-            },
-            "required": ["descripcion"]
         }
 
         content_properties = {
@@ -912,16 +909,16 @@ def generate_menu_copilot_suggestion(
             },
             "menus": {
                 "type": "ARRAY",
-                "description": "3 propuestas completas de menú (Opción 1, Opción 2, Opción 3) en formato oficial SMAE Nutrilev.",
+                "description": f"{num_menus} propuestas completas de menú (MENÚ 1 a MENÚ {num_menus}) en formato oficial SMAE Nutrilev.",
                 "items": {
                     "type": "OBJECT",
                     "properties": {
                         "id": {"type": "INTEGER"},
                         "title": {"type": "STRING", "description": "Título en mayúsculas del menú (ej. MENÚ 1 TOSTADAS DE POLLO)"},
                         "desayuno": meal_eq_schema,
-                        "colacion_matutina": colacion_schema,
+                        "colacion_matutina": meal_eq_schema,
                         "comida": meal_eq_schema,
-                        "colacion_vespertina": colacion_schema,
+                        "colacion_vespertina": meal_eq_schema,
                         "cena": meal_eq_schema
                     },
                     "required": ["id", "title", "desayuno", "comida", "cena"]
@@ -955,7 +952,7 @@ def generate_menu_copilot_suggestion(
     format_instruction = (
         f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'SEMANAL'. El plan DEBE comenzar a partir de mañana ({ordered_days[0]}). Debes incluir EXACTAMENTE 7 días consecutivos en el arreglo 'days' con 'day_name' en este orden secuencial estricto iniciando mañana: {ordered_days_str} con platillos distintos y variados para cada día."
         if resolved_format == "semanal"
-        else f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir 3 opciones en el arreglo 'menus' (MENÚ 1, MENÚ 2, MENÚ 3). Para Desayuno, Comida y Cena en cada menú, debes desglosar en 'equivalencias' los grupos SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras') con sus porciones 'porciones' (Eq) e ingredientes 'descripcion' con tazas/piezas y gramos.\n\n{smae_prompt_instruction}"
+        else f"ESTRUCTURA OBJETIVO OBLIGATORIA: Generar un plan en formato 'EQUIVALENCIAS'. Debes incluir EXACTAMENTE {num_menus} opciones en el arreglo 'menus' (MENÚ 1 a MENÚ {num_menus}). Para Desayuno, Colación Matutina, Comida, Colación Vespertina y Cena en cada menú, debes desglosar en 'equivalencias' los grupos SMAE ('Cereales', 'POA', 'Grasas', 'Frutas', 'Verduras') con sus porciones 'porciones' (Eq) e ingredientes 'descripcion' con tazas/piezas y gramos.\n\n{smae_prompt_instruction}"
     )
 
     system_prompt = (
