@@ -558,15 +558,31 @@ export class MenuCopilotModalComponent {
   }
 
   private formatMealCellHtml(dish: any): string {
-    if (!dish || !dish.platillo) return '<span style="color: #94a3b8; font-style: italic;">Sin platillo asignado</span>';
+    if (!dish) return '<span style="color: #94a3b8; font-style: italic;">Sin platillo asignado</span>';
     
-    let html = `<div style="font-weight: bold; color: #0f172a; margin-bottom: 3px; font-size: 11px;">${this.escapeHtml(dish.platillo)}</div>`;
+    const title = dish.nombre_platillo || dish.platillo || '';
+    let html = '';
     
-    if (dish.ingredientes && dish.ingredientes.length > 0) {
+    if (title) {
+      html += `<div style="font-weight: bold; color: #0f172a; margin-bottom: 3px; font-size: 11px;">${this.escapeHtml(title)}</div>`;
+    }
+    
+    if (dish.equivalencias && dish.equivalencias.length > 0) {
+      const eqs = dish.equivalencias
+        .map((eq: any) => `<span style="font-weight: bold; color: #0f172a;">[${this.escapeHtml(eq.grupo)} ${eq.porciones} Eq]:</span> ${this.escapeHtml(eq.descripcion)}`)
+        .join('<br/>');
+      html += `<div style="color: #334155; font-size: 10.5px; line-height: 1.3; margin-bottom: 3px;">${eqs}</div>`;
+    } else if (dish.descripcion) {
+      html += `<div style="color: #334155; font-size: 10.5px; line-height: 1.3; margin-bottom: 3px;">${this.escapeHtml(dish.descripcion)}</div>`;
+    } else if (dish.ingredientes && dish.ingredientes.length > 0) {
       const cleanIngs = dish.ingredientes
         .map((ing: string) => this.escapeHtml(ing.replace(/^[•\-\*\s]+/, '')))
         .join('<br/>');
       html += `<div style="color: #334155; font-size: 10.5px; line-height: 1.3; margin-bottom: 3px;">${cleanIngs}</div>`;
+    }
+    
+    if (!html) {
+      return '<span style="color: #94a3b8; font-style: italic;">Sin platillo asignado</span>';
     }
     
     if (dish.preparacion_rapida) {

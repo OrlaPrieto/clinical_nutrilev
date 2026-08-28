@@ -158,10 +158,50 @@ def sanitize_copilot_response(data: dict) -> dict:
                             })
                     # Ordenar por el orden estándar SMAE: Cereales, POA, Grasas, Frutas, Verduras
                     normalized_eqs.sort(key=lambda x: standard_groups.index(x["grupo"]) if x["grupo"] in standard_groups else 99)
-                elif normalized_eqs:
+                elif meal_key in ["colacion_matutina", "colacion_vespertina"]:
+                    # Si no hay equivalencias en la colación pero hay descripción
+                    if not normalized_eqs and meal_data.get("descripcion"):
+                        desc = str(meal_data.get("descripcion"))
+                        normalized_eqs.append({
+                            "porciones": "1",
+                            "grupo": "Frutas",
+                            "descripcion": desc
+                        })
+                    elif not normalized_eqs:
+                        default_desc = "1 taza de fresas o manzana rebanada (150g)" if meal_key == "colacion_matutina" else "1 taza de pepino y jícama con limón (120g)"
+                        default_grp = "Frutas" if meal_key == "colacion_matutina" else "Verduras"
+                        normalized_eqs.append({
+                            "porciones": "1",
+                            "grupo": default_grp,
+                            "descripcion": default_desc
+                        })
                     normalized_eqs.sort(key=lambda x: standard_groups.index(x["grupo"]) if x["grupo"] in standard_groups else 99)
 
                 meal_data["equivalencias"] = normalized_eqs
+
+                # Asegurar nombre_platillo
+                if not meal_data.get("nombre_platillo") and not meal_data.get("platillo"):
+                    if meal_key == "colacion_matutina":
+                        meal_data["nombre_platillo"] = "Fruta fresca con verdura"
+                    elif meal_key == "colacion_vespertina":
+                        meal_data["nombre_platillo"] = "Snack saludable"
+                    elif meal_data.get("descripcion"):
+                        meal_data["nombre_platillo"] = str(meal_data.get("descripcion"))[:40]
+
+            # Garantizar que existan los objetos de colación en el menú
+            for col_k, def_title, def_grp, def_desc in [
+                ("colacion_matutina", "Fruta de temporada", "Frutas", "1 pza de manzana o 1.5 tazas de fresas (150g)"),
+                ("colacion_vespertina", "Verdura con limón", "Verduras", "1 taza de jícama y pepino picado (130g)")
+            ]:
+                if col_k not in m or not isinstance(m.get(col_k), dict):
+                    m[col_k] = {
+                        "nombre_platillo": def_title,
+                        "equivalencias": [{
+                            "porciones": "1",
+                            "grupo": def_grp,
+                            "descripcion": def_desc
+                        }]
+                    }
 
     return data
 
@@ -851,7 +891,7 @@ def generate_menu_copilot_suggestion(
                         "colacion_vespertina": meal_item_schema,
                         "cena": meal_item_schema
                     },
-                    "required": ["id", "day_name", "desayuno", "comida", "cena"]
+                    "required": ["id", "day_name", "desayuno", "colacion_matutina", "comida", "colacion_vespertina", "cena"]
                 }
             },
             "formatted_clipboard_text": {
@@ -921,7 +961,7 @@ def generate_menu_copilot_suggestion(
                         "colacion_vespertina": meal_eq_schema,
                         "cena": meal_eq_schema
                     },
-                    "required": ["id", "title", "desayuno", "comida", "cena"]
+                    "required": ["id", "title", "desayuno", "colacion_matutina", "comida", "colacion_vespertina", "cena"]
                 }
             },
             "formatted_clipboard_text": {
