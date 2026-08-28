@@ -191,7 +191,7 @@
                                       'text-amber-600 dark:text-amber-400 font-semibold': s.status === 'scheduled',
                                       'text-slate-400 dark:text-slate-500': s.status === 'pending'
                                   }">
-                                {{ s.status === 'completed' ? (s.dateLabel.split(' ')[0] + ' ' + (s.dateLabel.split(' ')[1] || '')) : (s.status === 'scheduled' ? 'Próxima' : 'Pendiente') }}
+                                {{ s.shortDateLabel }}
                             </span>
                         </div>
                     }
@@ -235,6 +235,11 @@
                             </div>
                         }
                     </div>
+
+                    <!-- Nota aclaratoria de fechas tentativas -->
+                    <p class="text-[9px] text-slate-400 dark:text-slate-500 italic px-1 pt-1">
+                        * Las fechas de las citas restantes se calculan de manera tentativa cada semana y se actualizarán automáticamente cuando agendes cada sesión con tu nutrióloga.
+                    </p>
                 </div>
             }
         </div>

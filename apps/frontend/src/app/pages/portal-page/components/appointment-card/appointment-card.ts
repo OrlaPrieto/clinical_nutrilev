@@ -8,8 +8,10 @@ export interface PackageSessionItem {
   sessionNumber: number;
   status: 'completed' | 'scheduled' | 'pending';
   dateLabel: string;
+  shortDateLabel: string;
   badgeText: string;
   summary: string;
+  isTentative: boolean;
   weight?: string | number;
 }
 
@@ -51,51 +53,104 @@ export class AppointmentCardComponent {
     if (total <= 0) return [];
 
     const completedCount = this.completedPlanCitas();
-    const history = [...this.progressHistory()];
-    // Si el historial viene del más reciente al más antiguo, invertimos los N completados
-    const completedProgress = history.slice(0, completedCount).reverse();
+    
+    // Historial ordenado cronológicamente (más antiguo al más reciente)
+    const sortedHistory = [...this.progressHistory()]
+      .filter(p => p.date || (p as any).created_at)
+      .sort((a, b) => new Date(a.date || (a as any).created_at!).getTime() - new Date(b.date || (b as any).created_at!).getTime());
 
-    const hasNext = this.nextAppointment()?.hasAppointment && this.nextAppointment()?.status !== 'cancelled';
+    const nextApt = this.nextAppointment();
+    const hasNextScheduled = !!(nextApt?.hasAppointment && nextApt?.start && nextApt?.status !== 'cancelled');
+
+    // Determinar la fecha base para proyectar las citas futuras:
+    // 1) Si hay próxima cita agendada en calendario, usar esa fecha
+    // 2) Si no, usar la fecha de la última cita completada
+    // 3) Si no hay citas previas, usar la fecha de creación del menú o la fecha de hoy
+    let baseFutureDate: Date;
+    let baseFutureSessionIndex = completedCount;
+
+    if (hasNextScheduled) {
+      baseFutureDate = new Date(nextApt!.start!);
+      baseFutureSessionIndex = completedCount + 1;
+    } else if (sortedHistory.length > 0) {
+      const lastProg = sortedHistory[sortedHistory.length - 1];
+      baseFutureDate = new Date(lastProg.date || (lastProg as any).created_at);
+    } else if (this.patient()?.menu_created_at) {
+      baseFutureDate = new Date(this.patient()!.menu_created_at!);
+    } else {
+      baseFutureDate = new Date();
+    }
+
     const items: PackageSessionItem[] = [];
 
     for (let i = 1; i <= total; i++) {
       if (i <= completedCount) {
-        const prog = completedProgress[i - 1];
-        let dateStr = 'Asistió';
+        // Cita completada
+        const prog = sortedHistory[i - 1];
+        let dateObj: Date | null = null;
         if (prog) {
-          const rawDate = prog.date || (prog as any).created_at;
-          if (rawDate) {
-            try {
-              const d = new Date(rawDate);
-              dateStr = d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
-            } catch (e) {
-              dateStr = String(rawDate);
-            }
+          const raw = prog.date || (prog as any).created_at;
+          if (raw) {
+            const parsed = new Date(raw);
+            if (!isNaN(parsed.getTime())) dateObj = parsed;
           }
         }
+
+        const dateLabel = dateObj 
+          ? dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+          : 'Asistió';
+        const shortDateLabel = dateObj
+          ? dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+          : 'Asistió';
+
         items.push({
           sessionNumber: i,
           status: 'completed',
-          dateLabel: dateStr,
+          dateLabel,
+          shortDateLabel,
           badgeText: 'Asistió ✅',
-          summary: prog?.weight ? `Peso: ${prog.weight} kg` : (i === 1 ? 'Consulta Inicial' : 'Seguimiento completado'),
+          summary: prog?.weight ? `Peso registrado: ${prog.weight} kg` : (i === 1 ? 'Consulta Inicial' : 'Seguimiento completado'),
+          isTentative: false,
           weight: prog?.weight
         });
-      } else if (i === completedCount + 1 && hasNext) {
+      } else if (i === completedCount + 1 && hasNextScheduled) {
+        // Próxima cita ya agendada en Google Calendar
+        const aptDate = new Date(nextApt!.start!);
+        const dateLabel = !isNaN(aptDate.getTime())
+          ? aptDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+          : (this.appointmentDateStr() || 'Próxima consulta');
+        const shortDateLabel = !isNaN(aptDate.getTime())
+          ? aptDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+          : 'Próxima';
+
+        const isConfirmed = nextApt?.status === 'confirmed';
         items.push({
           sessionNumber: i,
           status: 'scheduled',
-          dateLabel: this.appointmentDateStr() || 'Próxima cita agendada',
-          badgeText: this.nextAppointment()?.status === 'confirmed' ? 'Confirmada 🟡' : 'Por confirmar 🟡',
-          summary: 'Próxima consulta en agenda'
+          dateLabel,
+          shortDateLabel,
+          badgeText: isConfirmed ? 'Confirmada 🟡' : 'Por confirmar 🟡',
+          summary: 'Próxima consulta en agenda',
+          isTentative: false
         });
       } else {
+        // Citas restantes: Fechas tentativas proyectadas a intervalos semanales (cada 7 días)
+        const stepsFromBase = i - baseFutureSessionIndex;
+        const daysToAdd = Math.max(1, stepsFromBase) * 7;
+        const projectedDate = new Date(baseFutureDate);
+        projectedDate.setDate(projectedDate.getDate() + daysToAdd);
+
+        const dateLabel = projectedDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+        const shortDateLabel = `~ ${projectedDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}`;
+
         items.push({
           sessionNumber: i,
           status: 'pending',
-          dateLabel: 'Por agendar',
-          badgeText: 'Disponible ⚪',
-          summary: 'Sesión restante'
+          dateLabel: `${dateLabel} (Tentativa)`,
+          shortDateLabel,
+          badgeText: 'Tentativa ⚪',
+          summary: 'Fecha tentativa estimada (sujeta a cambios al agendar)',
+          isTentative: true
         });
       }
     }
