@@ -143,6 +143,7 @@ export interface PatientProgress {
   pliegue_cutaneo?: number | string | null;
   notes?: string | null;
   date?: string;
+  created_at?: string | null;
   numero_cita?: number | string | null;
 }
 
