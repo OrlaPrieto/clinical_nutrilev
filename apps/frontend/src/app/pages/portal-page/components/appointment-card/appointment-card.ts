@@ -57,7 +57,7 @@ export class AppointmentCardComponent {
         const prog = completedProgress[i - 1];
         let dateStr = 'Asistió';
         if (prog) {
-          const rawDate = prog.created_at || prog.date;
+          const rawDate = prog.date || (prog as any).created_at;
           if (rawDate) {
             try {
               const d = new Date(rawDate);
