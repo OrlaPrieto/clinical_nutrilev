@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../../../shared/components/atoms/icon/icon';
 import { Patient, PatientProgress } from '@shared/models/interfaces';
 import { Appointment } from '../../../../services/appointment.service';
+import { environment } from '../../../../../environments/environment';
 
 export interface PackageSessionItem {
   sessionNumber: number;
@@ -46,6 +47,12 @@ export class AppointmentCardComponent {
     const total = this.totalPlanCitas();
     if (!total) return 0;
     return Math.min(100, Math.round((this.completedPlanCitas() / total) * 100));
+  });
+
+  menuDurationDays = computed(() => {
+    const raw = this.patient()?.plan_duration_days;
+    const val = raw != null ? Number(raw) : environment.menuDurationDays;
+    return (val > 0 && val < 9999) ? val : 7;
   });
 
   sessionsTimeline = computed<PackageSessionItem[]>(() => {
@@ -134,9 +141,10 @@ export class AppointmentCardComponent {
           isTentative: false
         });
       } else {
-        // Citas restantes: Fechas tentativas proyectadas a intervalos semanales (cada 7 días)
+        // Citas restantes: Fechas tentativas proyectadas según la vigencia del menú (plan_duration_days)
+        const intervalDays = this.menuDurationDays();
         const stepsFromBase = i - baseFutureSessionIndex;
-        const daysToAdd = Math.max(1, stepsFromBase) * 7;
+        const daysToAdd = Math.max(1, stepsFromBase) * intervalDays;
         const projectedDate = new Date(baseFutureDate);
         projectedDate.setDate(projectedDate.getDate() + daysToAdd);
 
@@ -149,7 +157,7 @@ export class AppointmentCardComponent {
           dateLabel: `${dateLabel} (Tentativa)`,
           shortDateLabel,
           badgeText: 'Tentativa ⚪',
-          summary: 'Fecha tentativa estimada (sujeta a cambios al agendar)',
+          summary: `Fecha tentativa según vigencia del menú (${intervalDays} días)`,
           isTentative: true
         });
       }
