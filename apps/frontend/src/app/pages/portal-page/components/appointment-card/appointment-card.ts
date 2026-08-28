@@ -34,11 +34,17 @@ export class AppointmentCardComponent {
   cancel = output<void>();
 
   showDetailsModal = signal<boolean>(false);
+  showDetailedTimeline = signal<boolean>(false);
 
   totalPlanCitas = computed(() => Number(this.patient()?.plan_citas || 0));
   completedPlanCitas = computed(() => Number(this.patient()?.plan_citas_completadas || 0));
   remainingPlanCitas = computed(() => Math.max(0, this.totalPlanCitas() - this.completedPlanCitas()));
   isPackageCompleted = computed(() => this.totalPlanCitas() > 0 && this.completedPlanCitas() >= this.totalPlanCitas());
+  percentageCompleted = computed(() => {
+    const total = this.totalPlanCitas();
+    if (!total) return 0;
+    return Math.min(100, Math.round((this.completedPlanCitas() / total) * 100));
+  });
 
   sessionsTimeline = computed<PackageSessionItem[]>(() => {
     const total = this.totalPlanCitas();

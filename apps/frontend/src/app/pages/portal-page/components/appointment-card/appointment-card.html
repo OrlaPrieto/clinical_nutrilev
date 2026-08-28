@@ -1,69 +1,67 @@
-<div class="space-y-6 mb-6">
+<div class="space-y-4 mb-6">
     <!-- Fila Superior: Próxima Cita & Resumen del Paquete -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <!-- Widget de Siguiente Cita -->
         <div [class]="totalPlanCitas() > 0 ? 'lg:col-span-2' : 'lg:col-span-3'">
             @if (nextAppointment() && nextAppointment()?.hasAppointment) {
-                <div class="relative overflow-hidden rounded-[2rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-5 sm:p-6 shadow-md transition-all duration-300 border-l-4 h-full"
+                <div class="relative overflow-hidden rounded-[1.75rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-4 sm:p-5 shadow-sm transition-all duration-300 border-l-4 h-full"
                      [class.border-l-amber-500]="nextAppointment()?.status === 'pending'"
                      [class.border-l-emerald-500]="nextAppointment()?.status === 'confirmed'"
                      [class.border-l-rose-500]="nextAppointment()?.status === 'cancelled'">
-                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/5 dark:bg-white/[0.01] rounded-full blur-xl"></div>
-                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 h-full">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 border border-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0 shadow-inner">
-                                <app-a-icon name="calendar_today" size="22px"></app-a-icon>
+                    <div class="absolute -right-8 -top-8 w-28 h-28 bg-indigo-500/5 dark:bg-white/[0.01] rounded-full blur-xl"></div>
+                    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 h-full">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 border border-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0 shadow-inner">
+                                <app-a-icon name="calendar_today" size="20px"></app-a-icon>
                             </div>
-                            <div class="space-y-1">
+                            <div class="space-y-0.5">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500/70 dark:text-indigo-400/70">Próxima Consulta</span>
                                     @if (nextAppointment()?.status === 'pending') {
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200/50 dark:border-amber-500/20">Pendiente 🟡</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200/50">Pendiente 🟡</span>
                                     } @else if (nextAppointment()?.status === 'confirmed') {
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/20">Confirmada ✅</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200/50">Confirmada ✅</span>
                                     } @else if (nextAppointment()?.status === 'cancelled') {
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200/50 dark:border-rose-500/20">Cancelada ❌</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200/50">Cancelada ❌</span>
                                     }
                                 </div>
-                                <h3 class="text-base sm:text-lg font-extrabold text-nutri-text dark:text-white leading-tight font-sans">
+                                <h3 class="text-sm sm:text-base font-extrabold text-nutri-text dark:text-white leading-tight font-sans">
                                     {{ appointmentDateStr() }}
                                 </h3>
                             </div>
                         </div>
 
-                        <!-- Acciones dinámicas de confirmación -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
+                        <!-- Acciones de confirmación -->
+                        <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
                             @if (nextAppointment()?.status === 'pending') {
                                 @if (showConfirmButtons()) {
                                     <button (click)="confirmAppointment()" 
                                             [disabled]="loadingAppointmentAction()"
-                                            class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/10 hover:shadow-xl hover:shadow-emerald-500/20 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
+                                            class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/10 active:scale-[0.98] transition-all disabled:opacity-50 h-10">
                                         @if (loadingAppointmentAction()) {
-                                            <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                            <span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                                         } @else {
-                                            <app-a-icon name="check" size="14px"></app-a-icon>
+                                            <app-a-icon name="check" size="13px"></app-a-icon>
                                         }
                                         Confirmar cita
                                     </button>
                                     <button (click)="cancelAppointment()" 
                                             [disabled]="loadingAppointmentAction()"
-                                            class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-white/5 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 h-11">
+                                            class="flex items-center justify-center px-3 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-white/5 active:scale-[0.98] transition-all disabled:opacity-50 h-10">
                                         Cancelar
                                     </button>
                                 } @else {
-                                    <div class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/40 dark:border-white/5 justify-center">
-                                        <app-a-icon name="info" customClass="text-slate-400 dark:text-slate-500" size="14px"></app-a-icon>
-                                        <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                                            La confirmación se habilitará 1 día antes.
+                                    <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/40 dark:border-white/5">
+                                        <app-a-icon name="info" customClass="text-slate-400 dark:text-slate-500" size="13px"></app-a-icon>
+                                        <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                                            Confirmación 1 día antes
                                         </span>
                                     </div>
                                 }
                             } @else if (nextAppointment()?.status === 'cancelled') {
                                 <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
-                                   class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/15 hover:shadow-xl hover:shadow-[#25D366]/25 active:scale-[0.98] transition-all duration-200 h-11">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16">
-                                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93a7.9 7.9 0 0 0 1.08 3.851L0 16l4.25-1.116a7.89 7.89 0 0 0 3.74.935h.007c4.364 0 7.92-3.559 7.924-7.929a7.85 7.85 0 0 0-2.322-5.564H13.6zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.954c-.199-.1-.179-.176-.408-.505-.23-.329-1.248-1.233-1.428-1.329-.18-.098-.31-.147-.441.049-.13.197-.509.642-.624.774-.114.133-.23.148-.43.05-.2-.1-.843-.311-1.607-.991-.595-.53-1.002-1.185-1.119-1.385-.118-.2-.012-.307.088-.406.09-.089.199-.232.299-.348.1-.117.133-.198.199-.33.065-.133.033-.25-.017-.35-.05-.01-1.248-3.003-1.428-3.43-.175-.423-.348-.365-.48-.372-.124-.007-.267-.008-.41-.008a.78.78 0 0 0-.563.263c-.193.21-.737.72-.737 1.757s.754 2.04 1.868 2.529c1.114.49 2.188.89 3.09 1.127.461.12.83.18 1.14.226.347.05.663.023.91-.013.276-.04.843-.344 1.057-.83.214-.488.214-.907.15-1.026-.064-.118-.23-.197-.43-.297"/>
-                                    </svg>
+                                   class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-md shadow-[#25D366]/15 active:scale-[0.98] transition-all h-10">
+                                    <app-a-icon name="event_repeat" size="13px"></app-a-icon>
                                     Reagendar cita
                                 </a>
                             }
@@ -71,27 +69,27 @@
                     </div>
                 </div>
             } @else {
-                <div class="relative overflow-hidden rounded-[2rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-5 sm:p-6 shadow-md transition-all duration-300 border-l-4 border-l-indigo-300 dark:border-l-indigo-500/30 h-full">
-                    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 h-full">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0 shadow-inner">
-                                <app-a-icon name="calendar_today" size="22px"></app-a-icon>
+                <div class="relative overflow-hidden rounded-[1.75rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-4 sm:p-5 shadow-sm transition-all duration-300 border-l-4 border-l-indigo-300 dark:border-l-indigo-500/30 h-full">
+                    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 h-full">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0 shadow-inner">
+                                <app-a-icon name="calendar_today" size="20px"></app-a-icon>
                             </div>
                             <div>
                                 <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500/70 dark:text-indigo-400/70">Próxima Consulta</span>
-                                <h3 class="text-base font-bold text-nutri-text dark:text-slate-200 mt-0.5 font-sans">
-                                    {{ isPackageCompleted() ? 'Todas las citas del paquete cumplidas' : 'No se ha establecido una nueva cita en agenda.' }}
+                                <h3 class="text-sm sm:text-base font-bold text-nutri-text dark:text-slate-200 leading-tight font-sans">
+                                    {{ isPackageCompleted() ? 'Ciclo de citas del paquete cumplido' : 'Sin cita próxima agendada' }}
                                 </h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                    {{ isPackageCompleted() ? 'Tu paquete actual ha concluido.' : 'Tu nutrióloga asignará tu próxima fecha de seguimiento.' }}
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                                    {{ isPackageCompleted() ? 'Todas las consultas de tu paquete fueron completadas.' : 'Tu nutrióloga asignará tu próxima fecha.' }}
                                 </p>
                             </div>
                         </div>
 
                         @if (isPackageCompleted()) {
                             <a [href]="renewalWhatsappUrl()" target="_blank" rel="noopener"
-                               class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/15 transition-all shrink-0">
-                                <app-a-icon name="sync" size="14px"></app-a-icon>
+                               class="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/15 transition-all shrink-0">
+                                <app-a-icon name="sync" size="13px"></app-a-icon>
                                 Renovar Paquete
                             </a>
                         }
@@ -100,119 +98,46 @@
             }
         </div>
         
-        <!-- Resumen del Paquete de Citas -->
+        <!-- Resumen Compacto del Paquete -->
         @if (totalPlanCitas() > 0) {
             <div class="lg:col-span-1">
-                <div class="bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] p-6 rounded-[2rem] border border-emerald-100/50 dark:border-emerald-950/20 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300 overflow-hidden relative group h-full flex flex-col justify-between"
-                     [class.bg-amber-500/[0.04]]="isPackageCompleted()"
-                     [class.dark:bg-amber-500/[0.06]]="isPackageCompleted()"
-                     [class.border-amber-200/50]="isPackageCompleted()"
-                     [class.dark:border-amber-950/30]="isPackageCompleted()">
-                    <!-- Ambient light glow -->
-                    <div class="absolute -right-12 -bottom-12 w-32 h-32 rounded-full blur-2xl transition-all group-hover:scale-125 duration-700"
-                         [ngClass]="isPackageCompleted() ? 'bg-amber-500/10 dark:bg-amber-500/5' : 'bg-emerald-500/10 dark:bg-emerald-500/5'"></div>
+                <div class="p-4 sm:p-5 rounded-[1.75rem] border shadow-sm transition-all duration-300 relative overflow-hidden h-full flex flex-col justify-between"
+                     [ngClass]="isPackageCompleted()
+                         ? 'bg-amber-500/[0.04] dark:bg-amber-500/[0.06] border-amber-200/60 dark:border-amber-950/30'
+                         : 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] border-emerald-100/60 dark:border-emerald-950/30'">
                     
-                    <!-- Card Header -->
-                    <div class="relative z-10 flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between gap-2 mb-2">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg flex items-center justify-center"
+                            <div class="w-6 h-6 rounded-lg flex items-center justify-center"
                                  [ngClass]="isPackageCompleted() ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'">
-                                <app-a-icon [name]="isPackageCompleted() ? 'workspace_premium' : 'payments'" size="15px"></app-a-icon>
+                                <app-a-icon [name]="isPackageCompleted() ? 'workspace_premium' : 'payments'" size="13px"></app-a-icon>
                             </div>
-                            <span class="text-[10px] font-black uppercase tracking-widest"
-                                  [ngClass]="isPackageCompleted() ? 'text-amber-700 dark:text-amber-300' : 'text-emerald-700 dark:text-emerald-300'">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
                                 Paquete de Citas
                             </span>
                         </div>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider"
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider"
                               [ngClass]="isPackageCompleted()
-                                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200/60 dark:border-amber-500/30 shadow-sm'
-                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200/50 dark:border-blue-500/30'">
-                            {{ isPackageCompleted() ? 'Paquete Finalizado 🎓' : 'Paquete en Curso ⏳' }}
+                                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200/60'
+                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200/50'">
+                            {{ isPackageCompleted() ? 'Finalizado 🎓' : 'En Curso ⏳' }}
                         </span>
                     </div>
 
-                    <!-- Card Body Split Layout -->
-                    <div class="relative z-10 grid grid-cols-12 gap-5 items-center my-auto">
-                        <!-- Left: Radial gauge -->
-                        <div class="col-span-5 flex justify-center">
-                            <div class="relative w-20 h-20 sm:w-22 sm:h-22 flex items-center justify-center shrink-0">
-                                <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                    <!-- Base circle -->
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="40"
-                                        stroke="currentColor"
-                                        stroke-width="8"
-                                        class="text-slate-100 dark:text-white/5"
-                                        fill="transparent"
-                                    />
-                                    <!-- Active arc -->
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="40"
-                                        [attr.stroke]="isPackageCompleted() ? '#F59E0B' : 'url(#progressGradient)'"
-                                        stroke-width="8"
-                                        stroke-linecap="round"
-                                        class="transition-all duration-1000 ease-out"
-                                        fill="transparent"
-                                        [attr.stroke-dasharray]="251.3"
-                                        [attr.stroke-dashoffset]="251.3 * (1 - (completedPlanCitas() / (totalPlanCitas() || 1)))"
-                                    />
-                                    <defs>
-                                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stop-color="#34D399" />
-                                            <stop offset="100%" stop-color="#059669" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <!-- Text inside circle -->
-                                <div class="flex flex-col items-center justify-center text-center">
-                                    <span class="text-2xl font-black font-sans leading-none"
-                                          [ngClass]="isPackageCompleted() ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-white'">
-                                        {{ completedPlanCitas() }}
-                                    </span>
-                                    <span class="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                                        / {{ totalPlanCitas() }}
-                                    </span>
-                                </div>
+                    <div class="flex items-center justify-between gap-3 pt-1">
+                        <div>
+                            <div class="text-xl font-black font-sans leading-none text-slate-800 dark:text-white">
+                                {{ completedPlanCitas() }} <span class="text-xs font-bold text-slate-400 dark:text-slate-500">/ {{ totalPlanCitas() }}</span>
                             </div>
+                            <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                {{ isPackageCompleted() ? 'Paquete completado' : remainingPlanCitas() + ' restantes' }}
+                            </span>
                         </div>
-
-                        <!-- Right: Stats detail -->
-                        <div class="col-span-7 space-y-2">
-                            <h3 class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-tight">
-                                Estado de Sesiones
-                            </h3>
-                            
-                            <!-- Item Completadas -->
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                    <app-a-icon name="check" size="9px" customClass="text-emerald-500"></app-a-icon>
-                                </div>
-                                <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                                    <strong class="font-extrabold text-slate-800 dark:text-white">{{ completedPlanCitas() }}</strong> completadas
-                                </span>
-                            </div>
-
-                            <!-- Item Restantes -->
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                                     [ngClass]="isPackageCompleted() ? 'bg-amber-500/10' : 'bg-blue-500/10'">
-                                    <app-a-icon [name]="isPackageCompleted() ? 'verified' : 'schedule'"
-                                                size="9px"
-                                                [customClass]="isPackageCompleted() ? 'text-amber-500' : 'text-blue-500'"></app-a-icon>
-                                </div>
-                                <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                                    @if (isPackageCompleted()) {
-                                        <strong class="font-extrabold text-amber-600 dark:text-amber-400">0 restantes</strong> (Completado)
-                                    } @else {
-                                        <strong class="font-extrabold text-slate-800 dark:text-white">{{ remainingPlanCitas() }}</strong> restantes
-                                    }
-                                </span>
-                            </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-extrabold"
+                                  [ngClass]="isPackageCompleted() ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300' : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'">
+                                {{ percentageCompleted() }}% completado
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -220,33 +145,29 @@
         }
     </div>
 
-    <!-- TARJETA HERO: AVISO ESPECIAL DE PAQUETE FINALIZADO -->
+    <!-- TARJETA HERO: AVISO ESPECIAL DE PAQUETE FINALIZADO (Si se completó) -->
     @if (isPackageCompleted()) {
-        <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-emerald-500/10 dark:from-amber-950/20 dark:via-orange-950/20 dark:to-emerald-950/20 border border-amber-200/60 dark:border-amber-500/20 p-6 sm:p-7 shadow-md">
-            <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl"></div>
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-                <div class="space-y-2">
+        <div class="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-emerald-500/10 dark:from-amber-950/20 dark:via-orange-950/20 dark:to-emerald-950/20 border border-amber-200/60 dark:border-amber-500/20 p-4 sm:p-5 shadow-sm">
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                <div class="space-y-1">
                     <div class="flex items-center gap-2">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-white shadow-sm shadow-amber-500/20 flex items-center gap-1.5">
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-500 text-white flex items-center gap-1">
                             <span>🎓</span>
                             <span>Ciclo Cumplido</span>
                         </span>
-                        <span class="text-xs font-bold text-amber-800 dark:text-amber-300">
+                        <span class="text-xs font-black text-amber-800 dark:text-amber-300">
                             {{ totalPlanCitas() }} de {{ totalPlanCitas() }} citas realizadas
                         </span>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-black text-slate-800 dark:text-white leading-tight">
-                        ¡Felicidades por completar todas las sesiones de tu paquete! 🎉
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-                        Has utilizado las <strong>{{ totalPlanCitas() }} consultas</strong> incluidas en tu plan. Para continuar con nuevos ajustes de menú, seguimiento antropométrico y próximas fechas, renueva tu paquete de citas directamente con nosotros.
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-snug">
+                        Has completado con éxito todas las consultas de tu plan. Para continuar con nuevos ajustes de menú, renueva tu paquete de citas directamente por WhatsApp.
                     </p>
                 </div>
 
                 <div class="shrink-0 flex items-center">
                     <a [href]="renewalWhatsappUrl()" target="_blank" rel="noopener"
-                       class="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-lg shadow-[#25D366]/20 hover:shadow-xl hover:shadow-[#25D366]/30 active:scale-[0.98] transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-4 h-4 text-white" viewBox="0 0 16 16">
+                       class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-md shadow-[#25D366]/20 active:scale-[0.98] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16">
                           <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93a7.9 7.9 0 0 0 1.08 3.851L0 16l4.25-1.116a7.89 7.89 0 0 0 3.74.935h.007c4.364 0 7.92-3.559 7.924-7.929a7.85 7.85 0 0 0-2.322-5.564H13.6zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.618-4.954c-.199-.1-.179-.176-.408-.505-.23-.329-1.248-1.233-1.428-1.329-.18-.098-.31-.147-.441.049-.13.197-.509.642-.624.774-.114.133-.23.148-.43.05-.2-.1-.843-.311-1.607-.991-.595-.53-1.002-1.185-1.119-1.385-.118-.2-.012-.307.088-.406.09-.089.199-.232.299-.348.1-.117.133-.198.199-.33.065-.133.033-.25-.017-.35-.05-.01-1.248-3.003-1.428-3.43-.175-.423-.348-.365-.48-.372-.124-.007-.267-.008-.41-.008a.78.78 0 0 0-.563.263c-.193.21-.737.72-.737 1.757s.754 2.04 1.868 2.529c1.114.49 2.188.89 3.09 1.127.461.12.83.18 1.14.226.347.05.663.023.91-.013.276-.04.843-.344 1.057-.83.214-.488.214-.907.15-1.026-.064-.118-.23-.197-.43-.297"/>
                         </svg>
                         <span>Renovar Mi Paquete</span>
@@ -256,86 +177,111 @@
         </div>
     }
 
-    <!-- LÍNEA DE TIEMPO VISUAL DE SESIONES (SESSION STEPPER ROADMAP) -->
+    <!-- STEPPER ROADMAP HORIZONTAL COMPACTO (OPCIÓN 1) -->
     @if (totalPlanCitas() > 0) {
-        <div class="rounded-[2rem] bg-white dark:bg-[#141414] border border-slate-200/80 dark:border-white/10 p-6 sm:p-7 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 dark:border-white/5">
-                <div>
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-nutri-rose">Hoja de Ruta de tu Plan</span>
-                    <h3 class="text-base sm:text-lg font-bold text-slate-800 dark:text-white mt-0.5">
-                        Historial y Progreso de tus Sesiones
-                    </h3>
-                </div>
+        <div class="rounded-[1.75rem] bg-white dark:bg-[#141414] border border-slate-200/70 dark:border-white/10 p-4 sm:p-5 shadow-sm">
+            <!-- Header del Stepper -->
+            <div class="flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                    <span class="px-3 py-1 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300">
-                        {{ completedPlanCitas() }} de {{ totalPlanCitas() }} asistidas
+                    <span class="text-[9px] font-black uppercase tracking-[0.2em] text-nutri-rose">Hoja de Ruta</span>
+                    <span class="text-slate-300 dark:text-slate-700">·</span>
+                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                        {{ completedPlanCitas() }} de {{ totalPlanCitas() }} completadas
                     </span>
-                    @if (!isPackageCompleted()) {
-                        <span class="px-3 py-1 rounded-xl text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                            {{ remainingPlanCitas() }} disponibles
-                        </span>
+                </div>
+                
+                <button (click)="showDetailedTimeline.set(!showDetailedTimeline())" 
+                        class="text-[10px] font-bold text-nutri-rose hover:text-nutri-rose/80 flex items-center gap-1 transition-colors">
+                    <span>{{ showDetailedTimeline() ? 'Ocultar fechas' : 'Ver fechas' }}</span>
+                    <app-a-icon [name]="showDetailedTimeline() ? 'expand_less' : 'expand_more'" size="14px"></app-a-icon>
+                </button>
+            </div>
+
+            <!-- Fila Horizontal de Hitos Conectados -->
+            <div class="relative py-2 px-1 sm:px-4">
+                <!-- Línea de Conexión de Fondo -->
+                <div class="absolute top-[21px] left-6 right-6 h-[3px] bg-slate-100 dark:bg-white/5 rounded-full z-0"></div>
+                
+                <!-- Nodos Horizontales -->
+                <div class="relative z-10 flex items-start justify-between">
+                    @for (s of sessionsTimeline(); track s.sessionNumber) {
+                        <div class="flex flex-col items-center text-center group cursor-pointer"
+                             (click)="showDetailedTimeline.set(!showDetailedTimeline())">
+                            
+                            <!-- Nodo Circular -->
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all duration-300 ring-4 ring-white dark:ring-[#141414]"
+                                 [ngClass]="{
+                                     'bg-emerald-500 text-white shadow-md shadow-emerald-500/25': s.status === 'completed',
+                                     'bg-amber-500 text-white shadow-md shadow-amber-500/25 animate-pulse': s.status === 'scheduled',
+                                     'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-500': s.status === 'pending'
+                                 }">
+                                @if (s.status === 'completed') {
+                                    <app-a-icon name="check" size="14px"></app-a-icon>
+                                } @else if (s.status === 'scheduled') {
+                                    <app-a-icon name="event" size="14px"></app-a-icon>
+                                } @else {
+                                    <span class="text-[10px]">{{ s.sessionNumber }}</span>
+                                }
+                            </div>
+
+                            <!-- Etiqueta de Sesión -->
+                            <span class="text-[10px] font-bold mt-1.5 text-slate-800 dark:text-slate-200">
+                                S{{ s.sessionNumber }}
+                            </span>
+
+                            <!-- Estado / Fecha Corta -->
+                            <span class="text-[9px] font-medium tracking-tight mt-0.5 truncate max-w-[70px] sm:max-w-[100px]"
+                                  [ngClass]="{
+                                      'text-emerald-600 dark:text-emerald-400 font-semibold': s.status === 'completed',
+                                      'text-amber-600 dark:text-amber-400 font-semibold': s.status === 'scheduled',
+                                      'text-slate-400 dark:text-slate-500': s.status === 'pending'
+                                  }">
+                                {{ s.status === 'completed' ? (s.dateLabel.split(' ')[0] + ' ' + (s.dateLabel.split(' ')[1] || '')) : (s.status === 'scheduled' ? 'Próxima' : 'Pendiente') }}
+                            </span>
+                        </div>
                     }
                 </div>
             </div>
 
-            <!-- Stepper Grid / Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-5">
-                @for (s of sessionsTimeline(); track s.sessionNumber) {
-                    <div class="relative flex flex-col justify-between p-4 rounded-2xl border transition-all duration-300"
-                         [ngClass]="{
-                             'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] border-emerald-500/30 dark:border-emerald-500/20 shadow-sm': s.status === 'completed',
-                             'bg-amber-500/[0.05] dark:bg-amber-500/[0.08] border-amber-500/40 dark:border-amber-500/30 ring-2 ring-amber-500/20 shadow-md': s.status === 'scheduled',
-                             'bg-slate-50/50 dark:bg-white/[0.02] border-slate-200/70 dark:border-white/5 opacity-75': s.status === 'pending'
-                         }">
-                        
-                        <!-- Header del Hito -->
-                        <div class="flex items-center justify-between gap-2 mb-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-transform"
-                                     [ngClass]="{
-                                         'bg-emerald-500 text-white shadow-md shadow-emerald-500/20': s.status === 'completed',
-                                         'bg-amber-500 text-white shadow-md shadow-amber-500/20 animate-pulse': s.status === 'scheduled',
-                                         'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400': s.status === 'pending'
-                                     }">
-                                    @if (s.status === 'completed') {
-                                        <app-a-icon name="check" size="16px"></app-a-icon>
-                                    } @else if (s.status === 'scheduled') {
-                                        <app-a-icon name="event" size="16px"></app-a-icon>
-                                    } @else {
-                                        <span>{{ s.sessionNumber }}</span>
-                                    }
+            <!-- ACORDEÓN DESPLEGABLE: Detalle de Fechas y Notas -->
+            @if (showDetailedTimeline()) {
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-white/5 space-y-2 animate-fadeIn">
+                    <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1">
+                        Detalle por Sesión
+                    </h4>
+                    <div class="divide-y divide-slate-100 dark:divide-white/5 bg-slate-50/50 dark:bg-white/[0.02] rounded-xl border border-slate-100 dark:border-white/5 p-1.5">
+                        @for (s of sessionsTimeline(); track s.sessionNumber) {
+                            <div class="flex items-center justify-between p-2 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                                         [ngClass]="{
+                                             'bg-emerald-500/10 text-emerald-600': s.status === 'completed',
+                                             'bg-amber-500/10 text-amber-600': s.status === 'scheduled',
+                                             'bg-slate-100 text-slate-400': s.status === 'pending'
+                                         }">
+                                        {{ s.sessionNumber }}
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-slate-800 dark:text-white">Sesión {{ s.sessionNumber }}</span>
+                                        <span class="text-slate-400 dark:text-slate-500 mx-1">·</span>
+                                        <span class="text-slate-600 dark:text-slate-300 font-medium">{{ s.dateLabel }}</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Sesión {{ s.sessionNumber }}</span>
-                                    <h4 class="text-xs font-bold text-slate-800 dark:text-white leading-tight">
-                                        {{ s.status === 'completed' ? 'Asistida' : (s.status === 'scheduled' ? 'Próxima' : 'Pendiente') }}
-                                    </h4>
+                                <div class="text-right">
+                                    <span class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider"
+                                          [ngClass]="{
+                                              'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300': s.status === 'completed',
+                                              'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300': s.status === 'scheduled',
+                                              'bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400': s.status === 'pending'
+                                          }">
+                                        {{ s.badgeText }}
+                                    </span>
                                 </div>
                             </div>
-
-                            <span class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider"
-                                  [ngClass]="{
-                                      'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300': s.status === 'completed',
-                                      'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300': s.status === 'scheduled',
-                                      'bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400': s.status === 'pending'
-                                  }">
-                                {{ s.badgeText }}
-                            </span>
-                        </div>
-
-                        <!-- Fecha y Detalle -->
-                        <div class="space-y-1 pt-2 border-t border-slate-100 dark:border-white/5">
-                            <div class="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-semibold">
-                                <app-a-icon name="calendar_month" size="13px" customClass="text-slate-400 shrink-0"></app-a-icon>
-                                <span class="truncate">{{ s.dateLabel }}</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                                {{ s.summary }}
-                            </p>
-                        </div>
+                        }
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
     }
 </div>
