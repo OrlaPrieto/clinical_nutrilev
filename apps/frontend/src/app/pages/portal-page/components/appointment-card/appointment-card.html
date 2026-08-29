@@ -58,63 +58,93 @@
                     } @else if (nextAppointment()?.status === 'cancelled') {
                         <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
                            class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider bg-[#25D366] hover:bg-[#20ba56] text-white shadow-md shadow-[#25D366]/15 active:scale-[0.98] transition-all h-10">
-                            <app-a-icon name="event_repeat" size="13px"></app-a-icon>
-                            Reagendar cita
+                            <app-a-icon name="event_repeat" size="14px"></app-a-icon>
+                            Reagendar
                         </a>
+                    } @else if (nextAppointment()?.status === 'confirmed') {
+                        <button (click)="showDetailsModal.set(true)"
+                                class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-white/5 active:scale-[0.98] transition-all h-10">
+                            <app-a-icon name="visibility" size="13px"></app-a-icon>
+                            Detalles
+                        </button>
                     }
                 </div>
             </div>
         </div>
-    } @else {
-        <div class="relative overflow-hidden rounded-[1.75rem] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] border border-indigo-100/50 dark:border-indigo-950/20 p-4 sm:p-5 shadow-sm transition-all duration-300 border-l-4 border-l-indigo-300 dark:border-l-indigo-500/30">
-            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0 shadow-inner">
-                        <app-a-icon name="calendar_today" size="20px"></app-a-icon>
+    }
+
+    <!-- Modal de Detalles de Cita Confirmada -->
+    @if (showDetailsModal()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+            <div class="relative w-full max-w-md bg-white dark:bg-[#181818] rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-white/5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                            <app-a-icon name="event_available" size="20px"></app-a-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-extrabold text-slate-800 dark:text-white">Detalles de tu Cita</h3>
+                            <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Confirmada</span>
+                        </div>
                     </div>
-                    <div>
-                        <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500/70 dark:text-indigo-400/70">Próxima Consulta</span>
-                        <h3 class="text-sm sm:text-base font-bold text-nutri-text dark:text-slate-200 leading-tight font-sans">
-                            {{ isPackageCompleted() ? 'Ciclo de citas del paquete cumplido' : 'Sin cita próxima agendada' }}
-                        </h3>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                            {{ isPackageCompleted() ? 'Todas las consultas de tu paquete fueron completadas.' : 'Tu nutrióloga asignará tu próxima fecha.' }}
-                        </p>
+                    <button (click)="showDetailsModal.set(false)" 
+                            class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                        <app-a-icon name="close" size="16px"></app-a-icon>
+                    </button>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-white/[0.02] rounded-2xl p-4 border border-slate-100 dark:border-white/5 space-y-2.5 text-xs">
+                    <div class="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                        <app-a-icon name="schedule" size="16px" customClass="text-nutri-rose shrink-0 mt-0.5"></app-a-icon>
+                        <div>
+                            <span class="font-bold block">Horario:</span>
+                            <span class="text-slate-500 dark:text-slate-400">{{ appointmentDateStr() }}</span>
+                        </div>
                     </div>
+
+                    @if (nextAppointment()?.summary) {
+                        <div class="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                            <app-a-icon name="description" size="16px" customClass="text-nutri-rose shrink-0 mt-0.5"></app-a-icon>
+                            <div>
+                                <span class="font-bold block">Tipo de consulta:</span>
+                                <span class="text-slate-500 dark:text-slate-400">{{ nextAppointment()?.summary }}</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                        <app-a-icon name="location_on" size="16px" customClass="text-nutri-rose shrink-0 mt-0.5"></app-a-icon>
+                        <div>
+                            <span class="font-bold block">Ubicación / Modalidad:</span>
+                            <span class="text-slate-500 dark:text-slate-400">Consultorio Nutrilev / Consulta Presencial</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <a [href]="rescheduleWhatsappUrl()" target="_blank" rel="noopener"
+                       class="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 transition-colors">
+                        <app-a-icon name="chat" size="14px"></app-a-icon>
+                        Reagendar por WhatsApp
+                    </a>
+                    <button (click)="showDetailsModal.set(false)"
+                            class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-nutri-rose text-white hover:bg-nutri-rose/90 shadow-md shadow-nutri-rose/20 transition-all">
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </div>
     }
 
-    <!-- TARJETA HERO: AVISO ESPECIAL DE PAQUETE FINALIZADO (Si se completó) -->
-    @if (isPackageCompleted()) {
-        <div class="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-amber-500/[0.08] via-orange-500/[0.06] to-emerald-500/[0.06] dark:from-amber-950/20 dark:via-orange-950/20 dark:to-emerald-950/20 border border-amber-200/70 dark:border-amber-500/20 p-4 sm:p-5 shadow-sm">
-            <div class="relative z-10 space-y-2">
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-500 text-white flex items-center gap-1">
-                        <span>🎓</span>
-                        <span>Paquete Pagado Finalizado</span>
-                    </span>
-                    <span class="text-xs font-black text-amber-800 dark:text-amber-300">
-                        {{ totalPlanCitas() }} de {{ totalPlanCitas() }} consultas completadas
-                    </span>
-                </div>
-                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
-                    Has completado satisfactoriamente la totalidad de las consultas de tu paquete. En tu siguiente consulta nutricional será necesario renovar tu plan; este proceso se coordina de manera personalizada directamente con tu nutrióloga titular, <strong class="text-slate-900 dark:text-white font-extrabold">L.N. Velvet De la Cruz</strong>.
-                </p>
-            </div>
-        </div>
-    }
-
-    <!-- TARJETA UNIFICADA: PAQUETE DE CITAS & STEPPER ROADMAP HORIZONTAL -->
+    <!-- SECCIÓN DE PAQUETE DE CITAS (ROADMAP / TIMELINE) -->
     @if (totalPlanCitas() > 0) {
-        <div class="rounded-[1.75rem] bg-white dark:bg-[#141414] border border-slate-200/70 dark:border-white/10 p-4 sm:p-5 shadow-sm">
-            <!-- Header con Status Unificado -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-white/5">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                         [ngClass]="isPackageCompleted() ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'">
-                        <app-a-icon [name]="isPackageCompleted() ? 'workspace_premium' : 'payments'" size="16px"></app-a-icon>
+        <div class="rounded-[1.75rem] bg-white dark:bg-[#141414] border border-slate-100 dark:border-white/5 p-4 sm:p-5 shadow-sm space-y-4">
+            
+            <!-- Encabezado del Paquete -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-inner">
+                        <app-a-icon name="payments" size="20px"></app-a-icon>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
@@ -125,22 +155,21 @@
                             <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider"
                                   [ngClass]="isPackageCompleted()
                                       ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200/60'
-                                      : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200/50'">
+                                      : 'bg-rose-50 text-nutri-rose dark:bg-rose-500/15 dark:text-rose-300 border border-rose-200/60 dark:border-rose-500/20'">
                                 {{ isPackageCompleted() ? 'Finalizado 🎓' : 'En Curso ⏳' }}
                             </span>
                         </div>
                         <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
                             <strong class="text-slate-800 dark:text-white font-extrabold">{{ completedPlanCitas() }}</strong> de {{ totalPlanCitas() }} completadas
                             @if (!isPackageCompleted()) {
-                                <span class="text-emerald-600 dark:text-emerald-400 font-bold">({{ remainingPlanCitas() }} restantes)</span>
+                                <span class="text-nutri-rose dark:text-rose-400 font-bold">({{ remainingPlanCitas() }} restantes)</span>
                             }
                         </p>
                     </div>
                 </div>
                 
                 <div class="flex items-center justify-between sm:justify-end gap-2.5 pt-1 sm:pt-0">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-extrabold"
-                          [ngClass]="isPackageCompleted() ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300' : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                         {{ percentageCompleted() }}% completado
                     </span>
 
@@ -152,23 +181,22 @@
                 </div>
             </div>
 
-            <!-- Fila Horizontal de Hitos Conectados -->
-            <div class="relative py-2 px-1 sm:px-4">
-                <!-- Línea de Conexión de Fondo -->
-                <div class="absolute top-[21px] left-6 right-6 h-[3px] bg-slate-100 dark:bg-white/5 rounded-full z-0"></div>
-                
-                <!-- Nodos Horizontales -->
-                <div class="relative z-10 flex items-start justify-between">
-                    @for (s of sessionsTimeline(); track s.sessionNumber) {
-                        <div class="flex flex-col items-center text-center group cursor-pointer"
+            <!-- Fila Horizontal de Hitos Conectados (Líneas entre nodos que nunca se sobreponen) -->
+            <div class="py-2 px-1 sm:px-4 overflow-x-auto no-scrollbar">
+                <div class="flex items-start justify-between min-w-[280px] sm:min-w-0">
+                    @for (s of sessionsTimeline(); track s.sessionNumber; let idx = $index; let last = $last) {
+                        <!-- Nodo Individual -->
+                        <div class="flex flex-col items-center text-center group cursor-pointer shrink-0 z-10"
                              (click)="showDetailedTimeline.set(!showDetailedTimeline())">
                             
-                            <!-- Nodo Circular -->
+                            <!-- Círculo del Nodo -->
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all duration-300 ring-4 ring-white dark:ring-[#141414]"
                                  [ngClass]="{
                                      'bg-emerald-500 text-white shadow-md shadow-emerald-500/25': s.status === 'completed',
-                                     'bg-amber-500 text-white shadow-md shadow-amber-500/25 animate-pulse': s.status === 'scheduled',
-                                     'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-500': s.status === 'pending'
+                                     'bg-gradient-to-tr from-nutri-rose to-[#ff7043] text-white shadow-lg shadow-nutri-rose/30 ring-4 ring-nutri-rose/25 scale-105 animate-pulse': s.isNextActive,
+                                     'bg-rose-50 dark:bg-white/10 text-nutri-rose dark:text-rose-300 border border-rose-200/60 dark:border-white/10': s.badgeVariant === 'confirmed' && !s.isNextActive,
+                                     'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400': s.badgeVariant === 'pending' && !s.isNextActive,
+                                     'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500': s.status === 'pending' && s.badgeVariant !== 'pending'
                                  }">
                                 @if (s.status === 'completed') {
                                     <app-a-icon name="check" size="14px"></app-a-icon>
@@ -185,49 +213,72 @@
                             </span>
 
                             <!-- Estado / Fecha Corta -->
-                            <span class="text-[9px] font-medium tracking-tight mt-0.5 truncate max-w-[70px] sm:max-w-[100px]"
+                            <span class="text-[9px] font-medium tracking-tight mt-0.5 truncate max-w-[65px] sm:max-w-[90px]"
                                   [ngClass]="{
                                       'text-emerald-600 dark:text-emerald-400 font-semibold': s.status === 'completed',
-                                      'text-amber-600 dark:text-amber-400 font-semibold': s.status === 'scheduled',
-                                      'text-slate-400 dark:text-slate-500': s.status === 'pending'
+                                      'text-nutri-rose dark:text-rose-400 font-bold': s.isNextActive,
+                                      'text-rose-600/80 dark:text-rose-300 font-medium': s.badgeVariant === 'confirmed' && !s.isNextActive,
+                                      'text-slate-500 dark:text-slate-400': s.badgeVariant === 'pending' && !s.isNextActive,
+                                      'text-slate-400 dark:text-slate-500': s.status === 'pending' && s.badgeVariant !== 'pending'
                                   }">
                                 {{ s.shortDateLabel }}
                             </span>
                         </div>
+
+                        <!-- Segmento de Línea de Conexión entre Nodos -->
+                        @if (!last) {
+                            <div class="flex-1 h-[3px] mx-1.5 sm:mx-2.5 mt-[14px] rounded-full transition-all duration-500"
+                                 [ngClass]="idx < completedPlanCitas()
+                                     ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-sm shadow-emerald-500/20'
+                                     : 'bg-slate-100 dark:bg-white/5'">
+                            </div>
+                        }
                     }
                 </div>
             </div>
 
-            <!-- ACORDEÓN DESPLEGABLE: Detalle de Fechas y Notas -->
+            <!-- ACORDEÓN DESPLEGABLE: Detalle de Fechas, Horas y Notas -->
             @if (showDetailedTimeline()) {
                 <div class="mt-4 pt-3 border-t border-slate-100 dark:border-white/5 space-y-2 animate-fadeIn">
                     <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1">
                         Detalle por Sesión
                     </h4>
-                    <div class="divide-y divide-slate-100 dark:divide-white/5 bg-slate-50/50 dark:bg-white/[0.02] rounded-xl border border-slate-100 dark:border-white/5 p-1.5">
+                    <div class="divide-y divide-slate-100 dark:divide-white/5 bg-slate-50/50 dark:bg-white/[0.02] rounded-2xl border border-slate-100 dark:border-white/5 p-1">
                         @for (s of sessionsTimeline(); track s.sessionNumber) {
-                            <div class="flex items-center justify-between p-2 text-xs">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                            <div class="flex items-center justify-between py-2 px-2.5 rounded-xl transition-colors hover:bg-slate-100/60 dark:hover:bg-white/[0.04] gap-2 text-xs">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0"
                                          [ngClass]="{
-                                             'bg-emerald-500/10 text-emerald-600': s.status === 'completed',
-                                             'bg-amber-500/10 text-amber-600': s.status === 'scheduled',
-                                             'bg-slate-100 text-slate-400': s.status === 'pending'
+                                             'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60': s.status === 'completed',
+                                             'bg-rose-500/10 text-nutri-rose': s.badgeVariant === 'confirmed',
+                                             'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300': s.badgeVariant === 'pending',
+                                             'bg-slate-100/60 text-slate-400 dark:bg-white/5 dark:text-slate-500': s.status === 'pending' && s.badgeVariant !== 'pending'
                                          }">
-                                        {{ s.sessionNumber }}
+                                        @if (s.status === 'completed') {
+                                            <app-a-icon name="check" size="12px"></app-a-icon>
+                                        } @else {
+                                            {{ s.sessionNumber }}
+                                        }
                                     </div>
-                                    <div>
-                                        <span class="font-bold text-slate-800 dark:text-white">Sesión {{ s.sessionNumber }}</span>
-                                        <span class="text-slate-400 dark:text-slate-500 mx-1">·</span>
-                                        <span class="text-slate-600 dark:text-slate-300 font-medium">{{ s.dateLabel }}</span>
+                                    <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                                        <span class="font-bold text-slate-800 dark:text-white shrink-0">Sesión {{ s.sessionNumber }}</span>
+                                        <span class="text-slate-400 dark:text-slate-500">·</span>
+                                        <span class="text-slate-700 dark:text-slate-300 font-medium whitespace-nowrap">{{ s.dateLabel }}</span>
+                                        @if (s.timeLabel) {
+                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/5 text-[9px] font-bold text-slate-600 dark:text-slate-400 shrink-0">
+                                                <app-a-icon name="schedule" size="10px"></app-a-icon>
+                                                {{ s.timeLabel }}
+                                            </span>
+                                        }
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <span class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider"
+                                <div class="shrink-0 ml-1">
+                                    <span class="px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider whitespace-nowrap inline-block"
                                           [ngClass]="{
-                                              'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300': s.status === 'completed',
-                                              'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300': s.status === 'scheduled',
-                                              'bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400': s.status === 'pending'
+                                              'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40': s.badgeVariant === 'completed',
+                                              'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40': s.badgeVariant === 'confirmed',
+                                              'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300 border border-slate-200/60 dark:border-white/10': s.badgeVariant === 'pending',
+                                              'bg-slate-50 text-slate-400 dark:bg-white/[0.02] dark:text-slate-500 border border-slate-200/40 dark:border-white/5': s.badgeVariant === 'tentative'
                                           }">
                                         {{ s.badgeText }}
                                     </span>

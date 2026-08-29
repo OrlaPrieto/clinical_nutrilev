@@ -29,43 +29,88 @@ export class AppointmentsController {
   ) {}
 
   /**
-   * Retrieves the next upcoming appointment for a specific patient.
+   * Retrieves the next upcoming appointment and the list of all upcoming package appointments for a patient.
    */
   @Get('next/:email')
   @UseGuards(PatientAuthGuard)
   async getNextAppointment(@Param('email') email: string) {
     try {
-      const event = await this.calendarService.getNextAppointment(email);
-      if (!event) {
-        return { hasAppointment: false };
+      const events = await this.calendarService.getUpcomingAppointments(email);
+      if (!events || events.length === 0) {
+        return { hasAppointment: false, upcomingAppointments: [] };
       }
 
-      // Map colorId to a standard status string
-      // Esmeralda '7' u otros -> pending
-      // Morado '3' o Verde Musgo '10' -> confirmed
-      // Rojo '11' -> cancelled
-      let status = 'pending';
-      const colorId = event.colorId;
-      if (colorId === '3' || colorId === '10') {
-        status = 'confirmed';
-      } else if (colorId === '11') {
-        status = 'cancelled';
-      }
+      const mappedAppointments = events.map(event => {
+        // Map colorId to a standard status string
+        // Esmeralda '7' / Menta '2' u otros -> pending
+        // Morado '3' o Verde Musgo '10' -> confirmed
+        // Rojo '11' -> cancelled
+        let status: 'pending' | 'confirmed' | 'cancelled' = 'pending';
+        const colorId = event.colorId;
+        if (colorId === '3' || colorId === '10') {
+          status = 'confirmed';
+        } else if (colorId === '11') {
+          status = 'cancelled';
+        }
 
+        return {
+          hasAppointment: true,
+          eventId: event.id,
+          summary: event.summary,
+          description: event.description,
+          start: event.start?.dateTime || event.start?.date,
+          end: event.end?.dateTime || event.end?.date,
+          status,
+          colorId,
+        };
+      });
+
+      const firstEvent = mappedAppointments[0];
       return {
-        hasAppointment: true,
-        eventId: event.id,
-        summary: event.summary,
-        description: event.description,
-        start: event.start?.dateTime || event.start?.date,
-        end: event.end?.dateTime || event.end?.date,
-        status,
-        colorId,
+        ...firstEvent,
+        upcomingAppointments: mappedAppointments,
       };
     } catch (error: any) {
       this.logger.error(`Error fetching next appointment for ${email}: ${error.message}`);
       throw new HttpException(
         'Error al obtener la siguiente cita de Google Calendar',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Retrieves all upcoming appointments for a patient from Google Calendar.
+   */
+  @Get('upcoming/:email')
+  @UseGuards(PatientAuthGuard)
+  async getUpcomingAppointments(@Param('email') email: string) {
+    try {
+      const events = await this.calendarService.getUpcomingAppointments(email);
+      return events.map(event => {
+        let status: 'pending' | 'confirmed' | 'cancelled' = 'pending';
+        const colorId = event.colorId;
+        if (colorId === '3' || colorId === '10') {
+          status = 'confirmed';
+        } else if (colorId === '11') {
+          status = 'cancelled';
+        }
+
+        return {
+          hasAppointment: true,
+          eventId: event.id,
+          summary: event.summary,
+          description: event.description,
+          start: event.start?.dateTime || event.start?.date,
+          end: event.end?.dateTime || event.end?.date,
+          status,
+          colorId,
+        };
+      });
+    } catch (error: any) {
+      this.logger.error(`Error fetching upcoming appointments for ${email}: ${error.message}`);
+      throw new HttpException(
+        'Error al obtener las citas de Google Calendar',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

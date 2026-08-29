@@ -89,15 +89,15 @@ export class GoogleCalendarService {
   }
 
   /**
-   * Fetch the next appointment for a patient based on their email.
-   * Looks up to 2 months in advance.
+   * Fetch all upcoming appointments for a patient based on their email.
+   * Looks up to 6 months in advance to cover all sessions in a package.
    */
-  async getNextAppointment(email: string): Promise<any | null> {
+  async getUpcomingAppointments(email: string): Promise<any[]> {
     try {
       const calendar = this.getCalendarClient();
       const timeMin = new Date().toISOString();
-      // Look up to 2 months in advance
-      const timeMax = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
+      // Look up to 6 months in advance
+      const timeMax = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
       const cleanEmail = email.toLowerCase().trim();
 
       const response = await calendar.events.list({
@@ -111,10 +111,15 @@ export class GoogleCalendarService {
 
       const events = response.data.items || [];
       
-      // Filter events by description or attendee email containing the user's email
-      const patientEvent = events.find(event => {
+      // Filter events by description, summary, or attendee email containing the user's email
+      const patientEvents = events.filter(event => {
         const description = (event.description || '').toLowerCase();
         if (description.includes(cleanEmail)) {
+          return true;
+        }
+
+        const summary = (event.summary || '').toLowerCase();
+        if (summary.includes(cleanEmail)) {
           return true;
         }
 
@@ -127,11 +132,20 @@ export class GoogleCalendarService {
         return false;
       });
 
-      return patientEvent || null;
+      return patientEvents;
     } catch (error: any) {
-      this.logger.error(`Error searching next appointment for ${email}: ${error.message}`);
+      this.logger.error(`Error searching upcoming appointments for ${email}: ${error.message}`);
       throw error;
     }
+  }
+
+  /**
+   * Fetch the next appointment for a patient based on their email.
+   * Looks up to 6 months in advance.
+   */
+  async getNextAppointment(email: string): Promise<any | null> {
+    const upcoming = await this.getUpcomingAppointments(email);
+    return upcoming.length > 0 ? upcoming[0] : null;
   }
 
   /**

@@ -373,8 +373,11 @@
             <main class="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 mt-6 md:mt-8 mb-24 md:mb-8 pb-24 md:pb-20 space-y-8 flex-1 w-full min-w-0 transition-all duration-300">
                 <!-- Bienvenida y Objetivo (Solo Móvil) -->
                 <div class="md:hidden p-5 rounded-[2.25rem] bg-gradient-to-br from-white/70 to-white/30 dark:from-[#111111]/60 dark:to-[#080808]/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl shadow-nutri-rose/[0.02] flex items-center justify-between gap-4 mb-6 animate-fade-in relative overflow-hidden">
-                    <!-- Light effect background -->
-                    <div class="absolute -right-12 -bottom-12 w-28 h-28 bg-gradient-to-tr from-nutri-rose/10 to-[#ff7043]/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <!-- Light effect and subtle ambient watermark background -->
+                    <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-gradient-to-tr from-nutri-rose/10 to-[#ff7043]/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-nutri-rose/[0.10] dark:text-white/[0.06] pointer-events-none select-none z-0 transform rotate-12">
+                        <app-a-icon [name]="greetingIcon()" size="68px"></app-a-icon>
+                    </div>
                     
                     <div class="space-y-1.5 min-w-0 flex-1 relative z-10">
                         <span class="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
@@ -392,10 +395,6 @@
                                 {{ goalSubtitle() }}
                             </p>
                         </div>
-                    </div>
-                    <!-- Icono dinámico premium -->
-                    <div class="w-11 h-11 rounded-full bg-white dark:bg-white/5 border border-white/30 dark:border-white/10 shadow-md flex items-center justify-center text-nutri-rose dark:text-nutri-rose-soft shrink-0 relative z-10">
-                        <app-a-icon [name]="greetingIcon()" size="16px" customClass="animate-pulse"></app-a-icon>
                     </div>
                 </div>
                 @if (loading()) {

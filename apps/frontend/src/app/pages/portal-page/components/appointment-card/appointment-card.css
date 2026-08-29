@@ -1,1 +1,10 @@
 /* appointment-card.css — Estilos específicos del componente */
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

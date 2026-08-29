@@ -13,6 +13,7 @@ export interface Appointment {
   end?: string;
   status?: 'pending' | 'confirmed' | 'cancelled';
   colorId?: string;
+  upcomingAppointments?: Appointment[];
 }
 
 @Injectable({
@@ -27,22 +28,55 @@ export class AppointmentService {
 
   async getNextAppointment(email: string): Promise<Appointment> {
     if (this.authService.isDevMode()) {
-      // Mock tomorrow's appointment in Dev Mode
+      // Mock upcoming appointments in Dev Mode
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       tomorrow.setHours(10, 30, 0, 0);
 
+      const in3Weeks = new Date(tomorrow);
+      in3Weeks.setDate(in3Weeks.getDate() + 21);
+
+      const in6Weeks = new Date(tomorrow);
+      in6Weeks.setDate(in6Weeks.getDate() + 42);
+
       const cachedStatus = localStorage.getItem('mock_appointment_status') as any;
 
-      return new Promise(resolve => setTimeout(() => resolve({
+      const firstApt: Appointment = {
         hasAppointment: true,
-        eventId: 'mock-event-id-999',
+        eventId: 'mock-event-id-1',
         summary: 'Consulta de Seguimiento Nutrición',
         description: `Paciente: ${email}\nConsulta clínica presencial.`,
         start: tomorrow.toISOString(),
         end: new Date(tomorrow.getTime() + 60*60*1000).toISOString(),
         status: cachedStatus || 'pending',
         colorId: cachedStatus === 'confirmed' ? '10' : (cachedStatus === 'cancelled' ? '11' : '2')
+      };
+
+      const secondApt: Appointment = {
+        hasAppointment: true,
+        eventId: 'mock-event-id-2',
+        summary: 'Consulta de Seguimiento Nutrición (Sesión 2)',
+        description: `Paciente: ${email}\nConsulta clínica presencial.`,
+        start: in3Weeks.toISOString(),
+        end: new Date(in3Weeks.getTime() + 60*60*1000).toISOString(),
+        status: 'confirmed',
+        colorId: '10'
+      };
+
+      const thirdApt: Appointment = {
+        hasAppointment: true,
+        eventId: 'mock-event-id-3',
+        summary: 'Consulta de Seguimiento Nutrición (Sesión 3)',
+        description: `Paciente: ${email}\nConsulta clínica presencial.`,
+        start: in6Weeks.toISOString(),
+        end: new Date(in6Weeks.getTime() + 60*60*1000).toISOString(),
+        status: 'confirmed',
+        colorId: '10'
+      };
+
+      return new Promise(resolve => setTimeout(() => resolve({
+        ...firstApt,
+        upcomingAppointments: [firstApt, secondApt, thirdApt]
       }), 500));
     }
 

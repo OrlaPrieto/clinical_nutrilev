@@ -245,11 +245,57 @@ export class PortalStateService {
         this.titleService.setTitle(`Portal de ${currentPatient.nombre} - Nutrilev`);
         this.progress.set(history || []);
 
-        // Silently renew Push Subscription in backend if active in browser
-        this.pushService.autoSyncSubscription(userEmail);
+        // Filtrar citas si el paciente ya completó citas previas en la misma fecha
+        let effectiveApt = apt;
+        if (apt && apt.upcomingAppointments && apt.upcomingAppointments.length > 0) {
+          const completedCount = Number(currentPatient?.plan_citas_completadas || 0);
+          if (completedCount > 0) {
+            const sortedHistory = (history || [])
+              .filter((p: any) => p.date || p.created_at)
+              .sort((a: any, b: any) => {
+                const da = new Date(a.date || a.created_at).getTime();
+                const db = new Date(b.date || b.created_at).getTime();
+                return da - db;
+              });
 
-        if (apt && apt.hasAppointment) {
-          this.nextAppointment.set(apt);
+            const lastProg = sortedHistory.slice(-1)[0];
+            const rawCompDate = lastProg ? (lastProg.date || lastProg.created_at) : currentPatient.ultima_actualizacion;
+            
+            if (rawCompDate) {
+              const compDate = new Date(rawCompDate);
+              const compYear = compDate.getFullYear();
+              const compMonth = String(compDate.getMonth() + 1).padStart(2, '0');
+              const compDay = String(compDate.getDate()).padStart(2, '0');
+              const compDayKey = `${compYear}-${compMonth}-${compDay}`;
+
+              const futureAppointments = apt.upcomingAppointments.filter(item => {
+                if (!item.hasAppointment || !item.start || item.status === 'cancelled') return false;
+                const itemDate = new Date(item.start);
+                const itemYear = itemDate.getFullYear();
+                const itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0');
+                const itemDay = String(itemDate.getDate()).padStart(2, '0');
+                const itemDayKey = `${itemYear}-${itemMonth}-${itemDay}`;
+                return itemDayKey > compDayKey;
+              });
+
+              if (futureAppointments.length > 0) {
+                effectiveApt = {
+                  ...futureAppointments[0],
+                  upcomingAppointments: futureAppointments
+                };
+              } else if (apt.start) {
+                const aptDate = new Date(apt.start);
+                const aptDayKey = `${aptDate.getFullYear()}-${String(aptDate.getMonth() + 1).padStart(2, '0')}-${String(aptDate.getDate()).padStart(2, '0')}`;
+                if (aptDayKey <= compDayKey) {
+                  effectiveApt = null;
+                }
+              }
+            }
+          }
+        }
+
+        if (effectiveApt && effectiveApt.hasAppointment) {
+          this.nextAppointment.set(effectiveApt);
         } else {
           this.nextAppointment.set(null);
         }
@@ -257,7 +303,7 @@ export class PortalStateService {
         try {
           localStorage.setItem(`portal_patient_${userEmail}`, JSON.stringify(currentPatient));
           localStorage.setItem(`portal_progress_${userEmail}`, JSON.stringify(history || []));
-          localStorage.setItem(`portal_next_appointment_${userEmail}`, JSON.stringify(apt));
+          localStorage.setItem(`portal_next_appointment_${userEmail}`, JSON.stringify(effectiveApt));
         } catch (cacheErr) {
           console.error('Failed to write portal data cache:', cacheErr);
         }
@@ -389,11 +435,32 @@ export class PortalStateService {
         if (typeof window !== 'undefined' && 'navigator' in window && 'vibrate' in navigator) {
           navigator.vibrate([40, 45, 40]);
         }
-        this.nextAppointment.set({
+        
+        const updatedUpcoming = (apt.upcomingAppointments || []).map(item => {
+          if (item.eventId === apt.eventId || item.start === apt.start) {
+            return {
+              ...item,
+              status: 'confirmed' as const,
+              colorId: res.colorId || '10'
+            };
+          }
+          return item;
+        });
+
+        const updatedApt: Appointment = {
           ...apt,
           status: 'confirmed',
-          colorId: res.colorId || '10'
-        });
+          colorId: res.colorId || '10',
+          upcomingAppointments: updatedUpcoming
+        };
+
+        this.nextAppointment.set(updatedApt);
+
+        try {
+          localStorage.setItem(`portal_next_appointment_${p.email}`, JSON.stringify(updatedApt));
+        } catch (cacheErr) {
+          console.error('Failed to update cache:', cacheErr);
+        }
       }
     } catch (err) {
       console.error('Error confirming appointment:', err);
@@ -415,11 +482,32 @@ export class PortalStateService {
         if (typeof window !== 'undefined' && 'navigator' in window && 'vibrate' in navigator) {
           navigator.vibrate(60);
         }
-        this.nextAppointment.set({
+
+        const updatedUpcoming = (apt.upcomingAppointments || []).map(item => {
+          if (item.eventId === apt.eventId || item.start === apt.start) {
+            return {
+              ...item,
+              status: 'cancelled' as const,
+              colorId: '11'
+            };
+          }
+          return item;
+        });
+
+        const updatedApt: Appointment = {
           ...apt,
           status: 'cancelled',
-          colorId: '11'
-        });
+          colorId: '11',
+          upcomingAppointments: updatedUpcoming
+        };
+
+        this.nextAppointment.set(updatedApt);
+
+        try {
+          localStorage.setItem(`portal_next_appointment_${p.email}`, JSON.stringify(updatedApt));
+        } catch (cacheErr) {
+          console.error('Failed to update cache:', cacheErr);
+        }
       }
     } catch (err) {
       console.error('Error cancelling appointment:', err);
