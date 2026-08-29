@@ -496,7 +496,10 @@ def _call_gemini_micro_task(prompt: str, schema: dict, gemini_key: str, task_nam
     from google.genai import types
     from services.gemini_engine import _resolve_model
 
-    client = genai.Client(api_key=gemini_key)
+    client = genai.Client(
+        api_key=gemini_key,
+        http_options=types.HttpOptions(timeout=20000)
+    )
     models_to_try = _resolve_model(client)
     last_exception = None
 
@@ -520,10 +523,17 @@ def _call_gemini_micro_task(prompt: str, schema: dict, gemini_key: str, task_nam
                 print(f"[MenuParser AI] [{task_name}] Error with {model}: {e}")
                 last_exception = e
                 
-                is_unavailable = any(kw in err_str for kw in ["503", "unavailable", "high demand", "temporarily overloaded", "404", "not_found", "deprecated"])
+                is_not_found = any(kw in err_str for kw in ["404", "not_found", "deprecated"])
+                if is_not_found:
+                    break
+
+                is_unavailable = any(kw in err_str for kw in ["503", "unavailable", "high demand", "temporarily overloaded"])
                 if is_unavailable:
-                    print(f"[MenuParser AI] [{task_name}] Model {model} unavailable. Fail-fast switching to next model.")
-                    break  # Cambiar al siguiente modelo de inmediato
+                    if attempt == 0:
+                        print(f"[MenuParser AI] [{task_name}] Transient 503 on {model}. Retrying in 1.5s...")
+                        time.sleep(1.5)
+                        continue
+                    break
 
                 is_rate_limit = any(kw in err_str for kw in ["429", "resource_exhausted", "quota"])
                 is_zero_quota = "limit: 0" in err_str or "limit:0" in err_str
@@ -639,12 +649,12 @@ def _parse_metadata_and_notes_ai(meta_text: str, notes_text: str, gemini_key: st
 
 def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     """
-    Descarga el PDF/DOCX de la dieta del paciente y usa una arquitectura paralela
-    concurrente (ThreadPoolExecutor) para estructurar el menú en ~2.5 segundos de forma resiliente.
+    Descarga el PDF/DOCX de la dieta del paciente y estructura el menú completo
+    extrayendo TODOS los días de la semana (Lunes a Domingo) o todas las opciones de menú,
+    con enriquecimiento determinista crudo vs. cocido en Python.
     """
     import io
     import requests
-    from concurrent.futures import ThreadPoolExecutor
     from pypdf import PdfReader
     from docx import Document
 
@@ -667,72 +677,135 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
             full_text += (page.extract_text() or "") + "\n"
 
     print(f"[MenuParser AI] Extracted raw text length: {len(full_text)}")
-    
-    # 2. Segmentar el documento en bloques independientes
-    segmented = _segment_menu_document(full_text)
-    sections_info = segmented.get("sections", [])
-    meta_text = segmented.get("metadata_text", "")
-    notes_text = segmented.get("notes_text", "")
-    print(f"[MenuParser AI] Segmented into {len(sections_info)} sections + metadata")
+    cleaned_text = _clean_and_trim_menu_text(full_text)
 
-    # 3. Procesar todas las secciones y metadatos en PARALELO con ThreadPoolExecutor
-    meta_result = {}
-    parsed_sections = []
-
-    with ThreadPoolExecutor(max_workers=6) as executor:
-        # Lanzar worker de metadata
-        meta_future = executor.submit(_parse_metadata_and_notes_ai, meta_text, notes_text, gemini_key)
+    # 2. Separar lista de compras visual (páginas del súper) del contenido del menú
+    pos = cleaned_text.upper().find("LISTA DE COMPRAS")
+    if pos == -1:
+        pos = cleaned_text.upper().find("LISTA DEL SÚPER")
         
-        # Lanzar workers de cada sección
-        section_futures = [
-            executor.submit(_parse_single_section_ai, sec["name"], sec["text"], gemini_key)
-            for sec in sections_info
-        ]
+    if pos != -1:
+        menu_text = cleaned_text[:pos].strip()
+        super_notes = cleaned_text[pos:].strip()
+    else:
+        menu_text = cleaned_text
+        super_notes = ""
 
-        # Recoger resultado de metadata
-        try:
-            meta_result = meta_future.result(timeout=25)
-        except Exception as e:
-            print(f"[MenuParser AI] Warning in metadata parsing: {e}")
-            meta_result = {
-                "paciente_nombre": "",
-                "calorias_totales": 0,
-                "macronutrientes": {"proteinas_g": 0, "carbohidratos_g": 0, "grasas_g": 0},
-                "tipo_plan": "equivalencias_opciones",
-                "recomendaciones": [],
-                "suplementos": []
-            }
-
-        # Recoger resultados de cada sección
-        for i, fut in enumerate(section_futures):
-            try:
-                sec_data = fut.result(timeout=25)
-                if sec_data and sec_data.get("tiempos_comida"):
-                    parsed_sections.append(sec_data)
-            except Exception as e:
-                print(f"[MenuParser AI] Warning parsing section {i}: {e}")
-
-    # Si por alguna razón ninguna sección paralela respondió, hacer fallback seguro
-    if not parsed_sections:
-        raise ValueError("No se pudieron procesar las secciones del menú nutricional.")
-
-    # 4. Enriquecimiento Determinista en Python (SMAE crudo vs cocido)
-    _enrich_raw_cooked_conversions(parsed_sections)
-
-    # 5. Ensamblar JSON final
-    final_json = {
-        "paciente_nombre": meta_result.get("paciente_nombre", ""),
-        "fecha_elaboracion": meta_result.get("fecha_elaboracion", ""),
-        "calorias_totales": meta_result.get("calorias_totales", 0),
-        "macronutrientes": meta_result.get("macronutrientes", {"proteinas_g": 0, "carbohidratos_g": 0, "grasas_g": 0}),
-        "tipo_plan": meta_result.get("tipo_plan", "equivalencias_opciones"),
-        "secciones": parsed_sections,
-        "recomendaciones": meta_result.get("recomendaciones", []),
-        "suplementos": meta_result.get("suplementos", [])
+    # 3. Esquema estricto para extraer todos los días / opciones
+    menu_schema = {
+        "type": "OBJECT",
+        "properties": {
+            "paciente_nombre": {"type": "STRING"},
+            "fecha_elaboracion": {"type": "STRING"},
+            "calorias_totales": {"type": "INTEGER"},
+            "macronutrientes": {
+                "type": "OBJECT",
+                "properties": {
+                    "proteinas_g": {"type": "INTEGER"},
+                    "carbohidratos_g": {"type": "INTEGER"},
+                    "grasas_g": {"type": "INTEGER"}
+                },
+                "required": ["proteinas_g", "carbohidratos_g", "grasas_g"]
+            },
+            "tipo_plan": {
+                "type": "STRING",
+                "description": "'semanal' si el menú está dividido por días de la semana, o 'equivalencias_opciones' si son opciones (Opción 1, Opción 2...)"
+            },
+            "secciones": {
+                "type": "ARRAY",
+                "description": "Lista completa con CADA UNO de los días (Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo) o CADA opción de menú.",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "nombre": {"type": "STRING", "description": "Nombre del día o menú (ej. 'Lunes', 'Martes', 'Miércoles', o 'Menú Opción 1')"},
+                        "tiempos_comida": {
+                            "type": "ARRAY",
+                            "items": {
+                                "type": "OBJECT",
+                                "properties": {
+                                    "tiempo": {"type": "STRING", "description": "Ej: 'Desayuno', 'Colación 1', 'Comida', 'Colación 2', 'Cena'"},
+                                    "hora_sugerida": {"type": "STRING"},
+                                    "emoji": {"type": "STRING"},
+                                    "platillo": {"type": "STRING"},
+                                    "preparacion": {"type": "STRING"},
+                                    "termino_busqueda_imagen": {"type": "STRING", "description": "Término en inglés de 2 a 4 palabras para buscar foto gastronómica en Unsplash (ej. 'mexican chilaquiles green salsa', 'chicken fajitas skillet', 'oatmeal bowl berries')."},
+                                    "ingredientes": {
+                                        "type": "ARRAY",
+                                        "items": {
+                                            "type": "OBJECT",
+                                            "properties": {
+                                                "nombre": {"type": "STRING"},
+                                                "cantidad": {"type": "STRING"},
+                                                "grupo": {"type": "STRING"},
+                                                "reemplazos": {"type": "ARRAY", "items": {"type": "STRING"}}
+                                            },
+                                            "required": ["nombre", "cantidad"]
+                                        }
+                                    }
+                                },
+                                "required": ["tiempo", "platillo", "ingredientes"]
+                            }
+                        }
+                    },
+                    "required": ["nombre", "tiempos_comida"]
+                }
+            },
+            "recomendaciones": {"type": "ARRAY", "items": {"type": "STRING"}},
+            "suplementos": {"type": "ARRAY", "items": {"type": "STRING"}}
+        },
+        "required": ["paciente_nombre", "tipo_plan", "secciones"]
     }
 
-    print(f"[MenuParser AI] Parallel pipeline finished successfully with {len(parsed_sections)} sections.")
-    return final_json
+    prompt = f"""
+    Eres un nutriólogo clínico experto. Digitaliza el siguiente plan de alimentación:
+    
+    TEXTO DEL PLAN:
+    \"\"\"
+    {menu_text}
+    \"\"\"
+    
+    NOTAS ADICIONALES / RECOMENDACIONES:
+    \"\"\"
+    {super_notes[:3000]}
+    \"\"\"
+    
+    REGLAS OBLIGATORIAS:
+    1. Si el plan es una tabla semanal organizada por columnas de días (LUNES, MARTES, MIÉRCOLES, JUEVES, VIERNES, SÁBADO, DOMINGO o combinaciones):
+       - DEBES crear una sección en 'secciones' para CADA UNO de los días (ej: 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo').
+       - En cada día, extrae TODOS sus tiempos de comida en orden (Desayuno, Colación 1, Comida, Colación 2, Cena).
+    2. Si el plan está dividido por opciones (ej: Menú Opción 1, Menú Opción 2, Menú Opción 3):
+       - DEBES crear una sección para CADA opción de menú.
+    3. NUNCA resumas todo en un solo día ni omitas los demás días/opciones.
+    4. Extrae ingredientes detallados con cantidades exactas y grupos si se especifican.
+    5. Para cada platillo incluye 'termino_busqueda_imagen' con 2 a 4 palabras en inglés para buscar su fotografía gastronómica.
+    """
+
+    parsed = _call_gemini_micro_task(prompt, menu_schema, gemini_key, task_name="FullMenuParser")
+
+    if not parsed or not parsed.get("secciones"):
+        raise ValueError("No se pudieron extraer las secciones del menú nutricional.")
+
+    # 4. Enriquecimiento Determinista en Python (SMAE crudo vs cocido y Emojis)
+    _enrich_raw_cooked_conversions(parsed.get("secciones", []))
+    
+    emoji_map = {
+        "desayuno": "🍳",
+        "colaci": "🍏",
+        "snack": "🍏",
+        "comida": "🥗",
+        "almuerzo": "🥗",
+        "cena": "🌙",
+        "licuado": "🥤",
+        "batido": "🥤"
+    }
+    for sec in parsed.get("secciones", []):
+        for meal in sec.get("tiempos_comida", []):
+            if not meal.get("emoji"):
+                t = (meal.get("tiempo") or "").lower()
+                meal["emoji"] = next((v for k, v in emoji_map.items() if k in t), "🍽️")
+
+    print(f"[MenuParser AI] Successfully structured {len(parsed.get('secciones', []))} days/sections.")
+    return parsed
 
 
 MEXICAN_DISH_SEARCH_MAP = {
