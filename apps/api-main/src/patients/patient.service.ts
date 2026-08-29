@@ -174,60 +174,91 @@ export class PatientService {
     return { success: true };
   }
 
+  private readonly inFlightMenuParses = new Map<string, Promise<any>>();
+  private readonly inFlightShoppingLists = new Map<string, Promise<any>>();
+
   async getShoppingList(menuUrl: string, clientIp?: string): Promise<any> {
-    const client: any = this.supabaseService.getClient();
     const cleanMenuUrl = menuUrl.split('?')[0];
 
-    const { data: cached } = await client
-      .from('ai_menu_cache')
-      .select('shopping_list')
-      .eq('menu_url', cleanMenuUrl)
-      .maybeSingle() as any;
-
-    if (cached && cached.shopping_list) {
-      console.log(`[ShoppingList] Cache HIT for menu URL: ${cleanMenuUrl}`);
-      return cached.shopping_list;
+    if (this.inFlightShoppingLists.has(cleanMenuUrl)) {
+      console.log(`[ShoppingList] Deduplicating in-flight request for menu URL: ${cleanMenuUrl}`);
+      return this.inFlightShoppingLists.get(cleanMenuUrl);
     }
 
-    console.log(`[ShoppingList] Cache MISS. Generating shopping list via AI for menu URL: ${cleanMenuUrl}...`);
-    const result = await this.aiGatewayService.getShoppingList(menuUrl, clientIp);
+    const taskPromise = (async () => {
+      try {
+        const client: any = this.supabaseService.getClient();
+        const { data: cached } = await client
+          .from('ai_menu_cache')
+          .select('shopping_list')
+          .eq('menu_url', cleanMenuUrl)
+          .maybeSingle() as any;
 
-    if (result && !result.error) {
-      console.log(`[ShoppingList] Successfully generated shopping list via AI for menu URL: ${cleanMenuUrl}`);
-      await client.from('ai_menu_cache').upsert({
-        menu_url: cleanMenuUrl,
-        shopping_list: result,
-      });
-    }
-    return result;
+        if (cached && cached.shopping_list) {
+          console.log(`[ShoppingList] Cache HIT for menu URL: ${cleanMenuUrl}`);
+          return cached.shopping_list;
+        }
+
+        console.log(`[ShoppingList] Cache MISS. Generating shopping list via AI for menu URL: ${cleanMenuUrl}...`);
+        const result = await this.aiGatewayService.getShoppingList(menuUrl, clientIp);
+
+        if (result && !result.error) {
+          console.log(`[ShoppingList] Successfully generated shopping list via AI for menu URL: ${cleanMenuUrl}`);
+          await client.from('ai_menu_cache').upsert({
+            menu_url: cleanMenuUrl,
+            shopping_list: result,
+          });
+        }
+        return result;
+      } finally {
+        this.inFlightShoppingLists.delete(cleanMenuUrl);
+      }
+    })();
+
+    this.inFlightShoppingLists.set(cleanMenuUrl, taskPromise);
+    return taskPromise;
   }
 
   async getParsedMenu(menuUrl: string, clientIp?: string): Promise<any> {
-    const client: any = this.supabaseService.getClient();
     const cleanMenuUrl = menuUrl.split('?')[0];
 
-    const { data: cached } = await client
-      .from('ai_menu_cache')
-      .select('parsed_menu')
-      .eq('menu_url', cleanMenuUrl)
-      .maybeSingle() as any;
-
-    if (cached && cached.parsed_menu) {
-      console.log(`[ParsedMenu] Cache HIT for menu URL: ${cleanMenuUrl}`);
-      return cached.parsed_menu;
+    if (this.inFlightMenuParses.has(cleanMenuUrl)) {
+      console.log(`[ParsedMenu] Deduplicating in-flight parse request for menu URL: ${cleanMenuUrl}`);
+      return this.inFlightMenuParses.get(cleanMenuUrl);
     }
 
-    console.log(`[ParsedMenu] Cache MISS. Parsing menu document via AI for menu URL: ${cleanMenuUrl}...`);
-    const result = await this.aiGatewayService.getParsedMenu(menuUrl, clientIp);
+    const taskPromise = (async () => {
+      try {
+        const client: any = this.supabaseService.getClient();
+        const { data: cached } = await client
+          .from('ai_menu_cache')
+          .select('parsed_menu')
+          .eq('menu_url', cleanMenuUrl)
+          .maybeSingle() as any;
 
-    if (result && !result.error) {
-      console.log(`[ParsedMenu] Successfully parsed clinical menu via AI for menu URL: ${cleanMenuUrl}`);
-      await client.from('ai_menu_cache').upsert({
-        menu_url: cleanMenuUrl,
-        parsed_menu: result,
-      });
-    }
-    return result;
+        if (cached && cached.parsed_menu) {
+          console.log(`[ParsedMenu] Cache HIT for menu URL: ${cleanMenuUrl}`);
+          return cached.parsed_menu;
+        }
+
+        console.log(`[ParsedMenu] Cache MISS. Parsing menu document via AI for menu URL: ${cleanMenuUrl}...`);
+        const result = await this.aiGatewayService.getParsedMenu(menuUrl, clientIp);
+
+        if (result && !result.error) {
+          console.log(`[ParsedMenu] Successfully parsed clinical menu via AI for menu URL: ${cleanMenuUrl}`);
+          await client.from('ai_menu_cache').upsert({
+            menu_url: cleanMenuUrl,
+            parsed_menu: result,
+          });
+        }
+        return result;
+      } finally {
+        this.inFlightMenuParses.delete(cleanMenuUrl);
+      }
+    })();
+
+    this.inFlightMenuParses.set(cleanMenuUrl, taskPromise);
+    return taskPromise;
   }
 
   async getCopilotSuggestion(patientEmailOrId: string): Promise<any> {

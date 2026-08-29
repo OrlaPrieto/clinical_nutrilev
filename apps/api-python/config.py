@@ -1,7 +1,11 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+root_env = Path(__file__).resolve().parent.parent.parent / ".env"
+if root_env.exists():
+    load_dotenv(root_env)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 ALLOWED_ORIGINS = [FRONTEND_URL, "https://app.clinicanutrilev.com"]
