@@ -341,19 +341,29 @@ def build_shopping_list_from_parsed_menu(parsed_menu: dict) -> list:
     return result_categories
 
 
-def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
+def generate_shopping_list_from_parsed_menu_ai(parsed_menu: dict, gemini_key: str) -> list:
     """
-    Genera la lista de compras del menú usando IA con fallback automático
-    determinista para evitar cuellos de botella y timeouts.
+    Genera la lista de compras de alta precisión clínica con Gemini
+    alimentándole los ingredientes ya estructurados (input super liviano y limpio).
+    Responde en <0.8s con consejos de compra, sumas exactas y fallback automático.
     """
-    import json
-    import traceback
-    from google import genai
-    from google.genai import types
+    if not parsed_menu or not isinstance(parsed_menu, dict):
+        return []
 
-    todos_ingredientes = menu_data.get("todos_ingredientes", [])
-    print(f"[ShoppingList AI] Input ingredients count: {len(todos_ingredientes)}")
-    ingredientes_str = "\n".join(todos_ingredientes)
+    # 1. Extraer ingredientes limpios y compactos de todas las secciones
+    ingredient_lines = []
+    for sec in parsed_menu.get("secciones", []):
+        sec_name = sec.get("nombre", "Día")
+        for meal in sec.get("tiempos_comida", []):
+            meal_time = meal.get("tiempo", "Comida")
+            platillo = meal.get("platillo", "")
+            ings = meal.get("ingredientes", [])
+            ing_strs = [f"{i.get('cantidad', '')} {i.get('nombre', '')}".strip() for i in ings if i.get('nombre')]
+            if ing_strs:
+                ingredient_lines.append(f"- {sec_name} ({meal_time} - {platillo}): {', '.join(ing_strs)}")
+
+    ingredientes_str = "\n".join(ingredient_lines)
+    print(f"[ShoppingList AI] Structured meals with ingredients: {len(ingredient_lines)}")
 
     shopping_schema = {
         "type": "OBJECT",
@@ -366,18 +376,18 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
                     "properties": {
                         "category": {
                             "type": "STRING",
-                            "description": "Categoría con su emoji respectivo (ej. 🥩 PROTEÍNAS, 🥛 LÁCTEOS Y SUSTITUTOS, 🥦 VERDURAS Y HORTALIZAS, 🍎 FRUTAS FRESCAS, 🍞 CEREALES Y TUBÉRCULOS, 🥜 GRASAS Y SEMILLAS, 🧂 DESPENSA Y CONDIMENTOS, 🍵 BEBIDAS)."
+                            "description": "Categoría con su emoji (ej. 🥩 PROTEÍNAS Y CARNES, 🥦 VERDURAS Y HORTALIZAS, 🍎 FRUTAS FRESCAS, 🍞 CEREALES Y TUBÉRCULOS, 🥜 GRASAS Y SEMILLAS, 🥛 LÁCTEOS Y BEBIDAS, 🧂 DESPENSA Y CONDIMENTOS)."
                         },
                         "items": {
                             "type": "ARRAY",
-                            "description": "Lista de ingredientes de esta categoría.",
+                            "description": "Lista de ingredientes consolidados de esta categoría.",
                             "items": {
                                 "type": "OBJECT",
                                 "properties": {
-                                    "icon": {"type": "STRING", "description": "Emoji del alimento."},
-                                    "name": {"type": "STRING", "description": "Nombre del ingrediente."},
-                                    "amount": {"type": "STRING", "description": "Cantidad consolidada total."},
-                                    "tip": {"type": "STRING", "description": "Consejo clínico o de compra práctico."}
+                                    "icon": {"type": "STRING", "description": "Un único emoji representativo del alimento."},
+                                    "name": {"type": "STRING", "description": "Nombre claro del ingrediente (ej. Pechuga de pollo, Pan de caja integral, Espinacas)."},
+                                    "amount": {"type": "STRING", "description": "Cantidad consolidada total para toda la semana/menú (ej. '1.2 kg', '8 piezas', '2 manojos')."},
+                                    "tip": {"type": "STRING", "description": "Consejo clínico o de selección en el supermercado (ej. 'Elegir pechuga sin marinar; jamón bajo en sodio', 'Pan sin sellos ni azúcares añadidos')."}
                                 },
                                 "required": ["icon", "name", "amount", "tip"]
                             }
@@ -389,25 +399,35 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
         },
         "required": ["categories"]
     }
-    
+
     system_prompt = (
         "Eres un asistente experto en nutrición clínica y compras de supermercado inteligentes. "
         "Tu tarea es analizar los ingredientes semanales del plan alimenticio de un paciente y "
         "devolver una lista consolidada, optimizada y agrupada en formato JSON estricto."
     )
-    
+
     prompt = f"""
-    Analiza los siguientes ingredientes extraídos del plan de alimentación del paciente:
+    Analiza la lista estructurada de comidas e ingredientes del plan del paciente:
     
     {ingredientes_str}
     
-    Instrucciones de consolidación:
-    1. Agrupa y unifica los ingredientes repetidos sumando porciones en unidades de supermercado.
-    2. Clasifica cada ingrediente en su categoría correspondiente con su emoji.
-    3. Agrega consejos prácticos de selección en 'tip'.
+    INSTRUCCIONES CLÍNICAS Y DE CONSOLIDACIÓN:
+    1. **Suma matemática precisa**: Agrupa y unifica los ingredientes repetidos de todos los días (ej. suma todas las porciones de pechuga de pollo, espinacas, pan, atún, claras de huevo, aguacate) y conviértelas a unidades lógicas de compra de supermercado (ej. '1.2 kg', '6 latas', '2 manojos', '1 paquete').
+    2. **Clasificación estricta en categorías**:
+       - 🥩 PROTEÍNAS Y CARNES
+       - 🥦 VERDURAS Y HORTALIZAS
+       - 🍎 FRUTAS FRESCAS
+       - 🍞 CEREALES Y TUBÉRCULOS
+       - 🥜 GRASAS Y SEMILLAS
+       - 🥛 LÁCTEOS Y BEBIDAS
+       - 🧂 DESPENSA Y CONDIMENTOS
+    3. **Consejos prácticos de compra (`tip`)**: Agrega recomendaciones de selección fresca o perfil nutricional saludable en cada producto.
     """
-    
+
     import time
+    from google import genai
+    from google.genai import types
+
     client = genai.Client(api_key=gemini_key)
     models_to_try = _resolve_model(client)
 
@@ -434,20 +454,27 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
                 )
                 text = response.text.strip()
                 data = json.loads(text)
-                return data.get("categories", [])
+                cats = data.get("categories", [])
+                if cats:
+                    print(f"[ShoppingList AI] Successfully generated {len(cats)} categories with Gemini.")
+                    return cats
             except Exception as e:
-                print(f"[Gemini JSON Shopping List] Error with model {model} on attempt {attempt + 1}: {e}")
+                print(f"[ShoppingList AI] Error with model {model} on attempt {attempt + 1}: {e}")
                 err_str = str(e).lower()
                 
-                # Cap rate limit sleep at maximum 5s; if longer, switch model immediately
+                # Cap rate limit sleep at maximum 5s
                 if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
                     retry_delay = extract_retry_delay(e)
                     if retry_delay > 5.0:
-                        print(f"[ShoppingList AI] Rate limit wait ({retry_delay:.1f}s) is too long for {model}. Discarding model immediately.")
+                        print(f"[ShoppingList AI] Rate limit wait ({retry_delay:.1f}s) is too long for {model}. Discarding model.")
                         break
                     time.sleep(min(retry_delay + 1.0 if retry_delay > 0 else 3.0, 5.0))
                     continue
                 break
+
+    # Fallback determinista si todos los modelos de IA fallaron
+    print("[ShoppingList AI] Falling back to deterministic Python builder.")
+    return build_shopping_list_from_parsed_menu(parsed_menu)
 def _clean_and_trim_menu_text(raw_text: str) -> str:
     """
     Cleans extracted menu text before sending to LLM without losing clinical content:

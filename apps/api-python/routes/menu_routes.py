@@ -264,43 +264,21 @@ def get_shopping_list():
     gemini_key = GEMINI_API_KEY # Strictly from environment
 
     try:
-        from services.ai_service import parse_menu_document_to_json, build_shopping_list_from_parsed_menu, generate_shopping_list_json
-        from pypdf import PdfReader
-        from docx import Document
-        import io
+        from services.ai_service import parse_menu_document_to_json, generate_shopping_list_from_parsed_menu_ai, build_shopping_list_from_parsed_menu
 
-        # 1. Intentar generar la lista de compras al instante (0ms) a partir del menú estructurado
-        try:
-            parsed_menu = parse_menu_document_to_json(menu_url, gemini_key)
-            if parsed_menu and parsed_menu.get("secciones"):
-                shopping_json = build_shopping_list_from_parsed_menu(parsed_menu)
-                if shopping_json and len(shopping_json) > 0:
-                    print(f"[ShoppingList] Generated instant shopping list with {len(shopping_json)} categories directly from parsed menu.")
-                    return jsonify(shopping_json)
-        except Exception as parse_err:
-            print(f"[ShoppingList] Fast parser fallback triggered: {parse_err}")
-
-        # 2. Fallback estándar si se requiere extracción cruda
-        response = requests.get(menu_url, timeout=10)
-        response.raise_for_status()
-        file_bytes = response.content
-        content_type = response.headers.get('Content-Type', '')
+        # 1. Digitalizar el menú (1 sola llamada atómica ultra rápida de 2s)
+        parsed_menu = parse_menu_document_to_json(menu_url, gemini_key)
         
-        menu_data = {"menus": {}, "todos_ingredientes": []}
+        # 2. Generar la lista de compras clínica enriquecida con IA a partir del menú ya estructurado
+        if parsed_menu and parsed_menu.get("secciones"):
+            shopping_json = generate_shopping_list_from_parsed_menu_ai(parsed_menu, gemini_key)
+            if shopping_json and len(shopping_json) > 0:
+                print(f"[ShoppingList] Successfully generated rich AI shopping list with {len(shopping_json)} categories.")
+                return jsonify(shopping_json)
         
-        if 'officedocument.wordprocessingml.document' in content_type or menu_url.endswith('.docx'):
-            doc = Document(io.BytesIO(file_bytes))
-            full_text = "\n".join([p.text for p in doc.paragraphs] + [c.text for t in doc.tables for r in t.rows for c in r.cells])
-            menu_data["todos_ingredientes"] = [full_text]
-        elif 'pdf' in content_type or menu_url.endswith('.pdf'):
-            reader = PdfReader(io.BytesIO(file_bytes))
-            full_text = "\n".join([page.extract_text() or "" for page in reader.pages])
-            menu_data["todos_ingredientes"] = [full_text]
-        else:
-            return jsonify({"error": "Unsupported file format. Please use .docx or .pdf"}), 400
-
-        shopping_json = generate_shopping_list_json(menu_data, gemini_key)
-        return jsonify(shopping_json)
+        # 3. Fallback de seguridad
+        fallback_json = build_shopping_list_from_parsed_menu(parsed_menu)
+        return jsonify(fallback_json)
 
     except Exception as e:
         print(f"Error generating shopping list: {e}")
