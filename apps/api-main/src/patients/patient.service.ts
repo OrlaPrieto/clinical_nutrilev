@@ -353,13 +353,15 @@ export class PatientService {
     const result = await this.storageService.uploadMenuPdf(file, email, fileName);
     if (result && result.url) {
       console.log(`[PdfUpload] Pre-parsing menu & shopping list in background for: ${result.url}`);
-      // Pre-warm AI cache asynchronously without blocking the response to the nutritionist
-      this.getParsedMenu(result.url, undefined, true).catch(err => {
-        console.error(`[PdfUpload] Background menu pre-parsing error for ${result.url}:`, err);
-      });
-      this.getShoppingList(result.url).catch(err => {
-        console.error(`[PdfUpload] Background shopping list pre-parsing error for ${result.url}:`, err);
-      });
+      // Pre-calentar caché en segundo plano de forma encadenada (primero menú, luego lista de súper)
+      (async () => {
+        try {
+          await this.getParsedMenu(result.url, undefined, true);
+          await this.getShoppingList(result.url);
+        } catch (err) {
+          console.error(`[PdfUpload] Background pre-parsing error for ${result.url}:`, err);
+        }
+      })();
     }
     return result;
   }
