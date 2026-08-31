@@ -350,7 +350,18 @@ export class PatientService {
   }
 
   async uploadMenuPdf(file: any, email: string, fileName: string): Promise<{ url: string }> {
-    return this.storageService.uploadMenuPdf(file, email, fileName);
+    const result = await this.storageService.uploadMenuPdf(file, email, fileName);
+    if (result && result.url) {
+      console.log(`[PdfUpload] Pre-parsing menu & shopping list in background for: ${result.url}`);
+      // Pre-warm AI cache asynchronously without blocking the response to the nutritionist
+      this.getParsedMenu(result.url, undefined, true).catch(err => {
+        console.error(`[PdfUpload] Background menu pre-parsing error for ${result.url}:`, err);
+      });
+      this.getShoppingList(result.url).catch(err => {
+        console.error(`[PdfUpload] Background shopping list pre-parsing error for ${result.url}:`, err);
+      });
+    }
+    return result;
   }
 
   async getGlucoseLogs(patientEmail: string): Promise<any[]> {

@@ -525,15 +525,24 @@ def _call_gemini_micro_task(prompt: str, schema: dict, gemini_key: str, task_nam
         for attempt in range(2):
             try:
                 print(f"[MenuParser AI] [{task_name}] Invoking {model} (attempt {attempt + 1})...")
+                
+                # Desactivar thinking budget para respuesta instantánea (<1s) en modelos 2.5 / 3.x
+                config_kwargs = {
+                    "temperature": 0.1,
+                    "max_output_tokens": 8192,
+                    "response_mime_type": "application/json",
+                    "response_schema": schema,
+                }
+                try:
+                    if hasattr(types, 'ThinkingConfig'):
+                        config_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
+                except Exception:
+                    pass
+
                 response = client.models.generate_content(
                     model=model,
                     contents=[{"role": "user", "parts": [{"text": prompt}]}],
-                    config=types.GenerateContentConfig(
-                        temperature=0.1,
-                        max_output_tokens=8192,
-                        response_mime_type="application/json",
-                        response_schema=schema
-                    ),
+                    config=types.GenerateContentConfig(**config_kwargs),
                 )
                 text = response.text.strip()
                 return json.loads(text)
