@@ -586,7 +586,10 @@ def _parse_single_section_ai(sec_name: str, sec_text: str, gemini_key: str) -> d
                         "tiempo": {"type": "STRING", "description": "Ej: 'Licuado', 'Desayuno', 'Colación 1', 'Comida', 'Colación 2', 'Cena', 'Bebida'"},
                         "hora_sugerida": {"type": "STRING"},
                         "emoji": {"type": "STRING", "description": "Emoji representativo (ej. 🍳, 🍏, 🥗, ☕, 🌙, 🥤)"},
-                        "platillo": {"type": "STRING", "description": "Nombre EXACTO y literal del platillo tal como está escrito en el menú. PROHIBIDO inventar nombres."},
+                        "platillo": {
+                            "type": "STRING",
+                            "description": "Nombre representativo del platillo (ej. 'Sándwich de pechuga de pollo', 'Ensalada de coditos con atún', 'Huevos a la mexicana', 'Licuado verde con avena'). Si en el texto o encabezado viene el nombre, úsalo. Si solo viene el tiempo de comida y la lista de ingredientes, genera un nombre culinario natural y apetitoso según los ingredientes principales. PROHIBIDO poner palabras genéricas como 'Desayuno', 'Comida', 'Cena', 'Colación', 'Snack' o 'Bebida'."
+                        },
                         "preparacion": {"type": "STRING", "description": "Instrucciones de preparación si vienen en el texto."},
                         "termino_busqueda_imagen": {"type": "STRING", "description": "Término en inglés de 2 a 4 palabras para buscar la foto real en Unsplash (ej. 'mexican chilaquiles green salsa', 'chicken fajitas skillet', 'oatmeal bowl berries')."},
                         "ingredientes": {
@@ -611,23 +614,24 @@ def _parse_single_section_ai(sec_name: str, sec_text: str, gemini_key: str) -> d
     }
 
     prompt = f"""
-    Eres un asistente de nutrición clínica de máxima precisión. Digitaliza el siguiente tiempo de comida o día en JSON:
+    Eres un asistente de nutrición clínica de máxima precisión. Digitaliza el siguiente tiempo de comida o menú en JSON:
     
     TEXTO DE LA SECCIÓN ({sec_name}):
     \"\"\"
     {sec_text}
     \"\"\"
     
-    REGLAS ESTRICTAS OBLIGATORIAS:
-    1. 'nombre': Usa '{sec_name}'.
-    2. 'tiempos_comida': Extrae TODOS los tiempos de comida en orden cronológico:
-       - Incluye Desayuno, Licuado/Batido, Colación Matutina / Colación 1, Comida, Colación Vespertina / Colación 2, Cena y Bebidas.
-       - NUNCA omitas colaciones, snacks, licuados ni bebidas descritas en el texto.
-    3. TÍTULOS DE PLATILLO EXACTOS:
-       - El campo 'platillo' DEBE ser el título literal que aparece en el texto del documento (ej. 'Huevos con jamón de pavo', 'Licuado verde', 'Pechuga asada con verduras', 'Manzana con almendras').
-       - PROHIBIDO inventar nombres creativos o modificarlos. Respeta el texto del nutriólogo al 100%.
-    4. INGREDIENTES: Extrae cada ingrediente con su cantidad exacta y grupo si se especifica.
-    5. FOTOGRAFÍA: Para cada comida incluye 'termino_busqueda_imagen' con 2 a 4 palabras en inglés para fotografía gastronómica.
+    REGLAS CRÍTICAS PARA TÍTULOS DE PLATILLO ('platillo'):
+    1. PROHIBICIÓN ABSOLUTA DE TÍTULOS GENÉRICOS:
+       - El campo 'platillo' NUNCA debe ser 'Desayuno', 'Comida', 'Cena', 'Colación', 'Colación 1', 'Colación 2', 'Snack', 'Almuerzo' ni 'Bebida'.
+    2. SI EL TEXTO O ENCABEZADO TIENE EL NOMBRE DEL PLATILLO:
+       - Úsalo directamente (ej: escrito enseguida de MENÚ 1/2/3, o al lado del tiempo como 'Sándwich de pollo', 'Chilaquiles verdes con pollo', 'Atún a la mexicana').
+    3. SI EL TEXTO SOLO TIENE EL TIEMPO Y LA LISTA DE INGREDIENTES:
+       - Sintetiza el nombre culinario claro y apetitoso según sus ingredientes (ej: si tiene pan + pollo -> 'Sándwich de pollo con verduras'; si tiene coditos + atún -> 'Ensalada fría de coditos con atún'; si tiene huevo -> 'Huevos preparados al gusto'; si tiene manzana + almendras -> 'Manzana con almendras'; si tiene pepino + limón -> 'Pepino con limón y chile').
+    4. TIEMPOS DE COMIDA:
+       - Extrae TODOS los tiempos de comida en orden cronológico (Desayuno, Licuados, Colación 1, Comida, Colación 2, Cena, Bebidas).
+    5. INGREDIENTES: Extrae cada ingrediente con su cantidad exacta.
+    6. FOTOGRAFÍA: Para cada platillo incluye 'termino_busqueda_imagen' en inglés (ej. 'chicken sandwich toast', 'tuna pasta salad cold', 'mexican scrambled eggs').
     """
     return _call_gemini_micro_task(prompt, section_schema, gemini_key, task_name=f"Section:{sec_name[:15]}")
 
@@ -673,7 +677,63 @@ def _parse_metadata_and_notes_ai(meta_text: str, notes_text: str, gemini_key: st
     - Extrae cada recomendación, hábito o indicación general en 'recomendaciones_generales'.
     - Extrae cada suplemento o indicación de suplementación en 'suplementos'.
     """
-    return _call_gemini_micro_task(prompt, meta_schema, gemini_key, task_name="Metadata&Notes")
+def _sanitize_dish_titles(structured_sections: list) -> None:
+    """
+    Guardraíl determinista: si la IA dejó títulos genéricos como 'Desayuno' o 'Comida',
+    sintetiza inmediatamente un nombre culinario limpio y descriptivo a partir de sus ingredientes.
+    """
+    generic_words = {
+        "desayuno", "comida", "cena", "colacion", "colación", "colacion 1", "colación 1",
+        "colacion 2", "colación 2", "colación matutina", "colacion matutina",
+        "colación vespertina", "colacion vespertina", "snack", "almuerzo", "licuado",
+        "batido", "bebida", "infusion", "infusión", "menu", "menú", "menu 1", "menu 2",
+        "menu 3", "menu 4", "menu 5", "opcion 1", "opción 1", "opcion 2", "opción 2"
+    }
+
+    for sec in structured_sections:
+        for meal in sec.get("tiempos_comida", []):
+            current_title = (meal.get("platillo") or "").strip()
+            is_generic = (not current_title) or (current_title.lower() in generic_words)
+            
+            if is_generic:
+                ings = meal.get("ingredientes", [])
+                ing_names = [i.get("nombre", "").strip() for i in ings if i.get("nombre")]
+                joined_ings = " ".join(ing_names).lower()
+
+                # Detecciones culinarias precisas según ingredientes
+                if "pan" in joined_ings and any(k in joined_ings for k in ["pollo", "pechuga", "jamon", "jamón", "atun", "atún", "huevo", "queso", "panela"]):
+                    protein = next((p for p in ["pechuga de pollo", "pollo", "jamón de pavo", "jamón", "atún", "huevo", "queso panela"] if p in joined_ings), "pollo")
+                    meal["platillo"] = f"Sándwich de {protein}"
+                elif any(k in joined_ings for k in ["pasta", "codito", "coditos", "espagueti", "fideo"]):
+                    if any(k in joined_ings for k in ["atun", "atún"]):
+                        meal["platillo"] = "Ensalada de coditos con atún"
+                    elif any(k in joined_ings for k in ["pollo", "pechuga"]):
+                        meal["platillo"] = "Pasta con pechuga de pollo"
+                    else:
+                        meal["platillo"] = "Pasta con guarnición"
+                elif any(k in joined_ings for k in ["huevo", "huevos", "claras"]):
+                    if "jamon" in joined_ings or "jamón" in joined_ings:
+                        meal["platillo"] = "Huevos revueltos con jamón"
+                    elif "espinaca" in joined_ings or "espinacas" in joined_ings:
+                        meal["platillo"] = "Omelette de espinacas"
+                    else:
+                        meal["platillo"] = "Huevos preparados con guarnición"
+                elif any(k in joined_ings for k in ["avena", "oatmeal"]):
+                    meal["platillo"] = "Tazón de avena con fruta"
+                elif any(k in joined_ings for k in ["pechuga", "pollo"]):
+                    meal["platillo"] = "Pechuga de pollo con verduras"
+                elif any(k in joined_ings for k in ["bistec", "res", "carne molida", "carne"]):
+                    meal["platillo"] = "Carne de res con verduras"
+                elif any(k in joined_ings for k in ["pescado", "filete", "salmón", "salmon", "tilapia"]):
+                    meal["platillo"] = "Filete de pescado a la plancha"
+                elif any(k in joined_ings for k in ["licuado", "batido", "smoothie"]):
+                    meal["platillo"] = "Licuado nutritivo"
+                elif len(ing_names) >= 2:
+                    meal["platillo"] = f"{ing_names[0].capitalize()} con {ing_names[1]}"
+                elif len(ing_names) == 1:
+                    meal["platillo"] = ing_names[0].capitalize()
+                else:
+                    meal["platillo"] = f"Platillo de {meal.get('tiempo', 'Comida')}"
 
 
 def _split_menu_into_sections_ai(full_text: str, gemini_key: str) -> tuple[list, str]:
@@ -812,8 +872,9 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     if not structured_sections:
         raise ValueError("No se pudieron extraer las secciones del menú nutricional.")
 
-    # 4. Enriquecimiento Determinista en Python (SMAE crudo vs cocido y Emojis)
+    # 4. Enriquecimiento Determinista en Python (SMAE crudo vs cocido, Títulos y Emojis)
     _enrich_raw_cooked_conversions(structured_sections)
+    _sanitize_dish_titles(structured_sections)
     
     emoji_map = {
         "desayuno": "🍳",
