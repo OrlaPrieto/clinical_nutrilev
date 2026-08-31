@@ -63,8 +63,8 @@ NOTAS: {notas}
 """
 
 def _resolve_model(client=None) -> list:
-    # Retornamos modelos oficiales activos. gemini-3.1-flash-lite primero por alta disponibilidad y velocidad sub-segundo.
-    return ["gemini-3.1-flash-lite", "gemini-2.5-flash"]
+    # Modelos oficiales activos priorizando estabilidad y cuota
+    return ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash", "gemini-3.1-flash-lite"]
 
 def _call_gemini(historial: dict, calorias: int, notas: str, menu_base_texto: str, gemini_key: str) -> dict:
     client = genai.Client(api_key=gemini_key)
