@@ -1129,7 +1129,7 @@
                                         @if ((patient()?.plan_citas_completadas || 0) < patient()?.plan_citas) {
                                             {{ (patient()?.plan_citas_completadas || 0) + 1 }}
                                         } @else {
-                                            <app-a-icon name="check" size="18px" customClass="text-nutri-rose"></app-a-icon>
+                                            1
                                         }
                                     </div>
                                     <div class="flex-1 space-y-0.5">
@@ -1139,9 +1139,9 @@
                                                 Este registro se guardará automáticamente como la <strong>Cita {{ (patient()?.plan_citas_completadas || 0) + 1 }}</strong> de su paquete (actualmente {{ patient()?.plan_citas_completadas || 0 }} de {{ patient()?.plan_citas }} completadas).
                                             </p>
                                         } @else {
-                                            <p class="text-[11px] font-bold text-amber-500">Paquete Completado</p>
+                                            <p class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Nuevo Ciclo de Paquete</p>
                                             <p class="text-[9px] text-nutri-text/50 dark:text-slate-500 font-medium leading-relaxed">
-                                                El paquete actual ya está completado ({{ patient()?.plan_citas_completadas }} de {{ patient()?.plan_citas }} citas). Este registro se guardará sin número de cita.
+                                                El paquete anterior concluyó ({{ patient()?.plan_citas_completadas }} de {{ patient()?.plan_citas }}). Este nuevo registro iniciará automáticamente como la <strong>Cita 1</strong> de {{ patient()?.plan_citas }}.
                                             </p>
                                         }
                                     </div>

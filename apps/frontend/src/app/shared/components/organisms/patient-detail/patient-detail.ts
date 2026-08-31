@@ -479,18 +479,22 @@ export class PatientDetailComponent implements OnInit {
       
       // Automatización del plan de citas
       if (p.plan_citas) {
-        const nextCita = (p.plan_citas_completadas || 0) + 1;
-        if (nextCita <= p.plan_citas) {
-          progressData.numero_cita = nextCita;
-          
-          // Actualizar localmente y en el backend
-          p.plan_citas_completadas = nextCita;
-          await this.patientService.addPatientEntry({
-            email: p.email,
-            plan_citas_completadas: nextCita,
-            action: "update"
-          });
+        let nextCita = (p.plan_citas_completadas || 0) + 1;
+        
+        // Si el paquete ya estaba completado, iniciar automáticamente un nuevo ciclo como Cita 1
+        if (nextCita > p.plan_citas) {
+          nextCita = 1;
         }
+
+        progressData.numero_cita = nextCita;
+        
+        // Actualizar localmente y en el backend
+        p.plan_citas_completadas = nextCita;
+        await this.patientService.addPatientEntry({
+          email: p.email,
+          plan_citas_completadas: nextCita,
+          action: "update"
+        });
       }
 
       await this.patientService.addProgressEntry({
@@ -645,7 +649,9 @@ export class PatientDetailComponent implements OnInit {
     this.saving.set(true);
     currentPatient.ultima_actualizacion = new Date().toISOString();
 
-    if (linkCita) {
+    const shouldLink = linkCita || (!!currentPatient.plan_citas && currentPatient.plan_citas_completadas === 1);
+
+    if (shouldLink) {
       const lastRecord = this.progressHistory()[0];
       if (lastRecord) {
         try {
@@ -664,16 +670,14 @@ export class PatientDetailComponent implements OnInit {
       action: "update"
     };
 
-    const msg = linkCita 
-      ? 'Datos del expediente actualizados y consulta vinculada correctamente'
+    const msg = shouldLink 
+      ? 'Datos del expediente actualizados y consulta vinculada como Cita 1'
       : 'Datos del paciente actualizados correctamente';
 
     await this.sendUpdate(updatePayload, true, msg);
     this.showLinkCitaConfirm.set(false);
 
-    if (linkCita) {
-      await this.loadProgress();
-    }
+    await this.loadProgress();
   }
 
 

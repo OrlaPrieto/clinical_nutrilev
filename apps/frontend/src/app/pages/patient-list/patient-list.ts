@@ -297,6 +297,22 @@ export class PatientListPage implements OnInit {
         action: 'update'
       };
       await this.patientService.addPatientEntry(payload);
+
+      // Si se asignó 1 cita completada, sincronizar el registro más reciente para que tenga 'numero_cita: 1'
+      if (p.plan_citas && p.plan_citas_completadas === 1) {
+        try {
+          const history = await this.patientService.getPatientProgress(p.email, true);
+          if (history && history.length > 0) {
+            const latest = history[0];
+            if (latest && Number(latest.numero_cita) !== 1) {
+              await this.patientService.updateProgressEntry(latest.id, { numero_cita: 1 });
+            }
+          }
+        } catch (linkErr) {
+          console.warn('Could not auto-link latest progress entry in quick modal:', linkErr);
+        }
+      }
+
       this.toastService.show('Plan de citas y pagos actualizado', 'success');
       this.closeQuickEdit();
       await this.loadPatients(true);
