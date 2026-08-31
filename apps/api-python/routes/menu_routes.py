@@ -267,7 +267,6 @@ def get_shopping_list():
         from services.ai_service import parse_menu_document_to_json, build_shopping_list_from_parsed_menu, generate_shopping_list_json
         from pypdf import PdfReader
         from docx import Document
-        from services.docx_utils import extract_menu_data
         import io
 
         # 1. Intentar generar la lista de compras al instante (0ms) a partir del menú estructurado
@@ -291,7 +290,8 @@ def get_shopping_list():
         
         if 'officedocument.wordprocessingml.document' in content_type or menu_url.endswith('.docx'):
             doc = Document(io.BytesIO(file_bytes))
-            menu_data = extract_menu_data(doc)
+            full_text = "\n".join([p.text for p in doc.paragraphs] + [c.text for t in doc.tables for r in t.rows for c in r.cells])
+            menu_data["todos_ingredientes"] = [full_text]
         elif 'pdf' in content_type or menu_url.endswith('.pdf'):
             reader = PdfReader(io.BytesIO(file_bytes))
             full_text = "\n".join([page.extract_text() or "" for page in reader.pages])
