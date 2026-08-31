@@ -18,6 +18,13 @@ import { ProgressHistoryComponent } from '../progress-history/progress-history';
 import { MenuCopilotModalComponent } from '../menu-copilot-modal/menu-copilot-modal';
 import { ClinicalNote, ClinicalNoteCategory } from '@shared/models/interfaces';
 
+function getLocalISODate(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 @Component({
   selector: 'app-o-patient-detail',
   standalone: true,
@@ -477,24 +484,36 @@ export class PatientDetailComponent implements OnInit {
     try {
       const progressData = { ...this.newProgress() };
       
-      // Automatización del plan de citas
-      if (p.plan_citas) {
-        let nextCita = (p.plan_citas_completadas || 0) + 1;
+      // Siempre asignar la fecha local del navegador del nutriólogo (YYYY-MM-DD)
+      // para evitar que el servidor UTC guarde con un día posterior después de las 6:00 PM
+      if (!progressData.date) {
+        progressData.date = getLocalISODate(new Date());
+      }
+      
+      // Manejo estricto de paquetes de citas:
+      // Solo si hay paquete activo y aún no se ha concluido el total de citas del paquete
+      if (p.plan_citas && Number(p.plan_citas) > 0) {
+        const completed = Number(p.plan_citas_completadas || 0);
+        const total = Number(p.plan_citas);
         
-        // Si el paquete ya estaba completado, iniciar automáticamente un nuevo ciclo como Cita 1
-        if (nextCita > p.plan_citas) {
-          nextCita = 1;
+        if (completed < total) {
+          const nextCita = completed + 1;
+          progressData.numero_cita = nextCita;
+          
+          // Actualizar localmente y en el backend
+          p.plan_citas_completadas = nextCita;
+          await this.patientService.addPatientEntry({
+            email: p.email,
+            plan_citas_completadas: nextCita,
+            action: "update"
+          });
+        } else {
+          // El paquete ya concluyó (ej. 4 de 4): la consulta se guarda sin número de cita
+          // ya que el nutriólogo decidirá después si renueva, cambia de paquete o deja sin paquete.
+          progressData.numero_cita = null;
         }
-
-        progressData.numero_cita = nextCita;
-        
-        // Actualizar localmente y en el backend
-        p.plan_citas_completadas = nextCita;
-        await this.patientService.addPatientEntry({
-          email: p.email,
-          plan_citas_completadas: nextCita,
-          action: "update"
-        });
+      } else {
+        progressData.numero_cita = null;
       }
 
       await this.patientService.addProgressEntry({
