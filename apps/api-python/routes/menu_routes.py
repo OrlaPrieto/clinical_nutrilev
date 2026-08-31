@@ -264,13 +264,27 @@ def get_shopping_list():
     gemini_key = GEMINI_API_KEY # Strictly from environment
 
     try:
-        # 1. Download the file
+        from services.ai_service import parse_menu_document_to_json, build_shopping_list_from_parsed_menu, generate_shopping_list_json
+        from pypdf import PdfReader
+        from docx import Document
+        from services.docx_utils import extract_menu_data
+        import io
+
+        # 1. Intentar generar la lista de compras al instante (0ms) a partir del menú estructurado
+        try:
+            parsed_menu = parse_menu_document_to_json(menu_url, gemini_key)
+            if parsed_menu and parsed_menu.get("secciones"):
+                shopping_json = build_shopping_list_from_parsed_menu(parsed_menu)
+                if shopping_json and len(shopping_json) > 0:
+                    print(f"[ShoppingList] Generated instant shopping list with {len(shopping_json)} categories directly from parsed menu.")
+                    return jsonify(shopping_json)
+        except Exception as parse_err:
+            print(f"[ShoppingList] Fast parser fallback triggered: {parse_err}")
+
+        # 2. Fallback estándar si se requiere extracción cruda
         response = requests.get(menu_url, timeout=10)
         response.raise_for_status()
         file_bytes = response.content
-        
-        # 2. Identify and extract
-        # Simple detection by extension or magic bytes
         content_type = response.headers.get('Content-Type', '')
         
         menu_data = {"menus": {}, "todos_ingredientes": []}
@@ -279,34 +293,13 @@ def get_shopping_list():
             doc = Document(io.BytesIO(file_bytes))
             menu_data = extract_menu_data(doc)
         elif 'pdf' in content_type or menu_url.endswith('.pdf'):
-            print("[ShoppingList] Processing PDF...")
-            try:
-                from pypdf import PdfReader
-            except ImportError:
-                print("[ShoppingList] ERROR: pypdf not found in environment!")
-                return jsonify({"error": "PDF support is not installed (pypdf missing)"}), 500
-                
             reader = PdfReader(io.BytesIO(file_bytes))
-            full_text = ""
-            for page in reader.pages:
-                text = page.extract_text() or ""
-                full_text += text + "\n"
-            
-            if not full_text.strip():
-                print("[ShoppingList] WARNING: No text extracted from PDF")
-                
+            full_text = "\n".join([page.extract_text() or "" for page in reader.pages])
             menu_data["todos_ingredientes"] = [full_text]
         else:
-            print(f"[ShoppingList] Unsupported format: {content_type}")
             return jsonify({"error": "Unsupported file format. Please use .docx or .pdf"}), 400
 
-        # 3. Generate JSON
-        from services.ai_service import generate_shopping_list_json
         shopping_json = generate_shopping_list_json(menu_data, gemini_key)
-        
-        if isinstance(shopping_json, list) and len(shopping_json) > 0 and "ERROR" in shopping_json[0].get("category", ""):
-            return jsonify(shopping_json), 500
-            
         return jsonify(shopping_json)
 
     except Exception as e:

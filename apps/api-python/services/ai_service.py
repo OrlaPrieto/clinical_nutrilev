@@ -237,13 +237,124 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
     import json
     import traceback
     from google import genai
+def build_shopping_list_from_parsed_menu(parsed_menu: dict) -> list:
+    """
+    Construye la lista de compras categorizada y consolidada directamente
+    a partir del menú estructurado en 0ms, sin consumir cuota ni fallar por timeouts.
+    """
+    if not parsed_menu or not isinstance(parsed_menu, dict):
+        return []
+
+    category_keywords = {
+        "🥩 PROTEÍNAS Y CARNES": {
+            "icon": "🍗",
+            "keywords": ["pollo", "pechuga", "res", "bistec", "carne", "atun", "atún", "pescado", "filete", "salmón", "salmon", "tilapia", "huevo", "claras", "jamon", "jamón", "pavo", "queso", "panela", "requeson", "requesón", "tofu", "atun en agua"],
+            "tip": "Elegir cortes magros y pechuga sin piel; jamón de pavo bajo en sodio."
+        },
+        "🥦 VERDURAS Y HORTALIZAS": {
+            "icon": "🥦",
+            "keywords": ["lechuga", "espinaca", "espinacas", "pepino", "zanahoria", "betabel", "jitomate", "tomate", "calabacita", "calabaza", "brocoli", "brócoli", "coliflor", "nopal", "nopales", "champiñones", "champiñon", "pimiento", "cebolla", "apio", "chayote", "verduras"],
+            "tip": "Comprar frescas, desinfectar y guardar en recipientes herméticos."
+        },
+        "🍎 FRUTAS FRESCAS": {
+            "icon": "🍎",
+            "keywords": ["manzana", "platano", "plátano", "fresas", "fresa", "moras", "frutos rojos", "papaya", "melon", "melón", "piña", "naranja", "toronja", "uvas", "kiwi", "sandia", "sandía", "mango", "durazno", "fruta"],
+            "tip": "Seleccionar piezas en su punto óptimo de maduración natural."
+        },
+        "🍞 CEREALES Y TUBÉRCULOS": {
+            "icon": "🍞",
+            "keywords": ["pan", "bimbo", "tortilla", "tortillas", "avena", "arroz", "pasta", "coditos", "codito", "espagueti", "tostadas", "papa", "camote", "galletas", "cereal"],
+            "tip": "Preferir versiones 100% integrales o sin azúcar añadida (ej. Bimbo Cero Cero)."
+        },
+        "🥜 GRASAS Y SEMILLAS": {
+            "icon": "🥑",
+            "keywords": ["aguacate", "aceite", "oliva", "mayonesa", "crema", "almendras", "almendra", "nuez", "nueces", "cacahuate", "chia", "chía", "semillas", "mantequilla", "crema agria"],
+            "tip": "Grasas cardiosaludables y semillas sin sal añadida."
+        },
+        "🥛 LÁCTEOS Y BEBIDAS": {
+            "icon": "🥛",
+            "keywords": ["leche", "yogur", "yogurt", "kefir", "kéfir", "te", "té", "cafe", "café", "limonada", "agua", "bebida"],
+            "tip": "Leche descremada o vegetal sin azúcar; yogur griego natural."
+        },
+        "🧂 DESPENSA Y CONDIMENTOS": {
+            "icon": "🧂",
+            "keywords": ["sal", "pimienta", "oregano", "orégano", "canela", "stevia", "vainilla", "vinagre", "limon", "limón", "mostaza", "ajo"],
+            "tip": "Condimentos naturales para realzar el sabor sin añadir calorías."
+        }
+    }
+
+    categorized_items = {cat: {} for cat in category_keywords}
+
+    # Recorrer todos los ingredientes del plan
+    for sec in parsed_menu.get("secciones", []):
+        for meal in sec.get("tiempos_comida", []):
+            for ing in meal.get("ingredientes", []):
+                name = (ing.get("nombre") or "").strip()
+                amount = (ing.get("cantidad") or "").strip()
+                if not name:
+                    continue
+
+                name_lower = name.lower()
+                matched_cat = None
+                matched_icon = "🛒"
+                matched_tip = "Ingrediente recomendado en tu plan nutricional."
+
+                for cat_name, cat_info in category_keywords.items():
+                    if any(kw in name_lower for kw in cat_info["keywords"]):
+                        matched_cat = cat_name
+                        matched_icon = cat_info["icon"]
+                        matched_tip = cat_info["tip"]
+                        break
+
+                if not matched_cat:
+                    matched_cat = "🧂 DESPENSA Y CONDIMENTOS"
+
+                norm_key = name.capitalize()
+                if norm_key not in categorized_items[matched_cat]:
+                    categorized_items[matched_cat][norm_key] = {
+                        "icon": matched_icon,
+                        "name": norm_key,
+                        "amounts": [amount] if amount else [],
+                        "tip": matched_tip
+                    }
+                else:
+                    if amount and amount not in categorized_items[matched_cat][norm_key]["amounts"]:
+                        categorized_items[matched_cat][norm_key]["amounts"].append(amount)
+
+    result_categories = []
+    for cat_name, items_dict in categorized_items.items():
+        if items_dict:
+            items_list = []
+            for item_key, data in items_dict.items():
+                consolidated_amount = ", ".join(data["amounts"][:3]) if data["amounts"] else "Según plan"
+                items_list.append({
+                    "icon": data["icon"],
+                    "name": data["name"],
+                    "amount": consolidated_amount,
+                    "tip": data["tip"]
+                })
+            result_categories.append({
+                "category": cat_name,
+                "items": items_list
+            })
+
+    return result_categories
+
+
+def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
+    """
+    Genera la lista de compras del menú usando IA con fallback automático
+    determinista para evitar cuellos de botella y timeouts.
+    """
+    import json
+    import traceback
+    from google import genai
     from google.genai import types
 
     todos_ingredientes = menu_data.get("todos_ingredientes", [])
     print(f"[ShoppingList AI] Input ingredients count: {len(todos_ingredientes)}")
     ingredientes_str = "\n".join(todos_ingredientes)
 
-    # Define schema as a raw dict to ensure absolute compatibility across Pydantic/Python versions
     shopping_schema = {
         "type": "OBJECT",
         "properties": {
@@ -263,22 +374,10 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
                             "items": {
                                 "type": "OBJECT",
                                 "properties": {
-                                    "icon": {
-                                        "type": "STRING",
-                                        "description": "Un único emoji del alimento (ej. 🥬, 🍗, 🥛, 🍚)."
-                                    },
-                                    "name": {
-                                        "type": "STRING",
-                                        "description": "Nombre del ingrediente (ej. Pechuga de pollo, Brócoli)."
-                                    },
-                                    "amount": {
-                                        "type": "STRING",
-                                        "description": "Cantidad consolidada total (ej. 1.2 kg, 8 rebanadas)."
-                                    },
-                                    "tip": {
-                                        "type": "STRING",
-                                        "description": "Consejo clínico o de compra práctico."
-                                    }
+                                    "icon": {"type": "STRING", "description": "Emoji del alimento."},
+                                    "name": {"type": "STRING", "description": "Nombre del ingrediente."},
+                                    "amount": {"type": "STRING", "description": "Cantidad consolidada total."},
+                                    "tip": {"type": "STRING", "description": "Consejo clínico o de compra práctico."}
                                 },
                                 "required": ["icon", "name", "amount", "tip"]
                             }
@@ -298,54 +397,56 @@ def generate_shopping_list_json(menu_data: dict, gemini_key: str) -> list:
     )
     
     prompt = f"""
-Analiza los siguientes ingredientes extraídos del plan de alimentación de 7 días del paciente:
-
-{ingredientes_str}
-
-Instrucciones de consolidación:
-1. **Suma matemática precisa**: Agrupa y unifica los ingredientes repetidos. Por ejemplo, si el plan pide espinacas el lunes, miércoles y viernes, súmalas en un único ingrediente "Espinacas" consolidando sus porciones en una unidad de supermercado (ej. '2 manojos' o '500g').
-2. **Unidades de compra realistas**: Si la suma de proteínas da '1400g', conviértela a una unidad de compra lógica como '1.4 kg'.
-3. **Clasificación estricta**: Clasifica cada ingrediente en la categoría correcta de la lista proporcionada en la descripción de 'category'.
-4. **Consejos prácticos (`tip`)**: Agrega recomendaciones de selección fresca o de perfil saludable (ej. 'Elegir jamón bajo en sodio', 'Yogur griego sin endulzantes artificiales').
-
-Genera el JSON usando el esquema definido.
-"""
+    Analiza los siguientes ingredientes extraídos del plan de alimentación del paciente:
+    
+    {ingredientes_str}
+    
+    Instrucciones de consolidación:
+    1. Agrupa y unifica los ingredientes repetidos sumando porciones en unidades de supermercado.
+    2. Clasifica cada ingrediente en su categoría correspondiente con su emoji.
+    3. Agrega consejos prácticos de selección en 'tip'.
+    """
     
     import time
-
     client = genai.Client(api_key=gemini_key)
     models_to_try = _resolve_model(client)
 
     for model in models_to_try:
-        for attempt in range(3):
+        for attempt in range(2):
             try:
                 print(f"[ShoppingList AI] Calling Gemini using model: {model} (attempt {attempt + 1})...")
+                config_kwargs = {
+                    "temperature": 0.1,
+                    "max_output_tokens": 8192,
+                    "response_mime_type": "application/json",
+                    "response_schema": shopping_schema,
+                }
+                try:
+                    if hasattr(types, 'ThinkingConfig'):
+                        config_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
+                except Exception:
+                    pass
+
                 response = client.models.generate_content(
                     model=model,
                     contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
-                    config=types.GenerateContentConfig(
-                        temperature=0.1,
-                        response_mime_type="application/json",
-                        response_schema=shopping_schema
-                    ),
+                    config=types.GenerateContentConfig(**config_kwargs),
                 )
                 text = response.text.strip()
-                print(f"[ShoppingList AI] Response text length: {len(text)}")
                 data = json.loads(text)
                 return data.get("categories", [])
             except Exception as e:
                 print(f"[Gemini JSON Shopping List] Error with model {model} on attempt {attempt + 1}: {e}")
                 err_str = str(e).lower()
                 
-                # If it's a rate limit or transient service error, sleep and retry
+                # Cap rate limit sleep at maximum 5s; if longer, switch model immediately
                 if any(kw in err_str for kw in ["429", "resource_exhausted", "quota", "503", "unavailable", "high demand"]):
                     retry_delay = extract_retry_delay(e)
-                    sleep_time = retry_delay + 1.0 if retry_delay > 0 else 5.0 * (2 ** attempt)
-                    print(f"[ShoppingList AI] Rate limit hit. Sleeping for {sleep_time:.2f}s before retrying...")
-                    time.sleep(sleep_time)
+                    if retry_delay > 5.0:
+                        print(f"[ShoppingList AI] Rate limit wait ({retry_delay:.1f}s) is too long for {model}. Discarding model immediately.")
+                        break
+                    time.sleep(min(retry_delay + 1.0 if retry_delay > 0 else 3.0, 5.0))
                     continue
-                
-                traceback.print_exc()
                 break
 def _clean_and_trim_menu_text(raw_text: str) -> str:
     """
