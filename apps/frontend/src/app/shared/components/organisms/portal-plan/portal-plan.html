@@ -54,7 +54,26 @@
         </p>
       </div>
     </div>
-
+    
+    <!-- Alerta de digitalización parcial si faltó alguna opción -->
+    @if (parsedMenu()?.has_partial_error) {
+      <div class="bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 p-4 sm:p-5 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-fade-in shadow-sm">
+        <div class="flex gap-3 items-start">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <app-a-icon name="warning_amber" size="18px"></app-a-icon>
+          </div>
+          <div class="space-y-0.5">
+            <h4 class="text-xs font-bold text-amber-800 dark:text-amber-300">Menú parcialmente digitalizado</h4>
+            <p class="text-[11px] text-amber-700/80 dark:text-amber-400/90 leading-relaxed">
+              Se digitalizaron {{ parsedMenu()?.received_sections_count }} de {{ parsedMenu()?.expected_sections_count }} opciones detectadas en tu documento. Puedes regenerarlo para completar el menú.
+            </p>
+          </div>
+        </div>
+        <button (click)="loadPlan(true)" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 flex items-center gap-1.5 cursor-pointer">
+          <app-a-icon name="refresh" size="14px"></app-a-icon> Regenerar con IA
+        </button>
+      </div>
+    }
 
     <!-- 2. Section Selector (Menus / Days) -->
     <h4 class="text-[9px] font-black uppercase tracking-[0.2em] text-nutri-rose/60 px-2">Selecciona tu menú del día</h4>
@@ -241,13 +260,31 @@
       <div class="bg-gradient-to-br from-nutri-rose/[0.03] to-transparent dark:from-white/[0.01] rounded-[2rem] sm:rounded-[2.5rem] border border-nutri-rose/10 dark:border-white/5 p-5 sm:p-8 space-y-4 transition-colors">
         <div class="flex items-center gap-2 text-nutri-rose">
           <app-a-icon name="campaign" size="20px"></app-a-icon>
-          <h4 class="font-bold text-xs uppercase tracking-widest">Recomendaciones</h4>
+          <h4 class="font-bold text-xs uppercase tracking-widest">Recomendaciones del Nutriólogo</h4>
         </div>
         <ul class="space-y-2.5 pl-1">
           @for (rec of parsedMenu()?.recomendaciones_generales; track rec) {
             <li class="flex items-start gap-2.5 text-xs text-nutri-text/70 dark:text-slate-400 leading-relaxed">
               <span class="w-1.5 h-1.5 rounded-full bg-nutri-rose mt-1.5 shrink-0"></span>
               {{ rec }}
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- 5. General Supplements Card -->
+    @if (parsedMenu()?.suplementos && parsedMenu()?.suplementos.length > 0) {
+      <div class="bg-gradient-to-br from-violet-500/[0.03] to-transparent dark:from-white/[0.01] rounded-[2rem] sm:rounded-[2.5rem] border border-violet-500/10 dark:border-white/5 p-5 sm:p-8 space-y-4 transition-colors">
+        <div class="flex items-center gap-2 text-violet-600 dark:text-violet-400">
+          <app-a-icon name="medication" size="20px"></app-a-icon>
+          <h4 class="font-bold text-xs uppercase tracking-widest">Suplementación Recomendada</h4>
+        </div>
+        <ul class="space-y-2.5 pl-1">
+          @for (sup of parsedMenu()?.suplementos; track sup) {
+            <li class="flex items-start gap-2.5 text-xs text-nutri-text/70 dark:text-slate-400 leading-relaxed">
+              <span class="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1.5 shrink-0"></span>
+              {{ sup }}
             </li>
           }
         </ul>

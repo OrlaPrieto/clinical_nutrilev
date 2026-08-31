@@ -167,11 +167,11 @@ export class PatientService {
     return firstValueFrom(this.http.post<ShoppingCategory[]>(`${this.apiUrl}/shopping-list`, { menu_url: menuUrl }));
   }
 
-  async getParsedMenu(menuUrl: string): Promise<any> {
+  async getParsedMenu(menuUrl: string, forceRefresh?: boolean): Promise<any> {
     if (this.authService.isDevMode()) {
       return new Promise<any>(resolve => setTimeout(() => resolve(JSON.parse(JSON.stringify(MOCK_PARSED_MENU))), 500));
     }
-    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/parsed-menu`, { menu_url: menuUrl }));
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/parsed-menu`, { menu_url: menuUrl, forceRefresh }));
   }
 
   async uploadMenuPdf(formData: FormData): Promise<{ url: string }> {

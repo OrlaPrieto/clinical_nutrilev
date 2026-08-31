@@ -186,7 +186,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     }
   }
 
-  async loadPlan() {
+  async loadPlan(forceRefresh: boolean = false) {
     if (this.loading()) return;
 
     if (this.progressInterval) {
@@ -201,22 +201,30 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       return;
     }
 
-    // Intentar cargar del caché local de PWA para respuesta instantánea (offline-first)
     const cacheKey = `parsed_menu_${p?.email}_${url}`;
-    try {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        this.parsedMenu.set(parsed);
-        this.autoSelectDaySection();
-        setTimeout(() => {
-          this.scrollToCurrentMeal();
-        }, 300);
-        // Si ya está en caché, no necesitamos mostrar el spinner lento de carga
-        return;
+    
+    if (forceRefresh) {
+      try {
+        localStorage.removeItem(cacheKey);
+      } catch (e) {
+        console.error('Error clearing menu cache:', e);
       }
-    } catch (e) {
-      console.error('Error reading menu cache:', e);
+    } else {
+      // Intentar cargar del caché local de PWA para respuesta instantánea (offline-first)
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          this.parsedMenu.set(parsed);
+          this.autoSelectDaySection();
+          setTimeout(() => {
+            this.scrollToCurrentMeal();
+          }, 300);
+          return;
+        }
+      } catch (e) {
+        console.error('Error reading menu cache:', e);
+      }
     }
 
     this.loading.set(true);
@@ -229,43 +237,40 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     this.currentTipIndex.set(0);
 
     const updateProgressMessage = (pct: number) => {
-      if (pct < 20) {
-        this.menuLoadingMessage.set('Descargando archivo del plan alimenticio...');
-      } else if (pct < 45) {
-        this.menuLoadingMessage.set('Analizando texto y estructura del documento...');
+      if (pct < 25) {
+        this.menuLoadingMessage.set('Descargando plan clínico del nutriólogo...');
+      } else if (pct < 50) {
+        this.menuLoadingMessage.set('Segmentando días y opciones de menú con IA...');
       } else if (pct < 75) {
-        this.menuLoadingMessage.set('Clasificando comidas, ingredientes y porciones...');
+        this.menuLoadingMessage.set('Digitalizando comidas, colaciones y bebidas en paralelo...');
       } else if (pct < 90) {
-        this.menuLoadingMessage.set('Procesando con Inteligencia Artificial...');
+        this.menuLoadingMessage.set('Calculando equivalencias SMAE e ingredientes...');
       } else {
-        this.menuLoadingMessage.set('Estructurando recetas y equivalentes de intercambio...');
+        this.menuLoadingMessage.set('Asignando fotografías culinarias y recomendaciones...');
       }
     };
 
     this.progressInterval = setInterval(() => {
-      // Curva asintótica suave: nunca se congela en 95%
-      if (currentProgress < 80) {
-        currentProgress += 2.4;
-      } else if (currentProgress < 90) {
-        currentProgress += 0.9;
+      if (currentProgress < 75) {
+        currentProgress += 6.5;
+      } else if (currentProgress < 92) {
+        currentProgress += 3.2;
       } else if (currentProgress < 99) {
-        // Avance continuo asintótico hacia el 99%
-        currentProgress += (99.2 - currentProgress) * 0.07;
+        currentProgress += (99.2 - currentProgress) * 0.15;
       }
 
       const rounded = Math.min(99, Math.floor(currentProgress));
       this.menuProgress.set(rounded);
       updateProgressMessage(rounded);
 
-      // Rotar tip nutricional/estado cada 3.5 segundos (7 intervalos de 500ms)
       tipTimerCounter++;
-      if (tipTimerCounter % 7 === 0) {
+      if (tipTimerCounter % 8 === 0) {
         this.currentTipIndex.update(idx => (idx + 1) % this.nutritionTips.length);
       }
-    }, 500);
+    }, 250);
 
     try {
-      const data = await this.patientService.getParsedMenu(url);
+      const data = await this.patientService.getParsedMenu(url, forceRefresh);
       
       clearInterval(this.progressInterval);
       this.menuProgress.set(100);
@@ -278,7 +283,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       });
       
       // Wait briefly for completion transition
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise(resolve => setTimeout(resolve, 400));
 
       if (data && !data.error) {
         this.parsedMenu.set(data);
