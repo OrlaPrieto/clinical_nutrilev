@@ -498,7 +498,7 @@ def _call_gemini_micro_task(prompt: str, schema: dict, gemini_key: str, task_nam
 
     client = genai.Client(
         api_key=gemini_key,
-        http_options=types.HttpOptions(timeout=20000)
+        http_options=types.HttpOptions(timeout=25000)
     )
     models_to_try = _resolve_model(client)
     last_exception = None
@@ -512,6 +512,7 @@ def _call_gemini_micro_task(prompt: str, schema: dict, gemini_key: str, task_nam
                     contents=[{"role": "user", "parts": [{"text": prompt}]}],
                     config=types.GenerateContentConfig(
                         temperature=0.1,
+                        max_output_tokens=8192,
                         response_mime_type="application/json",
                         response_schema=schema
                     ),
@@ -664,7 +665,7 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     file_bytes = response.content
     content_type = response.headers.get('Content-Type', '')
 
-    # 1. Extraer texto plano
+    # 1. Extraer texto plano de todas las páginas del PDF o tablas de DOCX
     full_text = ""
     if 'officedocument.wordprocessingml.document' in content_type or menu_url.endswith('.docx'):
         print("[MenuParser AI] Parsing DOCX...")
@@ -673,25 +674,14 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     else:
         print("[MenuParser AI] Parsing PDF...")
         reader = PdfReader(io.BytesIO(file_bytes))
-        for page in reader.pages:
-            full_text += (page.extract_text() or "") + "\n"
+        for page_idx, page in enumerate(reader.pages):
+            page_text = page.extract_text() or ""
+            full_text += f"\n--- PÁGINA {page_idx + 1} ---\n" + page_text
 
     print(f"[MenuParser AI] Extracted raw text length: {len(full_text)}")
     cleaned_text = _clean_and_trim_menu_text(full_text)
 
-    # 2. Separar lista de compras visual (páginas del súper) del contenido del menú
-    pos = cleaned_text.upper().find("LISTA DE COMPRAS")
-    if pos == -1:
-        pos = cleaned_text.upper().find("LISTA DEL SÚPER")
-        
-    if pos != -1:
-        menu_text = cleaned_text[:pos].strip()
-        super_notes = cleaned_text[pos:].strip()
-    else:
-        menu_text = cleaned_text
-        super_notes = ""
-
-    # 3. Esquema estricto para extraer todos los días / opciones
+    # 2. Esquema estricto para extraer todos los días / opciones
     menu_schema = {
         "type": "OBJECT",
         "properties": {
@@ -713,17 +703,17 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
             },
             "secciones": {
                 "type": "ARRAY",
-                "description": "Lista completa con CADA UNO de los días (Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo) o CADA opción de menú.",
+                "description": "Lista exhaustiva con CADA UNO de los días (Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo) o CADA opción de menú. DEBE contener todos los días sin omitir ninguno.",
                 "items": {
                     "type": "OBJECT",
                     "properties": {
-                        "nombre": {"type": "STRING", "description": "Nombre del día o menú (ej. 'Lunes', 'Martes', 'Miércoles', o 'Menú Opción 1')"},
+                        "nombre": {"type": "STRING", "description": "Nombre del día o menú (ej. 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo', o 'Menú Opción 1')"},
                         "tiempos_comida": {
                             "type": "ARRAY",
                             "items": {
                                 "type": "OBJECT",
                                 "properties": {
-                                    "tiempo": {"type": "STRING", "description": "Ej: 'Desayuno', 'Colación 1', 'Comida', 'Colación 2', 'Cena'"},
+                                    "tiempo": {"type": "STRING", "description": "Ej: 'Licuado', 'Desayuno', 'Colación 1', 'Comida', 'Colación 2', 'Cena'"},
                                     "hora_sugerida": {"type": "STRING"},
                                     "emoji": {"type": "STRING"},
                                     "platillo": {"type": "STRING"},
@@ -757,27 +747,27 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     }
 
     prompt = f"""
-    Eres un nutriólogo clínico experto. Digitaliza el siguiente plan de alimentación:
+    Eres un nutriólogo clínico experto de alta precisión. Digitaliza el 100% del siguiente plan de alimentación nutricional:
     
-    TEXTO DEL PLAN:
+    TEXTO COMPLETO DEL DOCUMENTO:
     \"\"\"
-    {menu_text}
-    \"\"\"
-    
-    NOTAS ADICIONALES / RECOMENDACIONES:
-    \"\"\"
-    {super_notes[:3000]}
+    {cleaned_text}
     \"\"\"
     
-    REGLAS OBLIGATORIAS:
-    1. Si el plan es una tabla semanal organizada por columnas de días (LUNES, MARTES, MIÉRCOLES, JUEVES, VIERNES, SÁBADO, DOMINGO o combinaciones):
-       - DEBES crear una sección en 'secciones' para CADA UNO de los días (ej: 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo').
-       - En cada día, extrae TODOS sus tiempos de comida en orden (Desayuno, Colación 1, Comida, Colación 2, Cena).
-    2. Si el plan está dividido por opciones (ej: Menú Opción 1, Menú Opción 2, Menú Opción 3):
-       - DEBES crear una sección para CADA opción de menú.
-    3. NUNCA resumas todo en un solo día ni omitas los demás días/opciones.
-    4. Extrae ingredientes detallados con cantidades exactas y grupos si se especifican.
-    5. Para cada platillo incluye 'termino_busqueda_imagen' con 2 a 4 palabras en inglés para buscar su fotografía gastronómica.
+    REGLAS DE EXTRACCIÓN CRÍTICAS Y OBLIGATORIAS:
+    1. EXTRACCIÓN TOTAL DE TODOS LOS DÍAS:
+       - Si el plan nutricional está organizado en formato semanal o por columnas de días (LUNES, MARTES, MIÉRCOLES, JUEVES, VIERNES, SÁBADO, DOMINGO):
+       - DEBES crear una entrada en 'secciones' para CADA DÍA DE LA SEMANA (Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo).
+       - NUNCA te detengas en Martes ni resumas días. Si el menú tiene 7 días, 'secciones' DEBE tener exactamente los 7 días completos.
+    2. EXTRACCIÓN DE TODAS LAS OPCIONES:
+       - Si el plan está dividido por opciones (ej: Menú Opción 1, Menú Opción 2, Menú Opción 3, etc.):
+       - DEBES incluir todas y cada una de las opciones en 'secciones'.
+    3. TIEMPOS DE COMIDA:
+       - Extrae todos los tiempos de comida de cada día (Desayuno, Colación 1, Comida, Colación 2, Cena).
+    4. INGREDIENTES DETALLADOS:
+       - Extrae cada ingrediente con su cantidad exacta y equivalencia.
+    5. FOTOGRAFÍA GASTRONÓMICA:
+       - Para cada platillo incluye 'termino_busqueda_imagen' en inglés (ej. 'mexican chilaquiles green salsa', 'chicken fajitas skillet', 'oatmeal bowl berries').
     """
 
     parsed = _call_gemini_micro_task(prompt, menu_schema, gemini_key, task_name="FullMenuParser")

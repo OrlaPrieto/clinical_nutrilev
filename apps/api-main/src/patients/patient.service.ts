@@ -219,10 +219,10 @@ export class PatientService {
     return taskPromise;
   }
 
-  async getParsedMenu(menuUrl: string, clientIp?: string): Promise<any> {
+  async getParsedMenu(menuUrl: string, clientIp?: string, forceRefresh?: boolean): Promise<any> {
     const cleanMenuUrl = menuUrl.split('?')[0];
 
-    if (this.inFlightMenuParses.has(cleanMenuUrl)) {
+    if (!forceRefresh && this.inFlightMenuParses.has(cleanMenuUrl)) {
       console.log(`[ParsedMenu] Deduplicating in-flight parse request for menu URL: ${cleanMenuUrl}`);
       return this.inFlightMenuParses.get(cleanMenuUrl);
     }
@@ -230,18 +230,24 @@ export class PatientService {
     const taskPromise = (async () => {
       try {
         const client: any = this.supabaseService.getClient();
-        const { data: cached } = await client
-          .from('ai_menu_cache')
-          .select('parsed_menu')
-          .eq('menu_url', cleanMenuUrl)
-          .maybeSingle() as any;
+        
+        if (!forceRefresh) {
+          const { data: cached } = await client
+            .from('ai_menu_cache')
+            .select('parsed_menu')
+            .eq('menu_url', cleanMenuUrl)
+            .maybeSingle() as any;
 
-        if (cached && cached.parsed_menu) {
-          console.log(`[ParsedMenu] Cache HIT for menu URL: ${cleanMenuUrl}`);
-          return cached.parsed_menu;
+          if (cached && cached.parsed_menu) {
+            console.log(`[ParsedMenu] Cache HIT for menu URL: ${cleanMenuUrl}`);
+            return cached.parsed_menu;
+          }
+        } else {
+          console.log(`[ParsedMenu] Force refresh requested. Invalidating cache for: ${cleanMenuUrl}`);
+          await client.from('ai_menu_cache').delete().eq('menu_url', cleanMenuUrl);
         }
 
-        console.log(`[ParsedMenu] Cache MISS. Parsing menu document via AI for menu URL: ${cleanMenuUrl}...`);
+        console.log(`[ParsedMenu] Parsing menu document via AI for menu URL: ${cleanMenuUrl}...`);
         const result = await this.aiGatewayService.getParsedMenu(menuUrl, clientIp);
 
         if (result && !result.error) {
