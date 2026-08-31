@@ -666,10 +666,60 @@ def _parse_metadata_and_notes_ai(meta_text: str, notes_text: str, gemini_key: st
     return _call_gemini_micro_task(prompt, meta_schema, gemini_key, task_name="Metadata&Notes")
 
 
+def _split_menu_into_sections_ai(full_text: str, gemini_key: str) -> tuple[list, str]:
+    """
+    Usa Gemini para segmentar inteligentemente cualquier formato de menú (tabla 2D semanal, columnas, opciones):
+    Devuelve lista de objetos con: {"nombre": "Lunes", "texto": "..."} para cada día u opción.
+    """
+    schema = {
+        "type": "OBJECT",
+        "properties": {
+            "tipo_plan": {
+                "type": "STRING",
+                "description": "'semanal' si el menú tiene días de la semana (Lunes a Domingo), o 'equivalencias_opciones' si son opciones (Menú 1, Menú 2, etc.)"
+            },
+            "secciones": {
+                "type": "ARRAY",
+                "description": "Lista con CADA UNO de los días (Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo) o CADA opción de menú (Menú 1, Menú 2, Menú 3). DEBE contener TODOS los días sin omitir ninguno.",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "nombre": {"type": "STRING", "description": "Ej: 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo', 'Menú 1', 'Menú 2', 'Menú 3'"},
+                        "texto": {"type": "STRING", "description": "El texto completo de las comidas, platillos e ingredientes correspondientes a ese día u opción."}
+                    },
+                    "required": ["nombre", "texto"]
+                }
+            }
+        },
+        "required": ["tipo_plan", "secciones"]
+    }
+
+    prompt = f"""
+    Eres un asistente clínico experto. Analiza el siguiente documento de nutrición y divídelo en sus días u opciones independientes:
+    
+    TEXTO DEL MENÚ:
+    \"\"\"
+    {full_text}
+    \"\"\"
+    
+    INSTRUCCIONES CRÍTICAS:
+    1. Si el menú es semanal o contiene días (LUNES, MARTES, MIÉRCOLES, JUEVES, VIERNES, SÁBADO, DOMINGO), aunque estén en columnas o tablas:
+       - Crea una sección para CADA DÍA (Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo).
+       - En 'texto', coloca todos los alimentos y comidas (desayuno, comida, cena, colaciones) que le corresponden a ese día específico.
+       - NUNCA agrupes en un solo día ni omitas días. Si hay 7 días, debes devolver exactamente las 7 secciones.
+    2. Si el menú es por opciones (Menú 1, Menú 2, Menú 3 u Opción 1, Opción 2, Opción 3):
+       - Crea una sección para CADA opción con su texto completo.
+    3. Devuelve únicamente el JSON con el array 'secciones'.
+    """
+
+    res = _call_gemini_micro_task(prompt, schema, gemini_key, task_name="SectionSplitter")
+    return res.get("secciones", []), res.get("tipo_plan", "semanal")
+
+
 def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
     """
     Descarga el PDF/DOCX de la dieta y estructura el menú por micro-tareas en paralelo:
-    - Divide el texto por días/opciones (Lunes..Domingo o Opción 1..N).
+    - Divide el texto por días/opciones (Lunes..Domingo o Opción 1..N) mediante IA de segmentación rápida.
     - Procesa metadatos y cada día de forma independiente en subprocesos ultra-rápidos (<1s c/u).
     - Une todo con enriquecimiento determinista SMAE y emojis.
     """
@@ -699,14 +749,17 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
             full_text += f"\n--- PÁGINA {page_idx + 1} ---\n" + page_text
 
     print(f"[MenuParser AI] Extracted raw text length: {len(full_text)}")
+    cleaned_text = _clean_and_trim_menu_text(full_text)
     
-    # 2. Segmentación determinista en Python por días / secciones
-    segmented = _segment_menu_document(full_text)
-    sections_raw = segmented.get("sections", [])
-    meta_text = segmented.get("metadata_text", "")
-    notes_text = segmented.get("notes_text", "")
+    # 2. Segmentación con IA rápida (divide en Lunes..Domingo o Menú 1..3)
+    sections_raw, tipo_plan_detected = _split_menu_into_sections_ai(cleaned_text, gemini_key)
     
-    print(f"[MenuParser AI] Segmented document into {len(sections_raw)} sections/days: {[s['name'] for s in sections_raw]}")
+    # Fallback a segmentación heurística si el splitter falló
+    if not sections_raw:
+        segmented_fallback = _segment_menu_document(cleaned_text)
+        sections_raw = segmented_fallback.get("sections", [])
+    
+    print(f"[MenuParser AI] Segmented document into {len(sections_raw)} sections/days: {[s.get('nombre') for s in sections_raw]}")
 
     # 3. Procesar Metadatos y cada Sección en paralelo con ThreadPoolExecutor
     parsed_meta = {}
@@ -716,13 +769,13 @@ def parse_menu_document_to_json(menu_url: str, gemini_key: str) -> dict:
         futures = {}
         
         # Futuro para metadatos y recomendaciones
-        meta_future = executor.submit(_parse_metadata_and_notes_ai, meta_text, notes_text, gemini_key)
+        meta_future = executor.submit(_parse_metadata_and_notes_ai, cleaned_text[:2000], cleaned_text, gemini_key)
         futures[meta_future] = ("meta", "Metadata")
 
         # Futuros para cada día/sección individual
         for idx, sec in enumerate(sections_raw):
-            sec_name = sec["name"]
-            sec_text = sec["text"]
+            sec_name = sec.get("nombre", f"Sección {idx + 1}")
+            sec_text = sec.get("texto", "")
             f = executor.submit(_parse_single_section_ai, sec_name, sec_text, gemini_key)
             futures[f] = ("section", idx, sec_name)
 
