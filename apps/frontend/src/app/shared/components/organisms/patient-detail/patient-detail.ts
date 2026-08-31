@@ -591,10 +591,13 @@ export class PatientDetailComponent implements OnInit {
     }
   }
 
+  private originalPlanCitasCompletadas: number = 0;
+
   toggleEdit() {
     if (!this.isEditing()) {
       this.originalEmail = this.patient()?.email;
       this.originalPlanCitas = this.patient()?.plan_citas || null;
+      this.originalPlanCitasCompletadas = this.patient()?.plan_citas_completadas || 0;
     }
     this.isEditing.update(val => !val);
   }
@@ -603,33 +606,30 @@ export class PatientDetailComponent implements OnInit {
     const currentPatient = this.patient();
     if (!currentPatient) return;
 
-    // Check if package was activated and there is a recent unassigned consultation
-    const planActivated = !this.originalPlanCitas && currentPatient.plan_citas;
+    // Check if package is active and was either newly activated, modified or reset to 0/renewed
+    const isPackageConfigured = !!currentPatient.plan_citas;
+    const isPackageResetOrNew = isPackageConfigured && (
+      !this.originalPlanCitas ||
+      this.originalPlanCitas !== currentPatient.plan_citas ||
+      currentPatient.plan_citas_completadas === 0 ||
+      (this.originalPlanCitasCompletadas >= (this.originalPlanCitas || 0))
+    );
+
     const lastRecord = this.progressHistory()[0];
     
-    let hasRecentUnassigned = false;
-    if (lastRecord && !lastRecord.numero_cita) {
-      // Parse record date or created_at
+    let hasRecentConsultation = false;
+    if (lastRecord) {
       const recordTime = new Date(lastRecord.created_at || lastRecord.date).getTime();
       const nowTime = Date.now();
       const diffHours = Math.abs(nowTime - recordTime) / (1000 * 60 * 60);
       
-      // If it is within 24 hours, consider it recent
-      if (diffHours <= 24) {
-        hasRecentUnassigned = true;
+      // If consultation is within 48 hours (today or recent), consider it eligible to link as Cita 1
+      if (diffHours <= 48) {
+        hasRecentConsultation = true;
       }
     }
 
-    console.log('Retroactive Linking Check:', {
-      originalPlanCitas: this.originalPlanCitas,
-      currentPlanCitas: currentPatient.plan_citas,
-      planActivated,
-      lastRecordDate: lastRecord?.date,
-      lastRecordCreatedAt: lastRecord?.created_at,
-      hasRecentUnassigned
-    });
-
-    if (planActivated && hasRecentUnassigned) {
+    if (isPackageResetOrNew && hasRecentConsultation && currentPatient.plan_citas_completadas !== 1) {
       this.showLinkCitaConfirm.set(true);
       return; // Wait for user decision
     }

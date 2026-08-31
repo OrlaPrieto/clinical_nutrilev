@@ -115,26 +115,15 @@ export class AppointmentCardComponent {
         return da - db;
       });
 
-    // Mapear registros de progreso para las citas completadas del paquete:
-    // Prioridad 1: Registros que tengan 'numero_cita' explícito coincidente (ej. numero_cita = 1 para Sesión 1)
-    // Prioridad 2: Los 'completedCount' registros más recientes del historial del paciente
+    // Los 'completedCount' registros más recientes del historial corresponden al paquete activo actual:
+    const activePackageHistory = sortedHistory.slice(-completedCount);
+
+    // Mapear registros de progreso para las citas completadas del paquete actual:
     const packageProgressRecords: (PatientProgress | undefined)[] = [];
     for (let i = 1; i <= completedCount; i++) {
-      const explicitProg = sortedHistory.find(p => Number(p.numero_cita) === i);
-      if (explicitProg) {
-        packageProgressRecords[i - 1] = explicitProg;
-      }
-    }
-
-    const unassignedRecentRecords = sortedHistory
-      .filter(p => !packageProgressRecords.includes(p))
-      .slice(-Math.max(0, completedCount - packageProgressRecords.filter(Boolean).length));
-
-    let unassignedIdx = 0;
-    for (let i = 1; i <= completedCount; i++) {
-      if (!packageProgressRecords[i - 1] && unassignedIdx < unassignedRecentRecords.length) {
-        packageProgressRecords[i - 1] = unassignedRecentRecords[unassignedIdx++];
-      }
+      // Buscar primero si en el historial del paquete activo hay un registro con numero_cita = i explícito
+      const explicitProg = activePackageHistory.find(p => Number(p.numero_cita) === i);
+      packageProgressRecords[i - 1] = explicitProg || activePackageHistory[i - 1];
     }
 
     // Obtener la fecha del día de la última cita completada para evitar que la siguiente cita tome el mismo día ya asistido
