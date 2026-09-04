@@ -17,13 +17,7 @@ import { ProgressAnalyticCardComponent } from '../progress-analytic-card/progres
 import { ProgressHistoryComponent } from '../progress-history/progress-history';
 import { MenuCopilotModalComponent } from '../menu-copilot-modal/menu-copilot-modal';
 import { ClinicalNote, ClinicalNoteCategory } from '@shared/models/interfaces';
-
-function getLocalISODate(d: Date = new Date()): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
+import { getChihuahuaNowISO, normalizeProgressRecord } from '../../../utils/date-utils';
 
 @Component({
   selector: 'app-o-patient-detail',
@@ -374,7 +368,8 @@ export class PatientDetailComponent implements OnInit {
     const p = this.patient();
     if (p && p.email) {
       try {
-        const history = await this.patientService.getPatientProgress(p.email);
+        const rawHistory = await this.patientService.getPatientProgress(p.email);
+        const history = (rawHistory || []).map(r => normalizeProgressRecord(r));
         this.progressHistory.set(history);
         this.initializeNewProgressFromLastRecord();
       } catch (err) {
@@ -484,10 +479,11 @@ export class PatientDetailComponent implements OnInit {
     try {
       const progressData = { ...this.newProgress() };
       
-      // Siempre asignar la fecha local del navegador del nutriólogo (YYYY-MM-DD)
-      // para evitar que el servidor UTC guarde con un día posterior después de las 6:00 PM
+      // Siempre asignar la fecha en la zona horaria de Chihuahua, Chihuahua México (UTC-6)
       if (!progressData.date) {
-        progressData.date = getLocalISODate(new Date());
+        progressData.date = getChihuahuaNowISO();
+      } else if (/^\d{4}-\d{2}-\d{2}$/.test(progressData.date)) {
+        progressData.date = `${progressData.date}T12:00:00-06:00`;
       }
       
       // Manejo estricto de paquetes de citas:

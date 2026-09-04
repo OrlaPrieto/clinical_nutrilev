@@ -167,11 +167,16 @@ describe('PatientService', () => {
       });
 
       const result = await service.addProgress(progressData);
-      expect(result).toEqual(progressData);
-      expect(mockSupabaseClient.insert).toHaveBeenCalledWith({
+      expect(result).toEqual(expect.objectContaining({
+        patient_id: 'uuid-123',
+        weight: 70,
+        date: expect.any(String),
+      }));
+      expect(mockSupabaseClient.insert).toHaveBeenCalledWith(expect.objectContaining({
         patient_id: 'uuid-123',
         weight: '70',
-      });
+        date: expect.stringMatching(/-06:00$/),
+      }));
     });
   });
 

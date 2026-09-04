@@ -20,10 +20,12 @@ export interface PackageSessionItem {
 }
 
 function getDayKey(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Chihuahua',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(d);
 }
 
 function parseSafeDate(raw: string | Date | null | undefined): Date | null {
@@ -32,9 +34,9 @@ function parseSafeDate(raw: string | Date | null | undefined): Date | null {
   if (typeof raw === 'string') {
     const trimmed = raw.trim();
     if (!trimmed) return null;
-    // Manejar formato 'YYYY-MM-DD' para evitar desfase de zona horaria UTC
-    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-      const [y, m, d] = trimmed.split('-').map(Number);
+    // Manejar formato 'YYYY-MM-DD' o medianoche UTC 'YYYY-MM-DDT00:00:00...' para evitar desfase de zona horaria
+    if (/^\d{4}-\d{2}-\d{2}(T00:00:00)?/.test(trimmed)) {
+      const [y, m, d] = trimmed.substring(0, 10).split('-').map(Number);
       return new Date(y, m - 1, d, 12, 0, 0);
     }
     const d = new Date(trimmed);
@@ -44,13 +46,12 @@ function parseSafeDate(raw: string | Date | null | undefined): Date | null {
 }
 
 function formatTime12h(date: Date): string {
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-  return `${hours}:${minutesStr} ${ampm}`;
+  return new Intl.DateTimeFormat('es-MX', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/Chihuahua'
+  }).format(date).toUpperCase();
 }
 
 @Component({
@@ -206,10 +207,10 @@ export class AppointmentCardComponent {
         }
 
         const dateLabel = dateObj 
-          ? dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+          ? dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Chihuahua' })
           : 'Asistió';
         const shortDateLabel = dateObj
-          ? dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+          ? dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', timeZone: 'America/Chihuahua' })
           : 'Asistió';
 
         items.push({
@@ -234,10 +235,10 @@ export class AppointmentCardComponent {
           const timeLabel = (aptDate && hasTime) ? formatTime12h(aptDate) : undefined;
 
           const dateLabel = (aptDate && !isNaN(aptDate.getTime()))
-            ? aptDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+            ? aptDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Chihuahua' })
             : (this.appointmentDateStr() || 'Consulta agendada');
           const shortDateLabel = (aptDate && !isNaN(aptDate.getTime()))
-            ? aptDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+            ? aptDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', timeZone: 'America/Chihuahua' })
             : 'Agendada';
 
           const isConfirmed = apt.status === 'confirmed';

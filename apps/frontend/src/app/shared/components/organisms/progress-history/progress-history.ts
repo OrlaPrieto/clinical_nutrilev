@@ -8,6 +8,7 @@ import { toBlob } from 'html-to-image';
 import { ThemeService } from '../../../services/theme.service';
 import { PatientService } from '../../../../services/patient';
 import { FormsModule } from '@angular/forms';
+import { normalizeProgressRecord, normalizeProgressDate } from '../../../utils/date-utils';
 
 import { PortalModule } from '@angular/cdk/portal';
 
@@ -45,7 +46,9 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  history = input.required<any[]>();
+  history = input.required<any[], any[]>({
+    transform: (records) => (records || []).map(r => normalizeProgressRecord(r))
+  });
   patient = input<any>(null);
   showActions = input<boolean>(false);
 
@@ -149,6 +152,15 @@ export class ProgressHistoryComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+      // Ensure date is formatted with Chihuahua timezone offset
+      if (payload.date) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(payload.date)) {
+          payload.date = `${payload.date}T12:00:00-06:00`;
+        } else {
+          payload.date = normalizeProgressDate(payload.date);
+        }
+      }
 
       // Call service to update progress entry on DB or Mock
       await this.patientService.updateProgressEntry(recordId, payload);

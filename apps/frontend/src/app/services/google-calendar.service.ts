@@ -82,11 +82,11 @@ export class GoogleCalendarService {
       'colorId': '8',
       'start': {
         'dateTime': startTime,
-        'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
+        'timeZone': 'America/Chihuahua'
       },
       'end': {
         'dateTime': endTime,
-        'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
+        'timeZone': 'America/Chihuahua'
       },
       'reminders': {
         'useDefault': true

@@ -79,14 +79,16 @@ export class PatientTableOrganism {
       if (isNaN(date.getTime())) return 'Nunca ha accedido';
       
       const now = new Date();
-      const isToday = date.toDateString() === now.toDateString();
+      const dateKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chihuahua', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+      const nowKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chihuahua', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+      const isToday = dateKey === nowKey;
       
-      const timeStr = date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const timeStr = date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Chihuahua' });
       if (isToday) {
         return `Hoy ${timeStr}`;
       }
       
-      const dateStr = date.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+      const dateStr = date.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', timeZone: 'America/Chihuahua' });
       return `${dateStr}, ${timeStr}`;
     } catch {
       return 'Nunca ha accedido';

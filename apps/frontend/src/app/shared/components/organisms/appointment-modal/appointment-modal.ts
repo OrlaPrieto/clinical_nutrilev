@@ -32,17 +32,15 @@ export class AppointmentModalComponent {
     this.loading = true;
     this.errorMessage = null;
 
-    const startDateTime = `${event.selectedDate}T${event.startTime}:00`;
-    const endDateTime = `${event.selectedDate}T${event.endTime}:00`;
-    
-    const startDate = new Date(startDateTime);
-    const endDate = new Date(endDateTime);
+    // Enforce America/Chihuahua (UTC-6) RFC 3339 format
+    const startIso = `${event.selectedDate}T${event.startTime}:00-06:00`;
+    const endIso = `${event.selectedDate}T${event.endTime}:00-06:00`;
 
     this.calendarService.createEvent(
       this.patientName,
       this.patientEmail,
-      startDate.toISOString(),
-      endDate.toISOString(),
+      startIso,
+      endIso,
       event.cost,
       event.appointmentNumber
     ).subscribe({

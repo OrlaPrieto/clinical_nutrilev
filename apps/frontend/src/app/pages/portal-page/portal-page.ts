@@ -427,7 +427,13 @@ export class PortalPage implements OnInit, OnDestroy {
   rescheduleWhatsappUrl = computed(() => {
     const apt = this.nextAppointment();
     const dateStr = apt?.start 
-      ? new Date(apt.start).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }) 
+      ? new Date(apt.start).toLocaleDateString('es-MX', { 
+          day: '2-digit', 
+          month: 'long', 
+          hour: '2-digit', 
+          minute: '2-digit',
+          timeZone: 'America/Chihuahua'
+        }) 
       : '';
     const message = encodeURIComponent(`Hola, tengo un contratiempo y me gustaría reagendar mi cita del ${dateStr}.`);
     return `https://wa.me/526143958598?text=${message}`;
@@ -441,17 +447,18 @@ export class PortalPage implements OnInit, OnDestroy {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
+      timeZone: 'America/Chihuahua'
     };
     let formattedDate = date.toLocaleDateString('es-MX', options);
     formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
     
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-    const timeStr = `${hours}:${minutesStr} ${ampm}`;
+    const timeFormatter = new Intl.DateTimeFormat('es-MX', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'America/Chihuahua'
+    });
+    const timeStr = timeFormatter.format(date).toUpperCase();
 
     return `${formattedDate} a las ${timeStr}`;
   });

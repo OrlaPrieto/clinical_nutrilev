@@ -11,6 +11,42 @@ import {
 } from '@shared/index';
 import { UpdateProgressDto } from './dto/update-progress.dto';
 
+function getChihuahuaNowISO(date: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Chihuahua',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+
+  const map: Record<string, string> = {};
+  for (const p of parts) {
+    map[p.type] = p.value;
+  }
+
+  return `${map['year']}-${map['month']}-${map['day']}T${map['hour']}:${map['minute']}:${map['second']}-06:00`;
+}
+
+function normalizeChihuahuaDate(rawDate: unknown): string {
+  if (!rawDate) return getChihuahuaNowISO();
+  if (typeof rawDate === 'string') {
+    const trimmed = rawDate.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return `${trimmed}T12:00:00-06:00`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}T00:00:00/.test(trimmed)) {
+      const datePart = trimmed.substring(0, 10);
+      return `${datePart}T12:00:00-06:00`;
+    }
+    return trimmed;
+  }
+  return getChihuahuaNowISO();
+}
+
 @Injectable()
 export class PatientService {
   constructor(
@@ -113,7 +149,11 @@ export class PatientService {
       patientId = patient.id;
     }
 
-    return this.patientRepository.getProgress(patientId);
+    const records = await this.patientRepository.getProgress(patientId);
+    return (records || []).map((r) => ({
+      ...r,
+      date: normalizeChihuahuaDate(r.date),
+    }));
   }
 
   async addProgress(
@@ -128,9 +168,14 @@ export class PatientService {
       }
     });
 
+    formattedData.date = normalizeChihuahuaDate(formattedData.date);
+
     const created = await this.patientRepository.addProgress(formattedData as any);
 
-    return created;
+    return {
+      ...created,
+      date: normalizeChihuahuaDate(created.date),
+    };
   }
 
   async updateProgress(
@@ -149,7 +194,15 @@ export class PatientService {
       }
     });
 
-    return this.patientRepository.updateProgress(id, formattedData as any);
+    if (formattedData.date) {
+      formattedData.date = normalizeChihuahuaDate(formattedData.date);
+    }
+
+    const updated = await this.patientRepository.updateProgress(id, formattedData as any);
+    return {
+      ...updated,
+      date: normalizeChihuahuaDate(updated.date),
+    };
   }
 
   async removeProgress(id: string): Promise<{ success: boolean }> {

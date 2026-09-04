@@ -10,6 +10,7 @@ import {
   SOCIAL_AUTH_CONFIG,
 } from '@abacritt/angularx-social-login';
 
+import { DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { routes } from './app.routes';
 import { httpResilienceInterceptor } from './interceptors/http-resilience.interceptor';
 import { authInterceptor } from './interceptors/auth.interceptor';
@@ -22,6 +23,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor, httpResilienceInterceptor])),
     provideAnimations(),
     provideNativeDateAdapter(),
+    {
+      provide: DATE_PIPE_DEFAULT_OPTIONS,
+      useValue: { timezone: 'America/Chihuahua' }
+    },
     SocialAuthService,
     {
       provide: SOCIAL_AUTH_CONFIG,
