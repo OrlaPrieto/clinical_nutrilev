@@ -89,11 +89,12 @@ export class EquivalentsModalComponent {
       .slice(0, 5)
       .map(food => {
         const scaledAmount = equivalents * food.amountValue;
-        const formattedAmount = Math.round(scaledAmount * 10) / 10;
+        const foodUnit = (food.unit || '').toLowerCase().trim();
+        const isGrams = foodUnit === 'gramos' || foodUnit === 'g';
+        const isCupUnit = foodUnit.includes('taza') || foodUnit.includes('tza');
+        const formattedAmount = isGrams ? Math.round(scaledAmount) : Math.round(scaledAmount * 10) / 10;
         
         let portionText = '';
-        const isCupUnit = food.unit.toLowerCase().includes('taza') || food.unit.toLowerCase() === 'tza' || food.unit.toLowerCase() === 'tzas';
-        
         if (isCupUnit) {
           const displayUnit = formattedAmount > 1 ? 'tzas' : 'tza';
           if (food.gramsEquivalent) {
@@ -102,9 +103,27 @@ export class EquivalentsModalComponent {
           } else {
             portionText = `${formattedAmount} ${displayUnit}`;
           }
+        } else if (isGrams) {
+          portionText = `${formattedAmount} gramos`;
         } else {
-          const suffix = (formattedAmount > 1 && food.unit.endsWith('a')) ? 's' : '';
-          portionText = `${formattedAmount} ${food.unit}${suffix}`;
+          let displayUnit = food.unit;
+          if (formattedAmount > 1) {
+            if (foodUnit.startsWith('pieza')) displayUnit = 'piezas';
+            else if (foodUnit.startsWith('rebanada')) displayUnit = 'rebanadas';
+            else if (foodUnit.startsWith('cucharadita')) displayUnit = 'cucharaditas';
+            else if (foodUnit.startsWith('cucharada')) displayUnit = 'cucharadas';
+            else if (foodUnit.startsWith('disparo')) displayUnit = 'disparos';
+            else if (foodUnit.startsWith('vaso')) displayUnit = 'vasos';
+            else if (food.unit.endsWith('a') || food.unit.endsWith('o')) displayUnit = `${food.unit}s`;
+          } else {
+            if (foodUnit.startsWith('piezas')) displayUnit = 'pieza';
+            else if (foodUnit.startsWith('rebanadas')) displayUnit = 'rebanada';
+            else if (foodUnit.startsWith('cucharaditas')) displayUnit = 'cucharadita';
+            else if (foodUnit.startsWith('cucharadas')) displayUnit = 'cucharada';
+            else if (foodUnit.startsWith('disparos')) displayUnit = 'disparo';
+            else if (foodUnit.startsWith('vasos')) displayUnit = 'vaso';
+          }
+          portionText = `${formattedAmount} ${displayUnit}`;
         }
 
         return {
