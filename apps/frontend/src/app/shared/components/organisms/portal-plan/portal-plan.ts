@@ -32,7 +32,6 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   error = signal<string | null>(null);
   
   activeSectionIdx = signal<number>(0);
-  selectedMealForRecipe = signal<any | null>(null);
   selectedIngredientForReplacement = signal<any | null>(null);
   showDayDropdown = signal<boolean>(false);
   menuProgress = signal<number>(0);
@@ -158,7 +157,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     }, { allowSignalWrites: true });
 
     effect(() => {
-      const open = this.selectedMealForRecipe() !== null || this.selectedIngredientForReplacement() !== null;
+      const open = this.selectedIngredientForReplacement() !== null;
       untracked(() => {
         if (open) {
           if (!this.isHistoryPushed) {
@@ -181,7 +180,6 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   onPopState(event: PopStateEvent) {
     if (this.isHistoryPushed) {
       this.isHistoryPushed = false;
-      this.selectedMealForRecipe.set(null);
       this.selectedIngredientForReplacement.set(null);
     }
   }
@@ -333,20 +331,13 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     this.activeSectionIdx.set(idx);
   }
 
-  openRecipe(meal: any, event: Event) {
-    event.stopPropagation();
-    this.selectedMealForRecipe.set(meal);
-  }
-
-  closeRecipe() {
-    this.selectedMealForRecipe.set(null);
-  }
-
   openReplacements(ingredient: any, event: Event) {
     event.stopPropagation();
+    if (!this.canReplace(ingredient)) return;
     
     // Generar sustitutos racionales, contextuales y equilibrados usando SMAE
     const reps = this.generateSmaeReplacements(ingredient);
+    if (!reps || reps.length === 0) return;
     
     const enriched = {
       ...ingredient,
@@ -357,6 +348,36 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   }
 
   canReplace(ing: any): boolean {
+    if (!ing) return false;
+
+    const clean = (s: string) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const cleanName = clean(ing.nombre);
+    const cleanQty = clean(ing.cantidad);
+    const cleanGroup = clean(ing.grupo);
+
+    // 1. Never replace water or hydration liquids
+    const waterRegex = /(^|[^a-záéíóúñ])(agua|hielo)([^a-záéíóúñ]|$)/i;
+    if (waterRegex.test(cleanName)) {
+      return false;
+    }
+
+    // 2. Never replace calorie-free seasonings, spices or artificial sweeteners
+    const freeNonFoodRegex = /(^|[^a-záéíóúñ])(sal|pimienta|canela|oregano|comino|laurel|tomillo|clavo|stevia|splenda|edulcorante|canderel|monk\s*fruit|fruto\s*del\s*monje)([^a-záéíóúñ]|$)/i;
+    if (freeNonFoodRegex.test(cleanName)) {
+      return false;
+    }
+
+    // 3. Never replace unmetered/free indications (e.g. "beber", "al gusto", "a libre demanda", "opcional")
+    const freeQtyRegex = /^(beber|al\s*gusto|libre|a\s*libre\s*demanda|ilimitado|abundante|opcional)$/i;
+    if (freeQtyRegex.test(cleanQty) && !cleanGroup.includes('aoa') && !cleanGroup.includes('cereal') && !cleanGroup.includes('fruta')) {
+      return false;
+    }
+
+    // 4. Energy free category
+    if (cleanGroup.includes('libre')) {
+      return false;
+    }
+
     if (ing.reemplazos && ing.reemplazos.length > 0) return true;
     if (ing.grupo) return true;
     return !!this.findMatchingFood(ing.nombre || '');
@@ -954,6 +975,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   }
 
   generateSmaeReplacements(ingredient: any): string[] {
+    if (!this.canReplace(ingredient)) return [];
     const nameLower = (ingredient.nombre || '').toLowerCase();
     const { category, subCategory, matchedFood } = this.inferCategoryAndSubcategory(ingredient);
 
