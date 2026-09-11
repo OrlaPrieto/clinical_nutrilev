@@ -427,85 +427,169 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   private inferCategoryAndSubcategory(ingredient: any): { category: string; subCategory: string; matchedFood: SmaeFood | null } {
     const rawName = (ingredient.nombre || '').toLowerCase();
     const rawGroup = (ingredient.grupo || '').toLowerCase();
+    const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
+    const cleanName = clean(rawName);
+    const cleanGroup = clean(rawGroup);
+    const text = `${cleanName} ${cleanGroup}`;
+
+    const hasWord = (...words: string[]): boolean => {
+      return words.some(w => {
+        const escaped = clean(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(^|[^a-záéíóúñ])${escaped}([^a-záéíóúñ]|$)`, 'i');
+        return regex.test(text);
+      });
+    };
+
+    // 1. Check if direct match in SMAE_DATABASE exists
     const matchedFood = this.findMatchingFood(rawName);
 
-    const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-    const text = clean(`${rawName} ${rawGroup}`);
+    // If matchedFood is a direct match with high confidence, trust its category!
+    if (matchedFood) {
+      const isDirectMatch = clean(matchedFood.name).includes(cleanName) || cleanName.includes(clean(matchedFood.name));
+      if (isDirectMatch) {
+        return {
+          category: matchedFood.category,
+          subCategory: matchedFood.subCategory || '',
+          matchedFood
+        };
+      }
+    }
 
-    // 1. DRESSINGS, DIPS & SPREADS (Aderezos, ranch, mayonesa, vinagreta, guacamole, crema, queso crema, pesto)
+    // 2. High-priority explicit GROUP mapping (if supplied by backend/menu schema)
+    if (cleanGroup.includes('fruta') || cleanGroup === 'fru') {
+      return {
+        category: 'Frutas',
+        subCategory: 'frutas',
+        matchedFood: matchedFood?.category === 'Frutas' ? matchedFood : (SMAE_DATABASE.find(f => f.category === 'Frutas') || null)
+      };
+    }
+    if (cleanGroup.includes('verdura') || cleanGroup === 'ver') {
+      const isCooked = hasWord('cocida', 'cocido', 'asado', 'asada', 'vapor', 'sopa', 'caldo');
+      const sub = isCooked ? 'cocidas_guisados' : 'ensalada_fresca';
+      return {
+        category: 'Verduras',
+        subCategory: sub,
+        matchedFood: matchedFood?.category === 'Verduras' ? matchedFood : (SMAE_DATABASE.find(f => f.subCategory === sub) || null)
+      };
+    }
+    if (cleanGroup.includes('legum') || cleanGroup === 'leg') {
+      return {
+        category: 'Leguminosas',
+        subCategory: 'leguminosas',
+        matchedFood: matchedFood?.category === 'Leguminosas' ? matchedFood : (SMAE_DATABASE.find(f => f.category === 'Leguminosas') || null)
+      };
+    }
+
+    // 3. FRUITS (Explicit fruit names - checked BEFORE meats so 'fresas' or 'fruta fresca' never get matched as meat!)
+    if (
+      hasWord(
+        'fruta', 'frutas', 'fresa', 'fresas', 'manzana', 'manzanas', 'platano', 'platanos',
+        'papaya', 'melon', 'sandia', 'mora', 'moras', 'blueberry', 'blueberries', 'zarzamora',
+        'zarzamoras', 'frambuesa', 'frambuesas', 'kiwi', 'kiwis', 'pera', 'peras', 'mango',
+        'mangos', 'arandano', 'arandanos', 'durazno', 'duraznos', 'guayaba', 'guayabas',
+        'uva', 'uvas', 'mandarina', 'mandarinas', 'naranja', 'naranjas', 'toronja', 'toronjas',
+        'pina', 'mamey', 'higo', 'higos', 'ciruela', 'ciruelas', 'tejocote'
+      )
+    ) {
+      return {
+        category: 'Frutas',
+        subCategory: 'frutas',
+        matchedFood: matchedFood?.category === 'Frutas' ? matchedFood : (SMAE_DATABASE.find(f => f.category === 'Frutas') || null)
+      };
+    }
+
+    // 4. VEGETABLES (Explicit vegetable names)
+    if (
+      hasWord(
+        'verdura', 'verduras', 'lechuga', 'pepino', 'espinaca', 'espinacas', 'jitomate',
+        'tomate', 'calabacita', 'calabacitas', 'calabaza', 'chayote', 'nopal', 'nopales',
+        'champinon', 'champinones', 'seta', 'setas', 'hongo', 'hongos', 'brocoli',
+        'coliflor', 'zanahoria', 'zanahorias', 'apio', 'jicama', 'pimiento', 'pimientos',
+        'ejote', 'ejotes', 'acelga', 'acelgas', 'rabano', 'rabanos', 'esparrago', 'esparragos',
+        'betabel', 'cilantro', 'perejil', 'germinado', 'alfalfa'
+      )
+    ) {
+      const isCooked = hasWord('cocida', 'cocido', 'asado', 'asada', 'vapor', 'sopa', 'caldo');
+      const sub = isCooked ? 'cocidas_guisados' : 'ensalada_fresca';
+      return {
+        category: 'Verduras',
+        subCategory: sub,
+        matchedFood: matchedFood?.category === 'Verduras' ? matchedFood : (SMAE_DATABASE.find(f => f.subCategory === sub) || null)
+      };
+    }
+
+    // 5. DRESSINGS, DIPS & SPREADS (Aderezos, ranch, mayonesa, vinagreta, guacamole, crema, queso crema, pesto)
     // CRITICAL: Even if labeled "bajo en grasa", an aderezo is ALWAYS Grasas sin proteína!
     if (
-      text.includes('aderezo') || text.includes('ranch') || text.includes('cesar') || text.includes('césar') ||
-      text.includes('vinagreta') || text.includes('mayonesa') || text.includes('guacamole') ||
-      text.includes('queso crema') || text.includes('philadelphia') || text.includes('pesto') ||
-      (text.includes('crema') && !text.includes('cereal') && !text.includes('cacahuate') && !text.includes('almendra'))
+      hasWord('aderezo', 'aderezos', 'ranch', 'cesar', 'vinagreta', 'vinagretas', 'mayonesa', 'guacamole', 'pesto') ||
+      text.includes('queso crema') || text.includes('philadelphia') ||
+      (hasWord('crema') && !hasWord('cacahuate', 'almendra', 'cereal', 'avena'))
     ) {
       return {
         category: 'Grasas sin proteína',
         subCategory: 'aderezos_untables',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Aderezo')) || null
+        matchedFood: matchedFood?.category.startsWith('Grasas') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Aderezo')) || null)
       };
     }
 
-    // 2. COOKING OILS & BUTTER
-    if (text.includes('aceite') || text.includes('mantequilla') || text.includes('ghee') || text.includes('pam') || text.includes('aerosol')) {
+    // 6. COOKING OILS & BUTTER
+    if (hasWord('aceite', 'mantequilla', 'ghee', 'pam', 'aerosol')) {
       return {
         category: 'Grasas sin proteína',
         subCategory: 'aceites_cocina',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Aceite')) || null
+        matchedFood: matchedFood?.category.startsWith('Grasas') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Aceite')) || null)
       };
     }
 
-    // 3. NUTS & SEEDS (Frutos secos)
+    // 7. NUTS & SEEDS (Frutos secos)
     if (
-      text.includes('almendra') || text.includes('nuez') || text.includes('nueces') ||
-      text.includes('cacahuate') || text.includes('mani') || text.includes('maní') || text.includes('pistache') ||
-      text.includes('chia') || text.includes('chía') || text.includes('linaza') || text.includes('girasol') ||
-      text.includes('pepita') || text.includes('crema de cacahuate') || text.includes('mantequilla de mani')
+      hasWord(
+        'almendra', 'almendras', 'nuez', 'nueces', 'cacahuate', 'cacahuates', 'mani',
+        'pistache', 'pistaches', 'chia', 'linaza', 'girasol', 'pepita', 'pepitas'
+      ) || text.includes('crema de cacahuate') || text.includes('mantequilla de mani')
     ) {
       return {
         category: 'Grasas con proteína',
         subCategory: 'frutos_secos_semillas',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Almendras')) || null
+        matchedFood: matchedFood?.category.startsWith('Grasas') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Almendras')) || null)
       };
     }
 
-    // 4. BREADS, TORTILLAS, CRACKERS, TOASTS (Pan de sandwich, tostadas, tortillas, galletas saladas)
+    // 8. BREADS, TORTILLAS, CRACKERS, TOASTS (Pan de sandwich, tostadas, tortillas, galletas saladas)
     if (
-      text.includes('pan') || text.includes('bimbo') || text.includes('tortilla') ||
-      text.includes('tostada') || text.includes('salmas') || text.includes('sanissimo') ||
-      text.includes('habanera') || text.includes('pita') || text.includes('bolillo') ||
-      text.includes('telera') || text.includes('bagel') || text.includes('wrap') ||
-      text.includes('rice cake') || text.includes('galleta de arroz') || text.includes('craker') ||
-      text.includes('galleta salada')
+      hasWord(
+        'pan', 'bimbo', 'tortilla', 'tortillas', 'tostada', 'tostadas', 'salmas', 'sanissimo',
+        'habanera', 'pita', 'bolillo', 'telera', 'bagel', 'wrap', 'cracker', 'salada'
+      ) || text.includes('rice cake') || text.includes('galleta de arroz')
     ) {
       return {
         category: 'Cereales sin grasa',
         subCategory: 'pan_tortilla',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Pan de caja integral')) || null
+        matchedFood: matchedFood?.category.startsWith('Cereales') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Pan de caja integral')) || null)
       };
     }
 
-    // 5. BREAKFAST CEREALS (Avena, amaranto, cereal de caja)
-    if (text.includes('avena') || text.includes('amaranto') || text.includes('corn flakes') || text.includes('cheerios') || text.includes('granola') || text.includes('salvado')) {
+    // 9. BREAKFAST CEREALS (Avena, amaranto, cereal de caja)
+    if (hasWord('avena', 'amaranto', 'granola', 'salvado', 'cheerios') || text.includes('corn flakes')) {
       return {
         category: 'Cereales sin grasa',
         subCategory: 'cereal_desayuno',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Avena')) || null
+        matchedFood: matchedFood?.category.startsWith('Cereales') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Avena')) || null)
       };
     }
 
-    // 6. STARCHY SIDES (Arroz, pastas, papa, camote, elote, quinoa)
-    if (text.includes('arroz') || text.includes('pasta') || text.includes('spaghetti') || text.includes('fideo') || text.includes('codito') || text.includes('papa') || text.includes('camote') || text.includes('elote') || text.includes('quinoa')) {
+    // 10. STARCHY SIDES (Arroz, pastas, papa, camote, elote, quinoa)
+    if (hasWord('arroz', 'pasta', 'spaghetti', 'fideo', 'codito', 'papa', 'papas', 'camote', 'elote', 'quinoa')) {
       return {
         category: 'Cereales sin grasa',
         subCategory: 'guarnicion_almidon',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Arroz')) || null
+        matchedFood: matchedFood?.category.startsWith('Cereales') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Arroz')) || null)
       };
     }
 
-    // 7. LEGUMES
-    if (text.includes('frijol') || text.includes('lenteja') || text.includes('garbanzo') || text.includes('haba') || text.includes('leguminosa')) {
+    // 11. LEGUMES
+    if (hasWord('frijol', 'frijoles', 'lenteja', 'lentejas', 'garbanzo', 'garbanzos', 'haba', 'habas')) {
       return {
         category: 'Leguminosas',
         subCategory: 'leguminosas',
@@ -513,43 +597,40 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       };
     }
 
-    // 8. BREAKFAST & SANDWICH PROTEINS (Jamón, huevo, claras, quesos frescos)
-    if (
-      text.includes('jamon') || text.includes('jamón') || text.includes('pavo') || text.includes('huevo') ||
-      text.includes('clara') || text.includes('panela') || text.includes('oaxaca') ||
-      text.includes('cottage') || text.includes('requeson') || text.includes('requesón')
-    ) {
+    // 12. BREAKFAST & SANDWICH PROTEINS (Jamón, huevo, claras, quesos frescos)
+    if (hasWord('jamon', 'pavo', 'huevo', 'huevos', 'clara', 'claras', 'panela', 'oaxaca', 'cottage', 'requeson')) {
       return {
         category: 'AOA bajo en grasa',
         subCategory: 'desayuno_embutidos',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Jamón')) || null
+        matchedFood: matchedFood?.category.startsWith('AOA') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Jamón')) || null)
       };
     }
 
-    // 9. MAIN DISH MEATS & SEAFOOD (Pollo, res, carne, pescado, mariscos)
+    // 13. MAIN DISH MEATS & SEAFOOD (Pollo, res, carne, pescado, mariscos)
+    // CRITICAL: Must use hasWord so 'res' NEVER matches 'fresas' or 'fresco'!
     if (
-      text.includes('pollo') || text.includes('pechuga') || text.includes('pescado') ||
-      text.includes('filete') || text.includes('res') || text.includes('carne') ||
-      text.includes('atun') || text.includes('atún') || text.includes('camaron') || text.includes('camarón') ||
-      text.includes('salmon') || text.includes('salmón') || text.includes('tilapia') ||
-      text.includes('molida') || text.includes('cerdo') || text.includes('lomo') || text.includes('bistec')
+      hasWord(
+        'pollo', 'pechuga', 'pescado', 'filete', 'res', 'carne', 'atun', 'camaron',
+        'camarones', 'salmon', 'tilapia', 'molida', 'cerdo', 'lomo', 'bistec',
+        'sirloin', 'arrachera', 'ternera'
+      )
     ) {
       return {
         category: 'AOA muy bajo en grasa',
         subCategory: 'plato_fuerte',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Pechuga de pollo')) || null
+        matchedFood: matchedFood?.category.startsWith('AOA') ? matchedFood : (SMAE_DATABASE.find(f => f.name.includes('Pechuga de pollo')) || null)
       };
     }
 
-    // 10. DAIRY
-    if (text.includes('yogurt') || text.includes('yogur') || text.includes('yoghurt') || text.includes('kefir') || text.includes('kéfir')) {
+    // 14. DAIRY
+    if (hasWord('yogurt', 'yogur', 'yoghurt', 'kefir')) {
       return {
         category: 'Lácteos descremados',
         subCategory: 'lacteos_solidos',
         matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Yogurt')) || null
       };
     }
-    if (text.includes('leche')) {
+    if (hasWord('leche')) {
       return {
         category: 'Lácteos descremados',
         subCategory: 'lacteos_liquidos',
@@ -557,27 +638,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       };
     }
 
-    // 11. VEGETABLES
-    if (text.includes('verdura') || matchedFood?.category === 'Verduras') {
-      const isCooked = text.includes('cocid') || text.includes('asado') || text.includes('vapor') || text.includes('caldo') || text.includes('sopa');
-      const sub = isCooked || (matchedFood?.subCategory === 'cocidas_guisados') ? 'cocidas_guisados' : 'ensalada_fresca';
-      return {
-        category: 'Verduras',
-        subCategory: sub,
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.subCategory === sub) || null
-      };
-    }
-
-    // 12. FRUITS
-    if (text.includes('fruta') || matchedFood?.category === 'Frutas') {
-      return {
-        category: 'Frutas',
-        subCategory: 'frutas',
-        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.category === 'Frutas') || null
-      };
-    }
-
-    // Fallback: If matchedFood exists, use its category and subCategory
+    // 15. Matched Food fallback (if found with tags / scoring)
     if (matchedFood) {
       return {
         category: matchedFood.category,
@@ -586,15 +647,14 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       };
     }
 
-    // Ultimate fallback based on group string
+    // 16. Fallback based on group string
     let fallbackCategory = 'Verduras';
     let fallbackSub = 'ensalada_fresca';
-    if (rawGroup.includes('fruta')) { fallbackCategory = 'Frutas'; fallbackSub = 'frutas'; }
-    else if (rawGroup.includes('cereal')) { fallbackCategory = 'Cereales sin grasa'; fallbackSub = 'pan_tortilla'; }
-    else if (rawGroup.includes('leguminosa')) { fallbackCategory = 'Leguminosas'; fallbackSub = 'leguminosas'; }
-    else if (rawGroup.includes('aoa') || rawGroup.includes('animal')) { fallbackCategory = 'AOA bajo en grasa'; fallbackSub = 'plato_fuerte'; }
-    else if (rawGroup.includes('lacteo') || rawGroup.includes('leche')) { fallbackCategory = 'Lácteos descremados'; fallbackSub = 'lacteos_liquidos'; }
-    else if (rawGroup.includes('grasa')) { fallbackCategory = 'Grasas sin proteína'; fallbackSub = 'aderezos_untables'; }
+    if (cleanGroup.includes('fruta') || cleanGroup === 'fru') { fallbackCategory = 'Frutas'; fallbackSub = 'frutas'; }
+    else if (cleanGroup.includes('cereal') || cleanGroup.includes('cer')) { fallbackCategory = 'Cereales sin grasa'; fallbackSub = 'pan_tortilla'; }
+    else if (cleanGroup.includes('aoa') || cleanGroup.includes('poa') || cleanGroup.includes('animal')) { fallbackCategory = 'AOA bajo en grasa'; fallbackSub = 'plato_fuerte'; }
+    else if (cleanGroup.includes('lacteo') || cleanGroup.includes('lac')) { fallbackCategory = 'Lácteos descremados'; fallbackSub = 'lacteos_liquidos'; }
+    else if (cleanGroup.includes('grasa') || cleanGroup.includes('gra')) { fallbackCategory = 'Grasas sin proteína'; fallbackSub = 'aderezos_untables'; }
 
     return {
       category: fallbackCategory,
