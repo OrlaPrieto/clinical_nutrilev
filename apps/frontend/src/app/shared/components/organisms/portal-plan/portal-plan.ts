@@ -345,16 +345,8 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   openReplacements(ingredient: any, event: Event) {
     event.stopPropagation();
     
-    // Si ya vienen reemplazos procesados del backend, úsalos pero compleméntalos
-    let reps = ingredient.reemplazos || [];
-    
-    // Validar si los reemplazos existentes están corruptos (ej. "0 tza", ": 0 ")
-    const hasCorruptedReps = reps.some((r: string) => typeof r === 'string' && (r.includes('0 tza') || r.includes(': 0 ')));
-
-    if (reps.length === 0 || hasCorruptedReps) {
-      // Buscar reemplazos en la base de datos SMAE local
-      reps = this.generateSmaeReplacements(ingredient);
-    }
+    // Generar sustitutos racionales, contextuales y equilibrados usando SMAE
+    const reps = this.generateSmaeReplacements(ingredient);
     
     const enriched = {
       ...ingredient,
@@ -370,6 +362,20 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     return !!this.findMatchingFood(ing.nombre || '');
   }
 
+  private readonly STOPWORDS = new Set([
+    'de', 'la', 'el', 'los', 'las', 'en', 'un', 'una', 'con', 'sin', 'al', 'del',
+    'para', 'por', 'sobre', 'bajo', 'baja', 'bajos', 'bajas', 'grasa', 'grasas',
+    'cocido', 'cocida', 'cocidos', 'cocidas', 'crudo', 'cruda', 'crudos', 'crudas',
+    'fresco', 'fresca', 'frescos', 'frescas', 'natural', 'naturales', 'picado',
+    'picada', 'picados', 'picadas', 'rebanado', 'rebanada', 'rebanados', 'rebanadas',
+    'deshebrado', 'deshebrada', 'asado', 'asada', 'asados', 'asadas', 'al vapor',
+    'comercial', 'pasteurizado', 'pasteurizada', 'ligero', 'ligera', 'light',
+    'entero', 'entera', 'descremado', 'descremada', 'magro', 'magra', 'chico',
+    'chica', 'chicos', 'chicas', 'mediano', 'mediana', 'medianos', 'medianas',
+    'grande', 'grandes', 'calidad', 'pieza', 'piezas', 'pza', 'pzas', 'taza',
+    'tazas', 'cda', 'cdas', 'cucharada', 'cucharadas', 'cdita', 'cditas', '00'
+  ]);
+
   private findMatchingFood(name: string): SmaeFood | null {
     if (!name) return null;
     const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
@@ -382,7 +388,9 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     };
 
     const target = clean(name);
-    const targetWords = target.split(/\s+/).map(stem).filter(w => w.length >= 3);
+    const rawWords = target.split(/\s+/).map(stem).filter(w => w.length >= 3);
+    const meaningfulWords = rawWords.filter(w => !this.STOPWORDS.has(w));
+    const targetWords = meaningfulWords.length > 0 ? meaningfulWords : rawWords;
 
     // 1. Direct contains check
     const directMatches = SMAE_DATABASE.filter(f => {
@@ -397,12 +405,15 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       })[0];
     }
 
-    // 2. Stem word overlap matching (e.g. "champiñones" -> "champinon" matches "champiñón cocido", "espinacas" -> "espinaca")
+    // 2. Score by meaningful words and tags
     const scored = SMAE_DATABASE.map(f => {
-      const fWords = clean(f.name).split(/\s+/).map(stem).filter(w => w.length >= 3);
+      const fWords = clean(f.name).split(/\s+/).map(stem).filter(w => w.length >= 3 && !this.STOPWORDS.has(w));
       let score = 0;
       for (const tw of targetWords) {
         if (fWords.some(fw => fw === tw || fw.startsWith(tw) || tw.startsWith(fw))) {
+          score += tw.length * 2;
+        }
+        if (f.tags && f.tags.some(t => clean(t).includes(tw) || tw.includes(clean(t)))) {
           score += tw.length;
         }
       }
@@ -411,6 +422,185 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       .sort((a, b) => b.score - a.score);
 
     return scored.length > 0 ? scored[0].food : null;
+  }
+
+  private inferCategoryAndSubcategory(ingredient: any): { category: string; subCategory: string; matchedFood: SmaeFood | null } {
+    const rawName = (ingredient.nombre || '').toLowerCase();
+    const rawGroup = (ingredient.grupo || '').toLowerCase();
+    const matchedFood = this.findMatchingFood(rawName);
+
+    const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const text = clean(`${rawName} ${rawGroup}`);
+
+    // 1. DRESSINGS, DIPS & SPREADS (Aderezos, ranch, mayonesa, vinagreta, guacamole, crema, queso crema, pesto)
+    // CRITICAL: Even if labeled "bajo en grasa", an aderezo is ALWAYS Grasas sin proteína!
+    if (
+      text.includes('aderezo') || text.includes('ranch') || text.includes('cesar') || text.includes('césar') ||
+      text.includes('vinagreta') || text.includes('mayonesa') || text.includes('guacamole') ||
+      text.includes('queso crema') || text.includes('philadelphia') || text.includes('pesto') ||
+      (text.includes('crema') && !text.includes('cereal') && !text.includes('cacahuate') && !text.includes('almendra'))
+    ) {
+      return {
+        category: 'Grasas sin proteína',
+        subCategory: 'aderezos_untables',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Aderezo')) || null
+      };
+    }
+
+    // 2. COOKING OILS & BUTTER
+    if (text.includes('aceite') || text.includes('mantequilla') || text.includes('ghee') || text.includes('pam') || text.includes('aerosol')) {
+      return {
+        category: 'Grasas sin proteína',
+        subCategory: 'aceites_cocina',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Aceite')) || null
+      };
+    }
+
+    // 3. NUTS & SEEDS (Frutos secos)
+    if (
+      text.includes('almendra') || text.includes('nuez') || text.includes('nueces') ||
+      text.includes('cacahuate') || text.includes('mani') || text.includes('maní') || text.includes('pistache') ||
+      text.includes('chia') || text.includes('chía') || text.includes('linaza') || text.includes('girasol') ||
+      text.includes('pepita') || text.includes('crema de cacahuate') || text.includes('mantequilla de mani')
+    ) {
+      return {
+        category: 'Grasas con proteína',
+        subCategory: 'frutos_secos_semillas',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Almendras')) || null
+      };
+    }
+
+    // 4. BREADS, TORTILLAS, CRACKERS, TOASTS (Pan de sandwich, tostadas, tortillas, galletas saladas)
+    if (
+      text.includes('pan') || text.includes('bimbo') || text.includes('tortilla') ||
+      text.includes('tostada') || text.includes('salmas') || text.includes('sanissimo') ||
+      text.includes('habanera') || text.includes('pita') || text.includes('bolillo') ||
+      text.includes('telera') || text.includes('bagel') || text.includes('wrap') ||
+      text.includes('rice cake') || text.includes('galleta de arroz') || text.includes('craker') ||
+      text.includes('galleta salada')
+    ) {
+      return {
+        category: 'Cereales sin grasa',
+        subCategory: 'pan_tortilla',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Pan de caja integral')) || null
+      };
+    }
+
+    // 5. BREAKFAST CEREALS (Avena, amaranto, cereal de caja)
+    if (text.includes('avena') || text.includes('amaranto') || text.includes('corn flakes') || text.includes('cheerios') || text.includes('granola') || text.includes('salvado')) {
+      return {
+        category: 'Cereales sin grasa',
+        subCategory: 'cereal_desayuno',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Avena')) || null
+      };
+    }
+
+    // 6. STARCHY SIDES (Arroz, pastas, papa, camote, elote, quinoa)
+    if (text.includes('arroz') || text.includes('pasta') || text.includes('spaghetti') || text.includes('fideo') || text.includes('codito') || text.includes('papa') || text.includes('camote') || text.includes('elote') || text.includes('quinoa')) {
+      return {
+        category: 'Cereales sin grasa',
+        subCategory: 'guarnicion_almidon',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Arroz')) || null
+      };
+    }
+
+    // 7. LEGUMES
+    if (text.includes('frijol') || text.includes('lenteja') || text.includes('garbanzo') || text.includes('haba') || text.includes('leguminosa')) {
+      return {
+        category: 'Leguminosas',
+        subCategory: 'leguminosas',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.category === 'Leguminosas') || null
+      };
+    }
+
+    // 8. BREAKFAST & SANDWICH PROTEINS (Jamón, huevo, claras, quesos frescos)
+    if (
+      text.includes('jamon') || text.includes('jamón') || text.includes('pavo') || text.includes('huevo') ||
+      text.includes('clara') || text.includes('panela') || text.includes('oaxaca') ||
+      text.includes('cottage') || text.includes('requeson') || text.includes('requesón')
+    ) {
+      return {
+        category: 'AOA bajo en grasa',
+        subCategory: 'desayuno_embutidos',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Jamón')) || null
+      };
+    }
+
+    // 9. MAIN DISH MEATS & SEAFOOD (Pollo, res, carne, pescado, mariscos)
+    if (
+      text.includes('pollo') || text.includes('pechuga') || text.includes('pescado') ||
+      text.includes('filete') || text.includes('res') || text.includes('carne') ||
+      text.includes('atun') || text.includes('atún') || text.includes('camaron') || text.includes('camarón') ||
+      text.includes('salmon') || text.includes('salmón') || text.includes('tilapia') ||
+      text.includes('molida') || text.includes('cerdo') || text.includes('lomo') || text.includes('bistec')
+    ) {
+      return {
+        category: 'AOA muy bajo en grasa',
+        subCategory: 'plato_fuerte',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Pechuga de pollo')) || null
+      };
+    }
+
+    // 10. DAIRY
+    if (text.includes('yogurt') || text.includes('yogur') || text.includes('yoghurt') || text.includes('kefir') || text.includes('kéfir')) {
+      return {
+        category: 'Lácteos descremados',
+        subCategory: 'lacteos_solidos',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Yogurt')) || null
+      };
+    }
+    if (text.includes('leche')) {
+      return {
+        category: 'Lácteos descremados',
+        subCategory: 'lacteos_liquidos',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.name.includes('Leche')) || null
+      };
+    }
+
+    // 11. VEGETABLES
+    if (text.includes('verdura') || matchedFood?.category === 'Verduras') {
+      const isCooked = text.includes('cocid') || text.includes('asado') || text.includes('vapor') || text.includes('caldo') || text.includes('sopa');
+      const sub = isCooked || (matchedFood?.subCategory === 'cocidas_guisados') ? 'cocidas_guisados' : 'ensalada_fresca';
+      return {
+        category: 'Verduras',
+        subCategory: sub,
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.subCategory === sub) || null
+      };
+    }
+
+    // 12. FRUITS
+    if (text.includes('fruta') || matchedFood?.category === 'Frutas') {
+      return {
+        category: 'Frutas',
+        subCategory: 'frutas',
+        matchedFood: matchedFood || SMAE_DATABASE.find(f => f.category === 'Frutas') || null
+      };
+    }
+
+    // Fallback: If matchedFood exists, use its category and subCategory
+    if (matchedFood) {
+      return {
+        category: matchedFood.category,
+        subCategory: matchedFood.subCategory || '',
+        matchedFood
+      };
+    }
+
+    // Ultimate fallback based on group string
+    let fallbackCategory = 'Verduras';
+    let fallbackSub = 'ensalada_fresca';
+    if (rawGroup.includes('fruta')) { fallbackCategory = 'Frutas'; fallbackSub = 'frutas'; }
+    else if (rawGroup.includes('cereal')) { fallbackCategory = 'Cereales sin grasa'; fallbackSub = 'pan_tortilla'; }
+    else if (rawGroup.includes('leguminosa')) { fallbackCategory = 'Leguminosas'; fallbackSub = 'leguminosas'; }
+    else if (rawGroup.includes('aoa') || rawGroup.includes('animal')) { fallbackCategory = 'AOA bajo en grasa'; fallbackSub = 'plato_fuerte'; }
+    else if (rawGroup.includes('lacteo') || rawGroup.includes('leche')) { fallbackCategory = 'Lácteos descremados'; fallbackSub = 'lacteos_liquidos'; }
+    else if (rawGroup.includes('grasa')) { fallbackCategory = 'Grasas sin proteína'; fallbackSub = 'aderezos_untables'; }
+
+    return {
+      category: fallbackCategory,
+      subCategory: fallbackSub,
+      matchedFood: null
+    };
   }
 
   private parsePortion(qtyStr: string): { value: number; unit: 'ml' | 'grams' | 'cups' | 'tbsp' | 'tsp' | 'pieces' | 'unknown' } {
@@ -704,46 +894,8 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   }
 
   generateSmaeReplacements(ingredient: any): string[] {
-    const groupName = (ingredient.grupo || '').toLowerCase();
     const nameLower = (ingredient.nombre || '').toLowerCase();
-
-    // 1. Encontrar la categoría compatible del SMAE
-    let categoryMatch = '';
-    
-    if (groupName.includes('verdura')) {
-      categoryMatch = 'Verduras';
-    } else if (groupName.includes('fruta')) {
-      categoryMatch = 'Frutas';
-    } else if (groupName.includes('cereal') && groupName.includes('sin grasa')) {
-      categoryMatch = 'Cereales sin grasa';
-    } else if (groupName.includes('cereal') && groupName.includes('con grasa')) {
-      categoryMatch = 'Cereales con grasa';
-    } else if (groupName.includes('leguminosa')) {
-      categoryMatch = 'Leguminosas';
-    } else if (groupName.includes('muy bajo') || (groupName.includes('aoa') && groupName.includes('muy bajo'))) {
-      categoryMatch = 'AOA muy bajo en grasa';
-    } else if (groupName.includes('bajo en grasa') || (groupName.includes('aoa') && groupName.includes('bajo'))) {
-      categoryMatch = 'AOA bajo en grasa';
-    } else if (groupName.includes('moderado') || (groupName.includes('aoa') && groupName.includes('moderado'))) {
-      categoryMatch = 'AOA moderado en grasa';
-    } else if (groupName.includes('alto en grasa') || (groupName.includes('aoa') && groupName.includes('alto'))) {
-      categoryMatch = 'AOA alto en grasa';
-    } else if (groupName.includes('lácteo') || groupName.includes('lacteo') || groupName.includes('leche')) {
-      categoryMatch = 'Lácteos';
-    } else if (groupName.includes('grasa') && groupName.includes('sin prote')) {
-      categoryMatch = 'Grasas sin proteína';
-    } else if (groupName.includes('grasa') && groupName.includes('con prote')) {
-      categoryMatch = 'Grasas con proteína';
-    } else if (groupName.includes('libre')) {
-      categoryMatch = 'Libres de energía';
-    }
-
-    const matchedFood = this.findMatchingFood(nameLower);
-    if (!categoryMatch && matchedFood) {
-      categoryMatch = matchedFood.category;
-    }
-
-    if (!categoryMatch) return [];
+    const { category, subCategory, matchedFood } = this.inferCategoryAndSubcategory(ingredient);
 
     const parsedPortion = this.parsePortion(ingredient.cantidad);
     let equivalents = this.calculateEquivalents(parsedPortion, matchedFood);
@@ -755,33 +907,65 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       equivalents = 1;
     }
 
-    // 3. Buscar candidatos compatibles de la categoría
+    // Compatible category matcher
     const isCategoryCompatible = (cat1: string, cat2: string) => {
       if (cat1 === cat2) return true;
       if (cat1.startsWith('Lácteos') && cat2.startsWith('Lácteos')) return true;
       if (cat1.startsWith('AOA') && cat2.startsWith('AOA')) return true;
       if (cat1.startsWith('Cereales') && cat2.startsWith('Cereales')) return true;
+      if (cat1.startsWith('Grasas') && cat2.startsWith('Grasas')) return true;
       return false;
     };
 
     const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const stem = (w: string) => {
+      let s = clean(w);
+      if (s.endsWith('ces')) s = s.slice(0, -3) + 'z';
+      else if (s.endsWith('es')) s = s.slice(0, -2);
+      else if (s.endsWith('s') && !s.endsWith('is')) s = s.slice(0, -1);
+      return s;
+    };
     const targetClean = clean(nameLower);
 
-    const candidates = SMAE_DATABASE.filter(food => 
-      isCategoryCompatible(food.category, categoryMatch) && 
-      !targetClean.includes(clean(food.name)) &&
-      !clean(food.name).includes(targetClean)
+    // Exclude the food being substituted
+    const isSameFood = (food: SmaeFood) => {
+      const fNameClean = clean(food.name);
+      if (matchedFood && food.name === matchedFood.name) return true;
+      if (targetClean.includes(fNameClean) || fNameClean.includes(targetClean)) return true;
+      const fWords = fNameClean.split(/\s+/).map(stem).filter(w => w.length >= 3 && !this.STOPWORDS.has(w));
+      const tWords = targetClean.split(/\s+/).map(stem).filter(w => w.length >= 3 && !this.STOPWORDS.has(w));
+      const overlap = fWords.filter(w => tWords.includes(w));
+      return overlap.length >= 2 || (overlap.length === 1 && fWords.length <= 2 && tWords.length <= 2);
+    };
+
+    const eligibleCandidates = SMAE_DATABASE.filter(food =>
+      isCategoryCompatible(food.category, category) && !isSameFood(food)
     );
 
-    // Mezclar candidatos usando Fisher-Yates
-    const shuffled = [...candidates];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    // Contextual & Culinary Affinity:
+    // Tier 1: Exactly matching culinary subcategory (e.g. bread with bread/tortilla, dressing with dressing/spread)
+    const tier1 = subCategory ? eligibleCandidates.filter(f => f.subCategory === subCategory) : [];
+
+    // Shuffle helper (Fisher-Yates)
+    const shuffle = (list: SmaeFood[]) => {
+      const arr = [...list];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+
+    let selectedCandidates: SmaeFood[] = [];
+    if (tier1.length >= 3) {
+      selectedCandidates = shuffle(tier1).slice(0, 5);
+    } else {
+      const rest = eligibleCandidates.filter(f => !tier1.includes(f));
+      selectedCandidates = [...shuffle(tier1), ...shuffle(rest)].slice(0, 5);
     }
 
-    // Retornar las primeras 5 sugerencias formateadas
-    return shuffled.slice(0, 5).map(food => {
+    // Format final 5 portion suggestions
+    return selectedCandidates.map(food => {
       const portionText = this.formatCandidatePortion(food, equivalents);
       return `${food.emoji} ${food.name}: ${portionText}`;
     });
