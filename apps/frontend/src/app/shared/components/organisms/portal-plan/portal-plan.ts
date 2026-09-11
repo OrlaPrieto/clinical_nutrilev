@@ -348,7 +348,10 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     // Si ya vienen reemplazos procesados del backend, úsalos pero compleméntalos
     let reps = ingredient.reemplazos || [];
     
-    if (reps.length === 0) {
+    // Validar si los reemplazos existentes están corruptos (ej. "0 tza", ": 0 ")
+    const hasCorruptedReps = reps.some((r: string) => typeof r === 'string' && (r.includes('0 tza') || r.includes(': 0 ')));
+
+    if (reps.length === 0 || hasCorruptedReps) {
       // Buscar reemplazos en la base de datos SMAE local
       reps = this.generateSmaeReplacements(ingredient);
     }
@@ -364,97 +367,182 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
   canReplace(ing: any): boolean {
     if (ing.reemplazos && ing.reemplazos.length > 0) return true;
     if (ing.grupo) return true;
-    
-    // Intentar buscar correspondencia por nombre en base de datos SMAE
-    const nameLower = (ing.nombre || '').toLowerCase();
-    return SMAE_DATABASE.some(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
+    return !!this.findMatchingFood(ing.nombre || '');
+  }
+
+  private findMatchingFood(name: string): SmaeFood | null {
+    if (!name) return null;
+    const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const stem = (w: string) => {
+      let s = clean(w);
+      if (s.endsWith('ces')) s = s.slice(0, -3) + 'z';
+      else if (s.endsWith('es')) s = s.slice(0, -2);
+      else if (s.endsWith('s') && !s.endsWith('is')) s = s.slice(0, -1);
+      return s;
+    };
+
+    const target = clean(name);
+    const targetWords = target.split(/\s+/).map(stem).filter(w => w.length >= 3);
+
+    // 1. Direct contains check
+    const directMatches = SMAE_DATABASE.filter(f => {
+      const fName = clean(f.name);
+      return target.includes(fName) || fName.includes(target);
+    });
+    if (directMatches.length > 0) {
+      return directMatches.sort((a, b) => {
+        const diffA = Math.abs(clean(a.name).length - target.length);
+        const diffB = Math.abs(clean(b.name).length - target.length);
+        return diffA - diffB;
+      })[0];
+    }
+
+    // 2. Stem word overlap matching (e.g. "champiñones" -> "champinon" matches "champiñón cocido", "espinacas" -> "espinaca")
+    const scored = SMAE_DATABASE.map(f => {
+      const fWords = clean(f.name).split(/\s+/).map(stem).filter(w => w.length >= 3);
+      let score = 0;
+      for (const tw of targetWords) {
+        if (fWords.some(fw => fw === tw || fw.startsWith(tw) || tw.startsWith(fw))) {
+          score += tw.length;
+        }
+      }
+      return { food: f, score };
+    }).filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return scored.length > 0 ? scored[0].food : null;
   }
 
   private parsePortion(qtyStr: string): { value: number; unit: 'ml' | 'grams' | 'cups' | 'tbsp' | 'tsp' | 'pieces' | 'unknown' } {
     const raw = (qtyStr || '').toLowerCase().trim();
     if (!raw) return { value: 1, unit: 'unknown' };
 
-    // Normalize spacing around numbers and fractions: e.g. "500ml" -> "500 ml", "90g" -> "90 g"
-    const normalized = raw
-      .replace(/(\d+)([a-zA-Z]+)/g, '$1 $2')
-      .replace(/([a-zA-Z]+)(\d+)/g, '$1 $2')
-      .trim();
+    // Separate main portion (outside parentheses) from secondary parenthetical portion (e.g. "(120 g)")
+    // Example: "1 taza (120 g)" -> main: "1 taza", paren: "120 g"
+    const parenMatch = raw.match(/\(([^)]+)\)/);
+    const parenPart = parenMatch ? parenMatch[1].trim() : '';
+    const outsidePart = raw.replace(/\([^)]*\)/g, ' ').trim();
 
-    let value = 1;
-    let hasNumber = false;
+    const parseSegment = (text: string) => {
+      if (!text) return null;
+      const normalized = text
+        .replace(/(\d+)([a-zA-Z]+)/g, '$1 $2')
+        .replace(/([a-zA-Z]+)(\d+)/g, '$1 $2')
+        .trim();
 
-    // Mixed fraction: "1 1/2", "2 1/4"
-    const mixedMatch = normalized.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)/);
-    if (mixedMatch) {
-      value = parseInt(mixedMatch[1], 10) + (parseInt(mixedMatch[2], 10) / parseInt(mixedMatch[3], 10));
-      hasNumber = true;
-    } else {
-      // Simple fraction: "1/2", "3/4"
-      const fracMatch = normalized.match(/(\d+)\s*\/\s*(\d+)/);
-      if (fracMatch) {
-        value = parseInt(fracMatch[1], 10) / parseInt(fracMatch[2], 10);
-        hasNumber = true;
-      } else if (normalized.includes('medio') || normalized.includes('media')) {
-        value = 0.5;
-        hasNumber = true;
-      } else if (normalized.includes('cuarto')) {
-        value = 0.25;
+      let value = 0;
+      let hasNumber = false;
+
+      // Mixed fraction: "1 1/2", "2 1/4"
+      const mixedMatch = normalized.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)/);
+      if (mixedMatch) {
+        value = parseInt(mixedMatch[1], 10) + (parseInt(mixedMatch[2], 10) / parseInt(mixedMatch[3], 10));
         hasNumber = true;
       } else {
-        const numMatch = normalized.match(/\d+([.,]\d+)?/);
-        if (numMatch) {
-          value = parseFloat(numMatch[0].replace(',', '.'));
+        // Simple fraction: "1/2", "3/4"
+        const fracMatch = normalized.match(/(\d+)\s*\/\s*(\d+)/);
+        if (fracMatch) {
+          value = parseInt(fracMatch[1], 10) / parseInt(fracMatch[2], 10);
           hasNumber = true;
+        } else if (/\b(medio|media)\b/i.test(normalized)) {
+          value = 0.5;
+          hasNumber = true;
+        } else if (/\b(cuarto|un cuarto)\b/i.test(normalized)) {
+          value = 0.25;
+          hasNumber = true;
+        } else {
+          const numMatch = normalized.match(/\d+([.,]\d+)?/);
+          if (numMatch) {
+            value = parseFloat(numMatch[0].replace(',', '.'));
+            hasNumber = true;
+          }
         }
+      }
+
+      if (!hasNumber || isNaN(value) || value <= 0) {
+        value = 0;
+      }
+
+      let unit: 'ml' | 'grams' | 'cups' | 'tbsp' | 'tsp' | 'pieces' | 'unknown' = 'unknown';
+
+      // Check specific volumetric and count units first before short unit strings
+      if (/\b(tazas?|tzas?|tza|tz|cups?)\b/i.test(normalized)) {
+        unit = 'cups';
+      } else if (/\b(cdas?|cda|cucharadas?|tbsp)\b/i.test(normalized)) {
+        unit = 'tbsp';
+      } else if (/\b(cditas?|cdita|cctas?|cucharaditas?|tsp)\b/i.test(normalized)) {
+        unit = 'tsp';
+      } else if (/\b(piezas?|pzas?|pza|pz|pzs|rebanadas?|rebanada|latas?|lata|disparos?|disparo|filetes?|sobres?)\b/i.test(normalized)) {
+        unit = 'pieces';
+      } else if (/\b(vasos?)\b/i.test(normalized)) {
+        unit = 'ml';
+        value = value > 0 ? value * 240 : 240;
+      } else if (/\b(ml|mls|mililitros?|cc|cm3)\b/i.test(normalized)) {
+        unit = 'ml';
+      } else if (/\b(l|lt|lts|litros?)\b/i.test(normalized)) {
+        unit = 'ml';
+        value = value * 1000;
+      } else if (/\b(kg|kgs|kilos?|kilogramos?)\b/i.test(normalized)) {
+        unit = 'grams';
+        value = value * 1000;
+      } else if (/\b(g|gr|grs|gramos?)\b/i.test(normalized)) {
+        unit = 'grams';
+      }
+
+      return { value, unit, hasNumber };
+    };
+
+    // 1. Try outside parentheses first (the primary stated measure)
+    const primary = parseSegment(outsidePart);
+    if (primary && primary.hasNumber && primary.unit !== 'unknown') {
+      return { value: primary.value, unit: primary.unit };
+    }
+
+    // 2. If primary had a number but unknown unit, check if parentheses specifies the unit or grams
+    if (primary && primary.hasNumber && parenPart) {
+      const secondary = parseSegment(parenPart);
+      if (secondary && secondary.unit !== 'unknown') {
+        if (secondary.hasNumber && secondary.value > 0) {
+          return { value: secondary.value, unit: secondary.unit };
+        }
+        return { value: primary.value, unit: secondary.unit };
+      }
+      return { value: primary.value, unit: 'unknown' };
+    }
+
+    // 3. Try parsing parenPart if outsidePart had no number
+    if (parenPart) {
+      const secondary = parseSegment(parenPart);
+      if (secondary && secondary.hasNumber) {
+        return { value: secondary.value, unit: secondary.unit };
       }
     }
 
-    if (!hasNumber || isNaN(value) || value <= 0) {
-      value = 1;
+    // 4. Fallback to parsing the entire raw string
+    const fallback = parseSegment(raw);
+    if (fallback && fallback.hasNumber) {
+      return { value: fallback.value, unit: fallback.unit };
     }
 
-    // Detect unit using word boundaries
-    let unit: 'ml' | 'grams' | 'cups' | 'tbsp' | 'tsp' | 'pieces' | 'unknown' = 'unknown';
-
-    if (/\b(ml|mls|mililitros?|cc|cm3)\b/i.test(normalized)) {
-      unit = 'ml';
-    } else if (/\b(l|lt|lts|litros?)\b/i.test(normalized)) {
-      unit = 'ml';
-      value = value * 1000;
-    } else if (/\b(vasos?)\b/i.test(normalized)) {
-      unit = 'ml';
-      value = value * 240;
-    } else if (/\b(g|gr|grs|gramos?)\b/i.test(normalized)) {
-      unit = 'grams';
-    } else if (/\b(kg|kgs|kilos?|kilogramos?)\b/i.test(normalized)) {
-      unit = 'grams';
-      value = value * 1000;
-    } else if (/\b(tazas?|tzas?|tza|tz|cups?)\b/i.test(normalized)) {
-      unit = 'cups';
-    } else if (/\b(cdas?|cda|cucharadas?|tbsp)\b/i.test(normalized)) {
-      unit = 'tbsp';
-    } else if (/\b(cditas?|cdita|cctas?|cucharaditas?|tsp)\b/i.test(normalized)) {
-      unit = 'tsp';
-    } else if (/\b(piezas?|pzas?|pza|pz|pzs|rebanadas?|rebanada|latas?|lata|disparos?|disparo)\b/i.test(normalized)) {
-      unit = 'pieces';
-    }
-
-    return { value, unit };
+    return { value: 1, unit: 'unknown' };
   }
 
   private calculateEquivalents(parsed: { value: number; unit: string }, matchedFood: SmaeFood | null): number {
     const { value, unit } = parsed;
 
     if (!matchedFood) {
-      if (unit === 'ml') return value / 240;
-      if (unit === 'cups' || unit === 'pieces' || unit === 'tbsp' || unit === 'tsp') return value;
+      if (unit === 'ml') return Math.max(0.5, value / 240);
+      if (unit === 'cups' || unit === 'pieces' || unit === 'tbsp' || unit === 'tsp') return Math.max(0.5, value);
+      if (unit === 'grams') return Math.max(0.5, value / 100);
       return 1;
     }
 
-    const foodUnit = (matchedFood.unit || '').toLowerCase();
+    const foodUnit = (matchedFood.unit || '').toLowerCase().trim();
     const isCupInDb = foodUnit.includes('taza') || foodUnit.includes('tza');
     const isTbspInDb = foodUnit.includes('cucharada');
     const isTspInDb = foodUnit.includes('cucharadita');
+    const isPieceInDb = foodUnit.includes('pieza') || foodUnit.includes('rebanada');
+    const isGramsInDb = foodUnit === 'gramos' || foodUnit === 'g';
 
     // Unit: Milliliters (Volume)
     if (unit === 'ml') {
@@ -470,7 +558,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       if (isTbspInDb) {
         return value / (matchedFood.amountValue * 15);
       }
-      if (foodUnit === 'gramos') {
+      if (isGramsInDb) {
         return value / matchedFood.amountValue;
       }
       return value / 240;
@@ -478,10 +566,14 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
 
     // Unit: Grams (Weight)
     if (unit === 'grams') {
+      // Guardrail: If value is tiny (<= 5), it represents portions/pieces, not 1 gram
+      if (value <= 5) {
+        return value;
+      }
       if (matchedFood.gramsEquivalent) {
         return value / matchedFood.gramsEquivalent;
       }
-      if (foodUnit === 'gramos') {
+      if (isGramsInDb) {
         return value / matchedFood.amountValue;
       }
       if (isCupInDb) {
@@ -498,7 +590,7 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       if (matchedFood.gramsEquivalent) {
         return (value * 240) / matchedFood.gramsEquivalent;
       }
-      if (foodUnit === 'gramos') {
+      if (isGramsInDb) {
         return (value * 240) / matchedFood.amountValue;
       }
       return value / matchedFood.amountValue;
@@ -506,49 +598,43 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
 
     // Unit: Tablespoon (cda ≈ 15g / 15ml)
     if (unit === 'tbsp') {
-      if (isTbspInDb) {
-        return value / matchedFood.amountValue;
-      }
-      if (isTspInDb) {
-        return (value * 3) / matchedFood.amountValue;
-      }
-      if (matchedFood.gramsEquivalent) {
-        return (value * 15) / matchedFood.gramsEquivalent;
-      }
-      if (foodUnit === 'gramos') {
-        return (value * 15) / matchedFood.amountValue;
-      }
+      if (isTbspInDb) return value / matchedFood.amountValue;
+      if (isTspInDb) return (value * 3) / matchedFood.amountValue;
+      if (matchedFood.gramsEquivalent) return (value * 15) / matchedFood.gramsEquivalent;
+      if (isGramsInDb) return (value * 15) / matchedFood.amountValue;
       return value / matchedFood.amountValue;
     }
 
     // Unit: Teaspoon (cdita ≈ 5g / 5ml)
     if (unit === 'tsp') {
-      if (isTspInDb) {
-        return value / matchedFood.amountValue;
-      }
-      if (isTbspInDb) {
-        return (value / 3) / matchedFood.amountValue;
-      }
-      if (matchedFood.gramsEquivalent) {
-        return (value * 5) / matchedFood.gramsEquivalent;
-      }
-      if (foodUnit === 'gramos') {
-        return (value * 5) / matchedFood.amountValue;
-      }
+      if (isTspInDb) return value / matchedFood.amountValue;
+      if (isTbspInDb) return (value / 3) / matchedFood.amountValue;
+      if (matchedFood.gramsEquivalent) return (value * 5) / matchedFood.gramsEquivalent;
+      if (isGramsInDb) return (value * 5) / matchedFood.amountValue;
       return value / matchedFood.amountValue;
     }
 
     // Unit: Pieces / slices
     if (unit === 'pieces') {
-      return value / matchedFood.amountValue;
+      if (isPieceInDb) {
+        return value / matchedFood.amountValue;
+      }
+      // If food in DB is in grams (e.g. 30g meat), 1 piece is 1 equivalent
+      if (isGramsInDb && matchedFood.amountValue >= 15) {
+        return value;
+      }
+      return value / (matchedFood.amountValue || 1);
     }
 
     // Fallback: No unit detected or unknown
-    if (foodUnit === 'gramos' && value >= 20) {
+    if (isGramsInDb && value >= 20) {
       return value / matchedFood.amountValue;
     }
     if (matchedFood.gramsEquivalent && value >= 50) {
       return value / matchedFood.gramsEquivalent;
+    }
+    if (value <= 5) {
+      return value / (matchedFood.amountValue || 1);
     }
     return value / (matchedFood.amountValue || 1);
   }
@@ -559,23 +645,24 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
     const isGrams = foodUnit === 'gramos' || foodUnit === 'g';
     const isCupUnit = foodUnit.includes('taza') || foodUnit.includes('tza');
 
-    const formattedAmount = isGrams ? Math.round(scaledAmount) : Math.round(scaledAmount * 10) / 10;
-
     if (isCupUnit) {
-      const displayUnit = formattedAmount > 1 ? 'tzas' : 'tza';
+      const formattedAmountStr = this.formatFractionOrDecimal(scaledAmount);
+      const displayUnit = scaledAmount > 1.05 ? 'tzas' : 'tza';
       if (food.gramsEquivalent) {
-        const scaledGrams = Math.round(equivalents * food.gramsEquivalent);
-        return `${formattedAmount} ${displayUnit} (${scaledGrams}g)`;
+        const scaledGrams = Math.max(10, Math.round(equivalents * food.gramsEquivalent));
+        return `${formattedAmountStr} ${displayUnit} (${scaledGrams}g)`;
       }
-      return `${formattedAmount} ${displayUnit}`;
+      return `${formattedAmountStr} ${displayUnit}`;
     }
 
     if (isGrams) {
+      const formattedAmount = Math.max(10, Math.round(scaledAmount));
       return `${formattedAmount} gramos`;
     }
 
+    const formattedAmountStr = this.formatFractionOrDecimal(scaledAmount);
     let displayUnit = food.unit;
-    if (formattedAmount > 1) {
+    if (scaledAmount > 1.05) {
       if (foodUnit.startsWith('pieza')) displayUnit = 'piezas';
       else if (foodUnit.startsWith('rebanada')) displayUnit = 'rebanadas';
       else if (foodUnit.startsWith('cucharadita')) displayUnit = 'cucharaditas';
@@ -592,7 +679,28 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       else if (foodUnit.startsWith('vasos')) displayUnit = 'vaso';
     }
 
-    return `${formattedAmount} ${displayUnit}`;
+    return `${formattedAmountStr} ${displayUnit}`;
+  }
+
+  private formatFractionOrDecimal(val: number): string {
+    if (val <= 0 || isNaN(val)) return '1';
+
+    const whole = Math.floor(val);
+    const frac = Math.round((val - whole) * 100) / 100;
+
+    let fracStr = '';
+    if (Math.abs(frac - 0.25) < 0.05) fracStr = '1/4';
+    else if (Math.abs(frac - 0.33) < 0.06 || Math.abs(frac - 0.34) < 0.06) fracStr = '1/3';
+    else if (Math.abs(frac - 0.5) < 0.06) fracStr = '1/2';
+    else if (Math.abs(frac - 0.66) < 0.06 || Math.abs(frac - 0.67) < 0.06) fracStr = '2/3';
+    else if (Math.abs(frac - 0.75) < 0.06) fracStr = '3/4';
+
+    if (fracStr) {
+      return whole > 0 ? `${whole} ${fracStr}` : fracStr;
+    }
+
+    const rounded = Math.round(val * 10) / 10;
+    return rounded > 0 ? `${rounded}` : '1/2';
   }
 
   generateSmaeReplacements(ingredient: any): string[] {
@@ -628,33 +736,24 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       categoryMatch = 'Grasas con proteína';
     } else if (groupName.includes('libre')) {
       categoryMatch = 'Libres de energía';
-    } else {
-      // Si no hay grupo claro, buscar por nombre del ingrediente en SMAE_DATABASE
-      const match = SMAE_DATABASE.find(f => nameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(nameLower));
-      if (match) {
-        categoryMatch = match.category;
-      }
+    }
+
+    const matchedFood = this.findMatchingFood(nameLower);
+    if (!categoryMatch && matchedFood) {
+      categoryMatch = matchedFood.category;
     }
 
     if (!categoryMatch) return [];
 
-    // 2. Intentar buscar el ingrediente en la base de datos para saber cuántos equivalentes representa su porción
-    const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-    const target = clean(nameLower);
-
-    const matchedFood = SMAE_DATABASE.filter(f => {
-      const fName = clean(f.name);
-      return target.includes(fName) || fName.includes(target);
-    }).sort((a, b) => {
-      const diffA = Math.abs(clean(a.name).length - target.length);
-      const diffB = Math.abs(clean(b.name).length - target.length);
-      return diffA - diffB;
-    })[0] || null;
-
     const parsedPortion = this.parsePortion(ingredient.cantidad);
     let equivalents = this.calculateEquivalents(parsedPortion, matchedFood);
 
-    if (equivalents <= 0 || isNaN(equivalents)) equivalents = 1;
+    // Guardrails against zero, NaN or abnormal equivalents
+    if (isNaN(equivalents) || equivalents < 0.25) {
+      equivalents = 1;
+    } else if (equivalents > 10) {
+      equivalents = 1;
+    }
 
     // 3. Buscar candidatos compatibles de la categoría
     const isCategoryCompatible = (cat1: string, cat2: string) => {
@@ -665,9 +764,13 @@ export class PortalPlanOrganism implements OnInit, OnDestroy {
       return false;
     };
 
+    const clean = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const targetClean = clean(nameLower);
+
     const candidates = SMAE_DATABASE.filter(food => 
       isCategoryCompatible(food.category, categoryMatch) && 
-      !nameLower.includes(food.name.toLowerCase())
+      !targetClean.includes(clean(food.name)) &&
+      !clean(food.name).includes(targetClean)
     );
 
     // Mezclar candidatos usando Fisher-Yates
