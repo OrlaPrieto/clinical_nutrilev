@@ -19,6 +19,17 @@
     "concurrently": "^8.2.2"
   },
   "dependencies": {
+    "@angular/animations": "^21.2.25",
+    "@angular/cdk": "^21.2.14",
+    "@angular/common": "^21.2.25",
+    "@angular/compiler": "^21.2.25",
+    "@angular/core": "^21.2.25",
+    "@angular/forms": "^21.2.25",
+    "@angular/material": "^21.2.14",
+    "@angular/platform-browser": "^21.2.25",
+    "@angular/platform-browser-dynamic": "^21.2.25",
+    "@angular/router": "^21.2.25",
+    "@angular/service-worker": "^21.2.25",
     "html-to-image": "^1.11.13"
   },
   "overrides": {
