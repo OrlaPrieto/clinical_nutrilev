@@ -305,6 +305,37 @@
         <!-- Tab 1: Clínica / Antecedentes Compacto -->
         @if (activeTab() === 1) {
             <div class="space-y-4 md:space-y-6 animate-fade-up">
+                <!-- Referencias Ponderales (Solo lectura) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <app-m-stat-card 
+                        label="Peso Habitual" 
+                        [value]="patient()?.peso_habitual" 
+                        suffix="kg" 
+                        [isEditing]="false" 
+                        placeholder="---">
+                    </app-m-stat-card>
+                    <app-m-stat-card 
+                        label="Peso Meta" 
+                        [value]="patient()?.peso_meta" 
+                        suffix="kg" 
+                        [isEditing]="false" 
+                        placeholder="---">
+                    </app-m-stat-card>
+                </div>
+
+                <!-- Historial / Detalle de Variaciones de Peso -->
+                <div class="bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm transition-colors">
+                    <app-m-detail-field
+                        label="Historial de Variaciones de Peso"
+                        [value]="patient()?.cambios_peso_detalle"
+                        icon="trending_up"
+                        [isEditing]="isEditing()"
+                        type="textarea"
+                        placeholder="Describe cambios de peso recientes, causas o fluctuaciones..."
+                        (valueChange)="patient().cambios_peso_detalle = $event">
+                    </app-m-detail-field>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-white dark:bg-[#111111] p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border border-nutri-rose/5 dark:border-white/5 shadow-sm space-y-4 transition-colors">
                         <app-m-detail-field
