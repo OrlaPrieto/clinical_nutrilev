@@ -168,11 +168,14 @@
                 @if (!loadingShoppingList() && !hasShoppingError() && shoppingList().length > 0) {
                     <app-a-button (onClick)="shareShoppingList()" label="Compartir Lista" variant="primary" size="lg"
                                  icon="share"
+                                 [disabled]="isGeneratingPdf()"
                                  class="w-full sm:flex-1"
                                  customClass="!rounded-2xl !bg-[#ff6b9b] !border-none hover:!bg-[#e05686] !text-white active:scale-95 transition-all !shadow-xl !shadow-pink-500/15">
                     </app-a-button>
                     <app-a-button (onClick)="printShoppingList()" label="Descargar PDF" variant="outline" size="lg"
                                  icon="download"
+                                 [loading]="isGeneratingPdf()"
+                                 [disabled]="isGeneratingPdf()"
                                  class="w-full sm:flex-1"
                                  customClass="!rounded-2xl !border-nutri-rose/20 !text-nutri-rose active:scale-95 transition-all">
                     </app-a-button>

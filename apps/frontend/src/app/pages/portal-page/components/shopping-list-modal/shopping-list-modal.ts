@@ -23,6 +23,7 @@ export class ShoppingListModalComponent {
 
   private toastService = inject(ToastService);
   // Local state signals
+  isGeneratingPdf = signal<boolean>(false);
   collapsedCategories = signal<Record<string, boolean>>({});
 
   isAllCategoriesCollapsed = computed(() => {
@@ -118,9 +119,10 @@ export class ShoppingListModalComponent {
   async printShoppingList() {
     const list = this.shoppingList();
     const p = this.patient();
-    if (!list || list.length === 0 || !p) return;
+    if (!list || list.length === 0 || !p || this.isGeneratingPdf()) return;
 
-    this.toastService.show('Generando PDF de la lista...', 'info');
+    this.isGeneratingPdf.set(true);
+    this.toastService.show('Preparando PDF de la lista...', 'info');
 
     const formattedDate = new Date().toLocaleDateString('es-MX', {
       day: 'numeric',
@@ -140,12 +142,11 @@ export class ShoppingListModalComponent {
     wrapper.style.pointerEvents = 'none';
     document.body.appendChild(wrapper);
 
-    // CSS styles shared by all elements
+    // CSS styles shared by all elements (using system fonts to avoid network font fetch timeouts/errors)
     const sharedStyles = `
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         .pdf-box {
-          font-family: 'Inter', sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
           color: #334155;
           padding: 20px 40px;
           background-color: #ffffff;
@@ -153,6 +154,7 @@ export class ShoppingListModalComponent {
           line-height: 1.5;
           width: 800px;
           box-sizing: border-box;
+          -webkit-font-smoothing: antialiased;
         }
         .header {
           border-bottom: 2px solid #e2e8f0;
@@ -260,10 +262,12 @@ export class ShoppingListModalComponent {
         wrapper.appendChild(container);
         
         // Wait for rendering
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 40));
         
         const dataUrl = await toPng(container, {
           backgroundColor: '#ffffff',
+          skipFonts: true,
+          pixelRatio: 2,
           style: {
             transform: 'scale(1)',
             transformOrigin: 'top left',
@@ -376,14 +380,60 @@ export class ShoppingListModalComponent {
       // Draw footer on the last page
       drawFooter(pageNumber);
 
-      pdf.save(`Lista_Super_Nutrilev_${p.nombre.replace(/\s+/g, '_')}.pdf`);
-      this.toastService.show('¡PDF descargado con éxito!', 'success');
+      const fileName = `Lista_Super_Nutrilev_${p.nombre.replace(/\s+/g, '_')}.pdf`;
+      const pdfBlob = pdf.output('blob');
+      const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      // 4. Mobile delivery: try native Web Share API with File (Supported on iOS Safari 15+, Android Chrome, WhatsApp WebView)
+      if (typeof navigator !== 'undefined' && 'canShare' in navigator && (navigator as any).canShare) {
+        try {
+          const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+          if ((navigator as any).canShare({ files: [file] })) {
+            await (navigator as any).share({
+              files: [file],
+              title: 'Lista de Súper - Nutrilev',
+              text: `Lista de compras de ${p.nombre}`
+            });
+            this.toastService.show('¡PDF generado con éxito!', 'success');
+            return;
+          }
+        } catch (shareErr: any) {
+          if (shareErr.name === 'AbortError') {
+            return; // User cancelled share dialog
+          }
+          console.warn('[ShoppingListModal] Native share with file failed, attempting direct download fallback:', shareErr);
+        }
+      }
+
+      // 5. Fallback download
+      const blobUrl = URL.createObjectURL(pdfBlob);
+
+      if (isMobile) {
+        // Mobile fallback: open blob directly or trigger anchor with target=_blank
+        const newWindow = window.open(blobUrl, '_blank');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = fileName;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => document.body.removeChild(a), 150);
+        }
+      } else {
+        // Desktop browser standard download
+        pdf.save(fileName);
+      }
+
+      this.toastService.show('¡PDF generado con éxito!', 'success');
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
 
     } catch (error) {
       console.error('Error generating PDF:', error);
       this.toastService.show('Error al generar el PDF de la lista', 'error');
     } finally {
       wrapper.remove();
+      this.isGeneratingPdf.set(false);
     }
   }
 
